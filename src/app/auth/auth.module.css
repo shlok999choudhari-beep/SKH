@@ -1,0 +1,129 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.companyPage { background: radial-gradient(ellipse at top left, rgba(16,185,129,0.08) 0%, transparent 60%), var(--bg-primary); }
+
+/* ── Orbs ── */
+.orb1 {
+  position: fixed; top: -100px; left: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(124,58,237,0.3), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 10s ease-in-out infinite;
+}
+.orb2 {
+  position: fixed; bottom: -100px; right: -100px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(59,130,246,0.2), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+.orb1green {
+  position: fixed; top: -100px; left: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(16,185,129,0.3), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 10s ease-in-out infinite;
+}
+.orb2green {
+  position: fixed; bottom: -100px; right: -100px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(6,182,212,0.2), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+
+.backBtn {
+  position: fixed; top: 20px; left: 24px;
+  font-size: 13px; color: var(--text-secondary);
+  text-decoration: none; font-weight: 500;
+  padding: 8px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: var(--transition);
+  z-index: 10;
+  display: flex; align-items: center; gap: 6px;
+}
+.backBtn:hover { color: var(--text-primary); border-color: var(--border-hover); }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  position: relative; z-index: 1;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+}
+.cardWide { max-width: 680px; }
+.companyCard { border-color: rgba(16,185,129,0.15); }
+.companyCard:hover { border-color: rgba(16,185,129,0.25); }
+
+.cardHeader { text-align: center; margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.roleIcon {
+  width: 64px; height: 64px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.studentIcon { background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(124,58,237,0.3); }
+.companyIcon { background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(6,182,212,0.2)); border: 1px solid rgba(16,185,129,0.3); }
+
+.title { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; }
+.subtitle { font-size: 14px; color: var(--text-secondary); max-width: 300px; }
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.submitBtn {
+  width: 100% !important;
+  padding: 14px !important;
+  font-size: 15px !important;
+  border-radius: 12px !important;
+  margin-top: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.error { color: #f87171; font-size: 13px; text-align: center; }
+.fieldError { color: #f87171; font-size: 12px; margin-top: 2px; }
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text-muted); font-size: 12px;
+  margin: 20px 0 12px;
+}
+.divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.switchBtn { width: 100%; margin-bottom: 16px; }
+.switchText { text-align: center; font-size: 13px; color: var(--text-muted); }
+.link { color: var(--accent-violet); text-decoration: none; font-weight: 500; }
+.link:hover { text-decoration: underline; }
+.linkGreen { color: var(--accent-green); }
+
+/* ── Spinner ── */
+.spinner, .spinnerGreen {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-30px) scale(1.05);} }
+
+@media (max-width: 600px) {
+  .card { padding: 28px 20px; }
+  .row2 { grid-template-columns: 1fr; }
+  .backBtn { top: 12px; left: 12px; }
+}

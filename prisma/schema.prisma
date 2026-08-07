@@ -1,0 +1,387 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int?      @map("institution_id")
+  name             String
+  email            String    @unique
+  password         String
+  college          String?
+  degree           String?
+  graduationYear   Int?      @map("graduation_year")
+  phone            String?
+  githubUrl        String?   @map("github_url")
+  linkedinUrl      String?   @map("linkedin_url")
+  portfolioUrl     String?   @map("portfolio_url")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @map("updated_at")
+
+  institution      Institution? @relation(fields: [institutionId], references: [id])
+  resumes          Resume[]
+  applications     Application[]
+  skillAssessments SkillAssessment[]
+  skillGapAnalyses SkillGapAnalysis[]
+  codingSessions   CodingSession[]
+  trainerSessions  TrainerSession[]
+  internshipApps   InternshipApplication[]
+  certifications   Certification[]
+  placementApps    PlacementApplication[]
+
+  @@map("students")
+}
+
+model Company {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int?      @map("institution_id")
+  companyName      String    @map("company_name")
+  email            String    @unique
+  password         String
+  industry         String?
+  website          String?
+  location         String?
+  companySize      String?   @map("company_size")
+  description      String?
+  contactPerson    String?   @map("contact_person")
+  phone            String?
+  isOnline         Int       @default(0) @map("is_online")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @map("updated_at")
+
+  institution      Institution? @relation(fields: [institutionId], references: [id])
+  jobPostings      JobPosting[]
+  codingSessions   CodingSession[]
+  internships      Internship[]
+  placementDrives  PlacementDrive[]
+
+  @@map("companies")
+}
+
+model Resume {
+  id               Int       @id @default(autoincrement())
+  studentId        Int       @map("student_id")
+  filename         String
+  filePath         String?   @map("file_path")
+  extractedText    String?   @map("extracted_text")
+  analysisData     String?   @map("analysis_data")
+  atsScore         Float?    @map("ats_score")
+  overallRating    Float?    @map("overall_rating")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("resumes")
+}
+
+model JobPosting {
+  id               Int       @id @default(autoincrement())
+  companyId        Int       @map("company_id")
+  title            String
+  description      String?
+  requiredSkills   String?   @map("required_skills")
+  location         String?
+  jobType          String?   @map("job_type")
+  salaryRange      String?   @map("salary_range")
+  isActive         Int       @default(1) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications     Application[]
+
+  @@map("job_postings")
+}
+
+model Application {
+  id               Int       @id @default(autoincrement())
+  studentId        Int       @map("student_id")
+  jobId            Int       @map("job_id")
+  matchScore       Float?    @map("match_score")
+  status           String    @default("pending")
+  appliedAt        DateTime  @default(now()) @map("applied_at")
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job              JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, jobId])
+  @@map("applications")
+}
+
+model SkillAssessment {
+  id               Int       @id @default(autoincrement())
+  studentId        Int       @map("student_id")
+  skillName        String    @map("skill_name")
+  proficiencyLevel Int?      @map("proficiency_level")
+  verified         Int       @default(0)
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("skill_assessments")
+}
+
+model SkillGapAnalysis {
+  id               Int       @id @default(autoincrement())
+  studentId        Int       @map("student_id")
+  resumeName       String    @map("resume_name")
+  jobDescName      String    @map("job_desc_name")
+  analysisData     String    @map("analysis_data")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("skill_gap_analyses")
+}
+
+model CodingSession {
+  id               Int       @id @default(autoincrement())
+  companyId        Int       @map("company_id")
+  studentId        Int       @map("student_id")
+  roomId           String    @unique @map("room_id")
+  status           String    @default("active")
+  score            Int?
+  feedback         String?
+  codeSnapshot     String?   @map("code_snapshot")
+  language         String?
+  startedAt        DateTime  @default(now()) @map("started_at")
+  endedAt          DateTime? @map("ended_at")
+
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("coding_sessions")
+}
+
+model Institution {
+  id               Int       @id @default(autoincrement())
+  name             String
+  domain           String?   @unique
+  contactEmail     String?   @map("contact_email")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @map("updated_at")
+
+  users            User[]
+  trainers         Trainer[]
+  cohorts          Cohort[]
+  auditLogs        AuditLog[]
+  resources        Resource[]
+  internships      Internship[]
+  certifications   Certification[]
+  placementDrives  PlacementDrive[]
+  students         Student[]
+  companies        Company[]
+
+  @@map("institutions")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int?      @map("institution_id")
+  name             String
+  email            String    @unique
+  password         String
+  role             String
+  status           String    @default("active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @map("updated_at")
+
+  institution      Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  trainers         Trainer[]
+  resourceBookings ResourceBooking[]
+
+  @@map("users")
+}
+
+model Trainer {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @map("user_id")
+  institutionId    Int       @map("institution_id")
+  expertiseTags    String?   @map("expertise_tags")
+  rating           Float     @default(0)
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  sessions         TrainerSession[]
+
+  @@map("trainers")
+}
+
+model Cohort {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int       @map("institution_id")
+  name             String
+  description      String?
+  graduationYear   Int?      @map("graduation_year")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@map("cohorts")
+}
+
+model AuditLog {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int?      @map("institution_id")
+  userId           Int       @map("user_id")
+  action           String
+  resource         String
+  details          String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  institution      Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model Resource {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int       @map("institution_id")
+  name             String
+  type             String
+  capacity         Int?
+  status           String    @default("active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  bookings         ResourceBooking[]
+
+  @@map("resources")
+}
+
+model ResourceBooking {
+  id               Int       @id @default(autoincrement())
+  resourceId       Int       @map("resource_id")
+  bookedByUserId   Int       @map("booked_by_user_id")
+  purpose          String?
+  startTime        DateTime  @map("start_time")
+  endTime          DateTime  @map("end_time")
+  status           String    @default("confirmed")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  resource         Resource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  bookedByUser     User      @relation(fields: [bookedByUserId], references: [id], onDelete: Cascade)
+
+  @@map("resource_bookings")
+}
+
+model TrainerSession {
+  id               Int       @id @default(autoincrement())
+  trainerId        Int       @map("trainer_id")
+  studentId        Int?      @map("student_id")
+  startTime        DateTime  @map("start_time")
+  endTime          DateTime  @map("end_time")
+  status           String    @default("scheduled")
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  trainer          Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  student          Student?  @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@map("trainer_sessions")
+}
+
+model Internship {
+  id               Int       @id @default(autoincrement())
+  institutionId    Int       @map("institution_id")
+  companyId        Int?      @map("company_id")
+  title            String
+  description      String
+  location         String?
+  stipend          String?
+  duration         String?
+  deadline         DateTime?
+  status           String    @default("open")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  company          Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  applications     InternshipApplication[]
+
+  @@map("internships")
+}
+
+model InternshipApplication {
+  id               Int       @id @default(autoincrement())
+  internshipId     Int       @map("internship_id")
+  studentId        Int       @map("student_id")
+  status           String    @default("pending")
+  appliedAt        DateTime  @default(now()) @map("applied_at")
+
+  internship       Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([internshipId, studentId])
+  @@map("internship_applications")
+}
+
+model Certification {
+  id               Int       @id @default(autoincrement())
+  studentId        Int       @map("student_id")
+  institutionId    Int       @map("institution_id")
+  name             String
+  provider         String
+  issueDate        DateTime  @map("issue_date")
+  credentialUrl    String?   @map("credential_url")
+  verifiedStatus   String    @default("pending") @map("verified_status")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model PlacementDrive {
+  id                  Int       @id @default(autoincrement())
+  institutionId       Int       @map("institution_id")
+  companyId           Int?      @map("company_id")
+  title               String
+  description         String
+  eligibilityCriteria String?   @map("eligibility_criteria")
+  status              String    @default("upcoming")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  institution         Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  company             Company?    @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  rounds              PlacementRound[]
+  applications        PlacementApplication[]
+
+  @@map("placement_drives")
+}
+
+model PlacementRound {
+  id               Int       @id @default(autoincrement())
+  driveId          Int       @map("drive_id")
+  roundName        String    @map("round_name")
+  startTime        DateTime? @map("start_time")
+  endTime          DateTime? @map("end_time")
+  status           String    @default("scheduled")
+
+  drive            PlacementDrive @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  applications     PlacementApplication[]
+
+  @@map("placement_rounds")
+}
+
+model PlacementApplication {
+  id               Int       @id @default(autoincrement())
+  driveId          Int       @map("drive_id")
+  studentId        Int       @map("student_id")
+  currentRoundId   Int?      @map("current_round_id")
+  status           String    @default("applied")
+  appliedAt        DateTime  @default(now()) @map("applied_at")
+
+  drive            PlacementDrive @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  student          Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  currentRound     PlacementRound? @relation(fields: [currentRoundId], references: [id], onDelete: SetNull)
+
+  @@unique([driveId, studentId])
+  @@map("placement_applications")
+}

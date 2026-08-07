@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  placeiq:
+    build: .
+    container_name: placeiq-app
+    ports:
+      - "5000:3000"  # Map container port 3000 to host port 5000
+      - "3001:3001"  # Socket server port
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./placeiq.db:/app/placeiq.db
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

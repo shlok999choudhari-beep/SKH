@@ -1,0 +1,63 @@
+'use client'
+import { useEffect } from 'react'
+
+export default function InstitutionError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error('Institution Module Error:', error)
+  }, [error])
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      textAlign: 'center',
+      padding: '2rem'
+    }}>
+      <div style={{
+        background: 'rgba(239, 68, 68, 0.1)',
+        border: '1px solid rgba(239, 68, 68, 0.3)',
+        borderRadius: '50%',
+        width: '64px',
+        height: '64px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '32px',
+        marginBottom: '1.5rem',
+        color: '#ef4444'
+      }}>
+        ⚠️
+      </div>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1rem' }}>
+        Something went wrong!
+      </h2>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', maxWidth: '400px' }}>
+        We encountered an error while trying to load this module. Please try again or contact support if the issue persists.
+      </p>
+      <button
+        onClick={() => reset()}
+        className="btn btn-primary"
+        style={{
+          background: 'var(--accent-violet)',
+          color: 'white',
+          border: 'none',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '8px',
+          cursor: 'pointer'
+        }}
+      >
+        Try again
+      </button>
+    </div>
+  )
+}

@@ -1,0 +1,90 @@
+/* ── LAYOUT ── */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
+  width: calc(100% - var(--sidebar-width));
+}
+
+/* When sidebar is collapsed */
+@media (min-width: 769px) {
+  .layout:has(.collapsed) .content {
+    margin-left: 64px;
+    width: calc(100% - 64px);
+  }
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: var(--header-height);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.pageTitle { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: var(--text-primary); }
+.pageSubtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 24px;
+  max-width: 1400px; width: 100%;
+}
+
+/* ── STATS ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.statCard {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.statIcon {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.statLabel { font-size: 12px; color: var(--text-muted); }
+.statValue { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+
+/* ── PANEL/CARD ── */
+.card {
+  padding: 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .content { margin-left: 0; width: 100%; }
+  .header { padding: 0 16px 0 64px; }
+  .main { padding: 20px 16px; }
+  .statsRow { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+@media (max-width: 480px) {
+  .statsRow { grid-template-columns: 1fr 1fr; }
+  .pageTitle { font-size: 18px; }
+}
