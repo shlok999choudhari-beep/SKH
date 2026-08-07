@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/session'
 import { z } from 'zod'
 
 const sessionSchema = z.object({
   student_id: z.number().optional(),
-  start_time: z.string().datetime({ message: 'Invalid start_time format' }),
-  end_time: z.string().datetime({ message: 'Invalid end_time format' }),
+  start_time: z.string(),
+  end_time: z.string(),
   notes: z.string().optional(),
-}).refine(data => new Date(data.start_time) < new Date(data.end_time), {
-  message: 'start_time must be before end_time',
-  path: ['end_time']
 })
 
 export async function GET(
@@ -28,15 +26,39 @@ export async function GET(
       where: { trainerId },
       include: {
         student: {
-          select: { name: true }
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            college: true,
+            degree: true,
+            phone: true,
+            graduationYear: true,
+            githubUrl: true,
+            linkedinUrl: true
+          }
         }
       },
       orderBy: { startTime: 'asc' }
     })
     
     const mappedSessions = sessions.map(ts => ({
-      ...ts,
-      student_name: ts.student?.name || null
+      id: ts.id,
+      trainerId: ts.trainerId,
+      studentId: ts.studentId,
+      student_name: ts.student?.name || 'Student',
+      student_email: ts.student?.email || '',
+      student_college: ts.student?.college || '',
+      student_degree: ts.student?.degree || '',
+      student_phone: ts.student?.phone || '',
+      student_graduation: ts.student?.graduationYear || null,
+      student_github: ts.student?.githubUrl || null,
+      student_linkedin: ts.student?.linkedinUrl || null,
+      startTime: ts.startTime,
+      endTime: ts.endTime,
+      notes: ts.notes,
+      status: ts.status,
+      createdAt: ts.createdAt
     }))
 
     return NextResponse.json({ sessions: mappedSessions })
@@ -64,7 +86,37 @@ export async function POST(
     const startTime = new Date(validatedData.start_time)
     const endTime = new Date(validatedData.end_time)
 
-    // Check for overlapping sessions
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      return NextResponse.json({ error: 'Invalid start or end time format' }, { status: 400 })
+    }
+
+    if (startTime >= endTime) {
+      return NextResponse.json({ error: 'Start time must be before end time' }, { status: 400 })
+    }
+
+    let studentId = validatedData.student_id
+
+    // Fallback to active logged-in student session
+    if (!studentId) {
+      try {
+        const session = await getSession()
+        if (session && session.role === 'student' && session.userId) {
+          studentId = session.userId
+        }
+      } catch (e) {
+        console.error('Session lookup error:', e)
+      }
+    }
+
+    // Fallback to first student if still not found
+    if (!studentId) {
+      const defaultStudent = await prisma.student.findFirst()
+      if (defaultStudent) {
+        studentId = defaultStudent.id
+      }
+    }
+
+    // Check for overlapping sessions for this trainer
     const overlapping = await prisma.trainerSession.findFirst({
       where: {
         trainerId,
@@ -78,22 +130,35 @@ export async function POST(
     })
 
     if (overlapping) {
-      return NextResponse.json({ error: 'Trainer is already booked for this time slot' }, { status: 409 })
+      return NextResponse.json({ error: 'Trainer is already booked for this selected time slot' }, { status: 409 })
     }
 
     const result = await prisma.trainerSession.create({
       data: {
         trainerId,
-        studentId: validatedData.student_id || null,
+        studentId: studentId || null,
         startTime,
         endTime,
-        notes: validatedData.notes || null
+        notes: validatedData.notes || '1-on-1 Mentorship Session',
+        status: 'scheduled'
+      },
+      include: {
+        student: {
+          select: { name: true, email: true, college: true, degree: true, phone: true }
+        }
       }
     })
 
     return NextResponse.json({ 
       success: true, 
-      sessionId: result.id 
+      session: {
+        ...result,
+        student_name: result.student?.name || 'Student',
+        student_email: result.student?.email || '',
+        student_college: result.student?.college || '',
+        student_degree: result.student?.degree || '',
+        student_phone: result.student?.phone || ''
+      }
     }, { status: 201 })
     
   } catch (error: any) {
@@ -104,3 +169,5 @@ export async function POST(
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
+
+

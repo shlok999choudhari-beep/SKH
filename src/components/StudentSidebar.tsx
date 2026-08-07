@@ -54,6 +54,7 @@ const STUDENT_NAV: NavGroup[] = [
     group: 'Growth',
     items: [
       { href: '/student/resources', icon: '📚', label: 'Learning Resources' },
+      { href: '/student/trainers', icon: '🧑‍🏫', label: 'Book a Trainer' },
       { href: '/student/mentor', icon: '🤖', label: 'Mentor Chat' },
       { href: '/student/skills', icon: '📊', label: 'Skill Radar Chart' },
     ]

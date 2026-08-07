@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const studentsCount = await prisma.student.count({ where: { institutionId: id } })
     const drivesCount = await prisma.placementDrive.count({ where: { institutionId: id, status: "active" } })
     const internshipsCount = await prisma.internship.count({ where: { institutionId: id, status: "open" } })
-    const trainersCount = await prisma.trainer.count({ where: { institutionId: id } })
+    const trainersCount = await prisma.trainer.count()
 
     // Pipeline Data
     const drives = await prisma.placementDrive.findMany({

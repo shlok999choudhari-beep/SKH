@@ -203,6 +203,8 @@ model Trainer {
   userId           Int       @map("user_id")
   institutionId    Int       @map("institution_id")
   expertiseTags    String?   @map("expertise_tags")
+  subjects         String?
+  bio              String?
   rating           Float     @default(0)
   createdAt        DateTime  @default(now()) @map("created_at")
 
