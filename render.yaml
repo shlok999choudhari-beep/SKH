@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: placeiq
+    name: demo
     runtime: node
     plan: free
     buildCommand: ./scripts/build.sh

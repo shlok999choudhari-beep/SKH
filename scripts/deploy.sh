@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# PlaceIQ Docker Deployment Script
+# Demo Docker Deployment Script
 # This script builds, runs, and pushes the Docker image
 
 set -e
 
-echo "🚀 PlaceIQ Docker Deployment"
+echo "🚀 Demo Docker Deployment"
 echo "=============================="
 
 # Configuration
-IMAGE_NAME="darshan11111/placeiq"
+IMAGE_NAME="darshan11111/demo"
 IMAGE_TAG="latest"
-CONTAINER_NAME="placeiq-app"
+CONTAINER_NAME="demo-app"
 
 # Step 1: Build Docker image
 echo ""

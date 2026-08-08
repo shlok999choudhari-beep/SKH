@@ -20,7 +20,7 @@ export default function LandingPage() {
                 <path d="M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>
+            <span className={styles.logoText}>De<span className="grad-text">mo</span></span>
           </div>
 
           <div className={styles.navLinks}>
@@ -161,10 +161,10 @@ export default function LandingPage() {
                 <path d="M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>
+            <span className={styles.logoText}>De<span className="grad-text">mo</span></span>
           </div>
           <p className={styles.footerTagline}>AI-powered placement intelligence • Built for the future of hiring</p>
-          <p className={styles.footerCopy}>© 2026 PlaceIQ. All rights reserved.</p>
+          <p className={styles.footerCopy}>© 2026 Demo. All rights reserved.</p>
         </div>
       </footer>
     </main>

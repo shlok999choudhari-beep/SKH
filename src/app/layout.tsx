@@ -3,7 +3,7 @@ import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export const metadata: Metadata = {
-  title: 'PlaceIQ — AI Smart Placement Gap Analyzer',
+  title: 'Demo — AI Smart Placement Gap Analyzer',
   description: 'Analyze your resume against job requirements, detect skill gaps, and get an AI-powered roadmap to land your dream job. Trusted by students and top companies.',
   keywords: 'AI placement, resume analysis, skill gap, career roadmap, job matching',
 }

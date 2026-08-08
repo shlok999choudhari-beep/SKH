@@ -12,14 +12,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    const stored = localStorage.getItem('placeiq-theme') as Theme
+    const stored = localStorage.getItem('demo-theme') as Theme
     if (stored) setTheme(stored)
   }, [])
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     setTheme(newTheme)
-    localStorage.setItem('placeiq-theme', newTheme)
+    localStorage.setItem('demo-theme', newTheme)
     document.documentElement.setAttribute('data-theme', newTheme)
   }
 

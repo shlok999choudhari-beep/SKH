@@ -64,7 +64,7 @@ export default function CompanySidebar() {
                 <path d="M2 12l10 5 10-5"/>
               </svg>
             </div>
-            {!collapsed && <span className={styles.logoText}>Place<span className="grad-text-green">IQ</span></span>}
+            {!collapsed && <span className={styles.logoText}>De<span className="grad-text-green">mo</span></span>}
           </Link>
           <button className={styles.collapseBtn} onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

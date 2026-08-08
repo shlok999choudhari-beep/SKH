@@ -1,8 +1,8 @@
-# PlaceIQ Expansion Implementation Plan
+# Demo Expansion Implementation Plan
 
 ## 1. Objective
 
-This document outlines how to evolve the current PlaceIQ platform into a fuller institutional career and placement ecosystem that covers the features shown in the requested verification matrix:
+This document outlines how to evolve the current Demo platform into a fuller institutional career and placement ecosystem that covers the features shown in the requested verification matrix:
 
 - Resource sharing (infrastructure, trainers)
 - Trainer management
@@ -70,7 +70,7 @@ The following institutional features are either absent or only partially impleme
 
 ## 3. Target Product Vision
 
-PlaceIQ should evolve from a student-to-company career assistant into an institutional career intelligence platform that supports:
+Demo should evolve from a student-to-company career assistant into an institutional career intelligence platform that supports:
 
 - students
 - trainers/faculty

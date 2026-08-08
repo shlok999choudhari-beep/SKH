@@ -40,7 +40,7 @@ export async function GET(
       status: a.status || 'offered',
       appliedAt: a.applied_at,
       student_name: a.student_name || 'Student Applicant',
-      student_email: a.student_email || 'student@placeiq.edu',
+      student_email: a.student_email || 'student@demo.edu',
       degree: a.degree || 'B.Tech',
       cgpa: a.cgpa ? Number(a.cgpa) : null
     }))

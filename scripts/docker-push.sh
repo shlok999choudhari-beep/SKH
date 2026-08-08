@@ -3,7 +3,7 @@
 set -e
 
 # Configuration
-IMAGE_NAME="placeiq"
+IMAGE_NAME="demo"
 DOCKER_USERNAME="${DOCKER_USERNAME:-your-dockerhub-username}"
 TAG="${TAG:-latest}"
 FULL_IMAGE_NAME="${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"

@@ -35,7 +35,7 @@ export async function createSession(payload: SessionPayload): Promise<void> {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const token = await encrypt({ ...payload, expiresAt })
   const cookieStore = await cookies()
-  cookieStore.set('placeiq_session', token, {
+  cookieStore.set('demo_session', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     expires: expiresAt,
@@ -46,11 +46,11 @@ export async function createSession(payload: SessionPayload): Promise<void> {
 
 export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('placeiq_session')?.value
+  const token = cookieStore.get('demo_session')?.value
   return decrypt(token)
 }
 
 export async function deleteSession(): Promise<void> {
   const cookieStore = await cookies()
-  cookieStore.delete('placeiq_session')
+  cookieStore.delete('demo_session')
 }

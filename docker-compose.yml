@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  placeiq:
+  demo:
     build: .
-    container_name: placeiq-app
+    container_name: demo-app
     ports:
       - "5000:3000"  # Map container port 3000 to host port 5000
       - "3001:3001"  # Socket server port
