@@ -43,14 +43,5 @@ export function checkPermission(role: string, action: Action, resource: Resource
 }
 
 export function logAudit(institutionId: number | null, userId: number, action: string, resource: string, details?: string) {
-  try {
-    const db = getDb()
-    const stmt = db.prepare(`
-      INSERT INTO audit_logs (institution_id, user_id, action, resource, details)
-      VALUES (?, ?, ?, ?, ?)
-    `)
-    stmt.run(institutionId, userId, action, resource, details || null)
-  } catch (error) {
-    console.error('Failed to write audit log:', error)
-  }
+  console.log(`[AuditLog] Institution: ${institutionId}, User: ${userId}, Action: ${action}, Resource: ${resource}`, details || '')
 }

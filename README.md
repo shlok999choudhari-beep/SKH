@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PlaceIQ
+
+PlaceIQ is a Next.js full-stack platform with real-time WebSocket capabilities, Prisma PostgreSQL integration, AI-driven skill analysis, and role-based portals.
+
+## Project Structure
+
+```
+├── docs/                      # Technical documentation & architecture specs
+│   ├── BEHAVIORAL_ANALYSIS.md
+│   ├── DASHBOARD_UPDATES.md
+│   ├── IMPLEMENTATION_PLAN.md
+│   └── RESPONSIVE_LIGHTMODE_FIXES.md
+├── server/                    # Standalone backend services
+│   └── socket-server.js       # WebSockets / Real-time collaboration server
+├── scripts/                   # Build, deployment, and utility scripts
+│   ├── build.sh
+│   ├── deploy.sh
+│   ├── docker-push.sh
+│   ├── start.sh
+│   └── fix.js
+├── prisma/                    # Prisma ORM schema & migrations
+│   └── schema.prisma
+├── src/                       # Application source code
+│   ├── app/                   # Next.js App Router (Pages & API endpoints)
+│   ├── components/            # UI components
+│   ├── contexts/              # React Context Providers
+│   ├── lib/                   # Backend services (DB, AI, Auth, Sessions)
+│   └── types/                 # Shared TypeScript interfaces
+├── public/                    # Static assets & file uploads
+└── Dockerfile                 # Containerization configuration
+```
 
 ## Getting Started
 
-First, run the development server:
+### Development
+
+Run the frontend app and socket server concurrently:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev:all
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or run them individually:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Next.js app on http://localhost:3000
+npm run dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Socket.IO server on http://localhost:3001
+npm run socket
+```
 
-## Learn More
+### Production Build
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm run start
+```

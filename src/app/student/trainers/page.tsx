@@ -302,7 +302,7 @@ export default function StudentTrainersPage() {
                         style={{
                           display: 'flex',
                           flexDirection: 'column',
-                          justify: 'space-between',
+                          justifyContent: 'space-between',
                           padding: '1.5rem',
                           borderRadius: '16px',
                           border: '1px solid var(--border)',
@@ -446,7 +446,7 @@ export default function StudentTrainersPage() {
                         background: 'var(--bg-secondary)',
                         display: 'flex',
                         flexDirection: 'column',
-                        justify: 'space-between'
+                        justifyContent: 'space-between'
                       }}
                     >
                       <div>

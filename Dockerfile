@@ -51,8 +51,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/socket-server.js ./socket-server.js
-COPY --from=builder /app/placeiq.db ./placeiq.db
+COPY --from=builder /app/server ./server
+COPY --from=builder /app/scripts ./scripts
 
 # Create uploads directory
 RUN mkdir -p public/uploads/resumes
@@ -63,8 +63,5 @@ ENV NODE_ENV=production
 # Expose ports
 EXPOSE 3000 3001
 
-# Create startup script
-RUN echo '#!/bin/sh\nnode socket-server.js &\nnpm start' > /app/start.sh && chmod +x /app/start.sh
-
 # Start application
-CMD ["/app/start.sh"]
+CMD ["/app/scripts/start.sh"]

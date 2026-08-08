@@ -301,7 +301,7 @@ export default function TrainersPage() {
                     background: 'var(--bg-secondary)',
                     display: 'flex',
                     flexDirection: 'column',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
                     transition: 'all 0.2s ease'
                   }}

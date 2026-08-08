@@ -10,7 +10,6 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - ./placeiq.db:/app/placeiq.db
       - ./public/uploads:/app/public/uploads
     restart: unless-stopped
     healthcheck:

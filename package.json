@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "socket": "node socket-server.js",
+    "socket": "node server/socket-server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
