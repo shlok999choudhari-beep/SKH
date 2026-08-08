@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import AcademicProfileModal from '@/components/AcademicProfileModal'
 import styles from '../dashboard.module.css'
 import Link from 'next/link'
 
@@ -8,10 +9,31 @@ export default function StudentDashboard() {
   const [stats, setStats] = useState<any>(null)
   const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [studentProfile, setStudentProfile] = useState<any>(null)
+  const [showAcademicModal, setShowAcademicModal] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
+    fetchStudentProfile()
   }, [])
+
+  const fetchStudentProfile = async () => {
+    try {
+      const res = await fetch('/api/student/profile', { cache: 'no-store' })
+      const data = await res.json()
+      if (data && !data.error) {
+        setStudentProfile(data)
+        if (data.cgpa === null || data.cgpa === undefined || data.twelfth_marks === null || data.twelfth_marks === undefined) {
+          setShowAcademicModal(true)
+        }
+      } else {
+        setShowAcademicModal(true)
+      }
+    } catch (err) {
+      console.error('Failed to fetch student profile:', err)
+      setShowAcademicModal(true)
+    }
+  }
 
   const fetchDashboardData = async () => {
     try {
@@ -35,6 +57,7 @@ export default function StudentDashboard() {
       setLoading(false)
     }
   }
+
   if (loading) {
     return (
       <div className={styles.layout}>
@@ -57,19 +80,27 @@ export default function StudentDashboard() {
             <p className={styles.pageSubtitle}>Welcome back, <strong>{stats?.name || 'Student'}</strong> 👋 Let&apos;s crush it today!</p>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/student/resume" className="btn btn-primary btn-sm">⚡ Analyze Resume</Link>
+            <Link href="/student/internships" className="btn btn-primary btn-sm">🎯 View Internships</Link>
+            <Link href="/student/resume" className="btn btn-secondary btn-sm">⚡ Analyze Resume</Link>
           </div>
         </header>
 
         <main className={styles.main}>
-          {/* Alert Banner */}
-          <div className={styles.alertBanner}>
-            <span className={styles.alertIcon}>🎯</span>
-            <div>
-              <strong>Your ATS Score is 62%</strong> — Upload a new resume to boost your match score for top companies.
+          {/* Academic Profile Alert Banner if Incomplete */}
+          {studentProfile && (!studentProfile.cgpa || !studentProfile.twelfth_marks) && (
+            <div className={`${styles.alertBanner} ${styles.alertOrange}`} style={{ marginBottom: '1.5rem' }}>
+              <span className={styles.alertIcon}>🎓</span>
+              <div>
+                <strong>Complete your Academic Profile!</strong> Enter your CGPA, 10th %, and 12th % to qualify for company internships.
+              </div>
+              <button 
+                className={`btn btn-primary btn-sm ${styles.alertBtn}`}
+                onClick={() => setShowAcademicModal(true)}
+              >
+                Complete Profile →
+              </button>
             </div>
-            <Link href="/student/resume" className={`btn btn-primary btn-sm ${styles.alertBtn}`}>Improve Now →</Link>
-          </div>
+          )}
 
           {/* Stats */}
           <div className={styles.statsRow}>
@@ -83,8 +114,8 @@ export default function StudentDashboard() {
             <div className="stat-card">
               <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#7c3aed30,#8b5cf630)' }}>🔥</div>
               <div>
-                <div className="stat-number" style={{ color: '#7c3aed' }}>{stats?.skillMatch || 0}/10</div>
-                <div className="stat-label">Skill Match</div>
+                <div className="stat-number" style={{ color: '#7c3aed' }}>{studentProfile?.cgpa ? `${studentProfile.cgpa} CGPA` : 'Not Set'}</div>
+                <div className="stat-label">Academic CGPA</div>
               </div>
             </div>
             <div className="stat-card">
@@ -107,7 +138,7 @@ export default function StudentDashboard() {
           <div className={styles.grid2}>
             {/* Quick Actions */}
             <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle}>🚀 Quick Actions</h3>
+              <h3 className={styles.panelTitle}>⚡ Quick Actions</h3>
               <div className={styles.quickActions}>
                 {QUICK_ACTIONS.map(a => (
                   <Link key={a.label} href={a.href} className={styles.quickAction} style={{ '--hover-color': a.color } as React.CSSProperties}>
@@ -122,97 +153,28 @@ export default function StudentDashboard() {
               </div>
             </div>
 
-            {/* Skill Radar Preview */}
+            {/* AI Skill Radar / Match */}
             <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle}>📊 Skill Radar</h3>
-              <div className={styles.radarContainer}>
-                <svg viewBox="0 0 200 200" className={styles.radar}>
-                  {/* Background hexagon shapes */}
-                  {[0.2,0.4,0.6,0.8,1.0].map(r => (
-                    <polygon
-                      key={r}
-                      points={getHexPoints(100, 100, r * 70)}
-                      fill="none" stroke="var(--text-muted)" strokeWidth="1" opacity="0.2"
-                    />
-                  ))}
-                  {/* Skills area */}
-                  <polygon
-                    points={getSkillPoints(100, 100, 70, [0.85,0.6,0.7,0.4,0.9,0.55])}
-                    fill="rgba(124,58,237,0.25)" stroke="rgba(124,58,237,0.8)" strokeWidth="2"
-                  />
-                  {/* Axis lines */}
-                  {getAxisLines(100,100,70).map((l,i) => (
-                    <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="var(--text-muted)" strokeWidth="1" opacity="0.3"/>
-                  ))}
-                  {/* Labels */}
-                  {SKILL_LABELS.map((s,i) => {
-                    const a = (i * 360/6 - 90) * Math.PI/180
-                    const x = 100 + Math.cos(a) * 88
-                    const y = 100 + Math.sin(a) * 88
-                    return <text key={s} x={x} y={y} fill="var(--text-secondary)" fontSize="9" fontWeight="600" textAnchor="middle" dominantBaseline="middle">{s}</text>
-                  })}
-                </svg>
-              </div>
-              <div className={styles.radarLegend}>
-                {SKILL_LABELS.map((s,i) => (
-                  <div key={s} className={styles.legendItem}>
-                    <div className={styles.legendDot} style={{ background: SKILL_COLORS[i] }} />
-                    <span>{s}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Grid */}
-          <div className={styles.grid3}>
-            {/* Matched Jobs */}
-            <div className={`glass ${styles.panel} ${styles.span2}`}>
               <div className={styles.panelHead}>
-                <h3 className={styles.panelTitle}>💼 AI-Matched Jobs</h3>
-                <Link href="/student/jobs" className="btn btn-ghost btn-sm">View All →</Link>
+                <h3 className={styles.panelTitle}>🎯 Recommended Next Steps</h3>
+                <Link href="/student/internships" className="btn btn-ghost btn-sm">Explore Internships →</Link>
               </div>
-              <div className={styles.jobsList}>
-                {MATCHED_JOBS.map(j => (
-                  <div key={j.title} className={styles.jobCard}>
-                    <div className={styles.jobLogo} style={{ background: j.gradient }}>{j.logo}</div>
-                    <div className={styles.jobInfo}>
-                      <div className={styles.jobTitle}>{j.title}</div>
-                      <div className={styles.jobMeta}>{j.company} • {j.location}</div>
-                    </div>
-                    <div className={styles.jobRight}>
-                      <div className={styles.matchScore} style={{ color: j.matchColor }}>
-                        {j.match}% match
-                      </div>
-                      <div className={styles.jobSalary}>{j.salary}</div>
-                    </div>
-                    <Link href="/student/jobs" className="btn btn-secondary btn-sm">Apply</Link>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+                <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>🎯 Apply for Partner Internships</div>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>Check company internship opportunities matched with your CGPA & academic score.</div>
+                  <Link href="/student/internships" className="btn btn-primary btn-sm" style={{ marginTop: '0.75rem', display: 'inline-block' }}>View Internships →</Link>
+                </div>
+                <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>💻 Practice Coding Judge</div>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>Solve real-time coding challenges to clear internship coding rounds.</div>
+                  <Link href="/student/coding-judge" className="btn btn-secondary btn-sm" style={{ marginTop: '0.75rem', display: 'inline-block' }}>Start Coding →</Link>
+                </div>
               </div>
-            </div>
-
-            {/* Roadmap */}
-            <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle}>🗺️ My Roadmap</h3>
-              <div className={styles.roadmapList}>
-                {ROADMAP.map((r, i) => (
-                  <div key={r.title} className={`${styles.roadmapItem} ${r.done ? styles.done : ''}`}>
-                    <div className={`${styles.roadmapCheck} ${r.done ? styles.checkDone : ''}`}>
-                      {r.done ? '✓' : i + 1}
-                    </div>
-                    <div>
-                      <div className={styles.roadmapTitle}>{r.title}</div>
-                      <div className={styles.roadmapDesc}>{r.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link href="/student/roadmap" className={`btn btn-primary btn-sm ${styles.fullWidthBtn}`}>View Full Roadmap →</Link>
             </div>
           </div>
 
-          {/* Real Job Offers from LinkedIn API */}
+          {/* Real Job Offers */}
           <div className={`glass ${styles.panel}`}>
             <div className={styles.panelHead}>
               <h3 className={styles.panelTitle}>💼 Live Job Opportunities</h3>
@@ -238,62 +200,30 @@ export default function StudentDashboard() {
           </div>
         </main>
       </div>
+
+      {/* Popup Academic Profile Modal */}
+      {showAcademicModal && (
+        <AcademicProfileModal
+          studentProfile={studentProfile}
+          onSave={(updated) => {
+            setStudentProfile(updated)
+            setShowAcademicModal(false)
+          }}
+          onClose={() => setShowAcademicModal(false)}
+        />
+      )}
     </div>
   )
 }
 
-const STUDENT_STATS = [
-  { icon: '🎯', label: 'ATS Score', value: '62%', color: '#f59e0b', gradient: 'linear-gradient(135deg,#f59e0b30,#ef444430)' },
-  { icon: '🔥', label: 'Skill Match', value: '4/10', color: '#7c3aed', gradient: 'linear-gradient(135deg,#7c3aed30,#8b5cf630)' },
-  { icon: '💼', label: 'Jobs Matched', value: '24', color: '#3b82f6', gradient: 'linear-gradient(135deg,#3b82f630,#06b6d430)' },
-  { icon: '📈', label: 'Profile Score', value: '71%', color: '#10b981', gradient: 'linear-gradient(135deg,#10b98130,#06b6d430)' },
-]
-
 const QUICK_ACTIONS = [
+  { href: '/student/internships', icon: '🎯', label: 'Internships Portal', desc: 'Apply to matching partner opportunities', color: '#10b981' },
   { href: '/student/resume', icon: '📄', label: 'Analyze Resume', desc: 'Upload & get ATS score instantly', color: '#7c3aed' },
   { href: '/student/mock-interview', icon: '🎤', label: 'Mock Interview', desc: 'Practice with AI interviewer', color: '#3b82f6' },
   { href: '/student/coding-judge', icon: '💻', label: 'Coding Challenge', desc: 'Solve DSA problems with judge', color: '#10b981' },
-  { href: '/student/behavioral-analysis', icon: '🎭', label: 'Behavioral Analysis', desc: 'AI-powered interview assessment', color: '#ec4899' },
 ]
-
-const MATCHED_JOBS = [
-  { logo: '🏔', title: 'SDE-1 Backend Engineer', company: 'Google', location: 'Bangalore', match: 87, matchColor: '#10b981', salary: '₹28-35 LPA', gradient: 'linear-gradient(135deg,#4285f4,#34a853)' },
-  { logo: '⚡', title: 'Full Stack Developer', company: 'Amazon', location: 'Hyderabad', match: 74, matchColor: '#f59e0b', salary: '₹22-28 LPA', gradient: 'linear-gradient(135deg,#ff9900,#232f3e)' },
-  { logo: '🔷', title: 'Data Engineer', company: 'Microsoft', location: 'Pune', match: 68, matchColor: '#f59e0b', salary: '₹18-24 LPA', gradient: 'linear-gradient(135deg,#00bcf2,#0078d4)' },
-]
-
-const ROADMAP = [
-  { title: 'Week 1: Data Structures', desc: 'Arrays, Linked Lists, Trees', done: true },
-  { title: 'Week 2: Algorithms', desc: 'Sorting, Searching, DP', done: true },
-  { title: 'Week 3: System Design', desc: 'HLD, LLD, Distributed Systems', done: false },
-  { title: 'Week 4: Mock Interviews', desc: '5 full rounds with AI feedback', done: false },
-]
-
-const SKILL_LABELS = ['DSA', 'System Design', 'Frontend', 'Backend', 'ML/AI', 'Soft Skills']
-const SKILL_COLORS = ['#7c3aed','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4']
 
 function getRandomColor() {
   const colors = ['#7c3aed','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4','#ef4444']
   return colors[Math.floor(Math.random() * colors.length)]
-}
-
-function getHexPoints(cx: number, cy: number, r: number): string {
-  return Array.from({length:6}).map((_,i) => {
-    const a = (i*60-30)*Math.PI/180
-    return `${cx+Math.cos(a)*r},${cy+Math.sin(a)*r}`
-  }).join(' ')
-}
-
-function getSkillPoints(cx: number, cy: number, r: number, vals: number[]): string {
-  return vals.map((v,i) => {
-    const a = (i*60-90)*Math.PI/180
-    return `${cx+Math.cos(a)*r*v},${cy+Math.sin(a)*r*v}`
-  }).join(' ')
-}
-
-function getAxisLines(cx: number, cy: number, r: number) {
-  return Array.from({length:6}).map((_,i) => {
-    const a = (i*60-90)*Math.PI/180
-    return { x1:cx, y1:cy, x2:cx+Math.cos(a)*r, y2:cy+Math.sin(a)*r }
-  })
 }

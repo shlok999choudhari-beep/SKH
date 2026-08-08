@@ -18,6 +18,9 @@ model Student {
   degree           String?
   graduationYear   Int?      @map("graduation_year")
   phone            String?
+  cgpa             Float?
+  tenthMarks       Float?    @map("tenth_marks")
+  twelfthMarks     Float?    @map("twelfth_marks")
   githubUrl        String?   @map("github_url")
   linkedinUrl      String?   @map("linkedin_url")
   portfolioUrl     String?   @map("portfolio_url")
@@ -298,6 +301,9 @@ model Internship {
   location         String?
   stipend          String?
   duration         String?
+  minCgpa          Float?    @map("min_cgpa")
+  minTenthMarks    Float?    @map("min_tenth_marks")
+  minTwelfthMarks  Float?    @map("min_twelfth_marks")
   deadline         DateTime?
   status           String    @default("open")
   createdAt        DateTime  @default(now()) @map("created_at")

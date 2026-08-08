@@ -45,6 +45,7 @@ const STUDENT_NAV: NavGroup[] = [
   {
     group: 'Jobs',
     items: [
+      { href: '/student/internships', icon: '🎯', label: 'Internships', badge: 'NEW' },
       { href: '/student/jobs', icon: '💼', label: 'Browse Jobs' },
       { href: '/student/companies', icon: '🏢', label: 'Company Profiles' },
       { href: '/student/dream-mode', icon: '🌟', label: 'Dream Company Mode' },

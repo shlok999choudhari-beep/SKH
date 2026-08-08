@@ -11,8 +11,9 @@ const COMPANY_NAV = [
     group: 'Overview',
     items: [
       { href: '/company/dashboard', icon: '🏠', label: 'Dashboard' },
+      { href: '/company/internships', icon: '💼', label: 'Internships', badge: 'NEW' },
       { href: '/company/profile', icon: '🏢', label: 'Company Profile' },
-      { href: '/company/coding-judge', icon: '💻', label: 'Coding Judge', badge: 'NEW' },
+      { href: '/company/coding-judge', icon: '💻', label: 'Coding Judge' },
     ]
   },
 ]
