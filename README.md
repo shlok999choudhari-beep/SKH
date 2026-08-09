@@ -1,4 +1,4 @@
-# Demo
+# PlaceIQ
 
 Demo is a Next.js full-stack platform with real-time WebSocket capabilities, Prisma PostgreSQL integration, AI-driven skill analysis, and role-based portals.
 
