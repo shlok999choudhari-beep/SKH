@@ -127,3 +127,26 @@
   .row2 { grid-template-columns: 1fr; }
   .backBtn { top: 12px; left: 12px; }
 }
+
+.institutionPage { background: radial-gradient(ellipse at top left, rgba(236,72,153,0.08) 0%, transparent 60%), var(--bg-primary); }
+
+.orb1purple {
+  position: fixed; top: -100px; left: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(236,72,153,0.3), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 10s ease-in-out infinite;
+}
+.orb2purple {
+  position: fixed; bottom: -100px; right: -100px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(139,92,246,0.2), transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+
+.institutionCard { border-color: rgba(236,72,153,0.15); }
+.institutionCard:hover { border-color: rgba(236,72,153,0.25); }
+
+.institutionIcon { background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(236,72,153,0.3); }
+

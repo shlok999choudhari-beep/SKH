@@ -24,14 +24,9 @@ export default function InstitutionSidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [userData, setUserData] = useState<any>(null)
+  const [userData, setUserData] = useState<any>({ name: 'Institution Admin' })
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
-
-  useEffect(() => {
-    // In a real implementation this would fetch from /api/institution/profile
-    setUserData({ name: 'Institution Admin' })
-  }, [])
 
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'IN'

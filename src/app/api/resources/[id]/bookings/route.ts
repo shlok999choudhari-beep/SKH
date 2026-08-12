@@ -29,6 +29,9 @@ export async function GET(
       include: {
         bookedByUser: {
           select: { name: true }
+        },
+        student: {
+          select: { name: true }
         }
       },
       orderBy: { startTime: 'asc' }
@@ -36,7 +39,7 @@ export async function GET(
     
     const mappedBookings = bookings.map(b => ({
       ...b,
-      booked_by_name: b.bookedByUser.name
+      booked_by_name: b.bookedByUser?.name || b.student?.name || 'Unknown User'
     }))
 
     return NextResponse.json({ bookings: mappedBookings })

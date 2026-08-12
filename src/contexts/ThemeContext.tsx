@@ -9,12 +9,13 @@ const ThemeContext = createContext<{
 }>({ theme: 'dark', toggleTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
-
-  useEffect(() => {
-    const stored = localStorage.getItem('demo-theme') as Theme
-    if (stored) setTheme(stored)
-  }, [])
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('demo-theme') as Theme
+      if (stored === 'dark' || stored === 'light') return stored
+    }
+    return 'dark'
+  })
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'

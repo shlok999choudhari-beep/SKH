@@ -32,7 +32,7 @@ export default function LandingPage() {
           <div className={styles.navActions}>
             <Link href="/auth/student/login" className="btn btn-ghost btn-sm">Student Login</Link>
             <Link href="/auth/company/login" className="btn btn-company btn-sm">Company Login</Link>
-            <Link href="/institution/dashboard" className="btn btn-sm" style={{background: 'var(--grad-purple)', color: 'white', border: 'none'}}>Institution Admin</Link>
+            <Link href="/auth/institution/login" className="btn btn-sm" style={{background: 'var(--grad-secondary)', color: 'white', border: 'none'}}>Institute Login</Link>
           </div>
         </div>
       </nav>
@@ -73,6 +73,20 @@ export default function LandingPage() {
             <div className={styles.ctaBtns}>
               <Link href="/auth/company/signup" className="btn btn-company btn-lg">Post a Job</Link>
               <Link href="/auth/company/login" className="btn btn-secondary btn-sm">Already registered?</Link>
+            </div>
+          </div>
+
+          <div className={styles.ctaDivider}>
+            <span>or</span>
+          </div>
+
+          <div className={`${styles.ctaCard} ${styles.ctaCardInstitution}`}>
+            <div className={styles.ctaIcon}>🏛️</div>
+            <h3>I&apos;m an Institute</h3>
+            <p>Manage cohorts, track placements, and coordinate drives</p>
+            <div className={styles.ctaBtns}>
+              <Link href="/auth/institution/login" className="btn btn-institution btn-lg">Access Portal</Link>
+              <Link href="/auth/institution/login" className="btn btn-secondary btn-sm">Already registered?</Link>
             </div>
           </div>
         </div>

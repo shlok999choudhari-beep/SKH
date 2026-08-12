@@ -26,10 +26,6 @@ export default function CompanySidebar() {
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
 
-  useEffect(() => {
-    fetchUserData()
-  }, [])
-
   const fetchUserData = async () => {
     try {
       const res = await fetch('/api/company/profile')
@@ -39,6 +35,10 @@ export default function CompanySidebar() {
       console.error('Failed to fetch user data:', error)
     }
   }
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
 
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'CO'

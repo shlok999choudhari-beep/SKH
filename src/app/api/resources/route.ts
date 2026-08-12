@@ -1,28 +1,95 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/session'
 import { z } from 'zod'
 
 const SERPER_API_KEY = process.env.SERPER_API_KEY || '5aeb9cd3c96f152dde1faf0b242e8a72a121abda'
 
 const resourceSchema = z.object({
-  institution_id: z.number(),
   name: z.string().min(2, 'Name is required'),
-  type: z.string().min(2, 'Type is required'),
+  type: z.string().optional(),
+  category: z.string().min(2, 'Category is required'),
+  description: z.string().optional(),
+  location: z.string().optional(),
   capacity: z.number().optional(),
+  availability: z.string().optional(),
+  facilities: z.string().optional(),
+  status: z.string().optional(),
+  sharingEnabled: z.boolean().optional(),
+  availableToStudents: z.boolean().optional(),
 })
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const institutionId = searchParams.get('institutionId')
+    const excludeInstitutionId = searchParams.get('excludeInstitutionId')
+    const sharingEnabled = searchParams.get('sharingEnabled')
+    const category = searchParams.get('category')
+    const location = searchParams.get('location')
+    const availability = searchParams.get('availability')
+    const capacityMin = searchParams.get('capacityMin')
+    const search = searchParams.get('search')
 
-    let whereClause = {}
+    let whereClause: any = {}
+
     if (institutionId) {
-      whereClause = { institutionId: parseInt(institutionId, 10) }
+      whereClause.institutionId = parseInt(institutionId, 10)
+    }
+
+    if (excludeInstitutionId) {
+      whereClause.institutionId = {
+        not: parseInt(excludeInstitutionId, 10)
+      }
+    }
+
+    if (sharingEnabled !== null) {
+      whereClause.sharingEnabled = sharingEnabled === 'true'
+    }
+
+    if (category && category !== 'all') {
+      whereClause.category = {
+        equals: category,
+        mode: 'insensitive'
+      }
+    }
+
+    if (location) {
+      whereClause.location = {
+        contains: location,
+        mode: 'insensitive'
+      }
+    }
+
+    if (availability) {
+      whereClause.availability = {
+        contains: availability,
+        mode: 'insensitive'
+      }
+    }
+
+    if (capacityMin) {
+      whereClause.capacity = {
+        gte: parseInt(capacityMin, 10)
+      }
+    }
+
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        { facilities: { contains: search, mode: 'insensitive' } }
+      ]
     }
 
     const resources = await prisma.resource.findMany({
       where: whereClause,
+      include: {
+        institution: {
+          select: { name: true }
+        }
+      },
       orderBy: { createdAt: 'desc' }
     })
     
@@ -150,14 +217,35 @@ export async function POST(request: Request) {
     }
 
     // 2. Institution Resource Creation
+    const session = await getSession()
+    if (!session || session.role !== 'institution-admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { institutionId: true }
+    })
+    if (!user || !user.institutionId) {
+      return NextResponse.json({ error: 'Institution profile not found' }, { status: 404 })
+    }
+
     const validatedData = resourceSchema.parse(body)
     
     const result = await prisma.resource.create({
       data: {
-        institutionId: validatedData.institution_id,
+        institutionId: user.institutionId,
         name: validatedData.name,
-        type: validatedData.type,
-        capacity: validatedData.capacity || null
+        type: validatedData.type || validatedData.category || 'other',
+        category: validatedData.category,
+        description: validatedData.description || null,
+        location: validatedData.location || null,
+        capacity: validatedData.capacity || null,
+        availability: validatedData.availability || null,
+        facilities: validatedData.facilities || null,
+        status: validatedData.status || 'active',
+        sharingEnabled: validatedData.sharingEnabled !== undefined ? validatedData.sharingEnabled : false,
+        availableToStudents: validatedData.availableToStudents !== undefined ? validatedData.availableToStudents : false
       }
     })
 

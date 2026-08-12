@@ -35,6 +35,13 @@ const STUDENT_NAV: NavGroup[] = [
     ]
   },
   {
+    group: 'Campus',
+    items: [
+      { href: '/student/campus-resources', icon: '🎓', label: 'Campus Resources' },
+      { href: '/student/bookings', icon: '📅', label: 'My Bookings' },
+    ]
+  },
+  {
     group: 'Interviews',
     items: [
       { href: '/student/mock-interview', icon: '🎤', label: 'Mock Interview' },
@@ -70,10 +77,6 @@ export default function StudentSidebar() {
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
 
-  useEffect(() => {
-    fetchUserData()
-  }, [])
-
   const fetchUserData = async () => {
     try {
       const res = await fetch('/api/student/profile')
@@ -83,6 +86,10 @@ export default function StudentSidebar() {
       console.error('Failed to fetch user data:', error)
     }
   }
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
 
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'ST'

@@ -134,6 +134,9 @@ body {
 .btn-company { background: var(--grad-green); color: #fff; box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
 .btn-company:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16,185,129,0.6); }
 
+.btn-institution { background: var(--grad-secondary); color: #fff; box-shadow: 0 4px 15px rgba(236,72,153,0.4); }
+.btn-institution:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(236,72,153,0.6); }
+
 /* ── FORM ── */
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }

@@ -37,6 +37,7 @@ model Student {
   internshipApps   InternshipApplication[]
   certifications   Certification[]
   placementApps    PlacementApplication[]
+  resourceBookings ResourceBooking[]
 
   @@map("students")
 }
@@ -179,6 +180,10 @@ model Institution {
   placementDrives  PlacementDrive[]
   students         Student[]
   companies        Company[]
+  resourceRequests ResourceRequest[]
+  sharingAgreementsOwner SharingAgreement[] @relation("OwnerAgreements")
+  sharingAgreementsRequestor SharingAgreement[] @relation("RequestorAgreements")
+  sharingNotifications ResourceSharingNotification[]
 
   @@map("institutions")
 }
@@ -250,12 +255,21 @@ model Resource {
   institutionId    Int       @map("institution_id")
   name             String
   type             String
+  category         String?
+  description      String?
+  location         String?
   capacity         Int?
+  availability     String?
+  facilities       String?
   status           String    @default("active")
+  sharingEnabled   Boolean   @default(false) @map("sharing_enabled")
+  availableToStudents Boolean   @default(false) @map("available_to_students")
   createdAt        DateTime  @default(now()) @map("created_at")
 
   institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
   bookings         ResourceBooking[]
+  requests         ResourceRequest[]
+  sharingAgreements SharingAgreement[]
 
   @@map("resources")
 }
@@ -263,17 +277,74 @@ model Resource {
 model ResourceBooking {
   id               Int       @id @default(autoincrement())
   resourceId       Int       @map("resource_id")
-  bookedByUserId   Int       @map("booked_by_user_id")
+  bookedByUserId   Int?      @map("booked_by_user_id")
+  studentId        Int?      @map("student_id")
   purpose          String?
   startTime        DateTime  @map("start_time")
   endTime          DateTime  @map("end_time")
   status           String    @default("confirmed")
+  rejectionReason  String?   @map("rejection_reason")
   createdAt        DateTime  @default(now()) @map("created_at")
 
   resource         Resource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  bookedByUser     User      @relation(fields: [bookedByUserId], references: [id], onDelete: Cascade)
+  bookedByUser     User?     @relation(fields: [bookedByUserId], references: [id], onDelete: Cascade)
+  student          Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("resource_bookings")
+}
+
+model ResourceRequest {
+  id                      Int       @id @default(autoincrement())
+  resourceId              Int       @map("resource_id")
+  requestingInstitutionId Int       @map("requesting_institution_id")
+  purpose                 String
+  requestedDate           DateTime  @map("requested_date")
+  startTime               DateTime  @map("start_time")
+  endTime                 DateTime  @map("end_time")
+  studentCount            Int       @map("student_count")
+  additionalRequirements  String?   @map("additional_requirements")
+  status                  String    @default("pending")
+  rejectionReason         String?   @map("rejection_reason")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  resource                Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  requestingInstitution   Institution     @relation(fields: [requestingInstitutionId], references: [id], onDelete: Cascade)
+  sharingAgreements       SharingAgreement[]
+
+  @@map("resource_requests")
+}
+
+model SharingAgreement {
+  id                      Int       @id @default(autoincrement())
+  resourceId              Int       @map("resource_id")
+  ownerInstitutionId      Int       @map("owner_institution_id")
+  requestingInstitutionId Int       @map("requesting_institution_id")
+  requestId               Int       @map("request_id")
+  startDate               DateTime  @map("start_date")
+  endDate                 DateTime  @map("end_date")
+  status                  String    @default("active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  resource                Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  ownerInstitution        Institution     @relation("OwnerAgreements", fields: [ownerInstitutionId], references: [id], onDelete: Cascade)
+  requestingInstitution   Institution     @relation("RequestorAgreements", fields: [requestingInstitutionId], references: [id], onDelete: Cascade)
+  request                 ResourceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("sharing_agreements")
+}
+
+model ResourceSharingNotification {
+  id            Int      @id @default(autoincrement())
+  institutionId Int      @map("institution_id")
+  message       String
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@map("resource_sharing_notifications")
 }
 
 model TrainerSession {

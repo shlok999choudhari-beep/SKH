@@ -90,7 +90,7 @@
   display: flex; align-items: stretch; gap: 0;
   margin-top: 16px;
   animation: fadeInUp 0.7s ease 0.3s both;
-  width: 100%; max-width: 780px;
+  width: 100%; max-width: 1100px;
 }
 .ctaCard {
   flex: 1;
@@ -107,6 +107,17 @@
   border-color: rgba(16,185,129,0.2);
 }
 .ctaCardCompany:hover { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.1); box-shadow: 0 20px 40px rgba(16,185,129,0.15); }
+
+.ctaCardInstitution {
+  background: rgba(236,72,153,0.06);
+  border-color: rgba(236,72,153,0.2);
+}
+.ctaCardInstitution:hover {
+  border-color: rgba(236,72,153,0.45);
+  background: rgba(236,72,153,0.1);
+  box-shadow: 0 20px 40px rgba(236,72,153,0.15);
+}
+
 
 .ctaIcon { font-size: 40px; }
 .ctaCard h3 { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; }
