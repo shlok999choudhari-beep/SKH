@@ -1,3 +1,5 @@
+import UniqueLoading from '@/components/ui/morph-loading'
+
 export default function StudentLoading() {
   return (
     <div style={{
@@ -5,24 +7,14 @@ export default function StudentLoading() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '60vh',
+      minHeight: '80vh',
+      width: '100%',
+      gap: '1.5rem',
     }}>
-      <div style={{
-        width: '40px',
-        height: '40px',
-        border: '3px solid rgba(59, 130, 246, 0.2)',
-        borderTopColor: 'var(--accent-blue, #3b82f6)',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }} />
-      <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-        Loading data...
+      <UniqueLoading variant="morph" size="lg" />
+      <p style={{ color: 'var(--text-secondary, #94a3b8)', fontSize: '14px', letterSpacing: '0.05em' }}>
+        Loading student portal...
       </p>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import UniqueLoading from '@/components/ui/morph-loading'
 
-export default function InstitutionLoading() {
+export default function CompanyLoading() {
   return (
     <div style={{
       display: 'flex',
@@ -13,7 +13,7 @@ export default function InstitutionLoading() {
     }}>
       <UniqueLoading variant="morph" size="lg" />
       <p style={{ color: 'var(--text-secondary, #94a3b8)', fontSize: '14px', letterSpacing: '0.05em' }}>
-        Loading institution portal...
+        Loading company portal...
       </p>
     </div>
   )

@@ -5,12 +5,12 @@
 }
 
 .content {
-  margin-left: var(--sidebar-width);
+  margin-left: 0;
   flex: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.25s ease;
+  padding-top: 68px;
 }
 
 /* ── HEADER ── */

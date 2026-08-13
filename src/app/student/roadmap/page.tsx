@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import UniqueLoading from '@/components/ui/morph-loading'
 import styles from '../dashboard.module.css'
 
 export default function RoadmapPage() {
@@ -155,8 +156,8 @@ export default function RoadmapPage() {
               </div>
 
               {generating && (
-                <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '40px' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+                <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
+                  <UniqueLoading variant="morph" size="lg" />
                   <p style={{ color: 'var(--text-secondary)' }}>Generating your personalized roadmap...</p>
                 </div>
               )}

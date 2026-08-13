@@ -19,7 +19,6 @@ const COMPANY_NAV = [
 ]
 
 export default function CompanySidebar() {
-  const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [userData, setUserData] = useState<any>(null)
@@ -49,32 +48,49 @@ export default function CompanySidebar() {
   }
 
   return (
-    <>
-      {mobileOpen && <div className={styles.overlay} onClick={() => setMobileOpen(false)} />}
-      <button className={`${styles.hamburger} ${styles.hamburgerGreen}`} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-        <span /><span /><span />
-      </button>
-      <aside className={`${styles.sidebar} ${styles.sidebarCompany} ${collapsed ? styles.collapsed : ''} ${mobileOpen ? styles.mobileOpen : ''}`}>
-        <div className={styles.sidebarTop}>
-          <Link href="/" className={styles.logo}>
-            <div className={`${styles.logoIcon} ${styles.logoIconGreen}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            {!collapsed && <span className={styles.logoText}>Place<span className="grad-text-green">IQ</span></span>}
-          </Link>
-          <button className={styles.collapseBtn} onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {collapsed ? <path d="M9 18l6-6-6-6"/> : <path d="M15 18l-6-6 6-6"/>}
-            </svg>
-          </button>
-        </div>
+    <header className={`${styles.sidebar} ${styles.sidebarCompany}`}>
 
-        {!collapsed && userData && (
-          <div className={`${styles.userTag} ${styles.userTagCompany}`}>
+      {/* Left Logo */}
+      <div className={styles.sidebarTop}>
+        <Link href="/" className={styles.logo}>
+          <div className={`${styles.logoIcon} ${styles.logoIconGreen}`}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <span className={styles.logoText}>Place<span className="grad-text-green">IQ</span></span>
+        </Link>
+      </div>
+
+      {/* Center Nav */}
+      <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`}>
+        {COMPANY_NAV.map(group => (
+          <div key={group.group} className={styles.navGroup}>
+            {group.items.map(item => {
+              const active = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${styles.categoryBtn} ${active ? styles.activeCompany : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span className={styles.navIcon}>{item.icon}</span>
+                  <span className={styles.navLabel}>{item.label}</span>
+                  {item.badge && <span className={`${styles.megaBadge} ${styles.megaBadgeGreen}`}>{item.badge}</span>}
+                </Link>
+              )
+            })}
+          </div>
+        ))}
+      </nav>
+
+      {/* Right User & Controls */}
+      <div className={`${styles.userTag} ${styles.userTagCompany}`}>
+        {userData && (
+          <>
             <div className={`${styles.userAvatar} ${styles.userAvatarCompany}`}>{getInitials(userData.company_name)}</div>
             <div className={styles.userInfo}>
               <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
@@ -83,62 +99,27 @@ export default function CompanySidebar() {
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </button>
-              <div className={styles.userRole}>
-                <span className="badge badge-green" style={{fontSize:'10px',padding:'2px 8px'}}>Recruiter</span>
-              </div>
             </div>
-            {dropdownOpen && (
-              <div className={styles.userDropdown}>
-                <button onClick={toggleTheme} className={styles.dropdownItem}>
-                  <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
-                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                </button>
-                <button onClick={handleLogout} className={styles.dropdownItem}>
-                  <span>🚪</span>
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
-          </div>
+          </>
         )}
 
-        <nav className={styles.nav}>
-          {COMPANY_NAV.map(group => (
-            <div key={group.group} className={styles.navGroup}>
-              {!collapsed && <span className={styles.groupLabel}>{group.group}</span>}
-              {group.items.map(item => {
-                const active = pathname === item.href
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`${styles.navItem} ${active ? styles.activeCompany : ''}`}
-                    onClick={() => setMobileOpen(false)}
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <span className={styles.navIcon}>{item.icon}</span>
-                    {!collapsed && (
-                      <>
-                        <span className={styles.navLabel}>{item.label}</span>
-                        {item.badge && <span className={`${styles.navBadge} ${styles.navBadgeGreen}`}>{item.badge}</span>}
-                      </>
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
+        <button className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+          <span /><span /><span />
+        </button>
 
-        {!collapsed && (
-          <div className={styles.sidebarBottom}>
-            <button onClick={toggleTheme} className={styles.themeBtn}>
+        {dropdownOpen && (
+          <div className={styles.userDropdown}>
+            <button onClick={toggleTheme} className={styles.dropdownItem}>
               <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
+            <button onClick={handleLogout} className={styles.dropdownItem}>
+              <span>🚪</span>
+              <span>Sign Out</span>
+            </button>
           </div>
         )}
-      </aside>
-    </>
+      </div>
+    </header>
   )
 }

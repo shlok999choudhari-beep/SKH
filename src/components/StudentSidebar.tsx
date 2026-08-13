@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import styles from './sidebar.module.css'
@@ -11,72 +11,73 @@ type NavItem = {
   icon: string;
   label: string;
   badge?: string;
+  desc?: string;
 }
 
-type NavGroup = {
-  group: string;
+type NavCategory = {
+  id: string;
+  title: string;
+  icon: string;
   items: NavItem[];
 }
 
-const STUDENT_NAV: NavGroup[] = [
+const CATEGORIES: NavCategory[] = [
   {
-    group: 'Overview',
+    id: 'ai-tools',
+    title: 'AI & Practice Tools',
+    icon: '⚡',
     items: [
-      { href: '/student/dashboard', icon: '🏠', label: 'Dashboard' },
-      { href: '/student/profile', icon: '👤', label: 'My Profile' },
+      { href: '/student/resume', icon: '📄', label: 'Resume Builder', badge: 'AI', desc: 'ATS Optimization' },
+      { href: '/student/mock-interview', icon: '🎙️', label: 'Mock Interview', badge: 'Vapi', desc: 'Voice AI Practice' },
+      { href: '/student/coding-judge', icon: '💻', label: 'Coding Judge', desc: 'LeetCode Style' },
+      { href: '/student/roadmap', icon: '🗺️', label: 'Learning Roadmap', desc: 'AI Career Path' },
+      { href: '/student/skill-gap', icon: '📊', label: 'Skill Gap Analysis', desc: 'Role Alignment' },
+      { href: '/student/skills', icon: '⚡', label: 'Skill Insights', desc: 'Radar Analytics' },
+      { href: '/student/behavioral-analysis', icon: '🧠', label: 'Behavioral Analysis', desc: 'Tone & Soft Skills' },
+      { href: '/student/mentor', icon: '💬', label: 'AI Mentor', desc: '24/7 Chat Guidance' },
+      { href: '/student/dream-mode', icon: '✨', label: 'Dream Mode', badge: 'HOT', desc: 'Company Targeting' },
     ]
   },
   {
-    group: 'Tools',
+    id: 'career',
+    title: 'Jobs & Placement',
+    icon: '💼',
     items: [
-      { href: '/student/documents', icon: '📁', label: 'Document Vault' },
-      { href: '/student/resume', icon: '📄', label: 'Resume Analyzer' },
-      { href: '/student/skill-gap', icon: '🔍', label: 'Skill Gap Detector' },
-      { href: '/student/roadmap', icon: '🗺️', label: 'My Roadmap' },
+      { href: '/student/jobs', icon: '💼', label: 'Job Openings', desc: 'Live Listings' },
+      { href: '/student/internships', icon: '🎯', label: 'Internships', desc: 'Paid Roles' },
+      { href: '/student/placements', icon: '🎓', label: 'Placements', desc: 'On-Campus Drives' },
+      { href: '/student/companies', icon: '🏢', label: 'Top Companies', desc: 'Hiring Insights' },
+      { href: '/student/profile', icon: '👤', label: 'My Profile', desc: 'Skills & Achievements' },
     ]
   },
   {
-    group: 'Campus',
+    id: 'campus',
+    title: 'Campus & Resources',
+    icon: '🏛️',
     items: [
-      { href: '/student/campus-resources', icon: '🎓', label: 'Campus Resources' },
-      { href: '/student/bookings', icon: '📅', label: 'My Bookings' },
+      { href: '/student/trainers', icon: '👨‍🏫', label: 'Industry Trainers', desc: '1-on-1 Sessions' },
+      { href: '/student/campus-resources', icon: '🏫', label: 'Campus Resources', desc: 'Labs & Hubs' },
+      { href: '/student/resources', icon: '📚', label: 'Study Resources', desc: 'Curated Notes' },
+      { href: '/student/bookings', icon: '📅', label: 'My Bookings', desc: 'Session Timetable' },
+      { href: '/student/documents', icon: '📁', label: 'My Documents', desc: 'Verified Proofs' },
     ]
-  },
-  {
-    group: 'Interviews',
-    items: [
-      { href: '/student/mock-interview', icon: '🎤', label: 'Mock Interview' },
-      { href: '/student/coding-judge', icon: '💻', label: 'Coding Judge' },
-      { href: '/student/behavioral-analysis', icon: '🎭', label: 'Behavioral Analysis' },
-    ]
-  },
-  {
-    group: 'Jobs',
-    items: [
-      { href: '/student/internships', icon: '🎯', label: 'Internships', badge: 'NEW' },
-      { href: '/student/jobs', icon: '💼', label: 'Browse Jobs' },
-      { href: '/student/companies', icon: '🏢', label: 'Company Profiles' },
-      { href: '/student/dream-mode', icon: '🌟', label: 'Dream Company Mode' },
-    ]
-  },
-  {
-    group: 'Growth',
-    items: [
-      { href: '/student/resources', icon: '📚', label: 'Learning Resources' },
-      { href: '/student/trainers', icon: '🧑‍🏫', label: 'Book a Trainer' },
-      { href: '/student/mentor', icon: '🤖', label: 'Mentor Chat' },
-      { href: '/student/skills', icon: '📊', label: 'Skill Radar Chart' },
-    ]
-  },
+  }
 ]
 
+// All items flat for search
+const ALL_ITEMS = CATEGORIES.flatMap(c => c.items)
+
 export default function StudentSidebar() {
-  const [collapsed, setCollapsed] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [userData, setUserData] = useState<any>(null)
+
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
+  const navRef = useRef<HTMLDivElement>(null)
 
   const fetchUserData = async () => {
     try {
@@ -92,6 +93,18 @@ export default function StudentSidebar() {
     fetchUserData()
   }, [])
 
+  // Close dropdowns on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setActiveCategory(null)
+        setSearchOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'ST'
   }
@@ -100,39 +113,138 @@ export default function StudentSidebar() {
     await logout()
   }
 
+  const filteredItems = searchQuery.trim()
+    ? ALL_ITEMS.filter(item =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.desc?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : []
+
   return (
-    <>
-      {/* Mobile overlay */}
-      {mobileOpen && <div className={styles.overlay} onClick={() => setMobileOpen(false)} />}
+    <header className={styles.sidebar}>
 
-      {/* Mobile hamburger */}
-      <button className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-        <span /><span /><span />
-      </button>
-
-      <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${mobileOpen ? styles.mobileOpen : ''}`}>
-        {/* Logo */}
-        <div className={styles.sidebarTop}>
-          <Link href="/" className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            {!collapsed && <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>}
-          </Link>
-          <button className={styles.collapseBtn} onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {collapsed ? <path d="M9 18l6-6-6-6"/> : <path d="M15 18l-6-6 6-6"/>}
+      {/* Left Logo */}
+      <div className={styles.sidebarTop}>
+        <Link href="/" className={styles.logo}>
+          <div className={styles.logoIcon}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
             </svg>
-          </button>
-        </div>
+          </div>
+          <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>
+        </Link>
+      </div>
 
-        {/* User Tag */}
-        {!collapsed && userData && (
-          <div className={styles.userTag}>
+      {/* Center Navbar Categories & Search */}
+      <div className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} ref={navRef}>
+        {/* Dashboard Direct Link */}
+        <Link
+          href="/student/dashboard"
+          className={`${styles.activeLink} ${pathname === '/student/dashboard' ? styles.categoryBtnActive : ''}`}
+          onClick={() => setMobileOpen(false)}
+        >
+          <span>🏠</span>
+          <span>Dashboard</span>
+        </Link>
+
+        {/* Category Mega Dropdowns */}
+        {CATEGORIES.map(cat => {
+          const isOpen = activeCategory === cat.id
+          const hasActiveItem = cat.items.some(i => pathname === i.href)
+
+          return (
+            <div key={cat.id} className={styles.categoryGroup}>
+              <button
+                className={`${styles.categoryBtn} ${hasActiveItem || isOpen ? styles.categoryBtnActive : ''}`}
+                onClick={() => setActiveCategory(isOpen ? null : cat.id)}
+              >
+                <span>{cat.icon}</span>
+                <span>{cat.title}</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </button>
+
+              {isOpen && (
+                <div className={`${styles.megaDropdown} ${cat.id === 'ai-tools' ? styles.megaDropdownWide : ''}`}>
+                  <div className={styles.megaHeader}>{cat.title}</div>
+                  <div className={styles.megaGrid}>
+                    {cat.items.map(item => {
+                      const isActive = pathname === item.href
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`${styles.megaItem} ${isActive ? styles.megaItemActive : ''}`}
+                          onClick={() => {
+                            setActiveCategory(null)
+                            setMobileOpen(false)
+                          }}
+                        >
+                          <span className={styles.megaIcon}>{item.icon}</span>
+                          <span className={styles.megaLabel}>{item.label}</span>
+                          {item.badge && <span className={styles.megaBadge}>{item.badge}</span>}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )})}
+
+        {/* Feature Quick Search Bar */}
+        <div className={styles.searchBox}>
+          <svg className={styles.searchIcon} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search features..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setSearchOpen(true)
+            }}
+            onFocus={() => setSearchOpen(true)}
+          />
+
+          {searchOpen && searchQuery.trim().length > 0 && (
+            <div className={styles.megaDropdown} style={{ width: '260px', right: 0, left: 'auto' }}>
+              <div className={styles.megaHeader}>Search Results</div>
+              <div className={styles.megaGrid} style={{ gridTemplateColumns: '1fr' }}>
+                {filteredItems.length > 0 ? (
+                  filteredItems.map(item => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={styles.megaItem}
+                      onClick={() => {
+                        setSearchOpen(false)
+                        setSearchQuery('')
+                        setMobileOpen(false)
+                      }}
+                    >
+                      <span className={styles.megaIcon}>{item.icon}</span>
+                      <span className={styles.megaLabel}>{item.label}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div style={{ padding: '8px', fontSize: '11px', color: 'var(--text-muted)' }}>No features found</div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right User & Controls */}
+      <div className={styles.userTag}>
+        {userData && (
+          <>
             <div className={styles.userAvatar}>{getInitials(userData.name)}</div>
             <div className={styles.userInfo}>
               <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
@@ -141,64 +253,27 @@ export default function StudentSidebar() {
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </button>
-              <div className={styles.userRole}>
-                <span className="badge badge-purple" style={{fontSize:'10px',padding:'2px 8px'}}>Student</span>
-              </div>
             </div>
-            {dropdownOpen && (
-              <div className={styles.userDropdown}>
-                <button onClick={toggleTheme} className={styles.dropdownItem}>
-                  <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
-                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                </button>
-                <button onClick={handleLogout} className={styles.dropdownItem}>
-                  <span>🚪</span>
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
-          </div>
+          </>
         )}
 
-        {/* Nav */}
-        <nav className={styles.nav}>
-          {STUDENT_NAV.map(group => (
-            <div key={group.group} className={styles.navGroup}>
-              {!collapsed && <span className={styles.groupLabel}>{group.group}</span>}
-              {group.items.map(item => {
-                const active = pathname === item.href
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`${styles.navItem} ${active ? styles.active : ''}`}
-                    onClick={() => setMobileOpen(false)}
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <span className={styles.navIcon}>{item.icon}</span>
-                    {!collapsed && (
-                      <>
-                        <span className={styles.navLabel}>{item.label}</span>
-                        {item.badge && <span className={styles.navBadge}>{item.badge}</span>}
-                      </>
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
+        <button className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+          <span /><span /><span />
+        </button>
 
-        {/* Bottom */}
-        {!collapsed && (
-          <div className={styles.sidebarBottom}>
-            <button onClick={toggleTheme} className={styles.themeBtn}>
+        {dropdownOpen && (
+          <div className={styles.userDropdown}>
+            <button onClick={toggleTheme} className={styles.dropdownItem}>
               <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
+            <button onClick={handleLogout} className={styles.dropdownItem}>
+              <span>🚪</span>
+              <span>Sign Out</span>
+            </button>
           </div>
         )}
-      </aside>
-    </>
+      </div>
+    </header>
   )
 }

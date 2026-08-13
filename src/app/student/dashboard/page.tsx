@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
 import AcademicProfileModal from '@/components/AcademicProfileModal'
+import UniqueLoading from '@/components/ui/morph-loading'
 import styles from '../dashboard.module.css'
 import Link from 'next/link'
 
@@ -62,8 +63,9 @@ export default function StudentDashboard() {
     return (
       <div className={styles.layout}>
         <StudentSidebar />
-        <div className={styles.content}>
-          <div style={{ padding: '60px', textAlign: 'center' }}>Loading...</div>
+        <div className={styles.content} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1.5rem' }}>
+          <UniqueLoading variant="morph" size="lg" />
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Loading Dashboard...</p>
         </div>
       </div>
     )

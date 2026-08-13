@@ -1,0 +1,262 @@
+/* ── PAGE ── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  position: relative;
+}
+
+.backBtn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition);
+  z-index: 10;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.backBtn:hover { color: var(--text-primary); background: rgba(255,255,255,0.09); }
+
+/* ── CARD ── */
+.card {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── ROLE SELECTOR ── */
+.roleSelector {
+  display: flex;
+  gap: 10px;
+}
+
+.roleTab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+}
+.roleTab:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+.roleTabActive {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.roleTabIcon { font-size: 22px; }
+
+.roleTabText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.roleTabLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.roleTabDesc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ── CARD HEADER ── */
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.roleIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ── FORM ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fieldError {
+  font-size: 12px;
+  color: #f87171;
+  margin-top: 4px;
+}
+
+.error {
+  padding: 12px 16px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: var(--radius-md);
+  color: #fca5a5;
+  font-size: 14px;
+  text-align: center;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  color: #000;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.submitBtn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.signupBtn {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  text-align: center;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.signupBtn:hover { background: rgba(255,255,255,0.06); border-color: rgba(234,179,8,0.3); }
+
+/* ── SPINNER ── */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .page {
+    padding: 70px 14px 30px;
+    justify-content: flex-start;
+  }
+  .backBtn {
+    top: 14px;
+    left: 14px;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  .card {
+    padding: 24px 18px;
+    border-radius: 20px;
+    gap: 18px;
+  }
+  .roleSelector {
+    gap: 6px;
+  }
+  .roleTab {
+    padding: 10px 6px;
+    border-radius: 12px;
+  }
+  .roleTabIcon {
+    font-size: 18px;
+  }
+  .roleTabLabel {
+    font-size: 11.5px;
+  }
+  .roleTabDesc {
+    display: none;
+  }
+  .roleIcon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+  .title {
+    font-size: 20px;
+  }
+  .subtitle {
+    font-size: 12px;
+  }
+  .input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  .submitBtn {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+

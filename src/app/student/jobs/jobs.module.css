@@ -5,7 +5,8 @@
 
 .content {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: 0;
+  padding-top: 68px;
   background: var(--bg-primary);
 }
 
