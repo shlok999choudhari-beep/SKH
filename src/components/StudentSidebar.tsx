@@ -29,6 +29,7 @@ const STUDENT_NAV: NavGroup[] = [
   {
     group: 'Tools',
     items: [
+      { href: '/student/documents', icon: '📁', label: 'Document Vault' },
       { href: '/student/resume', icon: '📄', label: 'Resume Analyzer' },
       { href: '/student/skill-gap', icon: '🔍', label: 'Skill Gap Detector' },
       { href: '/student/roadmap', icon: '🗺️', label: 'My Roadmap' },

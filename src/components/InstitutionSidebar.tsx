@@ -11,6 +11,7 @@ const INSTITUTION_NAV = [
     group: 'Overview',
     items: [
       { href: '/institution/dashboard', icon: '🏛️', label: 'Dashboard' },
+      { href: '/institution/documents', icon: '📁', label: 'Student Documents' },
       { href: '/institution/resources', icon: '🏢', label: 'Resources' },
       { href: '/institution/trainers', icon: '👨‍🏫', label: 'Trainers' },
       { href: '/institution/internships', icon: '💼', label: 'Internships' },

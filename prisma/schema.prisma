@@ -38,6 +38,8 @@ model Student {
   certifications   Certification[]
   placementApps    PlacementApplication[]
   resourceBookings ResourceBooking[]
+  documents        Document[]
+  documentRequests DocumentRequest[]
 
   @@map("students")
 }
@@ -184,6 +186,8 @@ model Institution {
   sharingAgreementsOwner SharingAgreement[] @relation("OwnerAgreements")
   sharingAgreementsRequestor SharingAgreement[] @relation("RequestorAgreements")
   sharingNotifications ResourceSharingNotification[]
+  documents        Document[]
+  documentRequests DocumentRequest[]
 
   @@map("institutions")
 }
@@ -464,3 +468,64 @@ model PlacementApplication {
   @@unique([driveId, studentId])
   @@map("placement_applications")
 }
+
+model Document {
+  id                   Int               @id @default(autoincrement())
+  studentId            Int               @map("student_id")
+  institutionId        Int?              @map("institution_id")
+  fileName             String            @map("file_name")
+  filePath             String            @map("file_path")
+  fileType             String            @map("file_type")
+  fileSize             Int               @map("file_size")
+  documentType         String            @map("document_type")
+  category             String
+  description          String?
+  accessLevel          String            @default("PRIVATE") @map("access_level")
+  verificationStatus   String            @default("PENDING") @map("verification_status")
+  qualityScore         Float?            @map("quality_score")
+  qualityResult        String?           @map("quality_result")
+  extractedInformation String?           @map("extracted_information")
+  expiryDate           DateTime?         @map("expiry_date")
+  version              Int               @default(1)
+  parentDocumentId     Int?              @map("parent_document_id")
+  rejectionReason      String?           @map("rejection_reason")
+  uploadedAt           DateTime          @default(now()) @map("uploaded_at")
+  updatedAt            DateTime          @default(now()) @updatedAt @map("updated_at")
+  verifiedAt           DateTime?         @map("verified_at")
+  verifiedBy           Int?              @map("verified_by")
+
+  student              Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institution          Institution?      @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  parentDocument       Document?         @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
+  childVersions        Document[]        @relation("DocumentVersions")
+  requests             DocumentRequest[]
+
+  @@index([studentId])
+  @@index([institutionId])
+  @@index([accessLevel])
+  @@index([verificationStatus])
+  @@map("documents")
+}
+
+model DocumentRequest {
+  id             Int       @id @default(autoincrement())
+  institutionId  Int       @map("institution_id")
+  studentId      Int       @map("student_id")
+  title          String
+  reason         String
+  category       String?
+  status         String    @default("PENDING")
+  documentId     Int?      @map("document_id")
+  requestedAt    DateTime  @default(now()) @map("requested_at")
+  completedAt    DateTime? @map("completed_at")
+
+  institution    Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  student        Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  document       Document?   @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([institutionId])
+  @@index([status])
+  @@map("document_requests")
+}
+
