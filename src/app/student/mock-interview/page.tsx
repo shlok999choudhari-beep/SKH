@@ -17,7 +17,8 @@ export default function MockInterviewPage() {
   const transcriptEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const vapiInstance = new Vapi('49b79d52-cdf5-4c86-942f-06ba89e8270e')
+    const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || ''
+    const vapiInstance = new Vapi(publicKey)
     setVapi(vapiInstance)
 
     // Event listeners

@@ -7,8 +7,8 @@ export default function TestVAPI() {
   const [messages, setMessages] = useState<any[]>([])
   const vapiRef = useRef<any>(null)
 
-  const VAPI_PUBLIC_KEY = '49b79d52-cdf5-4c86-942f-06ba89e8270e'
-  const ASSISTANT_ID = '5be94cdf-1c98-49d3-ae29-828a33de84a0'
+  const VAPI_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || ''
+  const ASSISTANT_ID = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || ''
 
   useEffect(() => {
     vapiRef.current = new Vapi(VAPI_PUBLIC_KEY)
