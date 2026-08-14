@@ -1,5 +1,3 @@
-import { getDb } from './db'
-
 export type Action = 'create' | 'read' | 'update' | 'delete'
 export type Resource = 'institution' | 'trainer' | 'resource' | 'internship' | 'certification' | 'placement'
 
