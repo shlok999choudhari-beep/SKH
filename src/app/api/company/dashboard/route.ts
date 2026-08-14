@@ -9,23 +9,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get company info
-    const company = await prisma.company.findUnique({
-      where: { id: session.userId },
-      select: { companyName: true }
-    })
-    
-    // Get coding sessions stats
-    const totalSessions = await prisma.codingSession.count({
-      where: { companyId: session.userId }
-    })
-
-    const completedSessions = await prisma.codingSession.count({
-      where: { 
-        companyId: session.userId,
-        score: { not: null }
-      }
-    })
+    // Parallelize company dashboard queries
+    const [company, totalSessions, completedSessions] = await Promise.all([
+      prisma.company.findUnique({
+        where: { id: session.userId },
+        select: { companyName: true }
+      }),
+      prisma.codingSession.count({
+        where: { companyId: session.userId }
+      }),
+      prisma.codingSession.count({
+        where: { 
+          companyId: session.userId,
+          score: { not: null }
+        }
+      })
+    ])
 
     return NextResponse.json({
       companyName: company?.companyName || 'Company',

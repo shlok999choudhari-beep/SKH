@@ -8,31 +8,38 @@ export default function CompanyDashboard() {
   const [stats, setStats] = useState<any>(null)
   const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [jobsLoading, setJobsLoading] = useState(true)
 
   useEffect(() => {
     fetchDashboardData()
+    fetchJobs()
   }, [])
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, jobsRes] = await Promise.all([
-        fetch('/api/company/dashboard'),
-        fetch('/api/jobs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keyword: 'developer', location: 'India' })
-        })
-      ])
-      
+      const statsRes = await fetch('/api/company/dashboard')
       const statsData = await statsRes.json()
-      const jobsData = await jobsRes.json()
-      
       setStats(statsData)
-      setJobs(jobsData.jobs?.slice(0, 6) || [])
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchJobs = async () => {
+    try {
+      const jobsRes = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keyword: 'developer', location: 'India' })
+      })
+      const jobsData = await jobsRes.json()
+      setJobs(jobsData.jobs?.slice(0, 6) || [])
+    } catch (error) {
+      console.error('Failed to fetch jobs:', error)
+    } finally {
+      setJobsLoading(false)
     }
   }
 
@@ -203,21 +210,31 @@ export default function CompanyDashboard() {
               <Link href="/company/talent-search" className="btn btn-ghost btn-sm">Search Talent →</Link>
             </div>
             <div className={styles.jobsList}>
-              {jobs.map((j, idx) => (
-                <div key={idx} className={styles.jobCard}>
-                  <div className={styles.jobLogo} style={{ background: `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})` }}>
-                    {j.company.charAt(0)}
-                  </div>
-                  <div className={styles.jobInfo}>
-                    <div className={styles.jobTitle}>{j.position}</div>
-                    <div className={styles.jobMeta}>{j.company} • {j.location}</div>
-                  </div>
-                  <div className={styles.jobRight}>
-                    <div className={styles.jobDate}>{j.date}</div>
-                  </div>
-                  <a href={j.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-company btn-sm">View</a>
+              {jobsLoading ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                  Loading trending market jobs...
                 </div>
-              ))}
+              ) : jobs.length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                  No trending jobs available right now.
+                </div>
+              ) : (
+                jobs.map((j, idx) => (
+                  <div key={idx} className={styles.jobCard}>
+                    <div className={styles.jobLogo} style={{ background: `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})` }}>
+                      {j.company ? j.company.charAt(0) : '💼'}
+                    </div>
+                    <div className={styles.jobInfo}>
+                      <div className={styles.jobTitle}>{j.position}</div>
+                      <div className={styles.jobMeta}>{j.company} • {j.location}</div>
+                    </div>
+                    <div className={styles.jobRight}>
+                      <div className={styles.jobDate}>{j.date}</div>
+                    </div>
+                    <a href={j.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-company btn-sm">View</a>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </main>

@@ -36,19 +36,19 @@ export default function CompanyInternshipsPage() {
 
   const fetchCompanyProfileAndInternships = async () => {
     try {
-      const profileRes = await fetch('/api/company/profile')
-      const profileData = await profileRes.json()
-      let compId = null
+      const [profileRes, intRes] = await Promise.all([
+        fetch('/api/company/profile'),
+        fetch('/api/internships', { cache: 'no-store' })
+      ])
+      const [profileData, intData] = await Promise.all([
+        profileRes.json(),
+        intRes.json()
+      ])
+
       if (profileData && !profileData.error) {
         setCompanyProfile(profileData)
-        compId = profileData.id || profileData.company_id
       }
-
-      // Fetch company specific internships
-      const url = compId ? `/api/internships?companyId=${compId}` : '/api/internships'
-      const intRes = await fetch(url, { cache: 'no-store' })
-      const intData = await intRes.json()
-      if (intData.internships) {
+      if (intData && intData.internships) {
         setInternships(intData.internships)
       }
     } catch (err) {
