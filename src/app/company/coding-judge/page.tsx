@@ -109,7 +109,8 @@ if __name__ == "__main__":
   const initializeSocket = () => {
     if (socketRef.current) return
     
-    socketRef.current = io('http://localhost:3001')
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? `http://${window.location.hostname}:3001` : 'http://localhost:3001')
+    socketRef.current = io(socketUrl)
     
     socketRef.current.on('connect', () => {
       console.log('Connected to socket server')
