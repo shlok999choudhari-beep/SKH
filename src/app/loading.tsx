@@ -1,3 +1,4 @@
+import Logo from '@/components/Logo'
 import UniqueLoading from '@/components/ui/morph-loading'
 
 export default function Loading() {
@@ -12,9 +13,10 @@ export default function Loading() {
       background: 'var(--bg-primary, #060010)',
       gap: '1.5rem',
     }}>
-      <UniqueLoading variant="morph" size="lg" />
-      <p style={{ color: 'var(--text-secondary, #94a3b8)', fontSize: '14px', letterSpacing: '0.05em' }}>
-        Loading PlaceIQ...
+      <Logo variant="student" size="xl" href="" withBadge badgeText="AI" />
+      <UniqueLoading variant="morph" size="sm" />
+      <p style={{ color: 'var(--text-secondary, #94a3b8)', fontSize: '13px', letterSpacing: '0.05em', fontFamily: 'var(--font-sans)' }}>
+        Initializing PlaceIQ Intelligence...
       </p>
     </div>
   )

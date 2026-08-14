@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { studentLogin } from '@/app/actions/studentAuth'
 import { companyLogin } from '@/app/actions/companyAuth'
 import { institutionLogin } from '@/app/actions/institutionAuth'
+import Logo from '@/components/Logo'
 import styles from './login.module.css'
 
 type Role = 'student' | 'company' | 'institution'
@@ -56,6 +57,10 @@ function LoginContent() {
       <Link href="/" className={styles.backBtn}>← Back to home</Link>
 
       <div className={styles.card}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+          <Logo variant={role === 'company' ? 'company' : role === 'institution' ? 'institution' : 'student'} size="lg" href="/" withBadge badgeText={role.toUpperCase()} />
+        </div>
+
         {/* Role Selector */}
         <div className={styles.roleSelector}>
           {ROLES.map(r => (

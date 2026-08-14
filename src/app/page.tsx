@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import styles from './page.module.css'
 import MaskedHeading from '@/components/MaskedHeading'
 import BlurText from '@/components/BlurText'
+import Logo from '@/components/Logo'
 
 const DriftWall = dynamic(() => import('@/components/DriftWall'), { ssr: false })
 const CircularGallery = dynamic(() => import('@/components/CircularGallery'), { ssr: false })
@@ -50,16 +51,7 @@ export default function LandingPage() {
       {/* ── GLASSMORPHISM NAV ── */}
       <nav className={styles.nav}>
         <div className={styles.navInner}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>
-          </div>
+          <Logo variant="student" size="md" href="/" withBadge badgeText="AI" />
 
           <div className={styles.navLinks}>
             <a href="#features" className={styles.navLink}>Features</a>
@@ -273,16 +265,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            <span className={styles.logoText}>Place<span className="grad-text">IQ</span></span>
-          </div>
+          <Logo variant="student" size="md" href="/" withBadge badgeText="AI" />
           <p className={styles.footerTagline}>AI-powered placement intelligence • Built for the future of hiring</p>
           <p className={styles.footerCopy}>© 2026 PLACEIQ. All rights reserved.</p>
         </div>

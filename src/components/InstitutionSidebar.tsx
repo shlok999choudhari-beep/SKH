@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Logo from '@/components/Logo'
+import NotificationBell from '@/components/NotificationBell'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
 import { logout } from '@/app/actions/logout'
@@ -41,16 +43,7 @@ export default function InstitutionSidebar() {
 
       {/* Left Logo */}
       <div className={styles.sidebarTop}>
-        <Link href="/" className={styles.logo}>
-          <div className={`${styles.logoIcon} ${styles.logoIconPurple}`}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span className={styles.logoText}>Place<span className="grad-text-purple">IQ</span></span>
-        </Link>
+        <Logo variant="institution" size="md" href="/" />
       </div>
 
       {/* Center Nav */}
@@ -77,6 +70,7 @@ export default function InstitutionSidebar() {
 
       {/* Right User & Controls */}
       <div className={`${styles.userTag} ${styles.userTagInstitution}`}>
+        <NotificationBell role="institution" />
         {userData && (
           <>
             <div className={`${styles.userAvatar} ${styles.userAvatarInstitution}`}>{getInitials(userData.name)}</div>
