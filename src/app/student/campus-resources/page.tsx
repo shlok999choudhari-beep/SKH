@@ -118,12 +118,15 @@ export default function StudentCampusResources() {
     setError(false)
     try {
       const res = await fetch('/api/student/resources')
-      if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
-      setResources(data.resources || [])
-      setStats(data.stats || { availableCount: 0, sharedCount: 0, labsCount: 0, facilitiesCount: 0 })
+      if (res.ok && data.resources) {
+        setResources(data.resources || [])
+        setStats(data.stats || { availableCount: 0, sharedCount: 0, labsCount: 0, facilitiesCount: 0 })
+      } else {
+        setError(true)
+      }
     } catch (err) {
-      console.error(err)
+      console.error('Error fetching resources:', err)
       setError(true)
     } finally {
       setLoading(false)

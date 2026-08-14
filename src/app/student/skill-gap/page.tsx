@@ -2,8 +2,6 @@
 import { useState, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
 import styles from '../dashboard.module.css'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 export default function SkillGapDetector() {
   const [step, setStep] = useState(1)
@@ -61,6 +59,11 @@ export default function SkillGapDetector() {
     
     setExporting(true)
     try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf')
+      ])
+
       const canvas = await html2canvas(reportRef.current, {
         scale: 2,
         backgroundColor: '#050816',

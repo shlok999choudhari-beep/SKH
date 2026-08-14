@@ -41,6 +41,7 @@ model Student {
   documents        Document[]
   documentRequests DocumentRequest[]
 
+  @@index([institutionId])
   @@map("students")
 }
 
@@ -67,6 +68,7 @@ model Company {
   internships      Internship[]
   placementDrives  PlacementDrive[]
 
+  @@index([institutionId])
   @@map("companies")
 }
 
@@ -83,6 +85,7 @@ model Resume {
 
   student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
+  @@index([studentId])
   @@map("resumes")
 }
 
@@ -101,6 +104,7 @@ model JobPosting {
   company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   applications     Application[]
 
+  @@index([companyId])
   @@map("job_postings")
 }
 
@@ -116,6 +120,9 @@ model Application {
   job              JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, jobId])
+  @@index([studentId])
+  @@index([jobId])
+  @@index([status])
   @@map("applications")
 }
 
@@ -161,6 +168,9 @@ model CodingSession {
   company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
+  @@index([studentId])
+  @@index([companyId])
+  @@index([status])
   @@map("coding_sessions")
 }
 
@@ -275,6 +285,8 @@ model Resource {
   requests         ResourceRequest[]
   sharingAgreements SharingAgreement[]
 
+  @@index([institutionId])
+  @@index([status])
   @@map("resources")
 }
 
@@ -294,6 +306,10 @@ model ResourceBooking {
   bookedByUser     User?     @relation(fields: [bookedByUserId], references: [id], onDelete: Cascade)
   student          Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
+  @@index([studentId])
+  @@index([resourceId])
+  @@index([status])
+  @@index([startTime, endTime])
   @@map("resource_bookings")
 }
 
@@ -336,6 +352,10 @@ model SharingAgreement {
   requestingInstitution   Institution     @relation("RequestorAgreements", fields: [requestingInstitutionId], references: [id], onDelete: Cascade)
   request                 ResourceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
+  @@index([resourceId])
+  @@index([ownerInstitutionId])
+  @@index([requestingInstitutionId])
+  @@index([status])
   @@map("sharing_agreements")
 }
 
@@ -387,6 +407,9 @@ model Internship {
   company          Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
   applications     InternshipApplication[]
 
+  @@index([institutionId])
+  @@index([companyId])
+  @@index([status])
   @@map("internships")
 }
 
@@ -401,6 +424,9 @@ model InternshipApplication {
   student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([internshipId, studentId])
+  @@index([internshipId])
+  @@index([studentId])
+  @@index([status])
   @@map("internship_applications")
 }
 
@@ -436,6 +462,9 @@ model PlacementDrive {
   rounds              PlacementRound[]
   applications        PlacementApplication[]
 
+  @@index([institutionId])
+  @@index([companyId])
+  @@index([status])
   @@map("placement_drives")
 }
 
@@ -466,6 +495,9 @@ model PlacementApplication {
   currentRound     PlacementRound? @relation(fields: [currentRoundId], references: [id], onDelete: SetNull)
 
   @@unique([driveId, studentId])
+  @@index([driveId])
+  @@index([studentId])
+  @@index([status])
   @@map("placement_applications")
 }
 

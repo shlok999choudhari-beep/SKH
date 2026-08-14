@@ -24,11 +24,14 @@ export default function StudentBookingsPage() {
     setError(false)
     try {
       const res = await fetch('/api/student/bookings')
-      if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
-      setBookings(data.bookings || [])
+      if (res.ok && data.success) {
+        setBookings(data.bookings || [])
+      } else {
+        setError(true)
+      }
     } catch (err) {
-      console.error(err)
+      console.error('Error fetching bookings:', err)
       setError(true)
     } finally {
       setLoading(false)

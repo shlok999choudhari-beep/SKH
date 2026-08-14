@@ -40,25 +40,31 @@ export async function GET(request: Request) {
     const parsedInstId = institutionId ? parseInt(institutionId, 10) : null
     const parsedCompId = companyId ? parseInt(companyId, 10) : null
 
-    // Query real students using raw SQL to avoid Prisma client generation errors
-    let allStudents: any[] = await prisma.$queryRaw`
-      SELECT id, name, email, degree, graduation_year as "graduationYear", cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks", institution_id as "institutionId"
-      FROM "students"
-    `
+    // Parallelize all raw SQL queries for students, internships, and applications
+    const [allStudentsRaw, rawInternshipsRaw, rawAppsRaw] = await Promise.all([
+      prisma.$queryRaw<any[]>`
+        SELECT id, name, email, degree, graduation_year as "graduationYear", cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks", institution_id as "institutionId"
+        FROM "students"
+      `,
+      prisma.$queryRaw<any[]>`
+        SELECT i.*, c.company_name, c.industry
+        FROM "internships" i
+        LEFT JOIN "companies" c ON i.company_id = c.id
+        ORDER BY i.created_at DESC
+      `,
+      prisma.$queryRaw<any[]>`
+        SELECT a.*, s.name as student_name, s.email as student_email
+        FROM "internship_applications" a
+        LEFT JOIN "students" s ON a.student_id = s.id
+      `
+    ])
 
+    let allStudents = allStudentsRaw || []
     if (parsedInstId) {
       allStudents = allStudents.filter(s => Number(s.institutionId) === parsedInstId)
     }
 
-    // Fetch internships with raw query
-    let rawInternships: any[] = await prisma.$queryRaw`
-      SELECT i.*, c.company_name, c.industry
-      FROM "internships" i
-      LEFT JOIN "companies" c ON i.company_id = c.id
-      ORDER BY i.created_at DESC
-    `
-
-    // Apply filtering ONLY if explicit query params passed
+    let rawInternships = rawInternshipsRaw || []
     if (parsedInstId) {
       rawInternships = rawInternships.filter(i => Number(i.institution_id) === parsedInstId)
     }
@@ -66,12 +72,7 @@ export async function GET(request: Request) {
       rawInternships = rawInternships.filter(i => Number(i.company_id) === parsedCompId)
     }
 
-    // Fetch applications
-    const rawApps: any[] = await prisma.$queryRaw`
-      SELECT a.*, s.name as student_name, s.email as student_email
-      FROM "internship_applications" a
-      LEFT JOIN "students" s ON a.student_id = s.id
-    `
+    const rawApps = rawAppsRaw || []
 
     const mappedInternships = rawInternships.map(i => {
       const apps = rawApps.filter(a => Number(a.internship_id) === Number(i.id))
@@ -115,7 +116,6 @@ export async function GET(request: Request) {
         createdAt: i.created_at,
         company_name: i.company_name || 'Partner Company',
         eligible_students_count: eligibleStudentsList.length,
-        eligible_students: eligibleStudentsList,
         pipeline: {
           offered: offeredCount,
           coding_round: codingCount,
