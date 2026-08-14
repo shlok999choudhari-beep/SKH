@@ -87,18 +87,30 @@
 }
 
 .loginBtn {
-  background: linear-gradient(135deg, #ffffff, #cbd5e1);
-  color: #000 !important;
-  font-weight: 700;
-  border: none;
-  padding: 9px 22px;
-  border-radius: 9999px;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-  transition: var(--transition);
+  background: linear-gradient(135deg, #86efac, #4ade80) !important;
+  color: #052e16 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.2px;
+  border: 1px solid rgba(134, 239, 172, 0.6) !important;
+  padding: 8px 20px !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 0 24px rgba(74, 222, 128, 0.35), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  line-height: 1 !important;
 }
+
 .loginBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
+  color: #022c22 !important;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 32px rgba(74, 222, 128, 0.55), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ── HERO ── */

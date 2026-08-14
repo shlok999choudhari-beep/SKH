@@ -70,10 +70,14 @@ export default function DreamMode() {
         const a = document.createElement('a')
         a.href = url
         a.download = `${company.name}_Hiring_Details.pdf`
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-        document.body.removeChild(a)
+        if (document.body) {
+          document.body.appendChild(a)
+          a.click()
+          window.URL.revokeObjectURL(url)
+          if (a.parentNode) {
+            a.parentNode.removeChild(a)
+          }
+        }
       }
     } catch (error) {
       console.error('Error downloading PDF:', error)

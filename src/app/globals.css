@@ -223,22 +223,22 @@ body {
 }
 
 /* ── NAV BAR & SIDE BAR GEIST MONO FONT (ALL 3 PORTALS & LOGIN) ── */
-header:not([class*="logo"]):not([class*="Logo"]),
-header *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-nav:not([class*="logo"]):not([class*="Logo"]),
-nav *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-aside:not([class*="logo"]):not([class*="Logo"]),
-aside *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-.sidebar:not([class*="logo"]):not([class*="Logo"]),
-.sidebar *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-[class*="sidebar"]:not([class*="logo"]):not([class*="Logo"]),
-[class*="sidebar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-[class*="header"]:not([class*="logo"]):not([class*="Logo"]),
-[class*="header"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-[class*="navBar"]:not([class*="logo"]):not([class*="Logo"]),
-[class*="navBar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]),
-[class*="topBar"]:not([class*="logo"]):not([class*="Logo"]),
-[class*="topBar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]) {
+header:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+header *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+nav:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+nav *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+aside:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+aside *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+.sidebar:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+.sidebar *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+[class*="sidebar"]:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+[class*="sidebar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+[class*="header"]:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+[class*="header"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+[class*="navBar"]:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+[class*="navBar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *),
+[class*="topBar"]:not([class*="logo"]):not([class*="Logo"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not(button),
+[class*="topBar"] *:not([class*="logo"]):not([class*="Logo"]):not([class*="placeText"]):not([class*="iqText"]):not([class*="wordmark"]):not([class*="subBadge"]):not([class*="btn"]):not([class*="Btn"]):not([class*="button"]):not([class*="Button"]):not([class*="badge"]):not(button):not(button *):not([class*="btn"] *):not([class*="Btn"] *) {
   font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
   font-style: normal !important;
   font-weight: 400 !important;

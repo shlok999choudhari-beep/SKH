@@ -62,13 +62,17 @@ export default function CircularGallery({
 
   // Load custom font if fontUrl is provided
   useEffect(() => {
-    if (fontUrl) {
+    if (fontUrl && typeof document !== 'undefined') {
       const link = document.createElement('link')
       link.href = fontUrl
       link.rel = 'stylesheet'
-      document.head.appendChild(link)
+      if (document.head) {
+        document.head.appendChild(link)
+      }
       return () => {
-        document.head.removeChild(link)
+        if (link.parentNode) {
+          link.parentNode.removeChild(link)
+        }
       }
     }
   }, [fontUrl])
