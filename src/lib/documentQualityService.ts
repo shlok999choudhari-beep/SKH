@@ -101,15 +101,12 @@ export async function analyzeDocumentQuality(
   }
 
   try {
-    const isImage = fileType.startsWith('image/')
-    const model = isImage ? 'llama-3.2-11b-vision-preview' : 'llama-3.3-70b-versatile'
-
     const prompt = `Analyze this document content for quality, document type classification, visual/structure integrity, and field extraction.
     
 File Name: ${fileName}
 File Type: ${fileType}
 Extracted Text Content (first 3000 chars):
-${trimmedText.slice(0, 3000) || '[Visual image document loaded for AI inspection]'}
+${trimmedText.slice(0, 3000) || '[No text extracted or raw visual document]'}
 
 Perform a document suitability analysis. Respond strictly with pure valid JSON matching this schema (do NOT include markdown codeblocks or any prose):
 
@@ -147,21 +144,6 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
   "message": "User-facing summary message (e.g. Document appears suitable for upload.)"
 }`
 
-    const userContent = isImage
-      ? [
-          {
-            type: 'text',
-            text: prompt
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:${fileType};base64,${buffer.toString('base64')}`
-            }
-          }
-        ]
-      : prompt
-
     const response = await axios.post(
       GROQ_API_URL,
       {
@@ -172,10 +154,10 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
           },
           {
             role: 'user',
-            content: userContent
+            content: prompt
           }
         ],
-        model: model,
+        model: 'llama-3.3-70b-versatile',
         temperature: 0.1,
         max_tokens: 1500
       },
@@ -183,8 +165,7 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
         headers: {
           'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json'
-        },
-        timeout: 10000
+        }
       }
     )
 

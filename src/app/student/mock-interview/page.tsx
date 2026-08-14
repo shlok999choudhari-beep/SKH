@@ -99,9 +99,8 @@ export default function MockInterviewPage() {
       setInterviewComplete(false)
       setSummary(null)
 
-      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || '5be94cdf-1c98-49d3-ae29-828a33de84a0'
       // Start VAPI call directly - VAPI handles microphone permissions
-      await vapi.start(assistantId)
+      await vapi.start('3ce271a3-e317-4b85-9973-a8e4b047cad3')
     } catch (error: any) {
       console.error('Failed to start call:', error)
       setCallStatus('error')
