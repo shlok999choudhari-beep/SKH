@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
 import styles from '../dashboard.module.css'
 import Vapi from '@vapi-ai/web'
-import jsPDF from 'jspdf'
 
 export default function MockInterviewPage() {
   const [vapi, setVapi] = useState<any>(null)
@@ -230,7 +229,7 @@ export default function MockInterviewPage() {
     setSummary(summaryData)
   }
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
     if (!summary) {
       alert('No summary data available. Please complete the interview first.')
       return
@@ -238,6 +237,7 @@ export default function MockInterviewPage() {
 
     console.log('Generating PDF with summary:', summary)
 
+    const { default: jsPDF } = await import('jspdf')
     const pdf = new jsPDF()
     let yPos = 20
 

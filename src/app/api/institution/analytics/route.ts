@@ -7,38 +7,36 @@ export async function GET(request: Request) {
     const institutionId = searchParams.get('institutionId')
     const id = institutionId ? parseInt(institutionId, 10) : 1
     
-    // Aggregates
-    const studentsCount = await prisma.student.count({ where: { institutionId: id } })
-    const drivesCount = await prisma.placementDrive.count({ where: { institutionId: id, status: "active" } })
-    const internshipsCount = await prisma.internship.count({ where: { institutionId: id, status: "open" } })
-    const trainersCount = await prisma.trainer.count()
-
-    // Pipeline Data
-    const drives = await prisma.placementDrive.findMany({
-      where: { institutionId: id },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-      select: {
-        title: true,
-        _count: { select: { applications: true } }
-      }
-    })
+    // Parallelize all analytics data queries
+    const [studentsCount, drivesCount, internshipsCount, trainersCount, drives, activityDataRaw] = await Promise.all([
+      prisma.student.count({ where: { institutionId: id } }),
+      prisma.placementDrive.count({ where: { institutionId: id, status: "active" } }),
+      prisma.internship.count({ where: { institutionId: id, status: "open" } }),
+      prisma.trainer.count(),
+      prisma.placementDrive.findMany({
+        where: { institutionId: id },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: {
+          title: true,
+          _count: { select: { applications: true } }
+        }
+      }),
+      prisma.$queryRaw<any[]>`
+        SELECT DATE(a.applied_at) as date, CAST(COUNT(*) AS INTEGER) as count
+        FROM placement_applications a
+        JOIN placement_drives d ON a.drive_id = d.id
+        WHERE d.institution_id = ${id}
+        GROUP BY DATE(a.applied_at)
+        ORDER BY DATE(a.applied_at) ASC
+        LIMIT 14
+      `
+    ])
     
     const pipelineData = drives.map(d => ({
       name: d.title,
       applications: d._count.applications
     }))
-
-    // Activity Timeline using Prisma raw query for date grouping
-    const activityDataRaw = await prisma.$queryRaw<any[]>`
-      SELECT DATE(a.applied_at) as date, CAST(COUNT(*) AS INTEGER) as count
-      FROM placement_applications a
-      JOIN placement_drives d ON a.drive_id = d.id
-      WHERE d.institution_id = ${id}
-      GROUP BY DATE(a.applied_at)
-      ORDER BY DATE(a.applied_at) ASC
-      LIMIT 14
-    `
 
     // Prisma $queryRaw might return Date objects for the 'date' field in postgres
     const activityData = activityDataRaw.map(r => ({

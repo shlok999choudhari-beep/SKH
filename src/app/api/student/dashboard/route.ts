@@ -9,30 +9,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get student info
-    const student = await prisma.student.findUnique({
-      where: { id: session.userId },
-      select: { name: true }
-    })
-    
-    // Get resume stats
-    const resumeStatsRaw = await prisma.resume.aggregate({
-      where: { studentId: session.userId },
-      _avg: { atsScore: true },
-      _count: { _all: true }
-    })
-    
-    // Get skill assessments
-    const skillCount = await prisma.skillAssessment.count({
-      where: { studentId: session.userId }
-    })
-    
-    // Get coding sessions
-    const codingSessionsRaw = await prisma.codingSession.aggregate({
-      where: { studentId: session.userId },
-      _avg: { score: true },
-      _count: { _all: true }
-    })
+    // Parallelize all dashboard metric queries
+    const [student, resumeStatsRaw, skillCount, codingSessionsRaw] = await Promise.all([
+      prisma.student.findUnique({
+        where: { id: session.userId },
+        select: { name: true }
+      }),
+      prisma.resume.aggregate({
+        where: { studentId: session.userId },
+        _avg: { atsScore: true },
+        _count: { _all: true }
+      }),
+      prisma.skillAssessment.count({
+        where: { studentId: session.userId }
+      }),
+      prisma.codingSession.aggregate({
+        where: { studentId: session.userId },
+        _avg: { score: true },
+        _count: { _all: true }
+      })
+    ])
 
     const avgAts = resumeStatsRaw._avg.atsScore || 0
     const avgScore = codingSessionsRaw._avg.score || 0

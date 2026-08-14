@@ -8,6 +8,7 @@ import BlurText from '@/components/BlurText'
 
 const DriftWall = dynamic(() => import('@/components/DriftWall'), { ssr: false })
 const CircularGallery = dynamic(() => import('@/components/CircularGallery'), { ssr: false })
+const SideRays = dynamic(() => import('@/components/SideRays'), { ssr: false })
 
 
 const DRIFT_ITEMS = [
@@ -29,6 +30,23 @@ export default function LandingPage() {
 
   return (
     <main className={styles.main}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+          <SideRays
+            speed={2.5}
+            rayColor1="#ffffff"
+            rayColor2="#cbd5e1"
+            intensity={0.8}
+            spread={2}
+            origin="top-right"
+            tilt={0}
+            saturation={1.5}
+            blend={0.75}
+            falloff={1.6}
+            opacity={0.15}
+          />
+        </div>
+      </div>
       {/* ── GLASSMORPHISM NAV ── */}
       <nav className={styles.nav}>
         <div className={styles.navInner}>
