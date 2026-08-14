@@ -214,7 +214,8 @@ export default function LandingPage() {
             bend={3}
             textColor="#ffffff"
             borderRadius={0.05}
-            scrollEase={0.02}
+            scrollEase={0.08}
+            autoRotateSpeed={0.025}
             fontUrl="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
             font="bold 30px Orbitron"
           />
