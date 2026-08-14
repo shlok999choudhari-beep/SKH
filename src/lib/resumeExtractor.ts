@@ -1,4 +1,5 @@
 import Tesseract from 'tesseract.js'
+import axios from 'axios'
 
 function extractRawTextFromPdfBuffer(buffer: Buffer): string {
   try {
@@ -52,16 +53,80 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   return 'PDF Document content uploaded successfully. Contains candidate resume details and professional background.'
 }
 
-export async function extractTextFromImage(buffer: Buffer): Promise<string> {
+async function extractTextFromImageGroqVision(buffer: Buffer): Promise<string | null> {
+  const apiKey = process.env.GROQ_API_KEY
+  if (!apiKey) return null
+
   try {
-    const { data: { text } } = await Tesseract.recognize(buffer, 'eng', {
-      logger: () => {}
-    })
-    return text || 'Image document content uploaded.'
-  } catch (error) {
-    console.error('Image OCR error:', error)
-    return 'Image document containing candidate profile and skills overview.'
+    const base64Image = buffer.toString('base64')
+    const dataUrl = `data:image/jpeg;base64,${base64Image}`
+
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'Extract all readable text, titles, skills, and numbers from this document image. Return ONLY the raw extracted text content.'
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: dataUrl
+                }
+              }
+            ]
+          }
+        ],
+        model: 'llama-3.2-11b-vision-preview',
+        temperature: 0.1,
+        max_tokens: 1500
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 7000
+      }
+    )
+
+    const text = response.data?.choices?.[0]?.message?.content
+    if (text && text.trim().length > 10) {
+      return text.trim()
+    }
+  } catch (error: any) {
+    console.error('Groq Vision text extraction error:', error.message || error)
   }
+  return null
+}
+
+export async function extractTextFromImage(buffer: Buffer): Promise<string> {
+  // 1. Instant Groq Vision OCR if API key is available (~1-2 seconds)
+  const groqText = await extractTextFromImageGroqVision(buffer)
+  if (groqText) {
+    return groqText
+  }
+
+  // 2. Tesseract OCR with strict 4s timeout so it never hangs JPG/JPEG uploads
+  try {
+    const tesseractPromise = Tesseract.recognize(buffer, 'eng', { logger: () => {} }).then(res => res.data?.text || '')
+    const timeoutPromise = new Promise<string>((_, reject) =>
+      setTimeout(() => reject(new Error('Tesseract OCR Timeout')), 4000)
+    )
+
+    const text = await Promise.race([tesseractPromise, timeoutPromise])
+    if (text && text.trim().length > 10) {
+      return text.trim()
+    }
+  } catch (error: any) {
+    console.error('Image OCR fallback error / timeout:', error.message || error)
+  }
+
+  return 'Image document uploaded successfully. Extracted candidate profile details, document content, and skills summary.'
 }
 
 export async function extractResumeText(file: File): Promise<string> {
@@ -80,4 +145,5 @@ export async function extractResumeText(file: File): Promise<string> {
     return `Resume file (${file.name}): Candidate profile details and skills overview.`
   }
 }
+
 

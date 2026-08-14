@@ -16,9 +16,12 @@ services:
         sync: false
       - key: NEXT_PUBLIC_VAPI_PUBLIC_KEY
         sync: false
+      - key: NEXT_PUBLIC_VAPI_ASSISTANT_ID
+        sync: false
       - key: VAPI_PRIVATE_KEY
         sync: false
       - key: VAPI_ASSISTANT_ID
         sync: false
       - key: SERPER_API_KEY
         sync: false
+
