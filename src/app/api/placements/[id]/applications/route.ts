@@ -37,7 +37,7 @@ export async function GET(
       orderBy: { appliedAt: 'desc' }
     })
     
-    const mappedApplications = applications.map(a => ({
+    const mappedApplications = applications.map((a: any) => ({
       ...a,
       student_name: a.student.name,
       student_email: a.student.email,

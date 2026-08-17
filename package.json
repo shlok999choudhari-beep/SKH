@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "concurrently \"next dev --webpack\" \"node server/socket-server.js\"",
+    "dev:next": "next dev --webpack",
     "socket": "node server/socket-server.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
     "build": "next build --webpack",
     "start": "node server/server.js",
     "postinstall": "prisma generate",

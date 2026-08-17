@@ -286,4 +286,14 @@
   .title {
     font-size: 22px;
   }
+  .input {
+    padding: 12px 14px;
+    font-size: 16px !important;
+    min-height: 48px;
+  }
+  .submitBtn {
+    padding: 14px;
+    font-size: 15px;
+    min-height: 48px;
+  }
 }

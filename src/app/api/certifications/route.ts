@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       orderBy: { issueDate: 'desc' }
     })
     
-    const mappedCerts = certs.map(c => ({
+    const mappedCerts = certs.map((c: any) => ({
       ...c,
       student_name: c.student?.name || null
     }))

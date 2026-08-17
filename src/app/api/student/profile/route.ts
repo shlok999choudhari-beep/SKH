@@ -13,35 +13,17 @@ export async function GET(request: NextRequest) {
       studentId = session.userId
     }
 
-    let rawStudents: any[] = await prisma.$queryRaw`
-      SELECT 
-        id, name, email, college, degree, 
-        graduation_year as "graduationYear", phone, 
-        cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks", 
-        github_url as "githubUrl", linkedin_url as "linkedinUrl", portfolio_url as "portfolioUrl", 
-        created_at as "createdAt"
-      FROM "students"
-      WHERE id = ${studentId}
-    `
+    let student = await prisma.student.findUnique({
+      where: { id: studentId }
+    })
 
-    if (rawStudents.length === 0) {
-      rawStudents = await prisma.$queryRaw`
-        SELECT 
-          id, name, email, college, degree, 
-          graduation_year as "graduationYear", phone, 
-          cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks", 
-          github_url as "githubUrl", linkedin_url as "linkedinUrl", portfolio_url as "portfolioUrl", 
-          created_at as "createdAt"
-        FROM "students"
-        LIMIT 1
-      `
+    if (!student) {
+      student = await prisma.student.findFirst()
     }
 
-    if (rawStudents.length === 0) {
+    if (!student) {
       return NextResponse.json({ error: 'Student profile not found' }, { status: 404 })
     }
-
-    const student = rawStudents[0]
 
     const mappedStudent = {
       id: student.id,
@@ -51,13 +33,16 @@ export async function GET(request: NextRequest) {
       degree: student.degree,
       phone: student.phone,
       cgpa: student.cgpa ? Number(student.cgpa) : null,
-      tenth_marks: student.tenthMarks ? Number(student.tenthMarks) : null,
-      twelfth_marks: student.twelfthMarks ? Number(student.twelfthMarks) : null,
-      graduation_year: student.graduationYear,
-      github_url: student.githubUrl,
-      linkedin_url: student.linkedinUrl,
-      portfolio_url: student.portfolioUrl,
-      created_at: student.createdAt
+      tenth_marks: student.tenth_marks ? Number(student.tenth_marks) : null,
+      tenthMarks: student.tenth_marks ? Number(student.tenth_marks) : null,
+      twelfth_marks: student.twelfth_marks ? Number(student.twelfth_marks) : null,
+      twelfthMarks: student.twelfth_marks ? Number(student.twelfth_marks) : null,
+      graduation_year: student.graduation_year,
+      graduationYear: student.graduation_year,
+      github_url: student.github_url,
+      linkedin_url: student.linkedin_url,
+      portfolio_url: student.portfolio_url,
+      created_at: student.created_at
     }
 
     return NextResponse.json(mappedStudent, { headers: { 'Cache-Control': 'no-store' } })
@@ -79,60 +64,69 @@ export async function PUT(request: NextRequest) {
 
     // If password update requested
     if (data.currentPassword && data.newPassword) {
-      const studentRows: any[] = await prisma.$queryRaw`SELECT password FROM "students" WHERE id = ${studentId}`
-      if (studentRows.length > 0 && studentRows[0].password) {
-        const validPassword = await bcrypt.compare(data.currentPassword, studentRows[0].password)
+      const student = await prisma.student.findUnique({
+        where: { id: studentId },
+        select: { password: true }
+      })
+      if (student?.password) {
+        const validPassword = await bcrypt.compare(data.currentPassword, student.password)
         if (validPassword) {
-          const hashedPassword = await bcrypt.hash(data.newPassword, 10)
-          await prisma.$executeRaw`UPDATE "students" SET password = ${hashedPassword} WHERE id = ${studentId}`
+          const hashedPassword = await bcrypt.hash(data.newPassword, 12)
+          await prisma.student.update({
+            where: { id: studentId },
+            data: { password: hashedPassword }
+          })
         }
       }
     }
 
-    const cgpaVal = data.cgpa !== undefined && data.cgpa !== null && data.cgpa !== '' ? parseFloat(data.cgpa) : null
-    const tenthVal = data.tenth_marks !== undefined && data.tenth_marks !== null && data.tenth_marks !== '' ? parseFloat(data.tenth_marks) : null
-    const twelfthVal = data.twelfth_marks !== undefined && data.twelfth_marks !== null && data.twelfth_marks !== '' ? parseFloat(data.twelfth_marks) : null
-    const nameVal = data.name || null
-    const collegeVal = data.college || null
-    const degreeVal = data.degree || null
-    const phoneVal = data.phone || null
-    const githubVal = data.github_url || null
-    const linkedinVal = data.linkedin_url || null
-    const portfolioVal = data.portfolio_url || null
+    const updatePayload: Record<string, any> = {}
 
-    await prisma.$executeRaw`
-      UPDATE "students"
-      SET 
-        cgpa = COALESCE(${cgpaVal}, cgpa),
-        tenth_marks = COALESCE(${tenthVal}, tenth_marks),
-        twelfth_marks = COALESCE(${twelfthVal}, twelfth_marks),
-        name = COALESCE(${nameVal}, name),
-        college = COALESCE(${collegeVal}, college),
-        degree = COALESCE(${degreeVal}, degree),
-        phone = COALESCE(${phoneVal}, phone),
-        github_url = COALESCE(${githubVal}, github_url),
-        linkedin_url = COALESCE(${linkedinVal}, linkedin_url),
-        portfolio_url = COALESCE(${portfolioVal}, portfolio_url)
-      WHERE id = ${studentId}
-    `
+    if (data.cgpa !== undefined && data.cgpa !== null && data.cgpa !== '') {
+      updatePayload.cgpa = parseFloat(data.cgpa)
+    }
+    if (data.tenth_marks !== undefined && data.tenth_marks !== null && data.tenth_marks !== '') {
+      updatePayload.tenth_marks = parseFloat(data.tenth_marks)
+    } else if (data.tenthMarks !== undefined && data.tenthMarks !== null && data.tenthMarks !== '') {
+      updatePayload.tenth_marks = parseFloat(data.tenthMarks)
+    }
+    if (data.twelfth_marks !== undefined && data.twelfth_marks !== null && data.twelfth_marks !== '') {
+      updatePayload.twelfth_marks = parseFloat(data.twelfth_marks)
+    } else if (data.twelfthMarks !== undefined && data.twelfthMarks !== null && data.twelfthMarks !== '') {
+      updatePayload.twelfth_marks = parseFloat(data.twelfthMarks)
+    }
+    if (data.name) updatePayload.name = data.name
+    if (data.college) updatePayload.college = data.college
+    if (data.degree) updatePayload.degree = data.degree
+    if (data.phone) updatePayload.phone = data.phone
+    if (data.github_url !== undefined) updatePayload.github_url = data.github_url
+    if (data.linkedin_url !== undefined) updatePayload.linkedin_url = data.linkedin_url
+    if (data.portfolio_url !== undefined) updatePayload.portfolio_url = data.portfolio_url
+    if (data.graduation_year !== undefined && data.graduation_year !== '') {
+      updatePayload.graduation_year = parseInt(data.graduation_year)
+    }
 
-    // Fetch updated record to return
-    const updatedRows: any[] = await prisma.$queryRaw`
-      SELECT id, name, email, cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks"
-      FROM "students"
-      WHERE id = ${studentId}
-    `
+    updatePayload.updated_at = new Date()
 
-    const updatedStudent = updatedRows[0] || {}
+    const updated = await prisma.student.update({
+      where: { id: studentId },
+      data: updatePayload
+    })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Academic profile updated successfully',
       student: {
-        ...updatedStudent,
-        cgpa: updatedStudent.cgpa ? Number(updatedStudent.cgpa) : cgpaVal,
-        tenth_marks: updatedStudent.tenthMarks ? Number(updatedStudent.tenthMarks) : tenthVal,
-        twelfth_marks: updatedStudent.twelfthMarks ? Number(updatedStudent.twelfthMarks) : twelfthVal
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        college: updated.college,
+        degree: updated.degree,
+        cgpa: updated.cgpa ? Number(updated.cgpa) : null,
+        tenth_marks: updated.tenth_marks ? Number(updated.tenth_marks) : null,
+        tenthMarks: updated.tenth_marks ? Number(updated.tenth_marks) : null,
+        twelfth_marks: updated.twelfth_marks ? Number(updated.twelfth_marks) : null,
+        twelfthMarks: updated.twelfth_marks ? Number(updated.twelfth_marks) : null
       }
     })
   } catch (error: any) {
@@ -140,3 +134,4 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to update profile', message: error?.message }, { status: 500 })
   }
 }
+

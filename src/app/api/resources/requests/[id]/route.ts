@@ -117,7 +117,7 @@ export async function PUT(
       }
 
       // Execute transaction for approval
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: any) => {
         // A. Update request status to APPROVED
         const updatedRequest = await tx.resourceRequest.update({
           where: { id: requestId },
@@ -177,7 +177,7 @@ export async function PUT(
       }
 
       // Transaction for rejection
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: any) => {
         const updatedRequest = await tx.resourceRequest.update({
           where: { id: requestId },
           data: {
@@ -209,7 +209,7 @@ export async function PUT(
 
     } else if (action === 'cancel') {
       // Transaction for cancellation
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: any) => {
         // A. Update request status to CANCELLED
         const updatedRequest = await tx.resourceRequest.update({
           where: { id: requestId },

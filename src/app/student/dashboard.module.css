@@ -506,3 +506,63 @@
   }
 }
 
+/* ── CODING JUDGE RESPONSIVE LAYOUT ── */
+.codingJudgeGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  min-height: calc(100vh - 200px);
+}
+
+.mobileTabNav {
+  display: none;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.mobileTabButton {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.mobileTabButtonActive {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-hover);
+}
+
+@media (max-width: 1024px) {
+  .codingJudgeGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .mobileTabNav {
+    display: flex;
+  }
+
+  .hideOnMobileTab {
+    display: none !important;
+  }
+}
+
+

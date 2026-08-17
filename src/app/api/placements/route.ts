@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' }
     })
     
-    const mappedDrives = drives.map(d => ({
+    const mappedDrives = drives.map((d: any) => ({
       ...d,
       company_name: d.company?.companyName || null
     }))

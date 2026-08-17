@@ -33,13 +33,13 @@ export async function GET(request: Request) {
       `
     ])
     
-    const pipelineData = drives.map(d => ({
+    const pipelineData = drives.map((d: any) => ({
       name: d.title,
       applications: d._count.applications
     }))
 
     // Prisma $queryRaw might return Date objects for the 'date' field in postgres
-    const activityData = activityDataRaw.map(r => ({
+    const activityData = activityDataRaw.map((r: any) => ({
       date: typeof r.date === 'string' ? r.date : new Date(r.date).toISOString().split('T')[0],
       count: Number(r.count)
     }))

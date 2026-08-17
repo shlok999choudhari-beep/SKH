@@ -63,7 +63,7 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' }
     })
     
-    const mappedTrainers = trainers.map(t => ({
+    const mappedTrainers = trainers.map((t: any) => ({
       id: t.id,
       userId: t.userId,
       institutionId: t.institutionId,

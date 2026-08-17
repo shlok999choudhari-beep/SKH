@@ -107,6 +107,24 @@ export default function StudentSidebar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false)
+    setActiveCategory(null)
+  }, [pathname])
+
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'ST'
   }
@@ -129,6 +147,11 @@ export default function StudentSidebar() {
       <div className={styles.sidebarTop}>
         <Logo variant="student" size="md" href="/" />
       </div>
+
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <div className={styles.mobileBackdrop} onClick={() => setMobileOpen(false)} />
+      )}
 
       {/* Center Navbar Categories & Search */}
       <div className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} ref={navRef}>

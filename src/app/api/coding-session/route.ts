@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       orderBy: { startedAt: 'desc' }
     })
     
-    const mappedSessions = sessions.map(cs => ({
+    const mappedSessions = sessions.map((cs: any) => ({
       ...cs,
       student_name: cs.student?.name || null,
       company_name: cs.company?.companyName || null,

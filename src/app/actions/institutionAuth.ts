@@ -43,10 +43,9 @@ export async function institutionLogin(state: AuthState, formData: FormData): Pr
     return { errors: { password: ['Incorrect password'] } }
   }
 
-  // Update user record if needed
   await prisma.user.update({
     where: { id: user.id },
-    data: { updatedAt: new Date() }
+    data: { updated_at: new Date() }
   })
 
   // We set the role to 'institution-admin' for layout & permissions check

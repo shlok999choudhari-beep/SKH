@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       take: 20
     })
 
-    const mappedRooms = rooms.map(r => ({
+    const mappedRooms = rooms.map((r: any) => ({
       room_id: r.roomId,
       started_at: r.startedAt,
       company_name: r.company?.companyName || null,

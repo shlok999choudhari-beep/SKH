@@ -432,18 +432,18 @@ export default function MockInterviewPage() {
           </div>
 
           {/* Interview Controls */}
-          <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '40px' }}>
+          <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '32px 16px' }}>
             {callStatus === 'idle' && (
               <>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎙️</div>
+                <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎙️</div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Ready to Start?</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '12px', fontSize: '14px' }}>
                   Click Start and allow microphone access when prompted
                 </p>
                 <p style={{ color: '#f59e0b', fontSize: '13px', marginBottom: '24px' }}>
                   ⚠️ Make sure you're using HTTPS or localhost
                 </p>
-                <button onClick={startInterview} className="btn btn-primary btn-lg">
+                <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '220px' }}>
                   🚀 Start Interview
                 </button>
               </>

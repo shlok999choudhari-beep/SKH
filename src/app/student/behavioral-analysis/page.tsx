@@ -299,7 +299,10 @@ export default function BehavioralAnalysis() {
                   muted
                   style={{
                     width: '100%',
-                    height: '500px',
+                    height: 'auto',
+                    aspectRatio: '16/9',
+                    maxHeight: '450px',
+                    minHeight: '200px',
                     background: '#000',
                     borderRadius: '12px',
                     objectFit: 'cover',
@@ -324,13 +327,13 @@ export default function BehavioralAnalysis() {
                   </div>
                 )}
 
-                <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   {!isInterviewActive ? (
-                    <button onClick={startInterview} className="btn btn-primary btn-lg">
+                    <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '200px' }}>
                       🎤 Start Interview
                     </button>
                   ) : (
-                    <button onClick={endInterview} className="btn btn-secondary btn-lg">
+                    <button onClick={endInterview} className="btn btn-secondary btn-lg" style={{ minWidth: '200px' }}>
                       ⏹️ End Interview
                     </button>
                   )}
@@ -350,7 +353,7 @@ export default function BehavioralAnalysis() {
                   </ul>
                 </div>
 
-                <div className={`glass ${styles.panel}`} style={{ padding: '20px', flex: 1, maxHeight: '500px', overflow: 'auto' }}>
+                <div className={`glass ${styles.panel}`} style={{ padding: '20px', flex: 1, maxHeight: '400px', overflow: 'auto' }}>
                   <h3 style={{ fontSize: '16px', marginBottom: '12px' }}>💬 Live Transcript</h3>
                   {transcript.length === 0 ? (
                     <p style={{ fontSize: '14px', color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>
@@ -381,28 +384,28 @@ export default function BehavioralAnalysis() {
             </div>
           ) : (
             <div>
-              <div className={`glass ${styles.panel}`} style={{ padding: '32px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                  <h2 style={{ fontSize: '24px' }}>📊 Analysis Report</h2>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <button onClick={downloadPDF} className="btn btn-primary">
+              <div className={`glass ${styles.panel}`} style={{ padding: '24px 16px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                  <h2 style={{ fontSize: '20px' }}>📊 Analysis Report</h2>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button onClick={downloadPDF} className="btn btn-primary btn-sm">
                       📄 Download PDF
                     </button>
-                    <button onClick={downloadHTML} className="btn btn-secondary">
+                    <button onClick={downloadHTML} className="btn btn-secondary btn-sm">
                       🌐 Download HTML
                     </button>
                   </div>
                 </div>
 
                 <div style={{ 
-                  padding: '32px', 
+                  padding: '24px 16px', 
                   background: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(124,58,237,0.2))',
                   borderRadius: '16px',
                   textAlign: 'center',
-                  marginBottom: '32px'
+                  marginBottom: '24px'
                 }}>
-                  <p style={{ fontSize: '16px', marginBottom: '8px' }}>Overall Score</p>
-                  <p style={{ fontSize: '64px', fontWeight: '800' }}>
+                  <p style={{ fontSize: '14px', marginBottom: '6px' }}>Overall Score</p>
+                  <p style={{ fontSize: 'clamp(40px, 10vw, 64px)', fontWeight: '800' }}>
                     {analysisReport.overallScore}/100
                   </p>
                 </div>

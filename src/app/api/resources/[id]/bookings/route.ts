@@ -37,7 +37,7 @@ export async function GET(
       orderBy: { startTime: 'asc' }
     })
     
-    const mappedBookings = bookings.map(b => ({
+    const mappedBookings = bookings.map((b: any) => ({
       ...b,
       booked_by_name: b.bookedByUser?.name || b.student?.name || 'Unknown User'
     }))

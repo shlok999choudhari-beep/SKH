@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       orderBy: { startTime: 'asc' }
     })
 
-    const mapped = sessions.map(s => ({
+    const mapped = sessions.map((s: any) => ({
       id: s.id,
       trainerId: s.trainerId,
       trainerName: s.trainer?.user?.name || 'Trainer',

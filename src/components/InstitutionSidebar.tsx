@@ -30,6 +30,23 @@ export default function InstitutionSidebar() {
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
   const getInitials = (name: string) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'IN'
   }
@@ -45,6 +62,11 @@ export default function InstitutionSidebar() {
       <div className={styles.sidebarTop}>
         <Logo variant="institution" size="md" href="/" />
       </div>
+
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <div className={styles.mobileBackdrop} onClick={() => setMobileOpen(false)} />
+      )}
 
       {/* Center Nav */}
       <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`}>

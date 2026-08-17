@@ -42,7 +42,7 @@ export async function GET(
       orderBy: { startTime: 'asc' }
     })
     
-    const mappedSessions = sessions.map(ts => ({
+    const mappedSessions = sessions.map((ts: any) => ({
       id: ts.id,
       trainerId: ts.trainerId,
       studentId: ts.studentId,

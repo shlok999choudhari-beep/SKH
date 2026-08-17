@@ -20,6 +20,7 @@ export default function CompanyCodingJudge() {
   const [localVideoReady, setLocalVideoReady] = useState(false)
   const [remoteVideoReady, setRemoteVideoReady] = useState(false)
   const [cameraOn, setCameraOn] = useState(false)
+  const [mobileTab, setMobileTab] = useState<'code' | 'video' | 'io'>('code')
   const [mounted, setMounted] = useState(false)
   
   const socketRef = useRef<any>(null)
@@ -109,9 +110,30 @@ if __name__ == "__main__":
   const initializeSocket = () => {
     if (socketRef.current) return
     
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : '')
+    let socketUrl: string | undefined = undefined
+    if (typeof window !== 'undefined') {
+      const isHttps = window.location.protocol === 'https:'
+      const envUrl = process.env.NEXT_PUBLIC_SOCKET_URL
+      if (envUrl) {
+        if (isHttps && envUrl.startsWith('http://')) {
+          socketUrl = envUrl.replace(/^http:\/\//, 'https://')
+        } else {
+          socketUrl = envUrl
+        }
+      } else {
+        // If no explicit env URL is set:
+        // In local HTTP dev (port 3000), default to port 3001
+        if (!isHttps && window.location.hostname === 'localhost' && window.location.port === '3000') {
+          socketUrl = 'http://localhost:3001'
+        } else {
+          socketUrl = window.location.origin
+        }
+      }
+    }
+
     socketRef.current = io(socketUrl || undefined, {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      secure: typeof window !== 'undefined' && window.location.protocol === 'https:'
     })
     
     socketRef.current.on('connect', () => {
@@ -496,82 +518,112 @@ if __name__ == "__main__":
               )}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px', height: 'calc(100vh - 200px)' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-                    <select
-                      value={language}
-                      onChange={(e) => handleLanguageChange(e.target.value)}
-                      className="form-select"
-                      style={{ width: '150px' }}
-                    >
-                      <option value="cpp">C++</option>
-                      <option value="python">Python</option>
-                      <option value="java">Java</option>
-                    </select>
-                    <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm">
-                      {running ? '⏳ Running...' : '▶️ Run Code'}
-                    </button>
-                  </div>
-                  
-                  <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', height: '400px' }}>
-                    <Editor
-                      height="100%"
-                      language={languageMap[language]}
-                      value={code}
-                      onChange={handleCodeChange}
-                      theme="vs-dark"
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: 'on',
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Input:</h4>
-                  <textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Enter input here..."
-                    style={{
-                      width: '100%',
-                      height: '80px',
-                      padding: '8px',
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '6px',
-                      color: 'var(--text-primary)',
-                      fontSize: '13px',
-                      fontFamily: 'monospace',
-                      resize: 'vertical'
-                    }}
-                  />
-                </div>
-
-                <div className={`glass ${styles.panel}`} style={{ padding: '16px', flex: 1 }}>
-                  <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Output:</h4>
-                  <pre style={{
-                    padding: '12px',
-                    background: 'rgba(0,0,0,0.3)',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    fontFamily: 'monospace',
-                    color: '#10b981',
-                    overflow: 'auto',
-                    maxHeight: '200px'
-                  }}>
-                    {output || 'No output yet'}
-                  </pre>
-                </div>
+            <div className={styles.codingJudgeGrid}>
+              {/* Mobile Tab Switcher */}
+              <div className={styles.mobileTabNav} style={{ gridColumn: '1 / -1' }}>
+                <button
+                  onClick={() => setMobileTab('code')}
+                  className={`${styles.mobileTabButton} ${mobileTab === 'code' ? styles.mobileTabButtonActive : ''}`}
+                >
+                  💻 Code
+                </button>
+                <button
+                  onClick={() => setMobileTab('video')}
+                  className={`${styles.mobileTabButton} ${mobileTab === 'video' ? styles.mobileTabButtonActive : ''}`}
+                >
+                  🎥 Candidate Video
+                </button>
+                <button
+                  onClick={() => setMobileTab('io')}
+                  className={`${styles.mobileTabButton} ${mobileTab === 'io' ? styles.mobileTabButtonActive : ''}`}
+                >
+                  📋 Output
+                </button>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Left: Code Editor (shown always on desktop, on mobile only when active tab is 'code' or 'io') */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab === 'video' ? styles.hideOnMobileTab : ''}>
+                {(mobileTab === 'code' || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
+                  <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
+                      <select
+                        value={language}
+                        onChange={(e) => handleLanguageChange(e.target.value)}
+                        className="form-select"
+                        style={{ width: '130px', minHeight: '38px' }}
+                      >
+                        <option value="cpp">C++</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                      </select>
+                      <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm" style={{ minHeight: '38px' }}>
+                        {running ? '⏳ Running...' : '▶️ Run Code'}
+                      </button>
+                    </div>
+                    
+                    <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', height: '400px', width: '100%' }}>
+                      <Editor
+                        height="100%"
+                        language={languageMap[language]}
+                        value={code}
+                        onChange={handleCodeChange}
+                        theme="vs-dark"
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: 'on',
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {(mobileTab === 'io' || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
+                  <>
+                    <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
+                      <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Input:</h4>
+                      <textarea
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Enter input here..."
+                        style={{
+                          width: '100%',
+                          height: '80px',
+                          padding: '8px',
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '6px',
+                          color: 'var(--text-primary)',
+                          fontSize: '13px',
+                          fontFamily: 'monospace',
+                          resize: 'vertical'
+                        }}
+                      />
+                    </div>
+
+                    <div className={`glass ${styles.panel}`} style={{ padding: '16px', flex: 1 }}>
+                      <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Output:</h4>
+                      <pre style={{
+                        padding: '12px',
+                        background: 'rgba(0,0,0,0.3)',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        fontFamily: 'monospace',
+                        color: '#10b981',
+                        overflow: 'auto',
+                        maxHeight: '200px'
+                      }}>
+                        {output || 'No output yet'}
+                      </pre>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Right: Video Call (shown always on desktop, on mobile only when active tab is 'video') */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab !== 'video' ? styles.hideOnMobileTab : ''}>
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
                   <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>{studentName || 'Candidate'} {!remoteVideoReady && '(Connecting...)'}</h4>
                   <video

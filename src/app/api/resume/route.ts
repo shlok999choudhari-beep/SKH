@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    const mappedResumes = resumes.map((r) => ({
+    const mappedResumes = resumes.map((r: any) => ({
       ...r,
       ats_score: r.atsScore,
       overall_rating: r.overallRating,

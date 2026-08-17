@@ -69,7 +69,7 @@ export async function studentSignup(state: AuthState, formData: FormData): Promi
       password: hashedPassword,
       college,
       degree,
-      graduationYear: year ? parseInt(year) : null,
+      graduation_year: year ? parseInt(year) : null,
       phone: phone || null
     }
   })
@@ -110,7 +110,7 @@ export async function studentLogin(state: AuthState, formData: FormData): Promis
   // Update last login
   await prisma.student.update({
     where: { id: student.id },
-    data: { updatedAt: new Date() }
+    data: { updated_at: new Date() }
   })
 
   await createSession({ userId: student.id, role: 'student', email: student.email, name: student.name, expiresAt: new Date() })

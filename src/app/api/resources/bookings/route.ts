@@ -52,15 +52,15 @@ export async function GET(request: Request) {
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
 
-    const pendingRequests = bookings.filter(b => b.status === 'pending').length
+    const pendingRequests = bookings.filter((b: any) => b.status === 'pending').length
     
-    const approvedToday = bookings.filter(b => {
+    const approvedToday = bookings.filter((b: any) => {
       const isApproved = b.status === 'approved' || b.status === 'confirmed'
       const updatedToday = b.createdAt >= startOfToday // Simplification for demo
       return isApproved && updatedToday
     }).length
 
-    const upcomingBookings = bookings.filter(b => {
+    const upcomingBookings = bookings.filter((b: any) => {
       const isApproved = b.status === 'approved' || b.status === 'confirmed'
       const isUpcoming = new Date(b.startTime) > now
       return isApproved && isUpcoming

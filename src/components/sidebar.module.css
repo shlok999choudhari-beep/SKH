@@ -449,6 +449,20 @@
     display: none;
   }
 
+  .mobileBackdrop {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9998;
+  }
+
   .mobileOpenNav {
     display: flex !important;
     flex-direction: column;
@@ -463,23 +477,37 @@
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
     border-bottom: 1px solid var(--border);
-    padding: 20px 16px;
-    gap: 14px;
+    padding: 20px 16px 40px;
+    gap: 12px;
     z-index: 9999;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     box-shadow: var(--shadow-card);
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .mobileOpenNav .searchBox {
     display: block !important;
     margin-left: 0;
     width: 100%;
+    margin-bottom: 8px;
   }
 
   .mobileOpenNav .searchInput {
     width: 100% !important;
-    height: 40px;
-    font-size: 13px !important;
+    height: 44px;
+    font-size: 14px !important;
   }
 
   .mobileOpenNav .categoryGroup {
@@ -488,15 +516,19 @@
 
   .mobileOpenNav .categoryBtn {
     width: 100%;
+    min-height: 46px;
     justify-content: space-between;
     padding: 12px 16px;
-    font-size: 13px !important;
+    font-size: 13.5px !important;
+    border-radius: 12px;
   }
 
   .mobileOpenNav .activeLink {
     width: 100%;
+    min-height: 46px;
     padding: 12px 16px;
-    font-size: 13px !important;
+    font-size: 13.5px !important;
+    border-radius: 12px;
   }
 
   .mobileOpenNav .megaDropdown {
@@ -507,6 +539,8 @@
     box-shadow: none;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 8px;
   }
 
   .mobileOpenNav .megaGrid {
@@ -515,12 +549,16 @@
   }
 
   .mobileOpenNav .megaItem {
-    padding: 10px 12px;
-    font-size: 12.5px;
+    padding: 12px 14px;
+    min-height: 44px;
+    font-size: 13px;
+    border-radius: 8px;
   }
 
   .hamburger {
     display: flex;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .userName {

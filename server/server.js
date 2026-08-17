@@ -3,7 +3,7 @@ const next = require('next')
 const { Server } = require('socket.io')
 
 const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev })
+const app = next({ dev, turbo: false })
 const handle = app.getRequestHandler()
 
 const rooms = new Map()

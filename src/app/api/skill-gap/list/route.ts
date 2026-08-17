@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     })
     
     // Map properties to expected JSON format
-    const mappedAnalyses = analyses.map(a => ({
+    const mappedAnalyses = analyses.map((a: any) => ({
       ...a,
       resume_name: a.resumeName,
       job_desc_name: a.jobDescName,
