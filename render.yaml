@@ -3,8 +3,8 @@ services:
     name: placeiq
     runtime: node
     plan: free
-    buildCommand: ./scripts/build.sh
-    startCommand: ./scripts/start.sh
+    buildCommand: sh ./scripts/build.sh
+    startCommand: sh ./scripts/start.sh
     envVars:
       - key: NODE_VERSION
         value: 20.11.0
