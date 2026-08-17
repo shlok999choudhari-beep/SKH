@@ -25,14 +25,17 @@ export default function StudentCodingJudge() {
   const [showScoreModal, setShowScoreModal] = useState(false)
   const [receivedScore, setReceivedScore] = useState<any>(null)
   const [mobileTab, setMobileTab] = useState<'code' | 'video' | 'io'>('code')
-  const roomIdRef = useRef('')
   const [mounted, setMounted] = useState(false)
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
   
+  const roomIdRef = useRef('')
   const socketRef = useRef<any>(null)
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
+  const previewVideoRef = useRef<HTMLVideoElement>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
   const localStreamRef = useRef<MediaStream | null>(null)
+  const remoteStreamRef = useRef<MediaStream | null>(null)
   const pendingCandidatesRef = useRef<RTCIceCandidate[]>([])
 
   const languageMap: any = {
@@ -40,6 +43,34 @@ export default function StudentCodingJudge() {
     python: 'python',
     java: 'java'
   }
+
+  // Sync local camera stream to local video and preview element
+  useEffect(() => {
+    if (localStreamRef.current) {
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current
+        localVideoRef.current.play().catch(e => console.log('Local video play error:', e))
+      }
+      if (previewVideoRef.current) {
+        previewVideoRef.current.srcObject = localStreamRef.current
+        previewVideoRef.current.play().catch(e => console.log('Preview video play error:', e))
+      }
+    }
+  }, [cameraOn, connected, mounted])
+
+  // Sync remote camera stream to remote video element
+  useEffect(() => {
+    if (remoteStreamRef.current && remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStreamRef.current
+      remoteVideoRef.current.play().catch(err => {
+        console.warn('Autoplay failed, trying muted:', err)
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.muted = true
+          remoteVideoRef.current.play().catch(e => console.error('Muted play error:', e))
+        }
+      })
+    }
+  }, [remoteStream, connected, mounted])
 
   useEffect(() => {
     setMounted(true)
@@ -303,38 +334,34 @@ export default function StudentCodingJudge() {
       
       // Handle remote stream
       peerConnectionRef.current.ontrack = (event) => {
-        console.log('🎥🎥🎥 ontrack event fired!')
-        console.log('Event:', event)
-        console.log('Streams count:', event.streams?.length)
-        console.log('Track:', event.track?.kind, event.track?.enabled, event.track?.readyState)
-        console.log('Track ID:', event.track?.id)
+        console.log('🎥🎥🎥 ontrack event fired!', event)
+        let stream = event.streams && event.streams[0] ? event.streams[0] : null
+        if (!stream && event.track) {
+          stream = new MediaStream([event.track])
+        }
         
-        if (event.streams && event.streams[0]) {
-          console.log('✅ Stream received, tracks:', event.streams[0].getTracks().length)
-          event.streams[0].getTracks().forEach(t => {
-            console.log('  - Track:', t.kind, t.enabled, t.readyState)
-          })
-          
-          const stream = event.streams[0]
+        if (stream) {
+          console.log('✅ Stream received, tracks:', stream.getTracks().length)
+          remoteStreamRef.current = stream
+          setRemoteStream(stream)
+          setRemoteVideoReady(true)
           
           if (remoteVideoRef.current) {
             console.log('Setting srcObject on remote video')
             remoteVideoRef.current.srcObject = stream
             remoteVideoRef.current.play().then(() => {
-              console.log('✅✅✅ Remote video playing!')
-              setRemoteVideoReady(true)
+              console.log('✅ Remote video playing!')
             }).catch(err => {
-              console.error('❌ Remote video play error:', err)
+              console.warn('Remote video unmuted play error, trying muted:', err)
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.muted = true
+                remoteVideoRef.current.play().catch(e => console.error('Muted play failed:', e))
+              }
             })
-          } else {
-            console.error('❌ remoteVideoRef.current is null!')
           }
-        } else {
-          console.error('❌ No streams in ontrack event!')
         }
       }
       
-      // Connection state logging
       peerConnectionRef.current.onconnectionstatechange = () => {
         console.log('Connection state:', peerConnectionRef.current?.connectionState)
       }
@@ -346,9 +373,10 @@ export default function StudentCodingJudge() {
       // Handle ICE candidates
       peerConnectionRef.current.onicecandidate = (event) => {
         if (event.candidate && socketRef.current) {
-          console.log('Sending ICE candidate')
+          const activeRoom = roomIdRef.current || currentRoomId || roomId
+          console.log('Sending ICE candidate to room:', activeRoom)
           socketRef.current.emit('webrtc-ice-candidate', {
-            roomId: roomIdRef.current,
+            roomId: activeRoom,
             candidate: event.candidate
           })
         }
@@ -356,8 +384,6 @@ export default function StudentCodingJudge() {
       
       console.log('Video initialized for room:', currentRoomId)
       console.log('✅ Peer connection setup complete')
-      console.log('remoteVideoRef exists:', !!remoteVideoRef.current)
-      console.log('localVideoRef exists:', !!localVideoRef.current)
     } catch (error) {
       console.error('Error initializing video:', error)
     }
@@ -371,12 +397,8 @@ export default function StudentCodingJudge() {
     
     try {
       console.log('📥 Received offer')
-      console.log('Offer SDP:', offer.sdp?.substring(0, 200) + '...')
-      console.log('Offer has video:', offer.sdp?.includes('m=video'))
-      console.log('Offer has audio:', offer.sdp?.includes('m=audio'))
       console.log('Peer connection state:', peerConnectionRef.current.connectionState)
       console.log('Signaling state:', peerConnectionRef.current.signalingState)
-      console.log('Senders before answer:', peerConnectionRef.current.getSenders().length)
       
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer))
       console.log('✅ Remote description set')
@@ -390,26 +412,14 @@ export default function StudentCodingJudge() {
       }
       
       console.log('📤 Creating answer...')
-      console.log('Local tracks:', localStreamRef.current?.getTracks().map(t => `${t.kind}: ${t.enabled}`))
-      
       const answer = await peerConnectionRef.current.createAnswer()
-      
-      console.log('Answer SDP:', answer.sdp?.substring(0, 200) + '...')
-      console.log('Answer has video:', answer.sdp?.includes('m=video'))
-      console.log('Answer has audio:', answer.sdp?.includes('m=audio'))
-      
       await peerConnectionRef.current.setLocalDescription(answer)
       
-      console.log('📤 Sending answer')
+      const activeRoom = roomIdRef.current || roomId
+      console.log('📤 Sending answer to room:', activeRoom)
       socketRef.current.emit('webrtc-answer', {
-        roomId: roomIdRef.current,
+        roomId: activeRoom,
         answer
-      })
-      
-      // Check transceivers after answer
-      console.log('📡 Transceivers:', peerConnectionRef.current.getTransceivers().length)
-      peerConnectionRef.current.getTransceivers().forEach((transceiver, i) => {
-        console.log(`Transceiver ${i}:`, transceiver.direction, transceiver.currentDirection, transceiver.receiver.track?.kind)
       })
     } catch (error) {
       console.error('Error handling offer:', error)
@@ -481,6 +491,20 @@ export default function StudentCodingJudge() {
                         {cameraOn ? '📹 Stop Camera' : '📷 Start Camera'}
                       </button>
                     </div>
+                    {cameraOn && (
+                      <div style={{ maxWidth: '320px', margin: '0 auto 20px', borderRadius: '12px', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.4)', background: '#000' }}>
+                        <video
+                          ref={previewVideoRef}
+                          autoPlay
+                          playsInline
+                          muted
+                          style={{ width: '100%', height: '180px', objectFit: 'cover', transform: 'scaleX(-1)' }}
+                        />
+                        <p style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)' }}>
+                          🟢 Camera Live & Ready
+                        </p>
+                      </div>
+                    )}
                     {cameraOn && (
                       <button 
                         onClick={loadAvailableRooms} 

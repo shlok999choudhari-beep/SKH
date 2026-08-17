@@ -22,12 +22,16 @@ export default function CompanyCodingJudge() {
   const [cameraOn, setCameraOn] = useState(false)
   const [mobileTab, setMobileTab] = useState<'code' | 'video' | 'io'>('code')
   const [mounted, setMounted] = useState(false)
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
   
+  const roomIdRef = useRef('')
   const socketRef = useRef<any>(null)
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
+  const previewVideoRef = useRef<HTMLVideoElement>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
   const localStreamRef = useRef<MediaStream | null>(null)
+  const remoteStreamRef = useRef<MediaStream | null>(null)
   const pendingCandidatesRef = useRef<RTCIceCandidate[]>([])
 
   const languageMap: any = {
@@ -56,6 +60,34 @@ if __name__ == "__main__":
 }`
   }
 
+  // Sync local camera stream to local video element and preview element
+  useEffect(() => {
+    if (localStreamRef.current) {
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current
+        localVideoRef.current.play().catch(e => console.log('Local video play error:', e))
+      }
+      if (previewVideoRef.current) {
+        previewVideoRef.current.srcObject = localStreamRef.current
+        previewVideoRef.current.play().catch(e => console.log('Preview video play error:', e))
+      }
+    }
+  }, [cameraOn, connected, mounted])
+
+  // Sync remote camera stream to remote video element
+  useEffect(() => {
+    if (remoteStreamRef.current && remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStreamRef.current
+      remoteVideoRef.current.play().catch(err => {
+        console.warn('Autoplay failed, falling back to muted:', err)
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.muted = true
+          remoteVideoRef.current.play().catch(e => console.error('Muted play error:', e))
+        }
+      })
+    }
+  }, [remoteStream, connected, mounted])
+
   useEffect(() => {
     setMounted(true)
     return () => {
@@ -78,6 +110,9 @@ if __name__ == "__main__":
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = null
         }
+        if (previewVideoRef.current) {
+          previewVideoRef.current.srcObject = null
+        }
       }
       setCameraOn(false)
       setLocalVideoReady(false)
@@ -95,10 +130,12 @@ if __name__ == "__main__":
       localStreamRef.current = stream
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream
-        await localVideoRef.current.play()
-        localVideoRef.current.onloadedmetadata = () => {
-          setLocalVideoReady(true)
-        }
+        await localVideoRef.current.play().catch(e => console.log(e))
+        setLocalVideoReady(true)
+      }
+      if (previewVideoRef.current) {
+        previewVideoRef.current.srcObject = stream
+        await previewVideoRef.current.play().catch(e => console.log(e))
       }
       setCameraOn(true)
     } catch (error) {
@@ -220,6 +257,7 @@ if __name__ == "__main__":
     const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase()
     console.log('Creating room:', newRoomId)
     setRoomId(newRoomId)
+    roomIdRef.current = newRoomId
     
     initializeSocket()
     await new Promise(resolve => setTimeout(resolve, 500))
@@ -259,34 +297,31 @@ if __name__ == "__main__":
       })
       
       peerConnectionRef.current.ontrack = (event) => {
-        console.log('🎥🎥🎥 ontrack event fired!')
-        console.log('Event:', event)
-        console.log('Streams count:', event.streams?.length)
-        console.log('Track:', event.track?.kind, event.track?.enabled, event.track?.readyState)
-        console.log('Track ID:', event.track?.id)
+        console.log('🎥🎥🎥 ontrack event fired!', event)
+        let stream = event.streams && event.streams[0] ? event.streams[0] : null
+        if (!stream && event.track) {
+          stream = new MediaStream([event.track])
+        }
         
-        if (event.streams && event.streams[0]) {
-          console.log('✅ Stream received, tracks:', event.streams[0].getTracks().length)
-          event.streams[0].getTracks().forEach(t => {
-            console.log('  - Track:', t.kind, t.enabled, t.readyState)
-          })
-          
-          const stream = event.streams[0]
+        if (stream) {
+          console.log('✅ Stream received, tracks:', stream.getTracks().length)
+          remoteStreamRef.current = stream
+          setRemoteStream(stream)
+          setRemoteVideoReady(true)
           
           if (remoteVideoRef.current) {
             console.log('Setting srcObject on remote video')
             remoteVideoRef.current.srcObject = stream
             remoteVideoRef.current.play().then(() => {
-              console.log('✅✅✅ Remote video playing!')
-              setRemoteVideoReady(true)
+              console.log('✅ Remote video playing!')
             }).catch(err => {
-              console.error('❌ Remote video play error:', err)
+              console.warn('Remote video unmuted play error, trying muted:', err)
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.muted = true
+                remoteVideoRef.current.play().catch(e => console.error('Muted play failed:', e))
+              }
             })
-          } else {
-            console.error('❌ remoteVideoRef.current is null!')
           }
-        } else {
-          console.error('❌ No streams in ontrack event!')
         }
       }
       
@@ -300,9 +335,10 @@ if __name__ == "__main__":
       
       peerConnectionRef.current.onicecandidate = (event) => {
         if (event.candidate && socketRef.current) {
-          console.log('Sending ICE candidate')
+          const activeRoom = roomIdRef.current || currentRoomId || roomId
+          console.log('Sending ICE candidate to room:', activeRoom)
           socketRef.current.emit('webrtc-ice-candidate', {
-            roomId: currentRoomId,
+            roomId: activeRoom,
             candidate: event.candidate
           })
         }
@@ -310,8 +346,6 @@ if __name__ == "__main__":
       
       console.log('Video initialized for room:', currentRoomId)
       console.log('✅ Peer connection setup complete')
-      console.log('remoteVideoRef exists:', !!remoteVideoRef.current)
-      console.log('localVideoRef exists:', !!localVideoRef.current)
     } catch (error) {
       console.error('Error initializing video:', error)
     }
@@ -335,15 +369,12 @@ if __name__ == "__main__":
         offerToReceiveVideo: true
       })
       
-      console.log('Offer SDP:', offer.sdp?.substring(0, 200) + '...')
-      console.log('Offer has video:', offer.sdp?.includes('m=video'))
-      console.log('Offer has audio:', offer.sdp?.includes('m=audio'))
-      
       await peerConnectionRef.current.setLocalDescription(offer)
       
-      console.log('📤 Sending offer to room:', roomId)
+      const activeRoom = roomIdRef.current || roomId
+      console.log('📤 Sending offer to room:', activeRoom)
       socketRef.current.emit('webrtc-offer', {
-        roomId,
+        roomId: activeRoom,
         offer
       })
     } catch (error) {
@@ -361,7 +392,6 @@ if __name__ == "__main__":
       console.log('Setting remote description from offer')
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer))
       
-      // Add any pending ICE candidates
       if (pendingCandidatesRef.current.length > 0) {
         console.log('Adding', pendingCandidatesRef.current.length, 'pending ICE candidates')
         for (const candidate of pendingCandidatesRef.current) {
@@ -374,9 +404,10 @@ if __name__ == "__main__":
       const answer = await peerConnectionRef.current.createAnswer()
       await peerConnectionRef.current.setLocalDescription(answer)
       
-      console.log('Sending answer')
+      const activeRoom = roomIdRef.current || roomId
+      console.log('Sending answer to room:', activeRoom)
       socketRef.current.emit('webrtc-answer', {
-        roomId,
+        roomId: activeRoom,
         answer
       })
     } catch (error) {
@@ -497,6 +528,20 @@ if __name__ == "__main__":
                   {cameraOn ? '📹 Stop Camera' : '📷 Start Camera'}
                 </button>
               </div>
+              {cameraOn && (
+                <div style={{ maxWidth: '320px', margin: '0 auto 20px', borderRadius: '12px', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.4)', background: '#000' }}>
+                  <video
+                    ref={previewVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{ width: '100%', height: '180px', objectFit: 'cover', transform: 'scaleX(-1)' }}
+                  />
+                  <p style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)' }}>
+                    🟢 Camera Live & Ready
+                  </p>
+                </div>
+              )}
               {cameraOn && (
                 <button onClick={createRoom} className="btn btn-primary btn-lg">
                   🚀 Create Room
