@@ -157,7 +157,7 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
             content: prompt
           }
         ],
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         temperature: 0.1,
         max_tokens: 1500
       },

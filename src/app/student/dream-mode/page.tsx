@@ -147,9 +147,21 @@ export default function DreamMode() {
                     <div className={styles.detailsLogo} style={{ background: `${selected.color}20` }}>
                       <img src={selected.logo} alt={selected.name} style={{ width: '80px', height: '80px', objectFit: 'contain' }} onError={(e) => { e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ctext y=".9em" font-size="90"%3E🏢%3C/text%3E%3C/svg%3E' }} />
                     </div>
-                    <div>
-                      <h2 className={styles.detailsName}>{selected.name}</h2>
-                      <p className={styles.detailsIndustry}>{selected.industry}</p>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <h2 className={styles.detailsName} style={{ margin: 0 }}>{selected.name}</h2>
+                        {data._source === 'live_ai' ? (
+                          <span className="badge badge-green" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '4px 10px', borderRadius: '12px' }}>
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }}></span>
+                            Live AI Intelligence
+                          </span>
+                        ) : (
+                          <span className="badge badge-purple" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '4px 10px', borderRadius: '12px' }}>
+                            📚 Curated Placement Intel
+                          </span>
+                        )}
+                      </div>
+                      <p className={styles.detailsIndustry} style={{ marginTop: '4px' }}>{selected.industry}</p>
                     </div>
                   </div>
 
