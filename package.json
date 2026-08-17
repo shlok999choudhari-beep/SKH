@@ -7,7 +7,7 @@
     "socket": "node server/socket-server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
     "build": "next build --webpack",
-    "start": "next start",
+    "start": "node server/server.js",
     "postinstall": "prisma generate",
     "lint": "eslint"
   },

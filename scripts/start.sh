@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Start socket server in background
-node server/socket-server.js &
+# Start unified Next.js + Socket.IO server
+node server/server.js
 
-# Start Next.js server
-npm start

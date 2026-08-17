@@ -60,8 +60,10 @@ export default function StudentCodingJudge() {
   const initializeSocket = () => {
     if (socketRef.current) return // Already initialized
     
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? `http://${window.location.hostname}:3001` : 'http://localhost:3001')
-    socketRef.current = io(socketUrl)
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : '')
+    socketRef.current = io(socketUrl || undefined, {
+      transports: ['websocket', 'polling']
+    })
     
     socketRef.current.on('connect', () => {
       console.log('Connected to socket server')
