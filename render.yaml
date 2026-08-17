@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: demo
+    name: placeiq
     runtime: node
     plan: free
     buildCommand: ./scripts/build.sh
@@ -10,15 +10,32 @@ services:
         value: 20.11.0
       - key: NODE_ENV
         value: production
+      # Database Connection
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      # Supabase Storage & Client
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      # Auth Session Secret
+      - key: SESSION_SECRET
+        sync: false
+      # AI APIs
       - key: GROQ_API_KEY
-        sync: false
-      - key: GROK_API_KEY
-        sync: false
-      - key: NEXT_PUBLIC_VAPI_PUBLIC_KEY
-        sync: false
-      - key: VAPI_PRIVATE_KEY
-        sync: false
-      - key: VAPI_ASSISTANT_ID
         sync: false
       - key: SERPER_API_KEY
         sync: false
+      # Vapi AI Voice Agent
+      - key: NEXT_PUBLIC_VAPI_PUBLIC_KEY
+        sync: false
+      - key: NEXT_PUBLIC_VAPI_ASSISTANT_ID
+        sync: false
+      # WebSocket Realtime URL
+      - key: NEXT_PUBLIC_SOCKET_URL
+        sync: false
+
