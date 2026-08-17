@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
-})
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
+    const apiKey = process.env.GROQ_API_KEY
+    if (!apiKey) {
+      return NextResponse.json({ error: 'GROQ_API_KEY is not configured' }, { status: 500 })
+    }
+
+    const groq = new Groq({ apiKey })
+
     const { transcript, duration, videoSnapshots } = await request.json()
 
     const analysisPrompt = `
