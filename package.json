@@ -8,6 +8,7 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
     "build": "next build --webpack",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "eslint"
   },
   "dependencies": {
