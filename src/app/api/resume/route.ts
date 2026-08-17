@@ -5,6 +5,11 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { extractResumeText } from '@/lib/resumeExtractor'
 import { analyzeResumeWithGroq } from '@/lib/groqService'
+import {
+  BUCKETS,
+  uploadToSupabaseStorage,
+  getSupabaseAdmin,
+} from '@/lib/supabaseStorage'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData()
     const file = formData.get('resume') as File
-    
+
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
     }
@@ -35,32 +40,57 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
     const safeFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`
-    const filename = `${session.userId}_${safeFileName}`
-    
-    const uploadDir = join(process.cwd(), 'public/uploads/resumes')
-    await mkdir(uploadDir, { recursive: true })
-    const filepath = join(uploadDir, filename)
-    await writeFile(filepath, buffer)
+    const storagePath = `student_${session.userId}/${safeFileName}`
+
+    let filePath = `/uploads/resumes/${session.userId}_${safeFileName}`
+
+    // 1. Upload to Supabase Storage
+    try {
+      const supabase = getSupabaseAdmin()
+      if (supabase) {
+        const uploadResult = await uploadToSupabaseStorage(
+          BUCKETS.RESUMES,
+          storagePath,
+          buffer,
+          file.type
+        )
+        if (uploadResult) {
+          filePath = `supabase:${BUCKETS.RESUMES}/${storagePath}`
+          console.log(`[Supabase Storage] Saved resume: ${BUCKETS.RESUMES}/${storagePath}`)
+        }
+      }
+    } catch (supabaseError) {
+      console.error('[Supabase Storage] Resume upload fallback to local:', supabaseError)
+    }
+
+    // 2. Local fallback if not saved to Supabase
+    if (!filePath.startsWith('supabase:')) {
+      const uploadDir = join(process.cwd(), 'public/uploads/resumes')
+      await mkdir(uploadDir, { recursive: true })
+      const filename = `${session.userId}_${safeFileName}`
+      const localFilepath = join(uploadDir, filename)
+      await writeFile(localFilepath, buffer)
+      filePath = `/uploads/resumes/${filename}`
+    }
 
     const result = await prisma.resume.create({
       data: {
         studentId: session.userId,
         filename: file.name,
-        filePath: `/uploads/resumes/${filename}`,
+        filePath,
         extractedText: extractedText,
         analysisData: JSON.stringify(analysis),
         atsScore: analysis.ats_score || 0,
-        overallRating: analysis.overall_rating || 0
-      }
+        overallRating: analysis.overall_rating || 0,
+      },
     })
 
     return NextResponse.json({
       success: true,
       resumeId: result.id,
       analysis,
-      extractedText: extractedText.substring(0, 500) + '...'
+      extractedText: extractedText.substring(0, 500) + '...',
     })
-
   } catch (error: any) {
     console.error('Resume upload error:', error)
     return NextResponse.json({ error: error.message || 'Failed to process resume' }, { status: 500 })
@@ -79,18 +109,20 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         filename: true,
+        filePath: true,
         atsScore: true,
         overallRating: true,
-        createdAt: true
+        createdAt: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     })
 
-    const mappedResumes = resumes.map(r => ({
+    const mappedResumes = resumes.map((r) => ({
       ...r,
       ats_score: r.atsScore,
       overall_rating: r.overallRating,
-      created_at: r.createdAt
+      created_at: r.createdAt,
+      download_url: `/api/resume/${r.id}/download`,
     }))
 
     return NextResponse.json({ resumes: mappedResumes })

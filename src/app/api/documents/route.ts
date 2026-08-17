@@ -112,8 +112,8 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Save to private vault storage
-    const filePath = await saveToVault(session.userId, file.name, buffer)
+    // Save to private vault storage (Supabase Cloud Storage)
+    const filePath = await saveToVault(session.userId, file.name, buffer, file.type)
 
     // Calculate version number if replacing/versioning existing document
     let version = 1

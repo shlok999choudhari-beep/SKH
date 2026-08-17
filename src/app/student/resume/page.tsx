@@ -533,15 +533,27 @@ export default function ResumeAnalyzer() {
                         {new Date(r.created_at).toLocaleDateString()}
                       </div>
                     </div>
-                    <div className={styles.resumeScores}>
-                      <div className={styles.resumeScore}>
-                        <span style={{ color: '#10b981' }}>{r.ats_score}%</span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>ATS</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div className={styles.resumeScores}>
+                        <div className={styles.resumeScore}>
+                          <span style={{ color: '#10b981' }}>{r.ats_score}%</span>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>ATS</span>
+                        </div>
+                        <div className={styles.resumeScore}>
+                          <span style={{ color: '#7c3aed' }}>{r.overall_rating}/10</span>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Rating</span>
+                        </div>
                       </div>
-                      <div className={styles.resumeScore}>
-                        <span style={{ color: '#7c3aed' }}>{r.overall_rating}/10</span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Rating</span>
-                      </div>
+                      <a
+                        href={r.download_url || `/api/resume/${r.id}/download?download=true`}
+                        download
+                        onClick={(e) => e.stopPropagation()}
+                        title="Download Original Resume"
+                        className="btn btn-sm btn-ghost"
+                        style={{ padding: '6px 10px', fontSize: '0.85rem' }}
+                      >
+                        ⬇️
+                      </a>
                     </div>
                   </div>
                 ))}

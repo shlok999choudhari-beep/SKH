@@ -137,10 +137,10 @@ function LoginContent() {
           <>
             <div className={styles.divider}><span>don&apos;t have an account?</span></div>
             <Link
-              href={role === 'student' ? '/auth/student/signup' : '/auth/company/signup'}
+              href={`/auth/signup?role=${role}`}
               className={styles.signupBtn}
             >
-              Create {currentRole.label} Account
+              Create {currentRole.label} Account →
             </Link>
           </>
         )}
