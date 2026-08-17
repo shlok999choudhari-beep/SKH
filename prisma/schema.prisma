@@ -8,556 +8,474 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Student {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int?      @map("institution_id")
-  name             String
-  email            String    @unique
-  password         String
-  college          String?
-  degree           String?
-  graduationYear   Int?      @map("graduation_year")
-  phone            String?
-  cgpa             Float?
-  tenthMarks       Float?    @map("tenth_marks")
-  twelfthMarks     Float?    @map("twelfth_marks")
-  githubUrl        String?   @map("github_url")
-  linkedinUrl      String?   @map("linkedin_url")
-  portfolioUrl     String?   @map("portfolio_url")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @default(now()) @map("updated_at")
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model applications {
+  id           Int          @id @default(autoincrement())
+  student_id   Int
+  job_id       Int
+  match_score  Float?
+  status       String       @default("pending")
+  applied_at   DateTime     @default(now())
+  job_postings job_postings @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  students     students     @relation(fields: [student_id], references: [id], onDelete: Cascade)
 
-  institution      Institution? @relation(fields: [institutionId], references: [id])
-  resumes          Resume[]
-  applications     Application[]
-  skillAssessments SkillAssessment[]
-  skillGapAnalyses SkillGapAnalysis[]
-  codingSessions   CodingSession[]
-  trainerSessions  TrainerSession[]
-  internshipApps   InternshipApplication[]
-  certifications   Certification[]
-  placementApps    PlacementApplication[]
-  resourceBookings ResourceBooking[]
-  documents        Document[]
-  documentRequests DocumentRequest[]
-
-  @@index([institutionId])
-  @@map("students")
+  @@unique([student_id, job_id])
 }
 
-model Company {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int?      @map("institution_id")
-  companyName      String    @map("company_name")
-  email            String    @unique
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit_logs {
+  id             Int           @id @default(autoincrement())
+  institution_id Int?
+  user_id        Int
+  action         String
+  resource       String
+  details        String?
+  created_at     DateTime      @default(now())
+  institutions   institutions? @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model certifications {
+  id              Int          @id @default(autoincrement())
+  student_id      Int
+  institution_id  Int
+  name            String
+  provider        String
+  issue_date      DateTime
+  credential_url  String?
+  verified_status String       @default("pending")
+  created_at      DateTime     @default(now())
+  institutions    institutions @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+  students        students     @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model coding_sessions {
+  id            Int       @id @default(autoincrement())
+  company_id    Int
+  student_id    Int
+  room_id       String    @unique
+  status        String    @default("active")
+  score         Int?
+  feedback      String?
+  code_snapshot String?
+  language      String?
+  started_at    DateTime  @default(now())
+  ended_at      DateTime?
+  companies     companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  students      students  @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model cohorts {
+  id              Int          @id @default(autoincrement())
+  institution_id  Int
+  name            String
+  description     String?
+  graduation_year Int?
+  created_at      DateTime     @default(now())
+  institutions    institutions @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model companies {
+  id               Int                @id @default(autoincrement())
+  institution_id   Int?
+  company_name     String
+  email            String             @unique
   password         String
   industry         String?
   website          String?
   location         String?
-  companySize      String?   @map("company_size")
+  company_size     String?
   description      String?
-  contactPerson    String?   @map("contact_person")
+  contact_person   String?
   phone            String?
-  isOnline         Int       @default(0) @map("is_online")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @default(now()) @map("updated_at")
-
-  institution      Institution? @relation(fields: [institutionId], references: [id])
-  jobPostings      JobPosting[]
-  codingSessions   CodingSession[]
-  internships      Internship[]
-  placementDrives  PlacementDrive[]
-
-  @@index([institutionId])
-  @@map("companies")
+  is_online        Int                @default(0)
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @default(now())
+  coding_sessions  coding_sessions[]
+  institutions     institutions?      @relation(fields: [institution_id], references: [id])
+  internships      internships[]
+  job_postings     job_postings[]
+  placement_drives placement_drives[]
 }
 
-model Resume {
-  id               Int       @id @default(autoincrement())
-  studentId        Int       @map("student_id")
-  filename         String
-  filePath         String?   @map("file_path")
-  extractedText    String?   @map("extracted_text")
-  analysisData     String?   @map("analysis_data")
-  atsScore         Float?    @map("ats_score")
-  overallRating    Float?    @map("overall_rating")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-  @@map("resumes")
-}
-
-model JobPosting {
-  id               Int       @id @default(autoincrement())
-  companyId        Int       @map("company_id")
-  title            String
-  description      String?
-  requiredSkills   String?   @map("required_skills")
-  location         String?
-  jobType          String?   @map("job_type")
-  salaryRange      String?   @map("salary_range")
-  isActive         Int       @default(1) @map("is_active")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  applications     Application[]
-
-  @@index([companyId])
-  @@map("job_postings")
-}
-
-model Application {
-  id               Int       @id @default(autoincrement())
-  studentId        Int       @map("student_id")
-  jobId            Int       @map("job_id")
-  matchScore       Float?    @map("match_score")
-  status           String    @default("pending")
-  appliedAt        DateTime  @default(now()) @map("applied_at")
-
-  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  job              JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, jobId])
-  @@index([studentId])
-  @@index([jobId])
-  @@index([status])
-  @@map("applications")
-}
-
-model SkillAssessment {
-  id               Int       @id @default(autoincrement())
-  studentId        Int       @map("student_id")
-  skillName        String    @map("skill_name")
-  proficiencyLevel Int?      @map("proficiency_level")
-  verified         Int       @default(0)
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@map("skill_assessments")
-}
-
-model SkillGapAnalysis {
-  id               Int       @id @default(autoincrement())
-  studentId        Int       @map("student_id")
-  resumeName       String    @map("resume_name")
-  jobDescName      String    @map("job_desc_name")
-  analysisData     String    @map("analysis_data")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@map("skill_gap_analyses")
-}
-
-model CodingSession {
-  id               Int       @id @default(autoincrement())
-  companyId        Int       @map("company_id")
-  studentId        Int       @map("student_id")
-  roomId           String    @unique @map("room_id")
-  status           String    @default("active")
-  score            Int?
-  feedback         String?
-  codeSnapshot     String?   @map("code_snapshot")
-  language         String?
-  startedAt        DateTime  @default(now()) @map("started_at")
-  endedAt          DateTime? @map("ended_at")
-
-  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-  @@index([companyId])
-  @@index([status])
-  @@map("coding_sessions")
-}
-
-model Institution {
-  id               Int       @id @default(autoincrement())
-  name             String
-  domain           String?   @unique
-  contactEmail     String?   @map("contact_email")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @default(now()) @map("updated_at")
-
-  users            User[]
-  trainers         Trainer[]
-  cohorts          Cohort[]
-  auditLogs        AuditLog[]
-  resources        Resource[]
-  internships      Internship[]
-  certifications   Certification[]
-  placementDrives  PlacementDrive[]
-  students         Student[]
-  companies        Company[]
-  resourceRequests ResourceRequest[]
-  sharingAgreementsOwner SharingAgreement[] @relation("OwnerAgreements")
-  sharingAgreementsRequestor SharingAgreement[] @relation("RequestorAgreements")
-  sharingNotifications ResourceSharingNotification[]
-  documents        Document[]
-  documentRequests DocumentRequest[]
-
-  @@map("institutions")
-}
-
-model User {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int?      @map("institution_id")
-  name             String
-  email            String    @unique
-  password         String
-  role             String
-  status           String    @default("active")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @default(now()) @map("updated_at")
-
-  institution      Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  trainers         Trainer[]
-  resourceBookings ResourceBooking[]
-
-  @@map("users")
-}
-
-model Trainer {
-  id               Int       @id @default(autoincrement())
-  userId           Int       @map("user_id")
-  institutionId    Int       @map("institution_id")
-  expertiseTags    String?   @map("expertise_tags")
-  subjects         String?
-  bio              String?
-  rating           Float     @default(0)
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  sessions         TrainerSession[]
-
-  @@map("trainers")
-}
-
-model Cohort {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int       @map("institution_id")
-  name             String
-  description      String?
-  graduationYear   Int?      @map("graduation_year")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  @@map("cohorts")
-}
-
-model AuditLog {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int?      @map("institution_id")
-  userId           Int       @map("user_id")
-  action           String
-  resource         String
-  details          String?
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  institution      Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  @@map("audit_logs")
-}
-
-model Resource {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int       @map("institution_id")
-  name             String
-  type             String
-  category         String?
-  description      String?
-  location         String?
-  capacity         Int?
-  availability     String?
-  facilities       String?
-  status           String    @default("active")
-  sharingEnabled   Boolean   @default(false) @map("sharing_enabled")
-  availableToStudents Boolean   @default(false) @map("available_to_students")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  bookings         ResourceBooking[]
-  requests         ResourceRequest[]
-  sharingAgreements SharingAgreement[]
-
-  @@index([institutionId])
-  @@index([status])
-  @@map("resources")
-}
-
-model ResourceBooking {
-  id               Int       @id @default(autoincrement())
-  resourceId       Int       @map("resource_id")
-  bookedByUserId   Int?      @map("booked_by_user_id")
-  studentId        Int?      @map("student_id")
-  purpose          String?
-  startTime        DateTime  @map("start_time")
-  endTime          DateTime  @map("end_time")
-  status           String    @default("confirmed")
-  rejectionReason  String?   @map("rejection_reason")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  resource         Resource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  bookedByUser     User?     @relation(fields: [bookedByUserId], references: [id], onDelete: Cascade)
-  student          Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-  @@index([resourceId])
-  @@index([status])
-  @@index([startTime, endTime])
-  @@map("resource_bookings")
-}
-
-model ResourceRequest {
-  id                      Int       @id @default(autoincrement())
-  resourceId              Int       @map("resource_id")
-  requestingInstitutionId Int       @map("requesting_institution_id")
-  purpose                 String
-  requestedDate           DateTime  @map("requested_date")
-  startTime               DateTime  @map("start_time")
-  endTime                 DateTime  @map("end_time")
-  studentCount            Int       @map("student_count")
-  additionalRequirements  String?   @map("additional_requirements")
-  status                  String    @default("pending")
-  rejectionReason         String?   @map("rejection_reason")
-  createdAt               DateTime  @default(now()) @map("created_at")
-  updatedAt               DateTime  @default(now()) @updatedAt @map("updated_at")
-
-  resource                Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  requestingInstitution   Institution     @relation(fields: [requestingInstitutionId], references: [id], onDelete: Cascade)
-  sharingAgreements       SharingAgreement[]
-
-  @@map("resource_requests")
-}
-
-model SharingAgreement {
-  id                      Int       @id @default(autoincrement())
-  resourceId              Int       @map("resource_id")
-  ownerInstitutionId      Int       @map("owner_institution_id")
-  requestingInstitutionId Int       @map("requesting_institution_id")
-  requestId               Int       @map("request_id")
-  startDate               DateTime  @map("start_date")
-  endDate                 DateTime  @map("end_date")
-  status                  String    @default("active")
-  createdAt               DateTime  @default(now()) @map("created_at")
-  updatedAt               DateTime  @default(now()) @updatedAt @map("updated_at")
-
-  resource                Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  ownerInstitution        Institution     @relation("OwnerAgreements", fields: [ownerInstitutionId], references: [id], onDelete: Cascade)
-  requestingInstitution   Institution     @relation("RequestorAgreements", fields: [requestingInstitutionId], references: [id], onDelete: Cascade)
-  request                 ResourceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-
-  @@index([resourceId])
-  @@index([ownerInstitutionId])
-  @@index([requestingInstitutionId])
-  @@index([status])
-  @@map("sharing_agreements")
-}
-
-model ResourceSharingNotification {
-  id            Int      @id @default(autoincrement())
-  institutionId Int      @map("institution_id")
-  message       String
-  read          Boolean  @default(false)
-  createdAt     DateTime @default(now()) @map("created_at")
-
-  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  @@map("resource_sharing_notifications")
-}
-
-model TrainerSession {
-  id               Int       @id @default(autoincrement())
-  trainerId        Int       @map("trainer_id")
-  studentId        Int?      @map("student_id")
-  startTime        DateTime  @map("start_time")
-  endTime          DateTime  @map("end_time")
-  status           String    @default("scheduled")
-  notes            String?
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  trainer          Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
-  student          Student?  @relation(fields: [studentId], references: [id], onDelete: SetNull)
-
-  @@map("trainer_sessions")
-}
-
-model Internship {
-  id               Int       @id @default(autoincrement())
-  institutionId    Int       @map("institution_id")
-  companyId        Int?      @map("company_id")
-  title            String
-  description      String
-  location         String?
-  stipend          String?
-  duration         String?
-  minCgpa          Float?    @map("min_cgpa")
-  minTenthMarks    Float?    @map("min_tenth_marks")
-  minTwelfthMarks  Float?    @map("min_twelfth_marks")
-  deadline         DateTime?
-  status           String    @default("open")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  company          Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  applications     InternshipApplication[]
-
-  @@index([institutionId])
-  @@index([companyId])
-  @@index([status])
-  @@map("internships")
-}
-
-model InternshipApplication {
-  id               Int       @id @default(autoincrement())
-  internshipId     Int       @map("internship_id")
-  studentId        Int       @map("student_id")
-  status           String    @default("pending")
-  appliedAt        DateTime  @default(now()) @map("applied_at")
-
-  internship       Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([internshipId, studentId])
-  @@index([internshipId])
-  @@index([studentId])
-  @@index([status])
-  @@map("internship_applications")
-}
-
-model Certification {
-  id               Int       @id @default(autoincrement())
-  studentId        Int       @map("student_id")
-  institutionId    Int       @map("institution_id")
-  name             String
-  provider         String
-  issueDate        DateTime  @map("issue_date")
-  credentialUrl    String?   @map("credential_url")
-  verifiedStatus   String    @default("pending") @map("verified_status")
-  createdAt        DateTime  @default(now()) @map("created_at")
-
-  student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institution      Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  @@map("certifications")
-}
-
-model PlacementDrive {
-  id                  Int       @id @default(autoincrement())
-  institutionId       Int       @map("institution_id")
-  companyId           Int?      @map("company_id")
-  title               String
-  description         String
-  eligibilityCriteria String?   @map("eligibility_criteria")
-  status              String    @default("upcoming")
-  createdAt           DateTime  @default(now()) @map("created_at")
-
-  institution         Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  company             Company?    @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  rounds              PlacementRound[]
-  applications        PlacementApplication[]
-
-  @@index([institutionId])
-  @@index([companyId])
-  @@index([status])
-  @@map("placement_drives")
-}
-
-model PlacementRound {
-  id               Int       @id @default(autoincrement())
-  driveId          Int       @map("drive_id")
-  roundName        String    @map("round_name")
-  startTime        DateTime? @map("start_time")
-  endTime          DateTime? @map("end_time")
-  status           String    @default("scheduled")
-
-  drive            PlacementDrive @relation(fields: [driveId], references: [id], onDelete: Cascade)
-  applications     PlacementApplication[]
-
-  @@map("placement_rounds")
-}
-
-model PlacementApplication {
-  id               Int       @id @default(autoincrement())
-  driveId          Int       @map("drive_id")
-  studentId        Int       @map("student_id")
-  currentRoundId   Int?      @map("current_round_id")
-  status           String    @default("applied")
-  appliedAt        DateTime  @default(now()) @map("applied_at")
-
-  drive            PlacementDrive @relation(fields: [driveId], references: [id], onDelete: Cascade)
-  student          Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  currentRound     PlacementRound? @relation(fields: [currentRoundId], references: [id], onDelete: SetNull)
-
-  @@unique([driveId, studentId])
-  @@index([driveId])
-  @@index([studentId])
-  @@index([status])
-  @@map("placement_applications")
-}
-
-model Document {
-  id                   Int               @id @default(autoincrement())
-  studentId            Int               @map("student_id")
-  institutionId        Int?              @map("institution_id")
-  fileName             String            @map("file_name")
-  filePath             String            @map("file_path")
-  fileType             String            @map("file_type")
-  fileSize             Int               @map("file_size")
-  documentType         String            @map("document_type")
-  category             String
-  description          String?
-  accessLevel          String            @default("PRIVATE") @map("access_level")
-  verificationStatus   String            @default("PENDING") @map("verification_status")
-  qualityScore         Float?            @map("quality_score")
-  qualityResult        String?           @map("quality_result")
-  extractedInformation String?           @map("extracted_information")
-  expiryDate           DateTime?         @map("expiry_date")
-  version              Int               @default(1)
-  parentDocumentId     Int?              @map("parent_document_id")
-  rejectionReason      String?           @map("rejection_reason")
-  uploadedAt           DateTime          @default(now()) @map("uploaded_at")
-  updatedAt            DateTime          @default(now()) @updatedAt @map("updated_at")
-  verifiedAt           DateTime?         @map("verified_at")
-  verifiedBy           Int?              @map("verified_by")
-
-  student              Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institution          Institution?      @relation(fields: [institutionId], references: [id], onDelete: SetNull)
-  parentDocument       Document?         @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
-  childVersions        Document[]        @relation("DocumentVersions")
-  requests             DocumentRequest[]
-
-  @@index([studentId])
-  @@index([institutionId])
-  @@index([accessLevel])
-  @@index([verificationStatus])
-  @@map("documents")
-}
-
-model DocumentRequest {
-  id             Int       @id @default(autoincrement())
-  institutionId  Int       @map("institution_id")
-  studentId      Int       @map("student_id")
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model document_requests {
+  id             Int          @id @default(autoincrement())
+  institution_id Int
+  student_id     Int
   title          String
   reason         String
   category       String?
-  status         String    @default("PENDING")
-  documentId     Int?      @map("document_id")
-  requestedAt    DateTime  @default(now()) @map("requested_at")
-  completedAt    DateTime? @map("completed_at")
+  status         String       @default("PENDING")
+  document_id    Int?
+  requested_at   DateTime     @default(now())
+  completed_at   DateTime?
+  documents      documents?   @relation(fields: [document_id], references: [id])
+  institutions   institutions @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+  students       students     @relation(fields: [student_id], references: [id], onDelete: Cascade)
 
-  institution    Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  student        Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  document       Document?   @relation(fields: [documentId], references: [id], onDelete: SetNull)
-
-  @@index([studentId])
-  @@index([institutionId])
+  @@index([institution_id])
   @@index([status])
-  @@map("document_requests")
+  @@index([student_id])
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model documents {
+  id                    Int                 @id @default(autoincrement())
+  student_id            Int
+  institution_id        Int?
+  file_name             String
+  file_path             String
+  file_type             String
+  file_size             Int
+  document_type         String
+  category              String
+  description           String?
+  access_level          String              @default("PRIVATE")
+  verification_status   String              @default("PENDING")
+  quality_score         Float?
+  quality_result        String?
+  extracted_information String?
+  expiry_date           DateTime?
+  version               Int                 @default(1)
+  parent_document_id    Int?
+  rejection_reason      String?
+  uploaded_at           DateTime            @default(now())
+  updated_at            DateTime            @default(now())
+  verified_at           DateTime?
+  verified_by           Int?
+  document_requests     document_requests[]
+  institutions          institutions?       @relation(fields: [institution_id], references: [id])
+  documents             documents?          @relation("documentsTodocuments", fields: [parent_document_id], references: [id])
+  other_documents       documents[]         @relation("documentsTodocuments")
+  students              students            @relation(fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@index([access_level])
+  @@index([institution_id])
+  @@index([student_id])
+  @@index([verification_status])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model institutions {
+  id                                                                            Int                              @id @default(autoincrement())
+  name                                                                          String
+  domain                                                                        String?                          @unique
+  contact_email                                                                 String?
+  created_at                                                                    DateTime                         @default(now())
+  updated_at                                                                    DateTime                         @default(now())
+  audit_logs                                                                    audit_logs[]
+  certifications                                                                certifications[]
+  cohorts                                                                       cohorts[]
+  companies                                                                     companies[]
+  document_requests                                                             document_requests[]
+  documents                                                                     documents[]
+  internships                                                                   internships[]
+  placement_drives                                                              placement_drives[]
+  resource_requests                                                             resource_requests[]
+  resource_sharing_notifications                                                resource_sharing_notifications[]
+  resources                                                                     resources[]
+  sharing_agreements_sharing_agreements_owner_institution_idToinstitutions      sharing_agreements[]             @relation("sharing_agreements_owner_institution_idToinstitutions")
+  sharing_agreements_sharing_agreements_requesting_institution_idToinstitutions sharing_agreements[]             @relation("sharing_agreements_requesting_institution_idToinstitutions")
+  students                                                                      students[]
+  trainers                                                                      trainers[]
+  users                                                                         users[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model internship_applications {
+  id            Int         @id @default(autoincrement())
+  internship_id Int
+  student_id    Int
+  status        String      @default("pending")
+  applied_at    DateTime    @default(now())
+  internships   internships @relation(fields: [internship_id], references: [id], onDelete: Cascade)
+  students      students    @relation(fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@unique([internship_id, student_id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model internships {
+  id                      Int                       @id @default(autoincrement())
+  institution_id          Int
+  company_id              Int?
+  title                   String
+  description             String
+  location                String?
+  stipend                 String?
+  duration                String?
+  deadline                DateTime?
+  status                  String                    @default("open")
+  created_at              DateTime                  @default(now())
+  min_cgpa                Float?
+  min_tenth_marks         Float?
+  min_twelfth_marks       Float?
+  internship_applications internship_applications[]
+  companies               companies?                @relation(fields: [company_id], references: [id])
+  institutions            institutions              @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model job_postings {
+  id              Int            @id @default(autoincrement())
+  company_id      Int
+  title           String
+  description     String?
+  required_skills String?
+  location        String?
+  job_type        String?
+  salary_range    String?
+  is_active       Int            @default(1)
+  created_at      DateTime       @default(now())
+  applications    applications[]
+  companies       companies      @relation(fields: [company_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model placement_applications {
+  id               Int               @id @default(autoincrement())
+  drive_id         Int
+  student_id       Int
+  current_round_id Int?
+  status           String            @default("applied")
+  applied_at       DateTime          @default(now())
+  placement_rounds placement_rounds? @relation(fields: [current_round_id], references: [id])
+  placement_drives placement_drives  @relation(fields: [drive_id], references: [id], onDelete: Cascade)
+  students         students          @relation(fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@unique([drive_id, student_id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model placement_drives {
+  id                     Int                      @id @default(autoincrement())
+  institution_id         Int
+  company_id             Int?
+  title                  String
+  description            String
+  eligibility_criteria   String?
+  status                 String                   @default("upcoming")
+  created_at             DateTime                 @default(now())
+  placement_applications placement_applications[]
+  companies              companies?               @relation(fields: [company_id], references: [id])
+  institutions           institutions             @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+  placement_rounds       placement_rounds[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model placement_rounds {
+  id                     Int                      @id @default(autoincrement())
+  drive_id               Int
+  round_name             String
+  start_time             DateTime?
+  end_time               DateTime?
+  status                 String                   @default("scheduled")
+  placement_applications placement_applications[]
+  placement_drives       placement_drives         @relation(fields: [drive_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model resource_bookings {
+  id                Int       @id @default(autoincrement())
+  resource_id       Int
+  booked_by_user_id Int?
+  purpose           String?
+  start_time        DateTime
+  end_time          DateTime
+  status            String    @default("confirmed")
+  created_at        DateTime  @default(now())
+  student_id        Int?
+  rejection_reason  String?
+  users             users?    @relation(fields: [booked_by_user_id], references: [id], onDelete: Cascade)
+  resources         resources @relation(fields: [resource_id], references: [id], onDelete: Cascade)
+  students          students? @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model resource_requests {
+  id                        Int                  @id @default(autoincrement())
+  resource_id               Int
+  requesting_institution_id Int
+  purpose                   String
+  requested_date            DateTime
+  start_time                DateTime
+  end_time                  DateTime
+  student_count             Int
+  additional_requirements   String?
+  status                    String               @default("pending")
+  rejection_reason          String?
+  created_at                DateTime             @default(now())
+  updated_at                DateTime             @default(now())
+  institutions              institutions         @relation(fields: [requesting_institution_id], references: [id], onDelete: Cascade)
+  resources                 resources            @relation(fields: [resource_id], references: [id], onDelete: Cascade)
+  sharing_agreements        sharing_agreements[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model resource_sharing_notifications {
+  id             Int          @id @default(autoincrement())
+  institution_id Int
+  message        String
+  read           Boolean      @default(false)
+  created_at     DateTime     @default(now())
+  institutions   institutions @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model resources {
+  id                    Int                  @id @default(autoincrement())
+  institution_id        Int
+  name                  String
+  type                  String
+  capacity              Int?
+  status                String               @default("active")
+  created_at            DateTime             @default(now())
+  availability          String?
+  category              String?
+  description           String?
+  facilities            String?
+  location              String?
+  sharing_enabled       Boolean              @default(false)
+  available_to_students Boolean              @default(false)
+  resource_bookings     resource_bookings[]
+  resource_requests     resource_requests[]
+  institutions          institutions         @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+  sharing_agreements    sharing_agreements[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model resumes {
+  id             Int      @id @default(autoincrement())
+  student_id     Int
+  filename       String
+  ats_score      Float?
+  created_at     DateTime @default(now())
+  analysis_data  String?
+  extracted_text String?
+  file_path      String?
+  overall_rating Float?
+  students       students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sharing_agreements {
+  id                                                                      Int               @id @default(autoincrement())
+  resource_id                                                             Int
+  owner_institution_id                                                    Int
+  requesting_institution_id                                               Int
+  request_id                                                              Int
+  start_date                                                              DateTime
+  end_date                                                                DateTime
+  status                                                                  String            @default("active")
+  created_at                                                              DateTime          @default(now())
+  updated_at                                                              DateTime          @default(now())
+  institutions_sharing_agreements_owner_institution_idToinstitutions      institutions      @relation("sharing_agreements_owner_institution_idToinstitutions", fields: [owner_institution_id], references: [id], onDelete: Cascade)
+  resource_requests                                                       resource_requests @relation(fields: [request_id], references: [id], onDelete: Cascade)
+  institutions_sharing_agreements_requesting_institution_idToinstitutions institutions      @relation("sharing_agreements_requesting_institution_idToinstitutions", fields: [requesting_institution_id], references: [id], onDelete: Cascade)
+  resources                                                               resources         @relation(fields: [resource_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model skill_assessments {
+  id                Int      @id @default(autoincrement())
+  student_id        Int
+  skill_name        String
+  proficiency_level Int?
+  verified          Int      @default(0)
+  created_at        DateTime @default(now())
+  students          students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model skill_gap_analyses {
+  id            Int      @id @default(autoincrement())
+  student_id    Int
+  resume_name   String
+  job_desc_name String
+  analysis_data String
+  created_at    DateTime @default(now())
+  students      students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model students {
+  id                      Int                       @id @default(autoincrement())
+  institution_id          Int?
+  name                    String
+  email                   String                    @unique
+  password                String
+  college                 String?
+  degree                  String?
+  graduation_year         Int?
+  phone                   String?
+  github_url              String?
+  linkedin_url            String?
+  portfolio_url           String?
+  created_at              DateTime                  @default(now())
+  updated_at              DateTime                  @default(now())
+  cgpa                    Float?
+  tenth_marks             Float?
+  twelfth_marks           Float?
+  applications            applications[]
+  certifications          certifications[]
+  coding_sessions         coding_sessions[]
+  document_requests       document_requests[]
+  documents               documents[]
+  internship_applications internship_applications[]
+  placement_applications  placement_applications[]
+  resource_bookings       resource_bookings[]
+  resumes                 resumes[]
+  skill_assessments       skill_assessments[]
+  skill_gap_analyses      skill_gap_analyses[]
+  institutions            institutions?             @relation(fields: [institution_id], references: [id])
+  trainer_sessions        trainer_sessions[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model trainer_sessions {
+  id         Int       @id @default(autoincrement())
+  trainer_id Int
+  student_id Int?
+  start_time DateTime
+  end_time   DateTime
+  status     String    @default("scheduled")
+  notes      String?
+  created_at DateTime  @default(now())
+  students   students? @relation(fields: [student_id], references: [id])
+  trainers   trainers  @relation(fields: [trainer_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model trainers {
+  id               Int                @id @default(autoincrement())
+  user_id          Int
+  institution_id   Int
+  expertise_tags   String?
+  rating           Float              @default(0)
+  created_at       DateTime           @default(now())
+  subjects         String?
+  bio              String?
+  trainer_sessions trainer_sessions[]
+  institutions     institutions       @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+  users            users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                Int                 @id @default(autoincrement())
+  institution_id    Int?
+  name              String
+  email             String              @unique
+  password          String
+  role              String
+  status            String              @default("active")
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @default(now())
+  resource_bookings resource_bookings[]
+  trainers          trainers[]
+  institutions      institutions?       @relation(fields: [institution_id], references: [id], onDelete: Cascade)
+}
