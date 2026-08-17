@@ -91,7 +91,7 @@ graph TD
 | :--- | :--- |
 | **Frontend Framework** | [Next.js 16.2.2](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) |
 | **Styling & UI** | Vanilla CSS Modules, Modern Glassmorphism Design System, Lucide Icons |
-| **Database & ORM** | [PostgreSQL (Supabase)](https://supabase.com/), [Prisma ORM 5.22](https://www.prisma.io/) (Indexed & RLS Protected) |
+| **Database, Storage & ORM** | [PostgreSQL (Supabase)](https://supabase.com/), [Supabase Storage](https://supabase.com/storage), [Prisma ORM 5.22](https://www.prisma.io/) |
 | **Real-Time & WebSockets** | [Socket.IO 4.8](https://socket.io/), [WebRTC](https://webrtc.org/) (Simple-Peer) |
 | **AI & NLP Inference** | [Groq SDK](https://groq.com/) (Llama-3.3-70B-Versatile), [Vapi AI](https://vapi.ai/) (Voice Agent) |
 | **Document & Media Processing**| `pdf-parse`, `jspdf`, `html2canvas`, `tesseract.js`, `sharp` |
@@ -167,24 +167,27 @@ graph TD
 Create a `.env` file in the root directory with the following configuration:
 
 ```env
-# Database Connections (Supabase / PostgreSQL)
+# Database Connections (Supabase PostgreSQL / Prisma)
 DATABASE_URL="postgresql://postgres.YOUR_PROJECT_ID:YOUR_PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true"
 DIRECT_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_ID.supabase.co:5432/postgres"
 
-# Authentication & Session
+# Supabase Cloud Storage (Vault & Resumes)
+NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT_ID.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your_supabase_anon_public_key"
+SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_secret_key"
+
+# Authentication & Session (JWT)
 SESSION_SECRET="your-super-secret-jwt-key-32-chars-minimum!!"
 
-# AI APIs
+# AI & NLP Inference (Groq Llama 3.3 70B)
 GROQ_API_KEY="gsk_your_groq_api_key"
-GROK_API_KEY="your_grok_api_key_optional"
 
-# Vapi Voice Assistant (Mock Interview Simulator)
+# Vapi AI Voice Agent (Mock Interview Simulator)
 NEXT_PUBLIC_VAPI_PUBLIC_KEY="your_vapi_public_key"
-VAPI_PRIVATE_KEY="your_vapi_private_key"
-VAPI_ASSISTANT_ID="your_vapi_assistant_id"
+NEXT_PUBLIC_VAPI_ASSISTANT_ID="your_vapi_assistant_id"
 
-# Web Search / Scraping
-SERPER_API_KEY="your_serper_api_key_optional"
+# Web Search & Live Market Jobs (Serper API)
+SERPER_API_KEY="your_serper_api_key"
 ```
 
 ---
