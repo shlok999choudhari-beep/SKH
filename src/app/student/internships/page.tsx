@@ -3,6 +3,22 @@ import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
 import AcademicProfileModal from '@/components/AcademicProfileModal'
 import styles from '../dashboard.module.css'
+import {
+  GraduationCap,
+  CheckCircle2,
+  TriangleAlert,
+  CircleX,
+  ArrowRight,
+  Briefcase,
+  TrendingUp,
+  Building2,
+  MapPin,
+  DollarSign,
+  Clock,
+  Bell,
+  Sparkles,
+  Award
+} from 'lucide-react'
 
 export default function StudentInternshipsPage() {
   const [studentProfile, setStudentProfile] = useState<any>(null)
@@ -60,7 +76,7 @@ export default function StudentInternshipsPage() {
         body: JSON.stringify({ student_id: sId, status: 'offered' })
       })
       if (res.ok) {
-        alert('🎉 Opportunity accepted! You are now in the active hiring pipeline.')
+        alert('Opportunity accepted! You are now in the active hiring pipeline.')
         setActiveTab('active')
         fetchInternships(sId)
       } else {
@@ -170,35 +186,35 @@ export default function StudentInternshipsPage() {
         return {
           badge: 'Stage 1: Offered',
           badgeClass: 'badge-purple',
-          msg: '⏳ Status: Opportunity Accepted. You are currently in Stage 1 (Offered). Waiting for company assessment instructions.',
+          msg: 'Status: Opportunity Accepted. You are currently in Stage 1 (Offered). Waiting for company assessment instructions.',
           color: '#8b5cf6'
         }
       case 'coding_round':
         return {
           badge: 'Stage 2: Coding Round',
           badgeClass: 'badge-blue',
-          msg: '💻 Status: Coding Round Active! The company has moved you to Stage 2 (Technical Test). Prepare for your assessment.',
+          msg: 'Status: Coding Round Active! The company has moved you to Stage 2 (Technical Test). Prepare for your assessment.',
           color: '#3b82f6'
         }
       case 'interview':
         return {
           badge: 'Stage 3: Interview Round',
           badgeClass: 'badge-orange',
-          msg: '🎤 Status: Interview Round Scheduled! The company has moved you to Stage 3 (Technical & HR Interview).',
+          msg: 'Status: Interview Round Scheduled! The company has moved you to Stage 3 (Technical & HR Interview).',
           color: '#f59e0b'
         }
       case 'placed':
         return {
-          badge: 'Stage 4: Placed 🎉',
+          badge: 'Stage 4: Placed',
           badgeClass: 'badge-green',
-          msg: '🎉 Status: CONGRATULATIONS! You have successfully cleared all hiring rounds and are officially PLACED at this company!',
+          msg: 'Status: CONGRATULATIONS! You have successfully cleared all hiring rounds and are officially PLACED at this company!',
           color: '#10b981'
         }
       default:
         return {
           badge: 'Stage 1: Offered',
           badgeClass: 'badge-purple',
-          msg: '⏳ Status: In hiring pipeline.',
+          msg: 'Status: In hiring pipeline.',
           color: '#8b5cf6'
         }
     }
@@ -214,7 +230,10 @@ export default function StudentInternshipsPage() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>Internship Opportunities</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle}>Internship Opportunities</h1>
+            </div>
             <p className={styles.pageSubtitle}>
               Discover partner company internships, accept opportunities, and track your live hiring pipeline progress.
             </p>
@@ -224,7 +243,8 @@ export default function StudentInternshipsPage() {
             onClick={() => setShowAcademicModal(true)}
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>🎓</span> Academic Scores: {studentProfile?.cgpa ? `${studentProfile.cgpa} CGPA` : 'Not Set'}
+            <GraduationCap size={15} strokeWidth={2} />
+            <span>Academic Scores: {studentProfile?.cgpa ? `${studentProfile.cgpa} CGPA` : 'Not Set'}</span>
           </button>
         </header>
 
@@ -238,15 +258,19 @@ export default function StudentInternshipsPage() {
                 background: studentProfile.cgpa ? 'rgba(16, 185, 129, 0.08)' : 'rgba(245, 158, 11, 0.08)',
                 border: `1px solid ${studentProfile.cgpa ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
                 display: 'flex',
+
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '1.5rem'
               }}
             >
               <div>
-                <strong style={{ color: studentProfile.cgpa ? '#10b981' : '#f59e0b', fontSize: '0.95rem' }}>
-                  {studentProfile.cgpa ? '✅ Academic Profile Active' : '⚠️ Academic Profile Incomplete'}
-                </strong>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {studentProfile.cgpa ? <CheckCircle2 size={16} strokeWidth={2} color="#10b981" /> : <TriangleAlert size={16} strokeWidth={2} color="#f59e0b" />}
+                  <strong style={{ color: studentProfile.cgpa ? '#10b981' : '#f59e0b', fontSize: '0.95rem' }}>
+                    {studentProfile.cgpa ? 'Academic Profile Active' : 'Academic Profile Incomplete'}
+                  </strong>
+                </div>
                 <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   {studentProfile.cgpa 
                     ? `CGPA: ${studentProfile.cgpa} | 12th: ${studentProfile.twelfth_marks || 'N/A'}% | 10th: ${studentProfile.tenth_marks || 'N/A'}%`
@@ -259,11 +283,15 @@ export default function StudentInternshipsPage() {
                 style={{
                   background: studentProfile.cgpa ? 'var(--bg-secondary)' : 'linear-gradient(135deg, #7c3aed, #ec4899)',
                   color: studentProfile.cgpa ? 'var(--text-primary)' : 'white',
-                  border: '1px solid var(--border)'
+                  border: '1px solid var(--border)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
                 }}
                 onClick={() => setShowAcademicModal(true)}
               >
-                {studentProfile.cgpa ? 'Edit Academic Profile' : 'Complete Profile Now →'}
+                <span>{studentProfile.cgpa ? 'Edit Academic Profile' : 'Complete Profile Now'}</span>
+                {!studentProfile.cgpa && <ArrowRight size={14} strokeWidth={2} />}
               </button>
             </div>
           )}
@@ -281,10 +309,14 @@ export default function StudentInternshipsPage() {
                 color: activeTab === 'available' ? '#10b981' : 'var(--text-secondary)',
                 borderBottom: activeTab === 'available' ? '3px solid #10b981' : '3px solid transparent',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
             >
-              💼 Available Opportunities ({availableInternships.length})
+              <Briefcase size={16} strokeWidth={2} />
+              <span>Available Opportunities ({availableInternships.length})</span>
             </button>
 
             <button 
@@ -298,10 +330,14 @@ export default function StudentInternshipsPage() {
                 color: activeTab === 'active' ? '#8b5cf6' : 'var(--text-secondary)',
                 borderBottom: activeTab === 'active' ? '3px solid #8b5cf6' : '3px solid transparent',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
             >
-              📈 Active Hiring Pipelines ({activeInternships.length})
+              <TrendingUp size={16} strokeWidth={2} />
+              <span>Active Hiring Pipelines ({activeInternships.length})</span>
             </button>
           </div>
 
@@ -309,7 +345,10 @@ export default function StudentInternshipsPage() {
           {activeTab === 'available' && (
             <div className={`glass ${styles.panel}`}>
               <div className={styles.panelHead}>
-                <h3 className={styles.panelTitle}>💼 Matching Company Opportunities</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Briefcase size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h3 className={styles.panelTitle}>Matching Company Opportunities</h3>
+                </div>
                 <span className="badge badge-purple">{availableInternships.length} Available</span>
               </div>
 
@@ -317,7 +356,7 @@ export default function StudentInternshipsPage() {
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading internships...</div>
               ) : availableInternships.length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  No new available opportunities. Active hiring pipelines are under the <strong>"Active Hiring Pipelines"</strong> tab.
+                  No new available opportunities. Active hiring pipelines are under the <strong>&quot;Active Hiring Pipelines&quot;</strong> tab.
                 </div>
               ) : (
                 <div className={styles.jobsList}>
@@ -337,27 +376,43 @@ export default function StudentInternshipsPage() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
                           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                             <div className={styles.jobLogo} style={{ background: 'linear-gradient(135deg, #10b981, #06b6d4)' }}>
-                              {internship.company_name ? internship.company_name.charAt(0) : '🏛'}
+                              {internship.company_name ? internship.company_name.charAt(0) : <Building2 size={20} />}
                             </div>
                             <div>
                               <div className={styles.jobTitle}>{internship.title}</div>
-                              <div className={styles.jobMeta}>
-                                🏢 <strong>{internship.company_name}</strong> • 📍 {internship.location || 'Remote'}
+                              <div className={styles.jobMeta} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Building2 size={13} strokeWidth={2} />
+                                <strong>{internship.company_name}</strong> • <MapPin size={13} strokeWidth={2} /> {internship.location || 'Remote'}
                               </div>
                               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', gap: '12px' }}>
-                                <span>💰 {internship.stipend || 'Stipend Provided'}</span>
-                                <span>⏱️ {internship.duration || '3 Months'}</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <DollarSign size={12} strokeWidth={2} />
+                                  <span>{internship.stipend || 'Stipend Provided'}</span>
+                                </span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <Clock size={12} strokeWidth={2} />
+                                  <span>{internship.duration || '3 Months'}</span>
+                                </span>
                               </div>
                             </div>
                           </div>
 
                           <div>
                             {statusInfo.eligible ? (
-                              <span className="badge badge-green">✅ Eligible</span>
+                              <span className="badge badge-green" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckCircle2 size={12} strokeWidth={2} />
+                                <span>Eligible</span>
+                              </span>
                             ) : statusInfo.incomplete ? (
-                              <span className="badge badge-orange">⚠️ Action Required</span>
+                              <span className="badge badge-orange" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <TriangleAlert size={12} strokeWidth={2} />
+                                <span>Action Required</span>
+                              </span>
                             ) : (
-                              <span className="badge badge-orange">❌ Ineligible</span>
+                              <span className="badge badge-orange" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CircleX size={12} strokeWidth={2} />
+                                <span>Ineligible</span>
+                              </span>
                             )}
                           </div>
                         </div>
@@ -375,9 +430,12 @@ export default function StudentInternshipsPage() {
                           }}
                         >
                           <div style={{ fontSize: '0.825rem' }}>
-                            <strong style={{ color: statusInfo.eligible ? '#10b981' : '#f59e0b', display: 'block', marginBottom: '2px' }}>
-                              {statusInfo.eligible ? '📢 Eligibility Notice: Qualified' : '📢 Eligibility Notice: Requirements Not Met'}
-                            </strong>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                              <Bell size={13} strokeWidth={2} color={statusInfo.eligible ? '#10b981' : '#f59e0b'} />
+                              <strong style={{ color: statusInfo.eligible ? '#10b981' : '#f59e0b' }}>
+                                {statusInfo.eligible ? 'Eligibility Notice: Qualified' : 'Eligibility Notice: Requirements Not Met'}
+                              </strong>
+                            </div>
                             <span style={{ color: 'var(--text-secondary)' }}>{statusInfo.reason}</span>
                           </div>
 
@@ -399,8 +457,10 @@ export default function StudentInternshipsPage() {
                                 className="btn btn-sm btn-primary"
                                 onClick={() => handleAccept(internship.id)}
                                 disabled={updatingId === internship.id}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                               >
-                                {updatingId === internship.id ? 'Saving...' : 'Accept Opportunity →'}
+                                <span>{updatingId === internship.id ? 'Saving...' : 'Accept Opportunity'}</span>
+                                <ArrowRight size={14} strokeWidth={2} />
                               </button>
                             </div>
                           ) : (
@@ -419,13 +479,16 @@ export default function StudentInternshipsPage() {
           {activeTab === 'active' && (
             <div className={`glass ${styles.panel}`}>
               <div className={styles.panelHead}>
-                <h3 className={styles.panelTitle}>📈 Active Hiring Pipelines & Live Progress</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <TrendingUp size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h3 className={styles.panelTitle}>Active Hiring Pipelines & Live Progress</h3>
+                </div>
                 <span className="badge badge-purple">{activeInternships.length} Active Pipelines</span>
               </div>
 
               {activeInternships.length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  You do not have any active hiring pipelines yet. Accept an eligible opportunity from the <strong>"Available Opportunities"</strong> tab to enter its pipeline!
+                  You do not have any active hiring pipelines yet. Accept an eligible opportunity from the <strong>&quot;Available Opportunities&quot;</strong> tab to enter its pipeline!
                 </div>
               ) : (
                 <div className={styles.jobsList}>
@@ -436,7 +499,7 @@ export default function StudentInternshipsPage() {
 
                     return (
                       <div 
-                        key={internship.id}
+                        key={internship.id} 
                         className={styles.jobCard}
                         style={{
                           padding: '1.5rem',
@@ -453,12 +516,13 @@ export default function StudentInternshipsPage() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                             <div className={styles.jobLogo} style={{ background: `linear-gradient(135deg, ${stageMeta.color}, #7c3aed)` }}>
-                              💼
+                              <Briefcase size={20} strokeWidth={2} color="white" />
                             </div>
                             <div>
                               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>{internship.title}</h3>
-                              <div style={{ fontSize: '0.875rem', color: stageMeta.color, fontWeight: 600 }}>
-                                🏢 {internship.company_name} • 📍 {internship.location || 'Remote'}
+                              <div style={{ fontSize: '0.875rem', color: stageMeta.color, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Building2 size={13} strokeWidth={2} />
+                                <span>{internship.company_name}</span> • <MapPin size={13} strokeWidth={2} /> <span>{internship.location || 'Remote'}</span>
                               </div>
                             </div>
                           </div>
@@ -470,14 +534,21 @@ export default function StudentInternshipsPage() {
 
                         {/* Meta info */}
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', gap: '16px' }}>
-                          <span>💰 Stipend: <strong>{internship.stipend || 'Stipend Provided'}</strong></span>
-                          <span>⏱️ Duration: <strong>{internship.duration || '3 Months'}</strong></span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <DollarSign size={13} strokeWidth={2} />
+                            <span>Stipend: <strong>{internship.stipend || 'Stipend Provided'}</strong></span>
+                          </span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Clock size={13} strokeWidth={2} />
+                            <span>Duration: <strong>{internship.duration || '3 Months'}</strong></span>
+                          </span>
                         </div>
 
                         {/* Visual 4-Stage Hiring Progress Tracker Stepper */}
                         <div style={{ background: 'var(--bg-primary)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-                            📊 Live 4-Stage Hiring Pipeline Progress Tracker:
+                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <TrendingUp size={14} strokeWidth={2} />
+                            <span>Live 4-Stage Hiring Pipeline Progress Tracker:</span>
                           </div>
 
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', textAlign: 'center' }}>
@@ -545,8 +616,9 @@ export default function StudentInternshipsPage() {
                                 transition: 'all 0.3s ease'
                               }}
                             >
-                              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: currentStep >= 4 ? '#10b981' : 'var(--text-muted)' }}>
-                                {currentStep >= 4 ? '🎉 Stage 4' : 'Stage 4'}
+                              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: currentStep >= 4 ? '#10b981' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
+                                {currentStep >= 4 && <Sparkles size={11} strokeWidth={2} color="#10b981" />}
+                                <span>Stage 4</span>
                               </div>
                               <div style={{ fontSize: '0.7rem', color: currentStep >= 4 ? 'var(--text-primary)' : 'var(--text-muted)', marginTop: '2px' }}>
                                 Placed

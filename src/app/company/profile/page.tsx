@@ -1,7 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
 import CompanySidebar from '@/components/CompanySidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
+import {
+  Building2,
+  User,
+  Lock,
+  Save,
+  Loader2
+} from 'lucide-react'
 
 export default function CompanyProfile() {
   const [profile, setProfile] = useState<any>(null)
@@ -95,7 +103,10 @@ export default function CompanyProfile() {
       <div className={styles.layout}>
         <CompanySidebar />
         <div className={styles.content}>
-          <div style={{ padding: '60px', textAlign: 'center' }}>Loading...</div>
+          <div style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#10b981' }} />
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading profile...</p>
+          </div>
         </div>
       </div>
     )
@@ -107,7 +118,10 @@ export default function CompanyProfile() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>Company Profile</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Building2 size={24} strokeWidth={2} color="#10b981" />
+              <h1 className={styles.pageTitle}>Company Profile</h1>
+            </div>
             <p className={styles.pageSubtitle}>Manage your company information and account settings</p>
           </div>
         </header>
@@ -115,7 +129,10 @@ export default function CompanyProfile() {
         <main className={styles.main}>
           <form onSubmit={handleSubmit}>
             <div className={`glass ${styles.panel}`} style={{ maxWidth: '800px' }}>
-              <h3 className={styles.panelTitle}>🏢 Company Information</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <Building2 size={18} strokeWidth={2} color="#10b981" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Company Information</h3>
+              </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
@@ -204,7 +221,10 @@ export default function CompanyProfile() {
             </div>
 
             <div className={`glass ${styles.panel}`} style={{ maxWidth: '800px' }}>
-              <h3 className={styles.panelTitle}>👤 Contact Information</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <User size={18} strokeWidth={2} color="#3b82f6" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Contact Information</h3>
+              </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
@@ -233,7 +253,10 @@ export default function CompanyProfile() {
 
             <div className={`glass ${styles.panel}`} style={{ maxWidth: '800px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 className={styles.panelTitle}>🔒 Change Password</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Lock size={18} strokeWidth={2} color="#f59e0b" />
+                  <h3 className={styles.panelTitle} style={{ margin: 0 }}>Change Password</h3>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowPasswordSection(!showPasswordSection)}
@@ -282,8 +305,18 @@ export default function CompanyProfile() {
             </div>
 
             <div style={{ maxWidth: '800px', display: 'flex', gap: '12px' }}>
-              <button type="submit" disabled={saving} className="btn btn-company btn-lg">
-                {saving ? '⏳ Saving...' : '💾 Save Changes'}
+              <button type="submit" disabled={saving} className="btn btn-company btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                {saving ? (
+                  <>
+                    <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} strokeWidth={2} />
+                    <span>Save Changes</span>
+                  </>
+                )}
               </button>
               <button type="button" onClick={fetchProfile} className="btn btn-secondary btn-lg">
                 Cancel
@@ -295,3 +328,4 @@ export default function CompanyProfile() {
     </div>
   )
 }
+

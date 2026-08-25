@@ -7,18 +7,38 @@ import NotificationBell from '@/components/NotificationBell'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
 import { logout } from '@/app/actions/logout'
+import {
+  LayoutDashboard,
+  FolderLock,
+  Share2,
+  Presentation,
+  BriefcaseBusiness,
+  GraduationCap,
+  ChartNoAxesCombined,
+  ChevronDown,
+  Sun,
+  Moon,
+  LogOut,
+  LucideIcon
+} from 'lucide-react'
 
-const INSTITUTION_NAV = [
+type InstitutionNavItem = {
+  href: string
+  icon: LucideIcon
+  label: string
+}
+
+const INSTITUTION_NAV: { group: string; items: InstitutionNavItem[] }[] = [
   {
     group: 'Overview',
     items: [
-      { href: '/institution/dashboard', icon: '🏛️', label: 'Dashboard' },
-      { href: '/institution/documents', icon: '📁', label: 'Student Documents' },
-      { href: '/institution/resources', icon: '🏢', label: 'Resources' },
-      { href: '/institution/trainers', icon: '👨‍🏫', label: 'Trainers' },
-      { href: '/institution/internships', icon: '💼', label: 'Internships' },
-      { href: '/institution/placements', icon: '📈', label: 'Placements' },
-      { href: '/institution/analytics', icon: '📊', label: 'Analytics' },
+      { href: '/institution/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+      { href: '/institution/documents', icon: FolderLock, label: 'Student Documents' },
+      { href: '/institution/resources', icon: Share2, label: 'Resources' },
+      { href: '/institution/trainers', icon: Presentation, label: 'Trainers' },
+      { href: '/institution/internships', icon: BriefcaseBusiness, label: 'Internships' },
+      { href: '/institution/placements', icon: GraduationCap, label: 'Placements' },
+      { href: '/institution/certifications', icon: ChartNoAxesCombined, label: 'Certifications' },
     ]
   },
 ]
@@ -73,6 +93,7 @@ export default function InstitutionSidebar() {
         {INSTITUTION_NAV.map(group => (
           <div key={group.group} className={styles.navGroup}>
             {group.items.map(item => {
+              const ItemIcon = item.icon
               const active = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
                 <Link
@@ -81,7 +102,9 @@ export default function InstitutionSidebar() {
                   className={`${styles.categoryBtn} ${active ? styles.activeInstitution : ''}`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  <span className={styles.navIcon}>{item.icon}</span>
+                  <span className={styles.navIcon}>
+                    <ItemIcon size={16} strokeWidth={2} />
+                  </span>
                   <span className={styles.navLabel}>{item.label}</span>
                 </Link>
               )
@@ -99,9 +122,7 @@ export default function InstitutionSidebar() {
             <div className={styles.userInfo}>
               <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <span className={styles.userName}>{userData.name}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
+                <ChevronDown size={14} strokeWidth={2} />
               </button>
             </div>
           </>
@@ -114,11 +135,11 @@ export default function InstitutionSidebar() {
         {dropdownOpen && (
           <div className={styles.userDropdown}>
             <button onClick={toggleTheme} className={styles.dropdownItem}>
-              <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+              {theme === 'dark' ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
             <button onClick={handleLogout} className={styles.dropdownItem}>
-              <span>🚪</span>
+              <LogOut size={16} strokeWidth={2} />
               <span>Sign Out</span>
             </button>
           </div>

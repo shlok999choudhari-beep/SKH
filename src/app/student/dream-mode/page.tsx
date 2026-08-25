@@ -1,7 +1,34 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './dream.module.css'
+import {
+  Sparkles,
+  ArrowLeft,
+  ArrowRight,
+  Search,
+  Calendar,
+  Briefcase,
+  CheckCircle2,
+  Wrench,
+  Code2,
+  GraduationCap,
+  Target,
+  FileText,
+  KeyRound,
+  CheckSquare,
+  Lightbulb,
+  BookOpen,
+  Mic,
+  Layers,
+  Rocket,
+  Brain,
+  DollarSign,
+  Download,
+  TriangleAlert,
+  ExternalLink
+} from 'lucide-react'
 
 export default function DreamMode() {
   const [search, setSearch] = useState('')
@@ -90,12 +117,16 @@ export default function DreamMode() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>🌟 Dream Company Mode</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle}>Dream Company Mode</h1>
+            </div>
             <p className={styles.pageSubtitle}>Complete hiring insights for your dream companies</p>
           </div>
           {selected && (
-            <button className="btn btn-secondary btn-sm" onClick={() => { setSelected(null); setData(null) }}>
-              ← Back
+            <button className="btn btn-secondary btn-sm" onClick={() => { setSelected(null); setData(null) }} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <ArrowLeft size={14} strokeWidth={2} />
+              <span>Back</span>
             </button>
           )}
         </header>
@@ -104,7 +135,9 @@ export default function DreamMode() {
           {!selected ? (
             <>
               <div className={styles.searchBar}>
-                <span className={styles.searchIcon}>🔍</span>
+                <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+                  <Search size={18} strokeWidth={2} color="var(--text-muted)" />
+                </span>
                 <input
                   type="text"
                   placeholder="Search your dream company..."
@@ -115,9 +148,9 @@ export default function DreamMode() {
               </div>
 
               {loadingCompanies ? (
-                <div className={styles.loading}>
-                  <div className={styles.spinner}></div>
-                  <p>Loading companies...</p>
+                <div className={styles.loading} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '3.5rem' }}>
+                  <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+                  <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading companies...</p>
                 </div>
               ) : (
                 <div className={styles.grid}>
@@ -128,7 +161,10 @@ export default function DreamMode() {
                       </div>
                       <h3 className={styles.cardName}>{company.name}</h3>
                       <p className={styles.cardIndustry}>{company.industry}</p>
-                      <button className={`btn btn-primary btn-sm ${styles.cardBtn}`}>View Details →</button>
+                      <button className={`btn btn-primary btn-sm ${styles.cardBtn}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                        <span>View Details</span>
+                        <ArrowRight size={14} strokeWidth={2} />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -137,9 +173,9 @@ export default function DreamMode() {
           ) : (
             <div className={styles.details}>
               {loading ? (
-                <div className={styles.loading}>
-                  <div className={styles.spinner}></div>
-                  <p>Loading {selected.name} insights...</p>
+                <div className={styles.loading} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '3.5rem' }}>
+                  <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+                  <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading {selected.name} insights...</p>
                 </div>
               ) : data ? (
                 <>
@@ -157,7 +193,8 @@ export default function DreamMode() {
                           </span>
                         ) : (
                           <span className="badge badge-purple" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '4px 10px', borderRadius: '12px' }}>
-                            📚 Curated Placement Intel
+                            <BookOpen size={12} strokeWidth={2} />
+                            <span>Curated Placement Intel</span>
                           </span>
                         )}
                       </div>
@@ -167,28 +204,40 @@ export default function DreamMode() {
 
                   {data.hiringCycles && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>📅 Hiring Cycles</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Calendar size={18} strokeWidth={2} color="#8b5cf6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Hiring Cycles</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.hiringCycles}</p>
                     </div>
                   )}
 
                   {data.jobOpenings && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>💼 Job Openings / Vacancies Timing</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Briefcase size={18} strokeWidth={2} color="#3b82f6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Job Openings / Vacancies Timing</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.jobOpenings}</p>
                     </div>
                   )}
 
                   {data.eligibility && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>✅ Eligibility Criteria</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <CheckCircle2 size={18} strokeWidth={2} color="#10b981" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Eligibility Criteria</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.eligibility}</p>
                     </div>
                   )}
 
                   {data.skills && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🛠️ Required Skill Set</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <Wrench size={18} strokeWidth={2} color="#f59e0b" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Required Skill Set</h3>
+                      </div>
                       <div className={styles.tags}>
                         {data.skills.map((skill: string, i: number) => (
                           <span key={i} className={styles.tag}>{skill}</span>
@@ -199,7 +248,10 @@ export default function DreamMode() {
 
                   {data.technologies && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>💻 Preferred Technologies</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <Code2 size={18} strokeWidth={2} color="#8b5cf6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Preferred Technologies</h3>
+                      </div>
                       <div className={styles.tags}>
                         {data.technologies.map((tech: string, i: number) => (
                           <span key={i} className={styles.tag}>{tech}</span>
@@ -210,35 +262,50 @@ export default function DreamMode() {
 
                   {data.cgpa && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🎓 Minimum CGPA Requirement</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <GraduationCap size={18} strokeWidth={2} color="#3b82f6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Minimum CGPA Requirement</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.cgpa}</p>
                     </div>
                   )}
 
                   {data.experience && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>💼 Prior Experience Requirement</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Briefcase size={18} strokeWidth={2} color="#10b981" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Prior Experience Requirement</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.experience}</p>
                     </div>
                   )}
 
                   {data.internship && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🎯 Internship Requirements</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Target size={18} strokeWidth={2} color="#ef4444" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Internship Requirements</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.internship}</p>
                     </div>
                   )}
 
                   {data.resumeCriteria && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>📄 Resume Shortlisting Criteria</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <FileText size={18} strokeWidth={2} color="#8b5cf6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Resume Shortlisting Criteria</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.resumeCriteria}</p>
                     </div>
                   )}
 
                   {data.atsKeywords && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🔑 ATS Keywords</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <KeyRound size={18} strokeWidth={2} color="#f59e0b" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>ATS Keywords</h3>
+                      </div>
                       <div className={styles.tags}>
                         {data.atsKeywords.map((keyword: string, i: number) => (
                           <span key={i} className={styles.tag}>{keyword}</span>
@@ -249,21 +316,30 @@ export default function DreamMode() {
 
                   {data.selectionProcess && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🎯 Selection Process Stages</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Target size={18} strokeWidth={2} color="#3b82f6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Selection Process Stages</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.selectionProcess}</p>
                     </div>
                   )}
 
                   {data.assessmentPattern && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>📝 Online Assessment Pattern</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <CheckSquare size={18} strokeWidth={2} color="#10b981" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Online Assessment Pattern</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.assessmentPattern}</p>
                     </div>
                   )}
 
                   {data.dsaTopics && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>💡 DSA Topics Asked</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <Lightbulb size={18} strokeWidth={2} color="#eab308" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>DSA Topics Asked</h3>
+                      </div>
                       <div className={styles.tags}>
                         {data.dsaTopics.map((topic: string, i: number) => (
                           <span key={i} className={styles.tag}>{topic}</span>
@@ -274,11 +350,15 @@ export default function DreamMode() {
 
                   {data.previousQuestions && data.previousQuestions.length > 0 && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>📚 Previous Year Questions</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <BookOpen size={18} strokeWidth={2} color="#8b5cf6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Previous Year Questions</h3>
+                      </div>
                       <div className={styles.links}>
                         {data.previousQuestions.map((item: any, i: number) => (
-                          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            {item.title} →
+                          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className={styles.link} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            <span>{item.title}</span>
+                            <ExternalLink size={13} strokeWidth={2} />
                           </a>
                         ))}
                       </div>
@@ -287,11 +367,15 @@ export default function DreamMode() {
 
                   {data.interviewBank && data.interviewBank.length > 0 && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🎤 Interview Question Bank Links</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <Mic size={18} strokeWidth={2} color="#ef4444" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Interview Question Bank Links</h3>
+                      </div>
                       <div className={styles.links}>
                         {data.interviewBank.map((item: any, i: number) => (
-                          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            {item.title} →
+                          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className={styles.link} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            <span>{item.title}</span>
+                            <ExternalLink size={13} strokeWidth={2} />
                           </a>
                         ))}
                       </div>
@@ -300,35 +384,50 @@ export default function DreamMode() {
 
                   {data.systemDesign && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🏗️ System Design Expectations</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Layers size={18} strokeWidth={2} color="#3b82f6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>System Design Expectations</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.systemDesign}</p>
                     </div>
                   )}
 
                   {data.projects && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🚀 Projects Expected</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Rocket size={18} strokeWidth={2} color="#10b981" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Projects Expected</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.projects}</p>
                     </div>
                   )}
 
                   {data.behavioral && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🧠 Behavioral / HR Questions</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Brain size={18} strokeWidth={2} color="#8b5cf6" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Behavioral / HR Questions</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.behavioral}</p>
                     </div>
                   )}
 
                   {data.culture && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>🌟 Company Culture & Values</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Sparkles size={18} strokeWidth={2} color="#eab308" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Company Culture & Values</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.culture}</p>
                     </div>
                   )}
 
                   {data.salary && (
                     <div className={styles.section}>
-                      <h3 className={styles.sectionTitle}>💰 Salary & Compensation Structure</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <DollarSign size={18} strokeWidth={2} color="#10b981" />
+                        <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Salary & Compensation Structure</h3>
+                      </div>
                       <p className={styles.sectionText}>{data.salary}</p>
                     </div>
                   )}
@@ -337,15 +436,16 @@ export default function DreamMode() {
                     <button 
                       className="btn btn-primary" 
                       onClick={() => downloadPDF(selected, data)}
-                      style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                      style={{ width: '100%', padding: '16px', fontSize: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                      📥 Download Complete Details as PDF
+                      <Download size={18} strokeWidth={2} />
+                      <span>Download Complete Details as PDF</span>
                     </button>
                   </div>
                 </>
               ) : (
-                <div className={styles.error}>
-                  <span>⚠️</span>
+                <div className={styles.error} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <TriangleAlert size={32} strokeWidth={2} color="#ef4444" />
                   <p>Failed to load data</p>
                 </div>
               )}
@@ -356,3 +456,4 @@ export default function DreamMode() {
     </div>
   )
 }
+

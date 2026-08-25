@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { GraduationCap, ArrowRight, X } from 'lucide-react'
 
 interface AcademicProfileModalProps {
   studentProfile: any
@@ -77,11 +78,35 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
           maxWidth: '520px',
           width: '100%',
           boxShadow: '0 25px 50px rgba(0,0,0,0.4)',
-          animation: 'fadeIn 0.2s ease-out'
+          animation: 'fadeIn 0.2s ease-out',
+          position: 'relative'
         }}
       >
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '1.25rem',
+              right: '1.25rem',
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            aria-label="Close modal"
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
+        )}
+
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎓</div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(124, 58, 237, 0.15)', color: '#8b5cf6', marginBottom: '12px' }}>
+            <GraduationCap size={32} strokeWidth={2} />
+          </div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
             Complete Your Academic Profile
           </h2>
@@ -178,9 +203,10 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
               type="submit" 
               className="btn btn-primary btn-sm"
               disabled={submitting}
-              style={{ padding: '0.75rem 1.5rem', borderRadius: '12px' }}
+              style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              {submitting ? 'Saving...' : 'Save & Unlock Internships →'}
+              <span>{submitting ? 'Saving...' : 'Save & Unlock Internships'}</span>
+              {!submitting && <ArrowRight size={16} strokeWidth={2} />}
             </button>
           </div>
         </form>

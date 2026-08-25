@@ -1,9 +1,24 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Editor from '@monaco-editor/react'
 import io from 'socket.io-client'
+import {
+  Code2,
+  Video,
+  VideoOff,
+  Search,
+  LogIn,
+  Clock,
+  Terminal,
+  Play,
+  Loader2,
+  CheckCircle2,
+  Award,
+  Target
+} from 'lucide-react'
 
 export default function StudentCodingJudge() {
   const [code, setCode] = useState('// Write your code here')
@@ -461,7 +476,10 @@ export default function StudentCodingJudge() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>💻 Coding Judge</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Code2 size={24} strokeWidth={2} color="#10b981" />
+              <h1 className={styles.pageTitle}>Coding Judge</h1>
+            </div>
             <p className={styles.pageSubtitle}>Join coding interview sessions</p>
           </div>
         </header>
@@ -470,7 +488,9 @@ export default function StudentCodingJudge() {
           {!mounted ? <div style={{ padding: '60px', textAlign: 'center' }}>Loading...</div> : !connected ? (
             <>
               <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '60px' }}>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎯</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', color: '#10b981', marginBottom: '20px' }}>
+                  <Target size={40} strokeWidth={1.75} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Join Coding Session</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
                   Search for the Room ID provided by the interviewer
@@ -487,8 +507,9 @@ export default function StudentCodingJudge() {
                       style={{ maxWidth: '400px', margin: '0 auto 20px', fontSize: '16px' }}
                     />
                     <div style={{ marginBottom: '20px' }}>
-                      <button onClick={toggleCamera} className={`btn ${cameraOn ? 'btn-secondary' : 'btn-primary'} btn-lg`}>
-                        {cameraOn ? '📹 Stop Camera' : '📷 Start Camera'}
+                      <button onClick={toggleCamera} className={`btn ${cameraOn ? 'btn-secondary' : 'btn-primary'} btn-lg`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        {cameraOn ? <VideoOff size={18} strokeWidth={2} /> : <Video size={18} strokeWidth={2} />}
+                        <span>{cameraOn ? 'Stop Camera' : 'Start Camera'}</span>
                       </button>
                     </div>
                     {cameraOn && (
@@ -500,8 +521,9 @@ export default function StudentCodingJudge() {
                           muted
                           style={{ width: '100%', height: '180px', objectFit: 'cover', transform: 'scaleX(-1)' }}
                         />
-                        <p style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)' }}>
-                          🟢 Camera Live & Ready
+                        <p style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                          <CheckCircle2 size={13} strokeWidth={2} />
+                          <span>Camera Live &amp; Ready</span>
                         </p>
                       </div>
                     )}
@@ -510,8 +532,10 @@ export default function StudentCodingJudge() {
                         onClick={loadAvailableRooms} 
                         className="btn btn-primary btn-lg" 
                         disabled={loadingRooms || !candidateName.trim()}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                       >
-                        {loadingRooms ? '⏳ Loading...' : '🔍 Search Available Rooms'}
+                        {loadingRooms ? <MorphingInfinity className="size-4" style={{ width: '18px', height: '18px' }} /> : <Search size={18} strokeWidth={2} />}
+                        <span>{loadingRooms ? 'Loading...' : 'Search Available Rooms'}</span>
                       </button>
                     )}
                   </>
@@ -571,8 +595,9 @@ export default function StudentCodingJudge() {
                         style={{ textAlign: 'center', fontSize: '18px', marginBottom: '12px' }}
                       />
                       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                        <button onClick={searchAndJoinRoom} className="btn btn-primary">
-                          🚀 Join Room
+                        <button onClick={searchAndJoinRoom} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <LogIn size={16} strokeWidth={2} />
+                          <span>Join Room</span>
                         </button>
                         <button onClick={() => { setShowSearch(false); setSearchRoomId(''); setAvailableRooms([]); setCandidateName('') }} className="btn btn-secondary">
                           Cancel
@@ -586,7 +611,10 @@ export default function StudentCodingJudge() {
               {/* Past Sessions */}
               {sessions.length > 0 && (
                 <div className={`glass ${styles.panel}`}>
-                  <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>📊 Past Sessions</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                    <Clock size={18} strokeWidth={2} color="#10b981" />
+                    <h3 className={styles.panelTitle}>Past Sessions</h3>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {sessions.map((session: any) => (
                       <div key={session.id} style={{
@@ -647,24 +675,30 @@ export default function StudentCodingJudge() {
                 <button
                   onClick={() => setMobileTab('code')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'code' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 >
-                  💻 Code
+                  <Code2 size={15} strokeWidth={2} />
+                  <span>Code</span>
                 </button>
                 <button
                   onClick={() => setMobileTab('video')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'video' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 >
-                  🎥 Video Call
+                  <Video size={15} strokeWidth={2} />
+                  <span>Video Call</span>
                 </button>
                 <button
                   onClick={() => setMobileTab('io')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'io' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 >
-                  📋 Output
+                  <Terminal size={15} strokeWidth={2} />
+                  <span>Output</span>
                 </button>
               </div>
 
-              {/* Left: Code Editor (shown always on desktop, on mobile only when active tab is 'code' or 'io') */}
+              {/* Left: Code Editor */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab === 'video' ? styles.hideOnMobileTab : ''}>
                 {(mobileTab === 'code' || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
                   <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
@@ -679,8 +713,9 @@ export default function StudentCodingJudge() {
                         <option value="python">Python</option>
                         <option value="java">Java</option>
                       </select>
-                      <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm" style={{ minHeight: '38px' }}>
-                        {running ? '⏳ Running...' : '▶️ Run Code'}
+                      <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm" style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        {running ? <MorphingInfinity className="size-4" style={{ width: '14px', height: '14px' }} /> : <Play size={14} strokeWidth={2} />}
+                        <span>{running ? 'Running...' : 'Run Code'}</span>
                       </button>
                     </div>
                     
@@ -745,7 +780,7 @@ export default function StudentCodingJudge() {
                 )}
               </div>
 
-              {/* Right: Video Call (shown always on desktop, on mobile only when active tab is 'video') */}
+              {/* Right: Video Call */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab !== 'video' ? styles.hideOnMobileTab : ''}>
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
                   <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>Interviewer {!remoteVideoReady && '(Connecting...)'}</h4>
@@ -766,8 +801,9 @@ export default function StudentCodingJudge() {
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <h4 style={{ fontSize: '14px' }}>You {!localVideoReady && '(Connecting...)'}</h4>
-                    <button onClick={toggleCamera} className="btn btn-secondary btn-sm">
-                      {cameraOn ? '📹 Stop' : '📷 Start'}
+                    <button onClick={toggleCamera} className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      {cameraOn ? <VideoOff size={14} strokeWidth={2} /> : <Video size={14} strokeWidth={2} />}
+                      <span>{cameraOn ? 'Stop' : 'Start'}</span>
                     </button>
                   </div>
                   <video
@@ -810,7 +846,9 @@ export default function StudentCodingJudge() {
           zIndex: 1000
         }}>
           <div className="glass" style={{ padding: '40px', maxWidth: '500px', width: '90%', textAlign: 'center' }}>
-            <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎉</div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', color: '#10b981', marginBottom: '20px' }}>
+              <Award size={44} strokeWidth={1.75} />
+            </div>
             <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>Interview Complete!</h3>
             
             <div style={{
@@ -854,3 +892,4 @@ export default function StudentCodingJudge() {
     </div>
   )
 }
+

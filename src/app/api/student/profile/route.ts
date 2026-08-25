@@ -33,16 +33,16 @@ export async function GET(request: NextRequest) {
       degree: student.degree,
       phone: student.phone,
       cgpa: student.cgpa ? Number(student.cgpa) : null,
-      tenth_marks: student.tenth_marks ? Number(student.tenth_marks) : null,
-      tenthMarks: student.tenth_marks ? Number(student.tenth_marks) : null,
-      twelfth_marks: student.twelfth_marks ? Number(student.twelfth_marks) : null,
-      twelfthMarks: student.twelfth_marks ? Number(student.twelfth_marks) : null,
-      graduation_year: student.graduation_year,
-      graduationYear: student.graduation_year,
-      github_url: student.github_url,
-      linkedin_url: student.linkedin_url,
-      portfolio_url: student.portfolio_url,
-      created_at: student.created_at
+      tenth_marks: student.tenthMarks ? Number(student.tenthMarks) : null,
+      tenthMarks: student.tenthMarks ? Number(student.tenthMarks) : null,
+      twelfth_marks: student.twelfthMarks ? Number(student.twelfthMarks) : null,
+      twelfthMarks: student.twelfthMarks ? Number(student.twelfthMarks) : null,
+      graduation_year: student.graduationYear,
+      graduationYear: student.graduationYear,
+      github_url: student.githubUrl,
+      linkedin_url: student.linkedinUrl,
+      portfolio_url: student.portfolioUrl,
+      created_at: student.createdAt
     }
 
     return NextResponse.json(mappedStudent, { headers: { 'Cache-Control': 'no-store' } })
@@ -123,10 +123,10 @@ export async function PUT(request: NextRequest) {
         college: updated.college,
         degree: updated.degree,
         cgpa: updated.cgpa ? Number(updated.cgpa) : null,
-        tenth_marks: updated.tenth_marks ? Number(updated.tenth_marks) : null,
-        tenthMarks: updated.tenth_marks ? Number(updated.tenth_marks) : null,
-        twelfth_marks: updated.twelfth_marks ? Number(updated.twelfth_marks) : null,
-        twelfthMarks: updated.twelfth_marks ? Number(updated.twelfth_marks) : null
+        tenth_marks: updated.tenthMarks ? Number(updated.tenthMarks) : null,
+        tenthMarks: updated.tenthMarks ? Number(updated.tenthMarks) : null,
+        twelfth_marks: updated.twelfthMarks ? Number(updated.twelfthMarks) : null,
+        twelfthMarks: updated.twelfthMarks ? Number(updated.twelfthMarks) : null
       }
     })
   } catch (error: any) {

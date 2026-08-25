@@ -7,15 +7,33 @@ import NotificationBell from '@/components/NotificationBell'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
 import { logout } from '@/app/actions/logout'
+import {
+  LayoutDashboard,
+  BriefcaseBusiness,
+  Building2,
+  Code2,
+  ChevronDown,
+  Sun,
+  Moon,
+  LogOut,
+  LucideIcon
+} from 'lucide-react'
 
-const COMPANY_NAV = [
+type CompanyNavItem = {
+  href: string
+  icon: LucideIcon
+  label: string
+  badge?: string
+}
+
+const COMPANY_NAV: { group: string; items: CompanyNavItem[] }[] = [
   {
     group: 'Overview',
     items: [
-      { href: '/company/dashboard', icon: '🏠', label: 'Dashboard' },
-      { href: '/company/internships', icon: '💼', label: 'Internships', badge: 'NEW' },
-      { href: '/company/profile', icon: '🏢', label: 'Company Profile' },
-      { href: '/company/coding-judge', icon: '💻', label: 'Coding Judge' },
+      { href: '/company/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+      { href: '/company/internships', icon: BriefcaseBusiness, label: 'Internships', badge: 'NEW' },
+      { href: '/company/profile', icon: Building2, label: 'Company Profile' },
+      { href: '/company/coding-judge', icon: Code2, label: 'Coding Judge' },
     ]
   },
 ]
@@ -84,6 +102,7 @@ export default function CompanySidebar() {
         {COMPANY_NAV.map(group => (
           <div key={group.group} className={styles.navGroup}>
             {group.items.map(item => {
+              const ItemIcon = item.icon
               const active = pathname === item.href
               return (
                 <Link
@@ -92,7 +111,9 @@ export default function CompanySidebar() {
                   className={`${styles.categoryBtn} ${active ? styles.activeCompany : ''}`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  <span className={styles.navIcon}>{item.icon}</span>
+                  <span className={styles.navIcon}>
+                    <ItemIcon size={16} strokeWidth={2} />
+                  </span>
                   <span className={styles.navLabel}>{item.label}</span>
                   {item.badge && <span className={`${styles.megaBadge} ${styles.megaBadgeGreen}`}>{item.badge}</span>}
                 </Link>
@@ -111,9 +132,7 @@ export default function CompanySidebar() {
             <div className={styles.userInfo}>
               <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <span className={styles.userName}>{userData.company_name}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
+                <ChevronDown size={14} strokeWidth={2} />
               </button>
             </div>
           </>
@@ -126,11 +145,11 @@ export default function CompanySidebar() {
         {dropdownOpen && (
           <div className={styles.userDropdown}>
             <button onClick={toggleTheme} className={styles.dropdownItem}>
-              <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+              {theme === 'dark' ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
             <button onClick={handleLogout} className={styles.dropdownItem}>
-              <span>🚪</span>
+              <LogOut size={16} strokeWidth={2} />
               <span>Sign Out</span>
             </button>
           </div>

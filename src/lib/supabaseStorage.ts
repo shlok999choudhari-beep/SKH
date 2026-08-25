@@ -46,7 +46,7 @@ export async function ensureBucketExists(
   try {
     const { data: buckets, error: listError } = await supabase.storage.listBuckets()
     if (!listError && buckets) {
-      const exists = buckets.some((b) => b.name === bucketName)
+      const exists = buckets.some((b: any) => b.name === bucketName)
       if (exists) {
         provisionedBuckets.add(bucketName)
         return true

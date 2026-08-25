@@ -1,7 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import Card1 from '@/components/ui/card-1'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './jobs.module.css'
+import {
+  Search,
+  MapPin,
+  Calendar,
+  DollarSign,
+  GraduationCap,
+  Briefcase,
+  ExternalLink,
+  Bookmark,
+  Loader2
+} from 'lucide-react'
 
 interface Job {
   position: string
@@ -18,10 +31,20 @@ export default function BrowseJobsPage() {
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [location, setLocation] = useState('')
+  const [savedIds, setSavedIds] = useState<Set<number>>(new Set())
   const [filters, setFilters] = useState({
     type: 'all',
     experience: 'all'
   })
+
+  const toggleSave = (idx: number) => {
+    setSavedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(idx)) next.delete(idx)
+      else next.add(idx)
+      return next
+    })
+  }
 
   const fetchJobs = async () => {
     setLoading(true)
@@ -63,143 +86,112 @@ export default function BrowseJobsPage() {
       <StudentSidebar />
       <div className={styles.content}>
         <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.headerTop}>
-          <div>
-            <h1 className={styles.title}>Browse <span className="grad-text">Jobs</span></h1>
-            <p className={styles.subtitle}>Discover opportunities from top companies worldwide</p>
-          </div>
-          <div className={styles.stats}>
-            <div className={styles.statItem}>
-              <span className={styles.statNum}>{filteredJobs.length}</span>
-              <span className={styles.statLabel}>Jobs Found</span>
-            </div>
-          </div>
-        </div>
-
-        <form onSubmit={handleSearch} className={styles.searchBar}>
-          <div className={styles.searchGroup}>
-            <span className={styles.searchIcon}>🔍</span>
-            <input
-              type="text"
-              placeholder="Search jobs, companies, keywords..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
-          <div className={styles.searchGroup}>
-            <span className={styles.searchIcon}>📍</span>
-            <input
-              type="text"
-              placeholder="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? '⏳' : '🚀'} Search
-          </button>
-        </form>
-
-        <div className={styles.filters}>
-          <button
-            className={`${styles.filterBtn} ${filters.type === 'all' ? styles.active : ''}`}
-            onClick={() => setFilters({...filters, type: 'all'})}
-          >
-            All Jobs
-          </button>
-          <button
-            className={`${styles.filterBtn} ${filters.type === 'internship' ? styles.active : ''}`}
-            onClick={() => setFilters({...filters, type: 'internship'})}
-          >
-            🎓 Internships
-          </button>
-          <button
-            className={`${styles.filterBtn} ${filters.type === 'fulltime' ? styles.active : ''}`}
-            onClick={() => setFilters({...filters, type: 'fulltime'})}
-          >
-            💼 Full-time
-          </button>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Finding amazing opportunities for you...</p>
-        </div>
-      ) : (
-        <div className={styles.jobsGrid}>
-          {filteredJobs.map((job, idx) => (
-            <div key={idx} className={`glass ${styles.jobCard}`}>
-              <div className={styles.jobHeader}>
-                <div className={styles.companyLogo}>
-                  {job.company.charAt(0).toUpperCase()}
-                </div>
-                <div className={styles.jobMeta}>
-                  <h3 className={styles.jobTitle}>{job.position}</h3>
-                  <p className={styles.companyName}>{job.company}</p>
-                </div>
+          <div className={styles.header}>
+            <div className={styles.headerTop}>
+              <div>
+                <h1 className={styles.title}>Browse <span className="grad-text">Jobs</span></h1>
+                <p className={styles.subtitle}>Discover opportunities from top companies worldwide</p>
               </div>
-
-              <div className={styles.jobDetails}>
-                <div className={styles.jobDetail}>
-                  <span className={styles.detailIcon}>📍</span>
-                  <span>{job.location}</span>
+              <div className={styles.stats}>
+                <div className={styles.statItem}>
+                  <span className={styles.statNum}>{filteredJobs.length}</span>
+                  <span className={styles.statLabel}>Jobs Found</span>
                 </div>
-                <div className={styles.jobDetail}>
-                  <span className={styles.detailIcon}>📅</span>
-                  <span>{job.date}</span>
-                </div>
-                {job.salary && (
-                  <div className={styles.jobDetail}>
-                    <span className={styles.detailIcon}>💰</span>
-                    <span>{job.salary}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.jobTags}>
-                {job.position.toLowerCase().includes('intern') && (
-                  <span className="badge badge-purple">Internship</span>
-                )}
-                {job.position.toLowerCase().includes('remote') && (
-                  <span className="badge badge-green">Remote</span>
-                )}
-                {job.position.toLowerCase().includes('senior') && (
-                  <span className="badge badge-orange">Senior</span>
-                )}
-              </div>
-
-              <div className={styles.jobActions}>
-                <a
-                  href={job.jobUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary btn-sm"
-                >
-                  Apply Now →
-                </a>
-                <button className="btn btn-secondary btn-sm">
-                  💾 Save
-                </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
 
-      {!loading && filteredJobs.length === 0 && (
-        <div className={styles.empty}>
-          <div className={styles.emptyIcon}>🔍</div>
-          <h3>No jobs found</h3>
-          <p>Try adjusting your search or filters</p>
-        </div>
-      )}
+            <form onSubmit={handleSearch} className={styles.searchBar}>
+              <div className={styles.searchGroup}>
+                <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+                  <Search size={16} strokeWidth={2} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search jobs, companies, keywords..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
+              <div className={styles.searchGroup}>
+                <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+                  <MapPin size={16} strokeWidth={2} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={loading} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                {loading ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : <Search size={16} strokeWidth={2} />}
+                <span>Search</span>
+              </button>
+            </form>
+
+            <div className={styles.filters}>
+              <button
+                className={`${styles.filterBtn} ${filters.type === 'all' ? styles.active : ''}`}
+                onClick={() => setFilters({...filters, type: 'all'})}
+              >
+                All Jobs
+              </button>
+              <button
+                className={`${styles.filterBtn} ${filters.type === 'internship' ? styles.active : ''}`}
+                onClick={() => setFilters({...filters, type: 'internship'})}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <GraduationCap size={14} strokeWidth={2} />
+                <span>Internships</span>
+              </button>
+              <button
+                className={`${styles.filterBtn} ${filters.type === 'fulltime' ? styles.active : ''}`}
+                onClick={() => setFilters({...filters, type: 'fulltime'})}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Briefcase size={14} strokeWidth={2} />
+                <span>Full-time</span>
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className={styles.loading} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '3.5rem' }}>
+              <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+              <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Finding amazing opportunities for you...</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px', marginTop: '16px' }}>
+              {filteredJobs.map((job, idx) => (
+                <Card1
+                  key={idx}
+                  position={job.position}
+                  company={job.company}
+                  location={job.location}
+                  date={job.date}
+                  jobUrl={job.jobUrl}
+                  salary={job.salary}
+                  isSaved={savedIds.has(idx)}
+                  onSave={() => toggleSave(idx)}
+                />
+              ))}
+            </div>
+          )}
+
+          {!loading && filteredJobs.length === 0 && (
+            <div className={styles.empty}>
+              <div className={styles.emptyIcon} style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                <Search size={40} strokeWidth={1.5} color="var(--text-muted)" />
+              </div>
+              <h3>No jobs found</h3>
+              <p>Try adjusting your search or filters</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
+

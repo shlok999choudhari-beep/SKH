@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { saveToVault } from '@/lib/storage'
+import { processAndVerifyDocument } from '@/lib/documentQualityService'
 import { z } from 'zod'
 
 const uploadDocSchema = z.object({
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
         category: validated.category,
         description: validated.description || null,
         accessLevel: validated.accessLevel,
-        verificationStatus: 'PENDING',
+        verificationStatus: 'PROCESSING',
         qualityScore: validated.qualityScore ?? null,
         qualityResult: validated.qualityResult || null,
         extractedInformation: validated.extractedInformation || null,
@@ -165,6 +166,43 @@ export async function POST(request: NextRequest) {
         })
       }
     }
+
+    // Asynchronous background processing with Docling + Groq
+    (async () => {
+      try {
+        const studentRecord = await prisma.student.findUnique({
+          where: { id: session.userId },
+          select: { name: true, email: true, college: true }
+        })
+        const report = await processAndVerifyDocument(
+          buffer,
+          file.name,
+          file.type,
+          studentRecord || undefined
+        )
+
+        await prisma.document.update({
+          where: { id: newDoc.id },
+          data: {
+            documentType: report.documentType || validated.documentType,
+            verificationStatus: report.verificationStatus,
+            qualityScore: report.qualityScore,
+            qualityResult: JSON.stringify(report),
+            extractedInformation: JSON.stringify(report.extractedInformation),
+            verifiedAt: report.verificationStatus === 'VERIFIED' ? new Date() : null,
+            rejectionReason: report.verificationStatus === 'REJECTED' ? (report.warnings[0] || report.explanation) : null
+          }
+        })
+      } catch (bgError) {
+        console.error(`[Background Docling] Error processing doc ${newDoc.id}:`, bgError)
+        await prisma.document.update({
+          where: { id: newDoc.id },
+          data: {
+            verificationStatus: 'NEEDS_REVIEW'
+          }
+        }).catch(() => {})
+      }
+    })()
 
     return NextResponse.json({
       success: true,

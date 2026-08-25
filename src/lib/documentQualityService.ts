@@ -1,147 +1,200 @@
 import axios from 'axios'
-import { extractTextFromPDF, extractTextFromImage } from './resumeExtractor'
+import { extractWithDocling, DoclingExtractionResult, DoclingSection, DoclingTable } from './doclingService'
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
-export interface QualityAnalysisResult {
+export interface DocumentVerificationReport {
+  success: boolean
   documentDetected: boolean
-  documentType: string // Marksheet, ID Card, Certificate, Resume, Transcript, Internship Certificate, Admission Document, Other
+  documentType: string
   qualityScore: number // 0-100
-  status: 'READY' | 'NEEDS_REVIEW' | 'POOR_QUALITY' | 'UNRECOGNIZED'
+  verificationStatus: 'VERIFIED' | 'NEEDS_REVIEW' | 'REJECTED' | 'FAILED'
+  pages: number
   checks: {
     readable: boolean
-    cropped: boolean
-    blurry: boolean
-    blank: boolean
-    randomImage: boolean
+    structureValid: boolean
+    tablesDetected: boolean
     nameDetected: boolean
+    nameMatchesStudent: boolean
     institutionDetected: boolean
     documentNumberDetected: boolean
-    rollNumberDetected: boolean
     dateDetected: boolean
-    photoDetected: boolean
-    qrDetected: boolean
-    barcodeDetected: boolean
+    noSuspiciousArtifacts: boolean
   }
   extractedInformation: {
     name: string | null
-    institution: string | null
-    documentNumber: string | null
+    studentId: string | null
     rollNumber: string | null
-    registrationNumber: string | null
-    yearOrDate: string | null
+    institution: string | null
+    documentType: string | null
+    dates: string[] | null
+    cgpaOrGrade: string | null
     certificateNumber: string | null
+  }
+  doclingData: {
+    markdown: string
+    sections: DoclingSection[]
+    tables: DoclingTable[]
+    metadata: Record<string, any>
   }
   warnings: string[]
   passedChecks: string[]
-  message: string
+  explanation: string
 }
 
-export async function extractTextFromBuffer(buffer: Buffer, fileType: string): Promise<string> {
-  try {
-    if (fileType === 'application/pdf') {
-      return await extractTextFromPDF(buffer)
-    } else if (fileType.startsWith('image/')) {
-      return await extractTextFromImage(buffer)
-    } else {
-      return ''
-    }
-  } catch (error) {
-    console.error('Extraction error:', error)
-    return ''
-  }
+/**
+ * Deterministic helper to evaluate string similarity (e.g. Student name check)
+ */
+function isNameSimilar(extractedName: string | null, studentName?: string | null): boolean {
+  if (!extractedName || !studentName) return true
+  const cleanExtracted = extractedName.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()
+  const cleanStudent = studentName.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()
+
+  const extractedTokens = cleanExtracted.split(/\s+/).filter(t => t.length > 2)
+  const studentTokens = cleanStudent.split(/\s+/).filter(t => t.length > 2)
+
+  if (extractedTokens.length === 0 || studentTokens.length === 0) return true
+
+  // Check if at least one significant token matches (first name or last name)
+  return studentTokens.some(t => extractedTokens.includes(t)) || extractedTokens.some(t => studentTokens.includes(t))
 }
 
-export async function analyzeDocumentQuality(
+/**
+ * Full Pipeline: Docling Document Extraction -> Deterministic Checks -> Groq AI Semantic Verification
+ */
+export async function processAndVerifyDocument(
   buffer: Buffer,
   fileName: string,
-  fileType: string
-): Promise<QualityAnalysisResult> {
-  const textContent = await extractTextFromBuffer(buffer, fileType)
-  const trimmedText = textContent.trim()
+  fileType: string,
+  studentProfile?: {
+    name?: string | null
+    email?: string | null
+    college?: string | null
+  }
+): Promise<DocumentVerificationReport> {
+  // Step 1: Docling Extraction
+  const doclingResult: DoclingExtractionResult = await extractWithDocling(
+    buffer,
+    fileName,
+    fileType
+  )
 
-  // Default fallback if Groq or extraction encounters issues
-  let fallbackResult: QualityAnalysisResult = {
-    documentDetected: trimmedText.length > 20,
-    documentType: 'Other',
-    qualityScore: trimmedText.length > 100 ? 75 : 45,
-    status: trimmedText.length > 100 ? 'READY' : 'NEEDS_REVIEW',
+  const extractedText = doclingResult.text.trim()
+  const doclingFields = doclingResult.fields || {}
+  const tablesCount = doclingResult.tables ? doclingResult.tables.length : 0
+  const sectionsCount = doclingResult.sections ? doclingResult.sections.length : 0
+
+  // Step 2: Initial Deterministic Checks
+  const isReadable = extractedText.length > 20
+  const hasStructure = sectionsCount > 0 || doclingResult.markdown.length > 50
+  const hasTables = tablesCount > 0
+
+  // Name check
+  const candidateName = doclingFields.name || null
+  const nameMatches = candidateName ? isNameSimilar(candidateName, studentProfile?.name) : true
+
+  const defaultReport: DocumentVerificationReport = {
+    success: doclingResult.success,
+    documentDetected: isReadable,
+    documentType: doclingResult.documentType || 'Other',
+    qualityScore: isReadable ? (hasStructure ? 80 : 65) : 30,
+    verificationStatus: isReadable ? (hasStructure && nameMatches ? 'VERIFIED' : 'NEEDS_REVIEW') : 'FAILED',
+    pages: doclingResult.pages || 1,
     checks: {
-      readable: trimmedText.length > 20,
-      cropped: false,
-      blurry: trimmedText.length < 20,
-      blank: trimmedText.length === 0,
-      randomImage: false,
-      nameDetected: false,
-      institutionDetected: false,
-      documentNumberDetected: false,
-      rollNumberDetected: false,
-      dateDetected: false,
-      photoDetected: false,
-      qrDetected: false,
-      barcodeDetected: false
+      readable: isReadable,
+      structureValid: hasStructure,
+      tablesDetected: hasTables,
+      nameDetected: Boolean(candidateName),
+      nameMatchesStudent: nameMatches,
+      institutionDetected: Boolean(doclingFields.institution),
+      documentNumberDetected: Boolean(doclingFields.rollNumber || doclingFields.certificateNumber),
+      dateDetected: Boolean(doclingFields.dates && doclingFields.dates.length > 0),
+      noSuspiciousArtifacts: true
     },
     extractedInformation: {
-      name: null,
-      institution: null,
-      documentNumber: null,
-      rollNumber: null,
-      registrationNumber: null,
-      yearOrDate: null,
-      certificateNumber: null
+      name: candidateName,
+      studentId: doclingFields.studentId || null,
+      rollNumber: doclingFields.rollNumber || null,
+      institution: doclingFields.institution || studentProfile?.college || null,
+      documentType: doclingResult.documentType || 'Other',
+      dates: doclingFields.dates || null,
+      cgpaOrGrade: doclingFields.cgpaOrGrade || null,
+      certificateNumber: doclingFields.certificateNumber || null
     },
-    warnings: trimmedText.length < 20 ? ['Low readable text detected in file.'] : [],
-    passedChecks: trimmedText.length > 20 ? ['Text content extracted successfully'] : [],
-    message: trimmedText.length > 50 ? 'Document appears suitable for upload.' : 'Document needs manual review.'
+    doclingData: {
+      markdown: doclingResult.markdown || extractedText,
+      sections: doclingResult.sections || [],
+      tables: doclingResult.tables || [],
+      metadata: doclingResult.metadata || {}
+    },
+    warnings: !isReadable ? ['Very low text extracted from document.'] : [],
+    passedChecks: isReadable ? ['Docling structural extraction successful'] : [],
+    explanation: isReadable
+      ? 'Document layout and text parsed successfully with Docling.'
+      : 'Document appears blurry, blank, or unreadable.'
   }
 
-  if (!GROQ_API_KEY) {
-    return fallbackResult
+  // Step 3: Groq AI Semantic Verification if GROQ_API_KEY is available
+  if (!GROQ_API_KEY || !isReadable) {
+    return defaultReport
   }
 
   try {
-    const prompt = `Analyze this document content for quality, document type classification, visual/structure integrity, and field extraction.
-    
+    const prompt = `You are the verification engine for PlaceIQ document vault.
+You are evaluating a document extracted using Docling.
+
 File Name: ${fileName}
 File Type: ${fileType}
-Extracted Text Content (first 3000 chars):
-${trimmedText.slice(0, 3000) || '[No text extracted or raw visual document]'}
+Registered Student Name: ${studentProfile?.name || 'Unknown'}
+Registered College: ${studentProfile?.college || 'Unknown'}
+Docling Detected Document Type: ${doclingResult.documentType}
+Pages: ${doclingResult.pages}
+Tables Detected: ${tablesCount}
+Sections Detected: ${sectionsCount}
 
-Perform a document suitability analysis. Respond strictly with pure valid JSON matching this schema (do NOT include markdown codeblocks or any prose):
+Docling Structured Markdown Content (first 4000 chars):
+${doclingResult.markdown.slice(0, 4000) || extractedText.slice(0, 4000)}
+
+Perform semantic verification of this document. Check:
+1. Document authenticity, consistency, and completeness.
+2. Verify if candidate name or identifiers in document match or conflict with the student profile.
+3. Validate presence of expected fields (dates, institutions, roll numbers, grades).
+4. Assign a verificationStatus: "VERIFIED" (clean, high confidence), "NEEDS_REVIEW" (minor ambiguity/missing field), or "REJECTED" (clear mismatch, fake or invalid document).
+5. Assign a confidence qualityScore (0 to 100).
+6. Provide a concise, professional explanation for the student and institution.
+
+Respond STRICTLY with valid JSON matching this schema (do NOT include markdown code blocks or additional text):
 
 {
-  "documentDetected": true/false,
-  "documentType": "Marksheet" | "ID Card" | "Certificate" | "Resume" | "Transcript" | "Internship Certificate" | "Admission Document" | "Other",
+  "documentDetected": true,
+  "documentType": "Marksheet" | "ID Card" | "Certificate" | "Resume" | "Transcript" | "Internship Certificate" | "Degree Certificate" | "Admission Document" | "Other",
   "qualityScore": number (0 to 100),
-  "status": "READY" | "NEEDS_REVIEW" | "POOR_QUALITY" | "UNRECOGNIZED",
+  "verificationStatus": "VERIFIED" | "NEEDS_REVIEW" | "REJECTED",
   "checks": {
-    "readable": true/false,
-    "cropped": true/false,
-    "blurry": true/false,
-    "blank": true/false,
-    "randomImage": true/false,
+    "readable": true,
+    "structureValid": true,
+    "tablesDetected": true/false,
     "nameDetected": true/false,
+    "nameMatchesStudent": true/false,
     "institutionDetected": true/false,
     "documentNumberDetected": true/false,
-    "rollNumberDetected": true/false,
     "dateDetected": true/false,
-    "photoDetected": true/false,
-    "qrDetected": true/false,
-    "barcodeDetected": true/false
+    "noSuspiciousArtifacts": true/false
   },
   "extractedInformation": {
     "name": string or null,
-    "institution": string or null,
-    "documentNumber": string or null,
+    "studentId": string or null,
     "rollNumber": string or null,
-    "registrationNumber": string or null,
-    "yearOrDate": string or null,
+    "institution": string or null,
+    "documentType": string or null,
+    "dates": [string] or null,
+    "cgpaOrGrade": string or null,
     "certificateNumber": string or null
   },
   "warnings": [string],
   "passedChecks": [string],
-  "message": "User-facing summary message (e.g. Document appears suitable for upload.)"
+  "explanation": "Clear summary of verification results"
 }`
 
     const response = await axios.post(
@@ -150,7 +203,7 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
         messages: [
           {
             role: 'system',
-            content: 'You are an AI document quality analyzer. You evaluate uploaded academic, professional, and identity documents for quality, structure, readability, and key field presence. Never claim legal or government authenticity. Respond in pure JSON format.'
+            content: 'You are an enterprise document verification system. You analyze Docling structured document extractions for authenticity, layout integrity, and entity validation. Respond strictly in pure JSON format.'
           },
           {
             role: 'user',
@@ -159,13 +212,14 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
         ],
         model: 'openai/gpt-oss-120b',
         temperature: 0.1,
-        max_tokens: 1500
+        max_tokens: 1800
       },
       {
         headers: {
           'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 25000
       }
     )
 
@@ -177,41 +231,87 @@ Perform a document suitability analysis. Respond strictly with pure valid JSON m
     }
 
     const parsed = JSON.parse(jsonStr.trim())
+
     return {
+      success: true,
       documentDetected: Boolean(parsed.documentDetected),
-      documentType: parsed.documentType || 'Other',
-      qualityScore: typeof parsed.qualityScore === 'number' ? parsed.qualityScore : 70,
-      status: parsed.status || 'READY',
+      documentType: parsed.documentType || doclingResult.documentType || 'Other',
+      qualityScore: typeof parsed.qualityScore === 'number' ? Math.min(100, Math.max(0, parsed.qualityScore)) : defaultReport.qualityScore,
+      verificationStatus: ['VERIFIED', 'NEEDS_REVIEW', 'REJECTED'].includes(parsed.verificationStatus) ? parsed.verificationStatus : defaultReport.verificationStatus,
+      pages: doclingResult.pages || 1,
       checks: {
-        readable: Boolean(parsed.checks?.readable),
-        cropped: Boolean(parsed.checks?.cropped),
-        blurry: Boolean(parsed.checks?.blurry),
-        blank: Boolean(parsed.checks?.blank),
-        randomImage: Boolean(parsed.checks?.randomImage),
-        nameDetected: Boolean(parsed.checks?.nameDetected),
-        institutionDetected: Boolean(parsed.checks?.institutionDetected),
-        documentNumberDetected: Boolean(parsed.checks?.documentNumberDetected),
-        rollNumberDetected: Boolean(parsed.checks?.rollNumberDetected),
-        dateDetected: Boolean(parsed.checks?.dateDetected),
-        photoDetected: Boolean(parsed.checks?.photoDetected),
-        qrDetected: Boolean(parsed.checks?.qrDetected),
-        barcodeDetected: Boolean(parsed.checks?.barcodeDetected)
+        readable: Boolean(parsed.checks?.readable ?? defaultReport.checks.readable),
+        structureValid: Boolean(parsed.checks?.structureValid ?? defaultReport.checks.structureValid),
+        tablesDetected: Boolean(parsed.checks?.tablesDetected ?? defaultReport.checks.tablesDetected),
+        nameDetected: Boolean(parsed.checks?.nameDetected ?? defaultReport.checks.nameDetected),
+        nameMatchesStudent: Boolean(parsed.checks?.nameMatchesStudent ?? defaultReport.checks.nameMatchesStudent),
+        institutionDetected: Boolean(parsed.checks?.institutionDetected ?? defaultReport.checks.institutionDetected),
+        documentNumberDetected: Boolean(parsed.checks?.documentNumberDetected ?? defaultReport.checks.documentNumberDetected),
+        dateDetected: Boolean(parsed.checks?.dateDetected ?? defaultReport.checks.dateDetected),
+        noSuspiciousArtifacts: Boolean(parsed.checks?.noSuspiciousArtifacts ?? defaultReport.checks.noSuspiciousArtifacts)
       },
       extractedInformation: {
-        name: parsed.extractedInformation?.name || null,
-        institution: parsed.extractedInformation?.institution || null,
-        documentNumber: parsed.extractedInformation?.documentNumber || null,
-        rollNumber: parsed.extractedInformation?.rollNumber || null,
-        registrationNumber: parsed.extractedInformation?.registrationNumber || null,
-        yearOrDate: parsed.extractedInformation?.yearOrDate || null,
-        certificateNumber: parsed.extractedInformation?.certificateNumber || null
+        name: parsed.extractedInformation?.name || defaultReport.extractedInformation.name,
+        studentId: parsed.extractedInformation?.studentId || defaultReport.extractedInformation.studentId,
+        rollNumber: parsed.extractedInformation?.rollNumber || defaultReport.extractedInformation.rollNumber,
+        institution: parsed.extractedInformation?.institution || defaultReport.extractedInformation.institution,
+        documentType: parsed.extractedInformation?.documentType || defaultReport.extractedInformation.documentType,
+        dates: parsed.extractedInformation?.dates || defaultReport.extractedInformation.dates,
+        cgpaOrGrade: parsed.extractedInformation?.cgpaOrGrade || defaultReport.extractedInformation.cgpaOrGrade,
+        certificateNumber: parsed.extractedInformation?.certificateNumber || defaultReport.extractedInformation.certificateNumber
       },
-      warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
-      passedChecks: Array.isArray(parsed.passedChecks) ? parsed.passedChecks : [],
-      message: parsed.message || 'Document quality check complete.'
+      doclingData: defaultReport.doclingData,
+      warnings: Array.isArray(parsed.warnings) ? parsed.warnings : defaultReport.warnings,
+      passedChecks: Array.isArray(parsed.passedChecks) ? parsed.passedChecks : defaultReport.passedChecks,
+      explanation: parsed.explanation || defaultReport.explanation
     }
-  } catch (error) {
-    console.error('Groq AI Document Quality Check error:', error)
-    return fallbackResult
+  } catch (groqError) {
+    console.error('Groq AI Document Verification error:', groqError)
+    return defaultReport
+  }
+}
+
+/**
+ * Backward-compatible wrapper for lightweight pre-upload checks
+ */
+export async function analyzeDocumentQuality(
+  buffer: Buffer,
+  fileName: string,
+  fileType: string
+) {
+  const report = await processAndVerifyDocument(buffer, fileName, fileType)
+  return {
+    documentDetected: report.documentDetected,
+    documentType: report.documentType,
+    qualityScore: report.qualityScore,
+    status: report.verificationStatus === 'VERIFIED' ? 'READY' : report.verificationStatus === 'NEEDS_REVIEW' ? 'NEEDS_REVIEW' : 'POOR_QUALITY',
+    checks: {
+      readable: report.checks.readable,
+      cropped: false,
+      blurry: !report.checks.readable,
+      blank: !report.checks.readable,
+      randomImage: false,
+      nameDetected: report.checks.nameDetected,
+      institutionDetected: report.checks.institutionDetected,
+      documentNumberDetected: report.checks.documentNumberDetected,
+      rollNumberDetected: report.checks.documentNumberDetected,
+      dateDetected: report.checks.dateDetected,
+      photoDetected: false,
+      qrDetected: false,
+      barcodeDetected: false
+    },
+    extractedInformation: {
+      name: report.extractedInformation.name,
+      institution: report.extractedInformation.institution,
+      documentNumber: report.extractedInformation.certificateNumber || report.extractedInformation.rollNumber,
+      rollNumber: report.extractedInformation.rollNumber,
+      registrationNumber: report.extractedInformation.studentId,
+      yearOrDate: report.extractedInformation.dates ? report.extractedInformation.dates[0] : null,
+      certificateNumber: report.extractedInformation.certificateNumber
+    },
+    warnings: report.warnings,
+    passedChecks: report.passedChecks,
+    message: report.explanation,
+    doclingData: report.doclingData
   }
 }

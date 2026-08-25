@@ -1,7 +1,21 @@
 'use client'
 import { useState, useEffect } from 'react'
 import CompanySidebar from '@/components/CompanySidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
+import {
+  Briefcase,
+  Building2,
+  MapPin,
+  DollarSign,
+  Clock,
+  Target,
+  Users,
+  ArrowRight,
+  Plus,
+  X,
+  Loader2
+} from 'lucide-react'
 
 export default function CompanyInternshipsPage() {
   const [companyProfile, setCompanyProfile] = useState<any>(null)
@@ -200,19 +214,26 @@ export default function CompanyInternshipsPage() {
             onClick={() => setShowModal(true)}
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>+</span> Post Internship
+            <Plus size={15} strokeWidth={2} />
+            <span>Post Internship</span>
           </button>
         </header>
 
         <main className={styles.main}>
           <div className={`glass ${styles.panel}`}>
             <div className={styles.panelHead}>
-              <h3 className={styles.panelTitle}>💼 Your Company Posted Internships</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Briefcase size={20} strokeWidth={2} color="#10b981" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Your Company Posted Internships</h3>
+              </div>
               <span className="badge badge-green">{internships.length} Active Opportunities</span>
             </div>
 
             {loading ? (
-              <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading internships...</div>
+              <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#10b981' }} />
+                <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>Loading internships...</p>
+              </div>
             ) : internships.length === 0 ? (
               <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                 No internships posted yet by <strong>{companyProfile?.company_name || 'your company'}</strong>. Click <strong>"+ Post Internship"</strong> to create one.
@@ -236,7 +257,10 @@ export default function CompanyInternshipsPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                         <div>
                           <h3 style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{i.title}</h3>
-                          <p style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>🏢 {i.company_name}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                            <Building2 size={13} strokeWidth={2} color="#10b981" />
+                            <p style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600, margin: 0 }}>{i.company_name}</p>
+                          </div>
                         </div>
                         <span className={`badge ${i.status === 'open' ? 'badge-green' : 'badge-orange'}`}>
                           {i.status}
@@ -248,16 +272,28 @@ export default function CompanyInternshipsPage() {
                       </p>
 
                       <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1rem' }}>
-                        <span>📍 Location: <strong>{i.location || 'Remote'}</strong></span>
-                        <span>💰 Stipend: <strong>{i.stipend || 'Unpaid'}</strong></span>
-                        <span>⏱️ Duration: <strong>{i.duration || 'Flexible'}</strong></span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <MapPin size={12} strokeWidth={2} />
+                          <span>Location: <strong>{i.location || 'Remote'}</strong></span>
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <DollarSign size={12} strokeWidth={2} />
+                          <span>Stipend: <strong>{i.stipend || 'Unpaid'}</strong></span>
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Clock size={12} strokeWidth={2} />
+                          <span>Duration: <strong>{i.duration || 'Flexible'}</strong></span>
+                        </span>
                       </div>
 
                       {/* Criteria Badges */}
                       <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)', marginBottom: '1rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#10b981', display: 'block', marginBottom: '4px' }}>
-                          🎯 Student Eligibility Criteria:
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                          <Target size={13} strokeWidth={2} color="#10b981" />
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#10b981' }}>
+                            Student Eligibility Criteria:
+                          </span>
+                        </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {i.min_cgpa && <span>• Min CGPA: <strong>{i.min_cgpa}</strong></span>}
                           {i.min_twelfth_marks && <span>• Min 12th: <strong>{i.min_twelfth_marks}%</strong></span>}
@@ -268,14 +304,17 @@ export default function CompanyInternshipsPage() {
                     </div>
 
                     <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>
-                        👥 {i.pipeline?.total_applications || 0} Applicants
+                      <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Users size={13} strokeWidth={2} />
+                        <span>{i.pipeline?.total_applications || 0} Applicants</span>
                       </span>
                       <button 
                         className="btn btn-sm btn-company"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         onClick={() => handleOpenApplicantsModal(i)}
                       >
-                        View Applicants & Status →
+                        <span>View Applicants & Status</span>
+                        <ArrowRight size={13} strokeWidth={2} />
                       </button>
                     </div>
                   </div>
@@ -318,14 +357,19 @@ export default function CompanyInternshipsPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  👥 Student Applications & Hiring Progress
-                </h2>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Users size={20} strokeWidth={2} color="#10b981" />
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Student Applications & Hiring Progress
+                  </h2>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   {selectedInternship.title} • {selectedInternship.company_name}
                 </p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowApplicantsModal(false)}>✕</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowApplicantsModal(false)} style={{ display: 'flex', alignItems: 'center' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '1.5rem', padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border)' }}>
@@ -348,7 +392,10 @@ export default function CompanyInternshipsPage() {
             </div>
 
             {loadingApps ? (
-              <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading applicant data...</div>
+              <div style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <MorphingInfinity className="size-10" style={{ width: '40px', height: '40px', color: '#10b981' }} />
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading applicant data...</p>
+              </div>
             ) : applications.length === 0 ? (
               <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>No applications submitted yet for this position.</div>
             ) : (
@@ -452,11 +499,15 @@ export default function CompanyInternshipsPage() {
             onClick={e => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                ➕ Post New Internship
-              </h2>
-              <span className="badge badge-green">
-                🏢 {companyProfile?.company_name || 'Active Company'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Plus size={18} strokeWidth={2} color="#10b981" />
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                  Post New Internship
+                </h2>
+              </div>
+              <span className="badge badge-green" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Building2 size={12} strokeWidth={2} />
+                <span>{companyProfile?.company_name || 'Active Company'}</span>
               </span>
             </div>
 
@@ -545,9 +596,12 @@ export default function CompanyInternshipsPage() {
 
               {/* Eligibility Criteria Section */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#10b981', marginBottom: '0.75rem' }}>
-                  🎯 Student Eligibility Criteria
-                </h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.75rem' }}>
+                  <Target size={14} strokeWidth={2} color="#10b981" />
+                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#10b981', margin: 0 }}>
+                    Student Eligibility Criteria
+                  </h4>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>
@@ -686,3 +740,5 @@ export default function CompanyInternshipsPage() {
     </div>
   )
 }
+
+

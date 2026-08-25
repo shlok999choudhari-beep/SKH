@@ -111,44 +111,111 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Query is empty' }, { status: 400 })
       }
 
+      const region = (typeof body.region === 'string' && body.region.trim()) ? body.region.trim().toLowerCase() : 'us'
+      const language = (typeof body.language === 'string' && body.language.trim()) ? body.language.trim().toLowerCase() : 'en'
+      const type = (typeof body.type === 'string' && body.type.trim()) ? body.type.trim().toLowerCase() : 'all'
+
+      const languageLabels: Record<string, string> = {
+        en: '',
+        hi: 'in Hindi हिंदी',
+        es: 'en español',
+        fr: 'en français',
+        de: 'auf Deutsch',
+        ta: 'in Tamil தமிழ்',
+        te: 'in Telugu తెలుగు',
+        bn: 'in Bengali বাংলা',
+        mr: 'in Marathi मराठी',
+        ja: 'in Japanese 日本語',
+        pt: 'em português',
+        ar: 'باللغة العربية'
+      }
+
+      const langSuffix = languageLabels[language] ? ` ${languageLabels[language]}` : ''
+
+      let videoQuery = `${query} tutorial course${langSuffix}`
+      if (type === 'playlist') {
+        videoQuery = `${query} playlist full course tutorial series${langSuffix}`
+      } else if (type === 'short') {
+        videoQuery = `${query} crash course in 10 minutes quick overview${langSuffix}`
+      } else if (type === 'course') {
+        videoQuery = `${query} complete bootcamp masterclass${langSuffix}`
+      }
+
+      const docsQuery = `${query} official documentation guide tutorial${langSuffix}`
+      const booksQuery = `${query} free online book open textbook read online github`
+      const notesQuery = `${query} revision notes cheat sheet quick reference summary`
+      const commQuery = `${query} community discord telegram reddit forum`
+
       try {
-        // Fetch videos, documentation, and communities in parallel via Serper API
-        const [videosRes, docsRes, commRes] = await Promise.all([
+        const serperHeaders = { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' }
+        const basePayload = { gl: region, hl: language, num: 6 }
+
+        // Fetch videos, documentation, books, notes, and communities in parallel via Serper API
+        const [videosRes, docsRes, booksRes, notesRes, commRes] = await Promise.all([
           fetch('https://google.serper.dev/videos', {
             method: 'POST',
-            headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: `${query} tutorial course`, num: 6 })
+            headers: serperHeaders,
+            body: JSON.stringify({ ...basePayload, q: videoQuery })
           }),
           fetch('https://google.serper.dev/search', {
             method: 'POST',
-            headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: `${query} official documentation guide tutorial`, num: 6 })
+            headers: serperHeaders,
+            body: JSON.stringify({ ...basePayload, q: docsQuery })
           }),
           fetch('https://google.serper.dev/search', {
             method: 'POST',
-            headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: `${query} community discord telegram reddit forum`, num: 6 })
+            headers: serperHeaders,
+            body: JSON.stringify({ ...basePayload, q: booksQuery, num: 4 })
+          }),
+          fetch('https://google.serper.dev/search', {
+            method: 'POST',
+            headers: serperHeaders,
+            body: JSON.stringify({ ...basePayload, q: notesQuery, num: 4 })
+          }),
+          fetch('https://google.serper.dev/search', {
+            method: 'POST',
+            headers: serperHeaders,
+            body: JSON.stringify({ ...basePayload, q: commQuery })
           })
         ])
 
-        const [videosData, docsData, commData] = await Promise.all([
+        const [videosData, docsData, booksData, notesData, commData] = await Promise.all([
           videosRes.json().catch(() => ({})),
           docsRes.json().catch(() => ({})),
+          booksRes.json().catch(() => ({})),
+          notesRes.json().catch(() => ({})),
           commRes.json().catch(() => ({}))
         ])
 
         const videos = (videosData.videos || []).map((v: any) => ({
           title: v.title || `${query} Tutorial`,
-          link: v.link || `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+          link: v.link || `https://www.youtube.com/results?search_query=${encodeURIComponent(videoQuery)}`,
           channel: v.channel || 'YouTube',
           imageUrl: v.imageUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60'
         }))
 
-        const documentation = (docsData.organic || []).map((d: any) => ({
+        const officialDocs = (docsData.organic || []).map((d: any) => ({
           title: d.title || `${query} Documentation`,
           snippet: d.snippet || `Official guides, API references, and documentation for ${query}.`,
-          link: d.link || `https://google.com/search?q=${encodeURIComponent(query + ' documentation')}`
+          link: d.link || `https://google.com/search?q=${encodeURIComponent(query + ' documentation')}`,
+          docType: 'official_docs'
         }))
+
+        const books = (booksData.organic || []).map((b: any) => ({
+          title: b.title || `${query} Free Online Book`,
+          snippet: b.snippet || `Open access textbook and comprehensive reading guide for ${query}.`,
+          link: b.link || `https://google.com/search?q=${encodeURIComponent(query + ' free online book')}`,
+          docType: 'book'
+        }))
+
+        const notes = (notesData.organic || []).map((n: any) => ({
+          title: n.title || `${query} Cheat Sheet & Quick Notes`,
+          snippet: n.snippet || `Concise revision summary, syntax cheat sheet, and study notes for ${query}.`,
+          link: n.link || `https://google.com/search?q=${encodeURIComponent(query + ' cheat sheet notes')}`,
+          docType: 'notes'
+        }))
+
+        const documentation = [...officialDocs, ...books, ...notes]
 
         const communities = (commData.organic || []).map((c: any) => ({
           title: c.title || `${query} Community`,
@@ -159,8 +226,8 @@ export async function POST(request: Request) {
         // Fallbacks if search returned empty results
         if (videos.length === 0) {
           videos.push({
-            title: `${query} Full Course & Complete Tutorial`,
-            link: `https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' tutorial')}`,
+            title: `${query} ${type === 'playlist' ? 'Full Playlist' : type === 'short' ? 'Crash Course' : 'Complete Tutorial'}`,
+            link: `https://www.youtube.com/results?search_query=${encodeURIComponent(videoQuery)}`,
             channel: 'YouTube Learning',
             imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60'
           })
@@ -170,7 +237,8 @@ export async function POST(request: Request) {
           documentation.push({
             title: `${query} Documentation & Official Guides`,
             snippet: `Explore official tutorials, API documentation, and best practices for ${query}.`,
-            link: `https://www.google.com/search?q=${encodeURIComponent(query + ' documentation')}`
+            link: `https://www.google.com/search?q=${encodeURIComponent(query + ' documentation')}`,
+            docType: 'official_docs'
           })
         }
 
@@ -184,6 +252,12 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
           success: true,
+          filtersApplied: {
+            region,
+            language,
+            type,
+            query
+          },
           resources: {
             videos,
             documentation,
@@ -194,10 +268,16 @@ export async function POST(request: Request) {
         console.error('Serper search error:', err)
         return NextResponse.json({
           success: true,
+          filtersApplied: {
+            region,
+            language,
+            type,
+            query
+          },
           resources: {
             videos: [{
               title: `${query} Complete Tutorial`,
-              link: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+              link: `https://www.youtube.com/results?search_query=${encodeURIComponent(videoQuery)}`,
               channel: 'YouTube',
               imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60'
             }],

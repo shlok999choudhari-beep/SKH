@@ -127,3 +127,15 @@
   align-items: center;
 }
 
+.docGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .docGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

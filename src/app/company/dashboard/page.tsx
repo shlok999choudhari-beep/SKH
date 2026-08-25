@@ -1,8 +1,25 @@
 'use client'
 import { useState, useEffect } from 'react'
 import CompanySidebar from '@/components/CompanySidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Link from 'next/link'
+import {
+  Building2,
+  Zap,
+  ArrowRight,
+  Users,
+  Target,
+  Briefcase,
+  BarChart2,
+  Sparkles,
+  Search,
+  Code2,
+  TrendingUp,
+  Flame,
+  Plus,
+  Loader2
+} from 'lucide-react'
 
 export default function CompanyDashboard() {
   const [stats, setStats] = useState<any>(null)
@@ -48,7 +65,10 @@ export default function CompanyDashboard() {
       <div className={styles.layout}>
         <CompanySidebar />
         <div className={styles.content}>
-          <div style={{ padding: '60px', textAlign: 'center' }}>Loading...</div>
+          <div style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#10b981' }} />
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading dashboard...</p>
+          </div>
         </div>
       </div>
     )
@@ -61,48 +81,68 @@ export default function CompanyDashboard() {
         <header className={styles.header}>
           <div>
             <h1 className={styles.pageTitle}>Company Dashboard</h1>
-            <p className={styles.pageSubtitle}>Welcome, <strong>{stats?.companyName || 'Company'}</strong> 🏢 Your AI-powered hiring suite</p>
+            <p className={styles.pageSubtitle} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <span>Welcome, <strong>{stats?.companyName || 'Company'}</strong></span>
+              <Building2 size={16} strokeWidth={2} color="#10b981" />
+              <span>Your AI-powered hiring suite</span>
+            </p>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/company/coding-judge" className="btn btn-company btn-sm">+ Start Interview</Link>
+            <Link href="/company/coding-judge" className="btn btn-company btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Plus size={14} strokeWidth={2} />
+              <span>Start Interview</span>
+            </Link>
           </div>
         </header>
 
         <main className={styles.main}>
           {/* Alert */}
           <div className={`${styles.alertBanner} ${styles.alertGreen}`}>
-            <span className={styles.alertIcon}>⚡</span>
+            <span className={styles.alertIcon} style={{ display: 'flex', alignItems: 'center' }}>
+              <Zap size={18} strokeWidth={2} color="#10b981" />
+            </span>
             <div>
               <strong>12 new AI-matched candidates</strong> have applied to your SDE-1 role. Review them now!
             </div>
-            <Link href="/company/applications" className={`btn btn-company btn-sm ${styles.alertBtn}`}>View Candidates →</Link>
+            <Link href="/company/applications" className={`btn btn-company btn-sm ${styles.alertBtn}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span>View Candidates</span>
+              <ArrowRight size={14} strokeWidth={2} />
+            </Link>
           </div>
 
           {/* Stats */}
           <div className={styles.statsRow}>
             <div className="stat-card">
-              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#10b98130,#06b6d430)' }}>👥</div>
+              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#10b98130,#06b6d430)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Users size={20} strokeWidth={2} color="#10b981" />
+              </div>
               <div>
                 <div className="stat-number" style={{ color: '#10b981' }}>{stats?.totalApplicants || 0}</div>
                 <div className="stat-label">Total Applicants</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#3b82f630,#8b5cf630)' }}>🎯</div>
+              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#3b82f630,#8b5cf630)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Target size={20} strokeWidth={2} color="#3b82f6" />
+              </div>
               <div>
                 <div className="stat-number" style={{ color: '#3b82f6' }}>{stats?.aiMatched || 0}</div>
                 <div className="stat-label">AI Matched</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#f59e0b30,#ef444430)' }}>💼</div>
+              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#f59e0b30,#ef444430)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Briefcase size={20} strokeWidth={2} color="#f59e0b" />
+              </div>
               <div>
                 <div className="stat-number" style={{ color: '#f59e0b' }}>{stats?.activeJobs || 0}</div>
                 <div className="stat-label">Active Sessions</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#ec489930,#8b5cf630)' }}>⚡</div>
+              <div className={styles.statIcon} style={{ background: 'linear-gradient(135deg,#ec489930,#8b5cf630)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Zap size={20} strokeWidth={2} color="#ec4899" />
+              </div>
               <div>
                 <div className="stat-number" style={{ color: '#ec4899' }}>{stats?.hiredThisMonth || 0}</div>
                 <div className="stat-label">Interviews Done</div>
@@ -114,7 +154,10 @@ export default function CompanyDashboard() {
           <div className={styles.grid2}>
             {/* Hiring Pipeline */}
             <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle}>📊 Hiring Pipeline</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                <BarChart2 size={18} strokeWidth={2} color="#3b82f6" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Hiring Pipeline</h3>
+              </div>
               <div className={styles.pipelineList}>
                 {PIPELINE.map(p => (
                   <div key={p.stage} className={styles.pipelineItem}>
@@ -133,18 +176,26 @@ export default function CompanyDashboard() {
 
             {/* Quick Actions */}
             <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle}>⚡ Quick Actions</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                <Sparkles size={18} strokeWidth={2} color="#10b981" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Quick Actions</h3>
+              </div>
               <div className={styles.quickActions}>
-                {COMPANY_QUICK_ACTIONS.map(a => (
-                  <Link key={a.label} href={a.href} className={`${styles.quickAction} ${styles.quickActionGreen}`} style={{ '--hover-color': a.color } as React.CSSProperties}>
-                    <span className={styles.qaIcon}>{a.icon}</span>
-                    <div>
-                      <div className={styles.qaLabel}>{a.label}</div>
-                      <div className={styles.qaDesc}>{a.desc}</div>
-                    </div>
-                    <span className={styles.qaArrow}>→</span>
-                  </Link>
-                ))}
+                {COMPANY_QUICK_ACTIONS.map(a => {
+                  const Icon = a.icon
+                  return (
+                    <Link key={a.label} href={a.href} className={`${styles.quickAction} ${styles.quickActionGreen}`} style={{ '--hover-color': a.color } as React.CSSProperties}>
+                      <span className={styles.qaIcon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon size={18} strokeWidth={2} />
+                      </span>
+                      <div>
+                        <div className={styles.qaLabel}>{a.label}</div>
+                        <div className={styles.qaDesc}>{a.desc}</div>
+                      </div>
+                      <ArrowRight size={14} strokeWidth={2} className={styles.qaArrow} />
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -154,8 +205,14 @@ export default function CompanyDashboard() {
             {/* Top Candidates */}
             <div className={`glass ${styles.panel} ${styles.span2}`}>
               <div className={styles.panelHead}>
-                <h3 className={styles.panelTitle}>🎯 Top AI-Matched Candidates</h3>
-                <Link href="/company/match-candidates" className="btn btn-ghost btn-sm">View All →</Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={18} strokeWidth={2} color="#10b981" />
+                  <h3 className={styles.panelTitle} style={{ margin: 0 }}>Top AI-Matched Candidates</h3>
+                </div>
+                <Link href="/company/match-candidates" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span>View All</span>
+                  <ArrowRight size={13} strokeWidth={2} />
+                </Link>
               </div>
               <div className={styles.candidatesList}>
                 {TOP_CANDIDATES.map(c => (
@@ -183,8 +240,14 @@ export default function CompanyDashboard() {
             {/* Active Jobs */}
             <div className={`glass ${styles.panel}`}>
               <div className={styles.panelHead}>
-                <h3 className={styles.panelTitle}>💼 Active Jobs</h3>
-                <Link href="/company/jobs" className="btn btn-ghost btn-sm">Manage →</Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Briefcase size={18} strokeWidth={2} color="#f59e0b" />
+                  <h3 className={styles.panelTitle} style={{ margin: 0 }}>Active Jobs</h3>
+                </div>
+                <Link href="/company/jobs" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span>Manage</span>
+                  <ArrowRight size={13} strokeWidth={2} />
+                </Link>
               </div>
               <div className={styles.activeJobsList}>
                 {ACTIVE_JOBS.map(j => (
@@ -193,26 +256,43 @@ export default function CompanyDashboard() {
                       <div className={styles.activeJobTitle}>{j.title}</div>
                       <div className={styles.activeJobMeta}>{j.applications} applications • {j.days} days left</div>
                     </div>
-                    <span className={`badge ${j.urgent ? 'badge-orange' : 'badge-green'}`}>
-                      {j.urgent ? '🔥 Hot' : 'Active'}
+                    <span className={`badge ${j.urgent ? 'badge-orange' : 'badge-green'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      {j.urgent ? (
+                        <>
+                          <Flame size={12} strokeWidth={2} />
+                          <span>Hot</span>
+                        </>
+                      ) : (
+                        <span>Active</span>
+                      )}
                     </span>
                   </div>
                 ))}
               </div>
-              <Link href="/company/jobs/create" className={`btn btn-company btn-sm ${styles.fullWidthBtn}`}>+ Post New Role</Link>
+              <Link href="/company/jobs/create" className={`btn btn-company btn-sm ${styles.fullWidthBtn}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <Plus size={14} strokeWidth={2} />
+                <span>Post New Role</span>
+              </Link>
             </div>
           </div>
 
           {/* Real Job Offers from LinkedIn API */}
           <div className={`glass ${styles.panel}`}>
             <div className={styles.panelHead}>
-              <h3 className={styles.panelTitle}>💼 Trending Job Market</h3>
-              <Link href="/company/talent-search" className="btn btn-ghost btn-sm">Search Talent →</Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <TrendingUp size={18} strokeWidth={2} color="#3b82f6" />
+                <h3 className={styles.panelTitle} style={{ margin: 0 }}>Trending Job Market</h3>
+              </div>
+              <Link href="/company/talent-search" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span>Search Talent</span>
+                <ArrowRight size={13} strokeWidth={2} />
+              </Link>
             </div>
             <div className={styles.jobsList}>
               {jobsLoading ? (
-                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                  Loading trending market jobs...
+                <div style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <MorphingInfinity className="size-10" style={{ width: '40px', height: '40px', color: '#10b981' }} />
+                  <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading trending market jobs...</p>
                 </div>
               ) : jobs.length === 0 ? (
                 <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
@@ -221,8 +301,8 @@ export default function CompanyDashboard() {
               ) : (
                 jobs.map((j, idx) => (
                   <div key={idx} className={styles.jobCard}>
-                    <div className={styles.jobLogo} style={{ background: `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})` }}>
-                      {j.company ? j.company.charAt(0) : '💼'}
+                    <div className={styles.jobLogo} style={{ background: `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {j.company ? j.company.charAt(0) : <Building2 size={16} strokeWidth={2} color="white" />}
                     </div>
                     <div className={styles.jobInfo}>
                       <div className={styles.jobTitle}>{j.position}</div>
@@ -243,13 +323,6 @@ export default function CompanyDashboard() {
   )
 }
 
-const COMPANY_STATS = [
-  { icon: '👥', label: 'Total Applicants', value: '147', color: '#10b981', gradient: 'linear-gradient(135deg,#10b98130,#06b6d430)' },
-  { icon: '🎯', label: 'AI Matched', value: '38', color: '#3b82f6', gradient: 'linear-gradient(135deg,#3b82f630,#8b5cf630)' },
-  { icon: '💼', label: 'Active Jobs', value: '5', color: '#f59e0b', gradient: 'linear-gradient(135deg,#f59e0b30,#ef444430)' },
-  { icon: '⚡', label: 'Hired This Month', value: '3', color: '#ec4899', gradient: 'linear-gradient(135deg,#ec489930,#8b5cf630)' },
-]
-
 const PIPELINE = [
   { stage: 'Applied', count: 147, pct: 100, color: '#3b82f6' },
   { stage: 'Screened', count: 89, pct: 61, color: '#8b5cf6' },
@@ -259,10 +332,10 @@ const PIPELINE = [
 ]
 
 const COMPANY_QUICK_ACTIONS = [
-  { href: '/company/talent-search', icon: '🔍', label: 'Search Talent', desc: 'AI-powered candidate search', color: '#10b981' },
-  { href: '/company/match-candidates', icon: '🎯', label: 'Match Candidates', desc: 'Auto-match for your open roles', color: '#3b82f6' },
-  { href: '/company/coding-judge', icon: '💻', label: 'Coding Interview', desc: 'Real-time coding assessment', color: '#8b5cf6' },
-  { href: '/company/dashboard', icon: '📈', label: 'View Analytics', desc: 'Hiring funnel & insights', color: '#f59e0b' },
+  { href: '/company/talent-search', icon: Search, label: 'Search Talent', desc: 'AI-powered candidate search', color: '#10b981' },
+  { href: '/company/match-candidates', icon: Target, label: 'Match Candidates', desc: 'Auto-match for your open roles', color: '#3b82f6' },
+  { href: '/company/coding-judge', icon: Code2, label: 'Coding Interview', desc: 'Real-time coding assessment', color: '#8b5cf6' },
+  { href: '/company/dashboard', icon: TrendingUp, label: 'View Analytics', desc: 'Hiring funnel & insights', color: '#f59e0b' },
 ]
 
 const TOP_CANDIDATES = [
@@ -283,3 +356,4 @@ function getRandomColor() {
   const colors = ['#7c3aed','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4','#ef4444']
   return colors[Math.floor(Math.random() * colors.length)]
 }
+

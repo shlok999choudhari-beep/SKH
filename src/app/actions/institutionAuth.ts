@@ -45,7 +45,7 @@ export async function institutionLogin(state: AuthState, formData: FormData): Pr
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { updated_at: new Date() }
+    data: { updatedAt: new Date() }
   })
 
   // We set the role to 'institution-admin' for layout & permissions check

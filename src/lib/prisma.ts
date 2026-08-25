@@ -4,34 +4,129 @@ const globalForPrisma = globalThis as unknown as { prisma: any }
 
 const rawPrisma = globalForPrisma.prisma || new PrismaClient()
 
-// Common relation and model mapping
+// Map all potential model names/aliases (snake_case, plural, camelCase) to the raw Prisma delegate name
 const MODEL_MAPPING: Record<string, string> = {
-  student: 'students',
-  institution: 'institutions',
-  company: 'companies',
-  trainer: 'trainers',
-  user: 'users',
-  resume: 'resumes',
-  application: 'applications',
-  certification: 'certifications',
-  codingSession: 'coding_sessions',
-  cohort: 'cohorts',
-  dreamCompany: 'dream_companies',
-  interview: 'interviews',
-  jobPosting: 'job_postings',
-  learningPath: 'learning_paths',
-  message: 'messages',
-  mockInterview: 'mock_interviews',
-  placementDrive: 'placement_drives',
-  placementRound: 'placement_rounds',
-  resource: 'resources',
-  resourceBooking: 'resource_bookings',
-  resourceRequest: 'resource_requests',
-  resourceSharingNotification: 'resource_sharing_notifications',
-  sharingAgreement: 'sharing_agreements',
-  skillAssessment: 'skill_assessments',
-  skillGapAnalysis: 'skill_gap_analyses',
-  trainerSession: 'trainer_sessions',
+  student: 'student',
+  students: 'student',
+  institution: 'institution',
+  institutions: 'institution',
+  company: 'company',
+  companies: 'company',
+  trainer: 'trainer',
+  trainers: 'trainer',
+  user: 'user',
+  users: 'user',
+  resume: 'resume',
+  resumes: 'resume',
+  application: 'application',
+  applications: 'application',
+  certification: 'certification',
+  certifications: 'certification',
+  codingSession: 'codingSession',
+  codingSessions: 'codingSession',
+  coding_session: 'codingSession',
+  coding_sessions: 'codingSession',
+  cohort: 'cohort',
+  cohorts: 'cohort',
+  dreamCompany: 'dreamCompany',
+  dreamCompanies: 'dreamCompany',
+  dream_company: 'dreamCompany',
+  dream_companies: 'dreamCompany',
+  interview: 'interview',
+  interviews: 'interview',
+  jobPosting: 'jobPosting',
+  jobPostings: 'jobPosting',
+  job_posting: 'jobPosting',
+  job_postings: 'jobPosting',
+  learningPath: 'learningPath',
+  learningPaths: 'learningPath',
+  learning_path: 'learningPath',
+  learning_paths: 'learningPath',
+  message: 'message',
+  messages: 'message',
+  mockInterview: 'mockInterview',
+  mockInterviews: 'mockInterview',
+  mock_interview: 'mock_interviews',
+  placementDrive: 'placementDrive',
+  placementDrives: 'placementDrive',
+  placement_drive: 'placementDrive',
+  placement_drives: 'placementDrive',
+  placementRound: 'placementRound',
+  placementRounds: 'placementRound',
+  placement_round: 'placementRound',
+  placement_rounds: 'placementRound',
+  placementApplication: 'placementApplication',
+  placementApplications: 'placementApplication',
+  placementApps: 'placementApplication',
+  placement_application: 'placementApplication',
+  placement_applications: 'placementApplication',
+  placement_apps: 'placementApplication',
+  resource: 'resource',
+  resources: 'resource',
+  resourceBooking: 'resourceBooking',
+  resourceBookings: 'resourceBooking',
+  resource_booking: 'resourceBooking',
+  resource_bookings: 'resourceBooking',
+  resourceRequest: 'resourceRequest',
+  resourceRequests: 'resourceRequest',
+  resource_request: 'resourceRequest',
+  resource_requests: 'resourceRequest',
+  resourceSharingNotification: 'resourceSharingNotification',
+  resourceSharingNotifications: 'resourceSharingNotification',
+  resource_sharing_notification: 'resourceSharingNotification',
+  resource_sharing_notifications: 'resourceSharingNotification',
+  sharingAgreement: 'sharingAgreement',
+  sharingAgreements: 'sharingAgreement',
+  sharing_agreement: 'sharingAgreement',
+  sharing_agreements: 'sharingAgreement',
+  skillAssessment: 'skillAssessment',
+  skillAssessments: 'skillAssessment',
+  skill_assessment: 'skillAssessment',
+  skill_assessments: 'skillAssessment',
+  skillGapAnalysis: 'skillGapAnalysis',
+  skillGapAnalyses: 'skillGapAnalysis',
+  skill_gap_analysis: 'skillGapAnalysis',
+  skill_gap_analyses: 'skillGapAnalysis',
+  trainerSession: 'trainerSession',
+  trainerSessions: 'trainerSession',
+  trainer_session: 'trainerSession',
+  trainer_sessions: 'trainerSession',
+  internship: 'internship',
+  internships: 'internship',
+  internshipApplication: 'internshipApplication',
+  internshipApplications: 'internshipApplication',
+  internshipApps: 'internshipApplication',
+  internship_application: 'internshipApplication',
+  internship_applications: 'internshipApplication',
+  internship_apps: 'internshipApplication',
+  document: 'document',
+  documents: 'document',
+  documentRequest: 'documentRequest',
+  documentRequests: 'documentRequest',
+  document_request: 'documentRequest',
+  document_requests: 'documentRequest',
+  auditLog: 'auditLog',
+  auditLogs: 'auditLog',
+  audit_log: 'auditLog',
+  audit_logs: 'auditLog',
+}
+
+// Map custom relation names used in include/select
+const RELATION_MAP: Record<string, string> = {
+  internship_applications: 'internshipApps',
+  internshipApplications: 'internshipApps',
+  internship_apps: 'internshipApps',
+  placement_applications: 'placementApps',
+  placementApplications: 'placementApps',
+  placement_apps: 'placementApps',
+  resource_sharing_notifications: 'sharingNotifications',
+  resourceSharingNotifications: 'sharingNotifications',
+}
+
+function toCamelCase(str: string): string {
+  if (RELATION_MAP[str]) return RELATION_MAP[str]
+  if (str.startsWith('$') || str.startsWith('_')) return str
+  return str.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase())
 }
 
 function toSnakeCase(str: string): string {
@@ -46,12 +141,12 @@ function transformKeys(obj: any): any {
   }
   const newObj: Record<string, any> = {}
   for (const [key, value] of Object.entries(obj)) {
-    if (key.startsWith('$')) {
+    if (key.startsWith('$') || key.startsWith('_')) {
       newObj[key] = transformKeys(value)
       continue
     }
-    const mapped = MODEL_MAPPING[key] || toSnakeCase(key)
-    newObj[mapped] = transformKeys(value)
+    const camelKey = toCamelCase(key)
+    newObj[camelKey] = transformKeys(value)
   }
   return newObj
 }
@@ -66,11 +161,33 @@ function wrapResultWithCamelGetters(result: any): any {
     get(target, prop: string | symbol) {
       if (typeof prop === 'symbol') return target[prop]
       if (prop in target) return wrapResultWithCamelGetters(target[prop])
+
+      const camelKey = toCamelCase(prop)
+      if (camelKey in target) return wrapResultWithCamelGetters(target[camelKey])
+
       const snakeKey = toSnakeCase(prop)
       if (snakeKey in target) return wrapResultWithCamelGetters(target[snakeKey])
-      const mapped = MODEL_MAPPING[prop]
-      if (mapped && mapped in target) return wrapResultWithCamelGetters(target[mapped])
+
+      if (prop === 'internship_applications' || prop === 'internshipApplications') {
+        if ('internshipApps' in target) return wrapResultWithCamelGetters(target['internshipApps'])
+      }
+      if (prop === 'placement_applications' || prop === 'placementApplications') {
+        if ('placementApps' in target) return wrapResultWithCamelGetters(target['placementApps'])
+      }
+      if (prop === 'resource_sharing_notifications' || prop === 'resourceSharingNotifications') {
+        if ('sharingNotifications' in target) return wrapResultWithCamelGetters(target['sharingNotifications'])
+      }
+
       return (target as any)[prop]
+    },
+    has(target, prop: string | symbol) {
+      if (typeof prop === 'symbol') return prop in target
+      if (prop in target) return true
+      const camelKey = toCamelCase(prop)
+      if (camelKey in target) return true
+      const snakeKey = toSnakeCase(prop)
+      if (snakeKey in target) return true
+      return false
     }
   })
 }
@@ -89,7 +206,7 @@ function wrapModelDelegate(delegate: any) {
           }
           const newArg: Record<string, any> = {}
           for (const [k, v] of Object.entries(arg)) {
-            if (k === 'where' || k === 'data' || k === 'orderBy' || k === 'select' || k === 'include') {
+            if (k === 'where' || k === 'data' || k === 'orderBy' || k === 'select' || k === 'include' || k === 'create' || k === 'update' || k === 'set') {
               newArg[k] = transformKeys(v)
             } else {
               newArg[k] = v
@@ -135,4 +252,5 @@ function createPrismaProxy(client: any): any {
 export const prisma = createPrismaProxy(rawPrisma) as PrismaClient & Record<string, any>
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = rawPrisma
+
 

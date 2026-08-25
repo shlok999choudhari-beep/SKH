@@ -1,9 +1,24 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import CompanySidebar from '@/components/CompanySidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Editor from '@monaco-editor/react'
 import io from 'socket.io-client'
+import {
+  Code2,
+  Video,
+  VideoOff,
+  Square,
+  CheckCircle2,
+  Rocket,
+  Copy,
+  Terminal,
+  Play,
+  Share2,
+  Users,
+  Award
+} from 'lucide-react'
 
 export default function CompanyCodingJudge() {
   const [code, setCode] = useState('// Write your code here')
@@ -158,8 +173,6 @@ if __name__ == "__main__":
           socketUrl = envUrl
         }
       } else {
-        // If no explicit env URL is set:
-        // In local HTTP dev (port 3000), default to port 3001
         if (!isHttps && window.location.hostname === 'localhost' && window.location.port === '3000') {
           socketUrl = 'http://localhost:3001'
         } else {
@@ -199,31 +212,15 @@ if __name__ == "__main__":
 
     socketRef.current.on('webrtc-answer', async ({ answer }: any) => {
       console.log('📥 Received answer')
-      console.log('Answer SDP:', answer.sdp?.substring(0, 200) + '...')
-      console.log('Answer has video:', answer.sdp?.includes('m=video'))
-      console.log('Answer has audio:', answer.sdp?.includes('m=audio'))
-      
       if (peerConnectionRef.current) {
         try {
           await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer))
-          console.log('✅ Remote description set from answer')
-          console.log('Signaling state:', peerConnectionRef.current.signalingState)
-          console.log('Connection state:', peerConnectionRef.current.connectionState)
-          
-          // Add any pending ICE candidates
           if (pendingCandidatesRef.current.length > 0) {
-            console.log('🧩 Adding', pendingCandidatesRef.current.length, 'pending ICE candidates')
             for (const candidate of pendingCandidatesRef.current) {
               await peerConnectionRef.current.addIceCandidate(candidate)
             }
             pendingCandidatesRef.current = []
           }
-          
-          // Check transceivers
-          console.log('📡 Transceivers:', peerConnectionRef.current.getTransceivers().length)
-          peerConnectionRef.current.getTransceivers().forEach((transceiver, i) => {
-            console.log(`Transceiver ${i}:`, transceiver.direction, transceiver.currentDirection, transceiver.receiver.track?.kind)
-          })
         } catch (error) {
           console.error('Error setting remote description:', error)
         }
@@ -231,14 +228,11 @@ if __name__ == "__main__":
     })
 
     socketRef.current.on('webrtc-ice-candidate', async ({ candidate }: any) => {
-      console.log('Received ICE candidate')
       if (peerConnectionRef.current && candidate) {
         try {
           if (peerConnectionRef.current.remoteDescription) {
             await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate))
-            console.log('ICE candidate added')
           } else {
-            console.log('Queuing ICE candidate')
             pendingCandidatesRef.current.push(new RTCIceCandidate(candidate))
           }
         } catch (error) {
@@ -255,7 +249,6 @@ if __name__ == "__main__":
     }
     
     const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase()
-    console.log('Creating room:', newRoomId)
     setRoomId(newRoomId)
     roomIdRef.current = newRoomId
     
@@ -284,38 +277,24 @@ if __name__ == "__main__":
       
       peerConnectionRef.current = new RTCPeerConnection(configuration)
       
-      console.log('🎬 Adding local tracks to peer connection...')
       localStreamRef.current.getTracks().forEach(track => {
-        console.log('➕ Adding track:', track.kind, 'enabled:', track.enabled, 'readyState:', track.readyState)
-        const sender = peerConnectionRef.current?.addTrack(track, localStreamRef.current!)
-        console.log('✅ Track added, sender:', sender?.track?.kind)
-      })
-      
-      console.log('📊 Total senders:', peerConnectionRef.current.getSenders().length)
-      peerConnectionRef.current.getSenders().forEach((sender, i) => {
-        console.log(`Sender ${i}:`, sender.track?.kind, sender.track?.enabled)
+        peerConnectionRef.current?.addTrack(track, localStreamRef.current!)
       })
       
       peerConnectionRef.current.ontrack = (event) => {
-        console.log('🎥🎥🎥 ontrack event fired!', event)
         let stream = event.streams && event.streams[0] ? event.streams[0] : null
         if (!stream && event.track) {
           stream = new MediaStream([event.track])
         }
         
         if (stream) {
-          console.log('✅ Stream received, tracks:', stream.getTracks().length)
           remoteStreamRef.current = stream
           setRemoteStream(stream)
           setRemoteVideoReady(true)
           
           if (remoteVideoRef.current) {
-            console.log('Setting srcObject on remote video')
             remoteVideoRef.current.srcObject = stream
-            remoteVideoRef.current.play().then(() => {
-              console.log('✅ Remote video playing!')
-            }).catch(err => {
-              console.warn('Remote video unmuted play error, trying muted:', err)
+            remoteVideoRef.current.play().catch(err => {
               if (remoteVideoRef.current) {
                 remoteVideoRef.current.muted = true
                 remoteVideoRef.current.play().catch(e => console.error('Muted play failed:', e))
@@ -325,128 +304,105 @@ if __name__ == "__main__":
         }
       }
       
-      peerConnectionRef.current.onconnectionstatechange = () => {
-        console.log('Connection state:', peerConnectionRef.current?.connectionState)
-      }
-      
-      peerConnectionRef.current.oniceconnectionstatechange = () => {
-        console.log('ICE connection state:', peerConnectionRef.current?.iceConnectionState)
-      }
-      
       peerConnectionRef.current.onicecandidate = (event) => {
         if (event.candidate && socketRef.current) {
           const activeRoom = roomIdRef.current || currentRoomId || roomId
-          console.log('Sending ICE candidate to room:', activeRoom)
           socketRef.current.emit('webrtc-ice-candidate', {
             roomId: activeRoom,
             candidate: event.candidate
           })
         }
       }
-      
-      console.log('Video initialized for room:', currentRoomId)
-      console.log('✅ Peer connection setup complete')
     } catch (error) {
       console.error('Error initializing video:', error)
     }
   }
 
-  const createOffer = async () => {
-    if (!peerConnectionRef.current) {
-      console.error('Peer connection not initialized')
-      return
-    }
-    
+  const handleOffer = async (offer: any) => {
+    if (!peerConnectionRef.current) return
     try {
-      console.log('📤 Creating offer...')
-      console.log('Peer connection state:', peerConnectionRef.current.connectionState)
-      console.log('Signaling state:', peerConnectionRef.current.signalingState)
-      console.log('Local tracks:', localStreamRef.current?.getTracks().map(t => `${t.kind}: ${t.enabled}`))
-      console.log('Senders before offer:', peerConnectionRef.current.getSenders().length)
-      
-      const offer = await peerConnectionRef.current.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: true
-      })
-      
-      await peerConnectionRef.current.setLocalDescription(offer)
-      
-      const activeRoom = roomIdRef.current || roomId
-      console.log('📤 Sending offer to room:', activeRoom)
-      socketRef.current.emit('webrtc-offer', {
-        roomId: activeRoom,
-        offer
-      })
-    } catch (error) {
-      console.error('Error creating offer:', error)
-    }
-  }
-
-  const handleOffer = async (offer: RTCSessionDescriptionInit) => {
-    if (!peerConnectionRef.current) {
-      console.error('Peer connection not initialized')
-      return
-    }
-    
-    try {
-      console.log('Setting remote description from offer')
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer))
-      
-      if (pendingCandidatesRef.current.length > 0) {
-        console.log('Adding', pendingCandidatesRef.current.length, 'pending ICE candidates')
-        for (const candidate of pendingCandidatesRef.current) {
-          await peerConnectionRef.current.addIceCandidate(candidate)
-        }
-        pendingCandidatesRef.current = []
-      }
-      
-      console.log('Creating answer')
       const answer = await peerConnectionRef.current.createAnswer()
       await peerConnectionRef.current.setLocalDescription(answer)
-      
-      const activeRoom = roomIdRef.current || roomId
-      console.log('Sending answer to room:', activeRoom)
-      socketRef.current.emit('webrtc-answer', {
-        roomId: activeRoom,
-        answer
-      })
-    } catch (error) {
-      console.error('Error handling offer:', error)
-    }
-  }
-
-  const handleCodeChange = (value: string | undefined) => {
-    if (value !== undefined) {
-      setCode(value)
-      if (connected && socketRef.current) {
-        socketRef.current.emit('code-change', { roomId, code: value })
+      if (socketRef.current) {
+        socketRef.current.emit('webrtc-answer', {
+          roomId: roomIdRef.current || roomId,
+          answer
+        })
       }
+    } catch (err) {
+      console.error('Error handling offer:', err)
     }
   }
 
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang)
-    setCode(templates[lang])
-    if (connected && socketRef.current) {
-      socketRef.current.emit('language-change', { roomId, language: lang })
+  const createOffer = async () => {
+    if (!peerConnectionRef.current) return
+    try {
+      const offer = await peerConnectionRef.current.createOffer()
+      await peerConnectionRef.current.setLocalDescription(offer)
+      const targetRoom = roomIdRef.current || roomId
+      if (socketRef.current && targetRoom) {
+        socketRef.current.emit('webrtc-offer', {
+          offer,
+          roomId: targetRoom
+        })
+      }
+    } catch (err) {
+      console.error('Error creating offer:', err)
+    }
+  }
+
+  const handleCodeChange = (newCode: any) => {
+    setCode(newCode)
+    if (socketRef.current && roomIdRef.current) {
+      socketRef.current.emit('code_change', {
+        code: newCode,
+        roomId: roomIdRef.current
+      })
+    }
+  }
+
+  const handleLanguageChange = (newLang: string) => {
+    setLanguage(newLang)
+    setCode(templates[newLang])
+    if (socketRef.current && roomIdRef.current) {
+      socketRef.current.emit('language_change', {
+        language: newLang,
+        code: templates[newLang],
+        roomId: roomIdRef.current
+      })
     }
   }
 
   const runCode = async () => {
     setRunning(true)
-    setOutput('Running...')
+    setOutput('Running code...')
     
     try {
-      const res = await fetch('/api/code-execute', {
+      const res = await fetch('/api/code/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language, input })
       })
-      
       const data = await res.json()
-      setOutput(data.error || data.output || 'No output')
+      const result = data.output || data.error || 'Execution finished'
+      setOutput(result)
+      
+      if (socketRef.current && roomIdRef.current) {
+        socketRef.current.emit('code_output', {
+          output: result,
+          roomId: roomIdRef.current
+        })
+      }
     } catch (error) {
-      setOutput('Error executing code')
+      const err = 'Failed to execute code'
+      setOutput(err)
+      if (socketRef.current && roomIdRef.current) {
+        socketRef.current.emit('code_output', {
+          output: err,
+          roomId: roomIdRef.current
+        })
+      }
     } finally {
       setRunning(false)
     }
@@ -458,44 +414,21 @@ if __name__ == "__main__":
 
   const submitScore = async () => {
     try {
-      // Emit score to student via socket
-      if (socketRef.current) {
-        socketRef.current.emit('session-ended', {
-          roomId,
-          score,
-          feedback
-        })
-      }
-
-      await fetch('/api/coding-session', {
-        method: 'PUT',
+      await fetch('/api/company/interviews/score', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          roomId,
+          roomId: roomIdRef.current,
           score,
           feedback,
-          codeSnapshot: code,
-          language
+          studentName
         })
       })
-      
-      setShowScoreModal(false)
       alert('Score submitted successfully!')
-      
-      // Disconnect and cleanup
-      if (socketRef.current) {
-        socketRef.current.disconnect()
-      }
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach(track => track.stop())
-      }
-      if (peerConnectionRef.current) {
-        peerConnectionRef.current.close()
-      }
-      
-      window.location.reload()
+      window.location.href = '/company/dashboard'
     } catch (error) {
-      alert('Failed to submit score')
+      console.error('Failed to submit score:', error)
+      alert('Score submission failed')
     }
   }
 
@@ -505,31 +438,47 @@ if __name__ == "__main__":
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>💻 Coding Judge</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Code2 size={24} strokeWidth={2} color="#10b981" />
+              <h1 className={styles.pageTitle}>Coding Judge</h1>
+            </div>
             <p className={styles.pageSubtitle}>Real-time collaborative coding interview</p>
           </div>
           {connected && (
-            <button onClick={endSession} className="btn btn-secondary">
-              ⏹️ End Session
+            <button onClick={endSession} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Square size={14} strokeWidth={2} fill="currentColor" />
+              <span>End Session</span>
             </button>
           )}
         </header>
 
         <main className={styles.main}>
           {!mounted ? <div style={{ padding: '60px', textAlign: 'center' }}>Loading...</div> : !connected ? (
-            <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '60px' }}>
-              <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎯</div>
+            <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                <Code2 size={56} strokeWidth={1.5} color="#10b981" />
+              </div>
               <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Start Coding Session</h3>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
                 Create a room and share the Room ID with the candidate
               </p>
               <div style={{ marginBottom: '20px' }}>
-                <button onClick={toggleCamera} className={`btn ${cameraOn ? 'btn-secondary' : 'btn-primary'} btn-lg`}>
-                  {cameraOn ? '📹 Stop Camera' : '📷 Start Camera'}
+                <button onClick={toggleCamera} className={`btn ${cameraOn ? 'btn-secondary' : 'btn-primary'} btn-lg`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  {cameraOn ? (
+                    <>
+                      <VideoOff size={18} strokeWidth={2} />
+                      <span>Stop Camera</span>
+                    </>
+                  ) : (
+                    <>
+                      <Video size={18} strokeWidth={2} />
+                      <span>Start Camera</span>
+                    </>
+                  )}
                 </button>
               </div>
               {cameraOn && (
-                <div style={{ maxWidth: '320px', margin: '0 auto 20px', borderRadius: '12px', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.4)', background: '#000' }}>
+                <div style={{ maxWidth: '320px', width: '100%', margin: '0 auto 20px', borderRadius: '12px', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.4)', background: '#000' }}>
                   <video
                     ref={previewVideoRef}
                     autoPlay
@@ -537,26 +486,30 @@ if __name__ == "__main__":
                     muted
                     style={{ width: '100%', height: '180px', objectFit: 'cover', transform: 'scaleX(-1)' }}
                   />
-                  <p style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)' }}>
-                    🟢 Camera Live & Ready
-                  </p>
+                  <div style={{ fontSize: '12px', color: '#10b981', padding: '6px', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <CheckCircle2 size={12} strokeWidth={2} />
+                    <span>Camera Live & Ready</span>
+                  </div>
                 </div>
               )}
               {cameraOn && (
-                <button onClick={createRoom} className="btn btn-primary btn-lg">
-                  🚀 Create Room
+                <button onClick={createRoom} className="btn btn-primary btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Rocket size={16} strokeWidth={2} />
+                  <span>Create Room</span>
                 </button>
               )}
               {roomId && (
-                <div style={{ marginTop: '24px', padding: '20px', background: 'rgba(16,185,129,0.15)', borderRadius: '12px', border: '2px solid rgba(16,185,129,0.3)' }}>
+                <div style={{ marginTop: '24px', padding: '20px', background: 'rgba(16,185,129,0.15)', borderRadius: '12px', border: '2px solid rgba(16,185,129,0.3)', maxWidth: '400px', width: '100%' }}>
                   <p style={{ fontSize: '14px', marginBottom: '8px', color: 'var(--text-secondary)' }}>Share this Room ID with the candidate:</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
-                    <p style={{ fontSize: '32px', fontWeight: '800', color: '#10b981', letterSpacing: '4px' }}>{roomId}</p>
+                    <p style={{ fontSize: '32px', fontWeight: '800', color: '#10b981', letterSpacing: '4px', margin: 0 }}>{roomId}</p>
                     <button 
                       onClick={() => { navigator.clipboard.writeText(roomId); alert('Room ID copied!') }}
                       className="btn btn-secondary btn-sm"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      📋 Copy
+                      <Copy size={13} strokeWidth={2} />
+                      <span>Copy</span>
                     </button>
                   </div>
                 </div>
@@ -564,29 +517,33 @@ if __name__ == "__main__":
             </div>
           ) : (
             <div className={styles.codingJudgeGrid}>
-              {/* Mobile Tab Switcher */}
               <div className={styles.mobileTabNav} style={{ gridColumn: '1 / -1' }}>
                 <button
                   onClick={() => setMobileTab('code')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'code' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                 >
-                  💻 Code
+                  <Code2 size={14} strokeWidth={2} />
+                  <span>Code</span>
                 </button>
                 <button
                   onClick={() => setMobileTab('video')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'video' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                 >
-                  🎥 Candidate Video
+                  <Video size={14} strokeWidth={2} />
+                  <span>Candidate Video</span>
                 </button>
                 <button
                   onClick={() => setMobileTab('io')}
                   className={`${styles.mobileTabButton} ${mobileTab === 'io' ? styles.mobileTabButtonActive : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                 >
-                  📋 Output
+                  <Terminal size={14} strokeWidth={2} />
+                  <span>Output</span>
                 </button>
               </div>
 
-              {/* Left: Code Editor (shown always on desktop, on mobile only when active tab is 'code' or 'io') */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab === 'video' ? styles.hideOnMobileTab : ''}>
                 {(mobileTab === 'code' || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
                   <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
@@ -601,8 +558,18 @@ if __name__ == "__main__":
                         <option value="python">Python</option>
                         <option value="java">Java</option>
                       </select>
-                      <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm" style={{ minHeight: '38px' }}>
-                        {running ? '⏳ Running...' : '▶️ Run Code'}
+                      <button onClick={runCode} disabled={running} className="btn btn-primary btn-sm" style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        {running ? (
+                          <>
+                            <MorphingInfinity className="size-4" style={{ width: '14px', height: '14px' }} />
+                            <span>Running...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play size={14} strokeWidth={2} fill="currentColor" />
+                            <span>Run Code</span>
+                          </>
+                        )}
                       </button>
                     </div>
                     
@@ -618,7 +585,8 @@ if __name__ == "__main__":
                           fontSize: 14,
                           lineNumbers: 'on',
                           scrollBeyondLastLine: false,
-                          automaticLayout: true
+                          automaticLayout: true,
+                          tabSize: 4
                         }}
                       />
                     </div>
@@ -626,91 +594,84 @@ if __name__ == "__main__":
                 )}
 
                 {(mobileTab === 'io' || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
-                  <>
-                    <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                      <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Input:</h4>
-                      <textarea
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Enter input here..."
-                        style={{
-                          width: '100%',
-                          height: '80px',
-                          padding: '8px',
-                          background: 'rgba(255,255,255,0.05)',
-                          border: '1px solid var(--border)',
-                          borderRadius: '6px',
-                          color: 'var(--text-primary)',
-                          fontSize: '13px',
-                          fontFamily: 'monospace',
-                          resize: 'vertical'
-                        }}
-                      />
+                  <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                          <Terminal size={14} strokeWidth={2} color="#10b981" />
+                          <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Input (stdin)</label>
+                        </div>
+                        <textarea
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          placeholder="Custom input..."
+                          style={{ width: '100%', height: '100px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', color: 'var(--text-primary)', fontFamily: 'monospace', fontSize: '12px', resize: 'none' }}
+                        />
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                          <Terminal size={14} strokeWidth={2} color="#10b981" />
+                          <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Output</label>
+                        </div>
+                        <pre style={{ height: '100px', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', color: 'var(--text-primary)', fontFamily: 'monospace', fontSize: '12px', overflowY: 'auto', margin: 0 }}>
+                          {output || 'Output will appear here...'}
+                        </pre>
+                      </div>
                     </div>
-
-                    <div className={`glass ${styles.panel}`} style={{ padding: '16px', flex: 1 }}>
-                      <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Output:</h4>
-                      <pre style={{
-                        padding: '12px',
-                        background: 'rgba(0,0,0,0.3)',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontFamily: 'monospace',
-                        color: '#10b981',
-                        overflow: 'auto',
-                        maxHeight: '200px'
-                      }}>
-                        {output || 'No output yet'}
-                      </pre>
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
 
-              {/* Right: Video Call (shown always on desktop, on mobile only when active tab is 'video') */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab !== 'video' ? styles.hideOnMobileTab : ''}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab === 'code' || mobileTab === 'io' ? styles.hideOnMobileTab : ''}>
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>{studentName || 'Candidate'} {!remoteVideoReady && '(Connecting...)'}</h4>
-                  <video
-                    ref={remoteVideoRef}
-                    autoPlay
-                    playsInline
-                    style={{
-                      width: '100%',
-                      height: '200px',
-                      background: '#000',
-                      borderRadius: '8px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                </div>
-
-                <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h4 style={{ fontSize: '14px' }}>You {!localVideoReady && '(Connecting...)'}</h4>
-                    <button onClick={toggleCamera} className="btn btn-secondary btn-sm">
-                      {cameraOn ? '📹 Stop' : '📷 Start'}
-                    </button>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Video size={16} strokeWidth={2} color="#10b981" />
+                      <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>Candidate Video</h4>
+                    </div>
+                    {studentName && (
+                      <span className="badge badge-green" style={{ fontSize: '11px' }}>
+                        {studentName} (Connected)
+                      </span>
+                    )}
                   </div>
-                  <video
-                    ref={localVideoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    style={{
-                      width: '100%',
-                      height: '200px',
-                      background: '#000',
-                      borderRadius: '8px',
-                      objectFit: 'cover',
-                      transform: 'scaleX(-1)'
-                    }}
-                  />
+                  <div style={{ width: '100%', height: '240px', background: '#000', borderRadius: '8px', overflow: 'hidden', position: 'relative', border: '1px solid var(--border)' }}>
+                    <video
+                      ref={remoteVideoRef}
+                      autoPlay
+                      playsInline
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    {!remoteVideoReady && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                        Waiting for candidate video...
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Room ID:</p>
-                  <p style={{ fontSize: '18px', fontWeight: '700', color: '#10b981', letterSpacing: '2px' }}>{roomId}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Video size={16} strokeWidth={2} color="#10b981" />
+                      <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>Your Camera</h4>
+                    </div>
+                    <span className="badge badge-purple" style={{ fontSize: '11px' }}>Interviewer</span>
+                  </div>
+                  <div style={{ width: '100%', height: '180px', background: '#000', borderRadius: '8px', overflow: 'hidden', position: 'relative', border: '1px solid var(--border)' }}>
+                    <video
+                      ref={localVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
+                    />
+                    {!localVideoReady && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                        Camera is off
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -719,55 +680,37 @@ if __name__ == "__main__":
       </div>
 
       {showScoreModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div className="glass" style={{ padding: '32px', maxWidth: '500px', width: '90%' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '24px' }}>Rate Candidate Performance</h3>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '14px', marginBottom: '8px', display: 'block' }}>
-                Score (0-100):
-              </label>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '16px', maxWidth: '480px', width: '100%', padding: '2rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+              Submit Candidate Assessment
+            </h3>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Score (out of 100)</label>
               <input
                 type="number"
                 min="0"
                 max="100"
                 value={score}
-                onChange={(e) => setScore(parseInt(e.target.value))}
+                onChange={(e) => setScore(Number(e.target.value))}
                 className="form-input"
+                style={{ width: '100%' }}
               />
             </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '14px', marginBottom: '8px', display: 'block' }}>
-                Feedback:
-              </label>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Feedback</label>
               <textarea
+                rows={4}
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Provide detailed feedback..."
+                placeholder="Candidate's strengths, areas of improvement..."
                 className="form-input"
-                style={{ minHeight: '120px', resize: 'vertical' }}
+                style={{ width: '100%', resize: 'vertical' }}
               />
             </div>
-
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={submitScore} className="btn btn-primary" style={{ flex: 1 }}>
-                Submit Score
-              </button>
-              <button onClick={() => setShowScoreModal(false)} className="btn btn-secondary">
-                Cancel
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button onClick={() => setShowScoreModal(false)} className="btn btn-secondary">Cancel</button>
+              <button onClick={submitScore} className="btn btn-primary">Submit Score</button>
             </div>
           </div>
         </div>

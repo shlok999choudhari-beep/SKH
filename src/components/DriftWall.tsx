@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from 'react'
 
 interface DriftItem {
   image?: string
-  icon?: string
+  icon?: React.ReactNode
   title?: string
   subtitle?: string
   type?: 'progress' | 'tags' | 'match' | 'step' | 'code' | 'badge'

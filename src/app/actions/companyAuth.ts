@@ -61,14 +61,14 @@ export async function companySignup(state: AuthState, formData: FormData): Promi
 
   const result = await prisma.company.create({
     data: {
-      company_name: company_name,
+      companyName: company_name,
       email,
       password: hashedPassword,
       industry: industry || null,
       website: website || null,
       location: location || null,
-      company_size: company_size || null,
-      contact_person: contact_person,
+      companySize: company_size || null,
+      contactPerson: contact_person,
       phone: phone || null
     }
   })
@@ -108,9 +108,9 @@ export async function companyLogin(state: AuthState, formData: FormData): Promis
 
   await prisma.company.update({
     where: { id: company.id },
-    data: { updated_at: new Date() }
+    data: { updatedAt: new Date() }
   })
 
-  await createSession({ userId: company.id, role: 'company', email: company.email, name: company.company_name || (company as any).companyName, expiresAt: new Date() })
+  await createSession({ userId: company.id, role: 'company', email: company.email, name: company.companyName, expiresAt: new Date() })
   redirect('/company/dashboard')
 }

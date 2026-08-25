@@ -1,8 +1,28 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Vapi from '@vapi-ai/web'
+import {
+  Mic,
+  Download,
+  ListOrdered,
+  TriangleAlert,
+  Play,
+  Loader2,
+  Volume2,
+  Square,
+  CheckCircle2,
+  CircleX,
+  RotateCcw,
+  MessageSquare,
+  Bot,
+  User,
+  BarChart2,
+  FileQuestion,
+  Target
+} from 'lucide-react'
 
 export default function MockInterviewPage() {
   const [vapi, setVapi] = useState<any>(null)
@@ -393,12 +413,16 @@ export default function MockInterviewPage() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>🎤 AI Mock Interview</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Mic size={24} strokeWidth={2} color="#3b82f6" />
+              <h1 className={styles.pageTitle}>AI Mock Interview</h1>
+            </div>
             <p className={styles.pageSubtitle}>Practice with AI-powered voice interviewer</p>
           </div>
           {interviewComplete && summary && (
-            <button onClick={downloadPDF} className="btn btn-primary">
-              📥 Download Report
+            <button onClick={downloadPDF} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Download size={15} strokeWidth={2} />
+              <span>Download Report</span>
             </button>
           )}
         </header>
@@ -406,27 +430,30 @@ export default function MockInterviewPage() {
         <main className={styles.main}>
           {/* Description */}
           <div className={`glass ${styles.panel}`}>
-            <h3 className={styles.panelTitle}>📋 How It Works</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <ListOrdered size={18} strokeWidth={2} color="#3b82f6" />
+              <h3 className={styles.panelTitle}>How It Works</h3>
+            </div>
             <div className={styles.listItems}>
               <div className={styles.listItem}>
-                <span className={styles.listIcon}>1️⃣</span>
-                <span>Click "Start Interview" to begin your AI-powered mock interview</span>
+                <span className={styles.listIcon} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.2)', color: '#3b82f6', fontSize: '12px', fontWeight: 'bold' }}>1</span>
+                <span>Click &quot;Start Interview&quot; to begin your AI-powered mock interview</span>
               </div>
               <div className={styles.listItem}>
-                <span className={styles.listIcon}>2️⃣</span>
-                <span>The AI will ask which company you're preparing for and your expertise area</span>
+                <span className={styles.listIcon} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.2)', color: '#3b82f6', fontSize: '12px', fontWeight: 'bold' }}>2</span>
+                <span>The AI will ask which company you&apos;re preparing for and your expertise area</span>
               </div>
               <div className={styles.listItem}>
-                <span className={styles.listIcon}>3️⃣</span>
+                <span className={styles.listIcon} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.2)', color: '#3b82f6', fontSize: '12px', fontWeight: 'bold' }}>3</span>
                 <span>Answer 5 tailored questions with real-time feedback after each response</span>
               </div>
               <div className={styles.listItem}>
-                <span className={styles.listIcon}>4️⃣</span>
+                <span className={styles.listIcon} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.2)', color: '#3b82f6', fontSize: '12px', fontWeight: 'bold' }}>4</span>
                 <span>Receive a comprehensive performance summary at the end</span>
               </div>
               <div className={styles.listItem}>
-                <span className={styles.listIcon}>5️⃣</span>
-                <span>Download your interview report as PDF with all Q&A and feedback</span>
+                <span className={styles.listIcon} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.2)', color: '#3b82f6', fontSize: '12px', fontWeight: 'bold' }}>5</span>
+                <span>Download your interview report as PDF with all Q&amp;A and feedback</span>
               </div>
             </div>
           </div>
@@ -435,23 +462,29 @@ export default function MockInterviewPage() {
           <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '32px 16px' }}>
             {callStatus === 'idle' && (
               <>
-                <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎙️</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(59,130,246,0.15)', color: '#3b82f6', marginBottom: '16px' }}>
+                  <Mic size={40} strokeWidth={1.75} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Ready to Start?</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '12px', fontSize: '14px' }}>
                   Click Start and allow microphone access when prompted
                 </p>
-                <p style={{ color: '#f59e0b', fontSize: '13px', marginBottom: '24px' }}>
-                  ⚠️ Make sure you're using HTTPS or localhost
+                <p style={{ color: '#f59e0b', fontSize: '13px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <TriangleAlert size={15} strokeWidth={2} />
+                  <span>Make sure you&apos;re using HTTPS or localhost</span>
                 </p>
-                <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '220px' }}>
-                  🚀 Start Interview
+                <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '220px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Play size={18} strokeWidth={2} />
+                  <span>Start Interview</span>
                 </button>
               </>
             )}
 
             {callStatus === 'connecting' && (
               <>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>⏳</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(124,58,237,0.15)', color: '#7c3aed', marginBottom: '20px' }}>
+                  <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#7c3aed' }} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Connecting...</h3>
                 <p style={{ color: 'var(--text-secondary)' }}>
                   Setting up your AI interviewer
@@ -461,51 +494,61 @@ export default function MockInterviewPage() {
 
             {callStatus === 'connected' && isCallActive && (
               <>
-                <div style={{ fontSize: '64px', marginBottom: '20px', animation: 'pulse 2s infinite' }}>🎤</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', color: '#10b981', marginBottom: '20px', animation: 'pulse 2s infinite' }}>
+                  <Mic size={40} strokeWidth={2} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px', color: '#10b981' }}>Interview in Progress</h3>
                 {isSpeaking === 'assistant' && (
-                  <p style={{ color: '#7c3aed', marginBottom: '12px', fontWeight: '600', animation: 'pulse 1s infinite' }}>
-                    🔊 AI is speaking...
+                  <p style={{ color: '#7c3aed', marginBottom: '12px', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '6px', animation: 'pulse 1s infinite' }}>
+                    <Volume2 size={16} strokeWidth={2} />
+                    <span>AI is speaking...</span>
                   </p>
                 )}
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
                   Speak clearly and take your time to answer
                 </p>
-                <button onClick={endInterview} className="btn btn-secondary">
-                  ⏹️ End Interview
+                <button onClick={endInterview} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Square size={16} strokeWidth={2} />
+                  <span>End Interview</span>
                 </button>
               </>
             )}
 
             {callStatus === 'ended' && interviewComplete && (
               <>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', color: '#10b981', marginBottom: '20px' }}>
+                  <CheckCircle2 size={44} strokeWidth={2} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Interview Complete!</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
                   Great job! Review your transcript and download your report below
                 </p>
-                <button onClick={startInterview} className="btn btn-primary">
-                  🔄 Start New Interview
+                <button onClick={startInterview} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <RotateCcw size={16} strokeWidth={2} />
+                  <span>Start New Interview</span>
                 </button>
               </>
             )}
 
             {callStatus === 'error' && (
               <>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>❌</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(239,68,68,0.15)', color: '#ef4444', marginBottom: '20px' }}>
+                  <CircleX size={44} strokeWidth={2} />
+                </div>
                 <h3 style={{ fontSize: '20px', marginBottom: '12px', color: '#ef4444' }}>Connection Error</h3>
                 <div style={{ color: 'var(--text-secondary)', marginBottom: '24px', textAlign: 'left', maxWidth: '500px' }}>
                   <p style={{ marginBottom: '12px' }}>Possible solutions:</p>
                   <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
                     <li>Allow microphone access in browser settings</li>
-                    <li>Make sure you're using HTTPS or localhost</li>
+                    <li>Make sure you&apos;re using HTTPS or localhost</li>
                     <li>Check if another app is using your microphone</li>
                     <li>Try refreshing the page</li>
                     <li>Try a different browser (Chrome recommended)</li>
                   </ul>
                 </div>
-                <button onClick={() => { setCallStatus('idle'); window.location.reload() }} className="btn btn-secondary">
-                  🔄 Refresh & Try Again
+                <button onClick={() => { setCallStatus('idle'); window.location.reload() }} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <RotateCcw size={16} strokeWidth={2} />
+                  <span>Refresh &amp; Try Again</span>
                 </button>
               </>
             )}
@@ -514,7 +557,10 @@ export default function MockInterviewPage() {
           {/* Live Transcript */}
           {transcript.length > 0 && (
             <div className={`glass ${styles.panel}`}>
-              <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>💬 Live Transcript</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <MessageSquare size={18} strokeWidth={2} color="#3b82f6" />
+                <h3 className={styles.panelTitle}>Live Transcript</h3>
+              </div>
               <div style={{ 
                 maxHeight: '400px', 
                 overflowY: 'auto',
@@ -536,9 +582,13 @@ export default function MockInterviewPage() {
                       marginBottom: '6px',
                       fontSize: '11px',
                       color: 'var(--text-muted)',
-                      fontWeight: '600'
+                      fontWeight: '600',
+                      alignItems: 'center'
                     }}>
-                      <span>{msg.role === 'assistant' ? '🤖 AI Interviewer' : '👤 You'}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        {msg.role === 'assistant' ? <Bot size={14} strokeWidth={2} color="#7c3aed" /> : <User size={14} strokeWidth={2} color="#10b981" />}
+                        <span>{msg.role === 'assistant' ? 'AI Interviewer' : 'You'}</span>
+                      </span>
                       <span>{msg.timestamp}</span>
                     </div>
                     <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-primary)' }}>
@@ -555,7 +605,10 @@ export default function MockInterviewPage() {
           {interviewComplete && summary && (
             <>
               <div className={`glass ${styles.panel}`}>
-                <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>📊 Interview Summary</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <BarChart2 size={18} strokeWidth={2} color="#7c3aed" />
+                  <h3 className={styles.panelTitle}>Interview Summary</h3>
+                </div>
                 <div className={styles.grid2}>
                   <div style={{ padding: '16px', background: 'rgba(124,58,237,0.1)', borderRadius: '8px' }}>
                     <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Company</p>
@@ -577,7 +630,10 @@ export default function MockInterviewPage() {
               </div>
 
               <div className={`glass ${styles.panel}`}>
-                <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>📝 Questions & Answers</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <FileQuestion size={18} strokeWidth={2} color="#10b981" />
+                  <h3 className={styles.panelTitle}>Questions &amp; Answers</h3>
+                </div>
                 {summary.qaList.map((qa: any, idx: number) => (
                   <div key={idx} style={{ 
                     marginBottom: '20px',
@@ -614,7 +670,10 @@ export default function MockInterviewPage() {
 
               {summary.finalSummary && (
                 <div className={`glass ${styles.panel}`}>
-                  <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>🎯 Performance Summary</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                    <Target size={18} strokeWidth={2} color="#f59e0b" />
+                    <h3 className={styles.panelTitle}>Performance Summary</h3>
+                  </div>
                   <p style={{ fontSize: '14px', lineHeight: '1.8', color: 'var(--text-secondary)' }}>
                     {summary.finalSummary}
                   </p>

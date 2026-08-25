@@ -7,10 +7,38 @@ import NotificationBell from '@/components/NotificationBell'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
 import { logout } from '@/app/actions/logout'
+import {
+  LayoutDashboard,
+  Zap,
+  FileText,
+  Mic,
+  Code2,
+  Compass,
+  ChartNoAxesCombined,
+  Brain,
+  Bot,
+  Sparkles,
+  BriefcaseBusiness,
+  Target,
+  GraduationCap,
+  Building2,
+  User,
+  Presentation,
+  Landmark,
+  BookOpen,
+  CalendarDays,
+  FolderLock,
+  Search,
+  ChevronDown,
+  Sun,
+  Moon,
+  LogOut,
+  LucideIcon
+} from 'lucide-react'
 
 type NavItem = {
   href: string;
-  icon: string;
+  icon: LucideIcon;
   label: string;
   badge?: string;
   desc?: string;
@@ -19,7 +47,7 @@ type NavItem = {
 type NavCategory = {
   id: string;
   title: string;
-  icon: string;
+  icon: LucideIcon;
   items: NavItem[];
 }
 
@@ -27,41 +55,41 @@ const CATEGORIES: NavCategory[] = [
   {
     id: 'ai-tools',
     title: 'AI & Practice Tools',
-    icon: '⚡',
+    icon: Sparkles,
     items: [
-      { href: '/student/resume', icon: '📄', label: 'Resume Builder', badge: 'AI', desc: 'ATS Optimization' },
-      { href: '/student/mock-interview', icon: '🎙️', label: 'Mock Interview', badge: 'Vapi', desc: 'Voice AI Practice' },
-      { href: '/student/coding-judge', icon: '💻', label: 'Coding Judge', desc: 'LeetCode Style' },
-      { href: '/student/roadmap', icon: '🗺️', label: 'Learning Roadmap', desc: 'AI Career Path' },
-      { href: '/student/skill-gap', icon: '📊', label: 'Skill Gap Analysis', desc: 'Role Alignment' },
-      { href: '/student/skills', icon: '⚡', label: 'Skill Insights', desc: 'Radar Analytics' },
-      { href: '/student/behavioral-analysis', icon: '🧠', label: 'Behavioral Analysis', desc: 'Tone & Soft Skills' },
-      { href: '/student/mentor', icon: '💬', label: 'AI Mentor', desc: '24/7 Chat Guidance' },
-      { href: '/student/dream-mode', icon: '✨', label: 'Dream Mode', badge: 'HOT', desc: 'Company Targeting' },
+      { href: '/student/resume', icon: FileText, label: 'Resume Builder', badge: 'AI', desc: 'ATS Optimization' },
+      { href: '/student/mock-interview', icon: Mic, label: 'Mock Interview', badge: 'Vapi', desc: 'Voice AI Practice' },
+      { href: '/student/coding-judge', icon: Code2, label: 'Coding Judge', desc: 'LeetCode Style' },
+      { href: '/student/roadmap', icon: Compass, label: 'Learning Roadmap', desc: 'AI Career Path' },
+      { href: '/student/skill-gap', icon: ChartNoAxesCombined, label: 'Skill Gap Analysis', desc: 'Role Alignment' },
+      { href: '/student/skills', icon: Zap, label: 'Skill Insights', desc: 'Radar Analytics' },
+      { href: '/student/behavioral-analysis', icon: Brain, label: 'Behavioral Analysis', desc: 'Tone & Soft Skills' },
+      { href: '/student/mentor', icon: Bot, label: 'AI Mentor', desc: '24/7 Chat Guidance' },
+      { href: '/student/dream-mode', icon: Sparkles, label: 'Dream Mode', badge: 'HOT', desc: 'Company Targeting' },
     ]
   },
   {
     id: 'career',
     title: 'Jobs & Placement',
-    icon: '💼',
+    icon: BriefcaseBusiness,
     items: [
-      { href: '/student/jobs', icon: '💼', label: 'Job Openings', desc: 'Live Listings' },
-      { href: '/student/internships', icon: '🎯', label: 'Internships', desc: 'Paid Roles' },
-      { href: '/student/placements', icon: '🎓', label: 'Placements', desc: 'On-Campus Drives' },
-      { href: '/student/companies', icon: '🏢', label: 'Top Companies', desc: 'Hiring Insights' },
-      { href: '/student/profile', icon: '👤', label: 'My Profile', desc: 'Skills & Achievements' },
+      { href: '/student/jobs', icon: BriefcaseBusiness, label: 'Job Openings', desc: 'Live Listings' },
+      { href: '/student/internships', icon: Target, label: 'Internships', desc: 'Paid Roles' },
+      { href: '/student/placements', icon: GraduationCap, label: 'Placements', desc: 'On-Campus Drives' },
+      { href: '/student/companies', icon: Building2, label: 'Top Companies', desc: 'Hiring Insights' },
+      { href: '/student/profile', icon: User, label: 'My Profile', desc: 'Skills & Achievements' },
     ]
   },
   {
     id: 'campus',
     title: 'Campus & Resources',
-    icon: '🏛️',
+    icon: Landmark,
     items: [
-      { href: '/student/trainers', icon: '👨‍🏫', label: 'Industry Trainers', desc: '1-on-1 Sessions' },
-      { href: '/student/campus-resources', icon: '🏫', label: 'Campus Resources', desc: 'Labs & Hubs' },
-      { href: '/student/resources', icon: '📚', label: 'Study Resources', desc: 'Curated Notes' },
-      { href: '/student/bookings', icon: '📅', label: 'My Bookings', desc: 'Session Timetable' },
-      { href: '/student/documents', icon: '📁', label: 'My Documents', desc: 'Verified Proofs' },
+      { href: '/student/trainers', icon: Presentation, label: 'Industry Trainers', desc: '1-on-1 Sessions' },
+      { href: '/student/campus-resources', icon: Landmark, label: 'Campus Resources', desc: 'Labs & Hubs' },
+      { href: '/student/resources', icon: BookOpen, label: 'Study Resources', desc: 'Curated Notes' },
+      { href: '/student/bookings', icon: CalendarDays, label: 'My Bookings', desc: 'Session Timetable' },
+      { href: '/student/documents', icon: FolderLock, label: 'My Documents', desc: 'Verified Proofs' },
     ]
   }
 ]
@@ -161,12 +189,13 @@ export default function StudentSidebar() {
           className={`${styles.activeLink} ${pathname === '/student/dashboard' ? styles.categoryBtnActive : ''}`}
           onClick={() => setMobileOpen(false)}
         >
-          <span>🏠</span>
+          <LayoutDashboard size={17} strokeWidth={2} />
           <span>Dashboard</span>
         </Link>
 
         {/* Category Mega Dropdowns */}
         {CATEGORIES.map(cat => {
+          const CatIcon = cat.icon
           const isOpen = activeCategory === cat.id
           const hasActiveItem = cat.items.some(i => pathname === i.href)
 
@@ -176,11 +205,16 @@ export default function StudentSidebar() {
                 className={`${styles.categoryBtn} ${hasActiveItem || isOpen ? styles.categoryBtnActive : ''}`}
                 onClick={() => setActiveCategory(isOpen ? null : cat.id)}
               >
-                <span>{cat.icon}</span>
+                <CatIcon size={16} strokeWidth={2} />
                 <span>{cat.title}</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
+                <ChevronDown
+                  size={14}
+                  strokeWidth={2}
+                  style={{
+                    transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
+                    transition: 'transform 0.2s'
+                  }}
+                />
               </button>
 
               {isOpen && (
@@ -188,6 +222,7 @@ export default function StudentSidebar() {
                   <div className={styles.megaHeader}>{cat.title}</div>
                   <div className={styles.megaGrid}>
                     {cat.items.map(item => {
+                      const ItemIcon = item.icon
                       const isActive = pathname === item.href
                       return (
                         <Link
@@ -199,7 +234,9 @@ export default function StudentSidebar() {
                             setMobileOpen(false)
                           }}
                         >
-                          <span className={styles.megaIcon}>{item.icon}</span>
+                          <span className={styles.megaIcon}>
+                            <ItemIcon size={18} strokeWidth={2} />
+                          </span>
                           <span className={styles.megaLabel}>{item.label}</span>
                           {item.badge && <span className={styles.megaBadge}>{item.badge}</span>}
                         </Link>
@@ -213,9 +250,7 @@ export default function StudentSidebar() {
 
         {/* Feature Quick Search Bar */}
         <div className={styles.searchBox}>
-          <svg className={styles.searchIcon} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-          </svg>
+          <Search className={styles.searchIcon} size={14} strokeWidth={2} />
           <input
             type="text"
             className={styles.searchInput}
@@ -233,21 +268,26 @@ export default function StudentSidebar() {
               <div className={styles.megaHeader}>Search Results</div>
               <div className={styles.megaGrid} style={{ gridTemplateColumns: '1fr' }}>
                 {filteredItems.length > 0 ? (
-                  filteredItems.map(item => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={styles.megaItem}
-                      onClick={() => {
-                        setSearchOpen(false)
-                        setSearchQuery('')
-                        setMobileOpen(false)
-                      }}
-                    >
-                      <span className={styles.megaIcon}>{item.icon}</span>
-                      <span className={styles.megaLabel}>{item.label}</span>
-                    </Link>
-                  ))
+                  filteredItems.map(item => {
+                    const SearchItemIcon = item.icon
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={styles.megaItem}
+                        onClick={() => {
+                          setSearchOpen(false)
+                          setSearchQuery('')
+                          setMobileOpen(false)
+                        }}
+                      >
+                        <span className={styles.megaIcon}>
+                          <SearchItemIcon size={16} strokeWidth={2} />
+                        </span>
+                        <span className={styles.megaLabel}>{item.label}</span>
+                      </Link>
+                    )
+                  })
                 ) : (
                   <div style={{ padding: '8px', fontSize: '11px', color: 'var(--text-muted)' }}>No features found</div>
                 )}
@@ -266,9 +306,7 @@ export default function StudentSidebar() {
             <div className={styles.userInfo}>
               <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <span className={styles.userName}>{userData.name}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
+                <ChevronDown size={14} strokeWidth={2} />
               </button>
             </div>
           </>
@@ -281,11 +319,11 @@ export default function StudentSidebar() {
         {dropdownOpen && (
           <div className={styles.userDropdown}>
             <button onClick={toggleTheme} className={styles.dropdownItem}>
-              <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+              {theme === 'dark' ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
             <button onClick={handleLogout} className={styles.dropdownItem}>
-              <span>🚪</span>
+              <LogOut size={16} strokeWidth={2} />
               <span>Sign Out</span>
             </button>
           </div>
@@ -294,3 +332,4 @@ export default function StudentSidebar() {
     </header>
   )
 }
+

@@ -1,6 +1,19 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../institution.module.css'
+import {
+  Building2,
+  MapPin,
+  DollarSign,
+  Clock,
+  Target,
+  BarChart2,
+  ArrowRight,
+  TrendingUp,
+  X,
+  Loader2
+} from 'lucide-react'
 
 export default function InstitutionInternshipsPage() {
   const [internships, setInternships] = useState<any[]>([])
@@ -96,14 +109,20 @@ export default function InstitutionInternshipsPage() {
       <main className={styles.main}>
         <div className={styles.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              🏢 Partner Company Opportunities
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Building2 size={20} strokeWidth={2} color="#a855f7" />
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                Partner Company Opportunities
+              </h2>
+            </div>
             <span className="badge badge-purple">{internships.length} Available Opportunities</span>
           </div>
 
           {loading ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading internships...</div>
+            <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+              <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#a855f7' }} />
+              <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>Loading internships...</p>
+            </div>
           ) : internships.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
               No internships posted by partner companies yet.
@@ -130,9 +149,12 @@ export default function InstitutionInternshipsPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                         <div>
                           <h3 style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{internship.title}</h3>
-                          <p style={{ fontSize: '0.875rem', color: '#10b981', fontWeight: 600 }}>
-                            🏢 {internship.company_name}
-                          </p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                            <Building2 size={13} strokeWidth={2} color="#10b981" />
+                            <p style={{ fontSize: '0.875rem', color: '#10b981', fontWeight: 600, margin: 0 }}>
+                              {internship.company_name}
+                            </p>
+                          </div>
                         </div>
                         <span className={`badge ${internship.status === 'open' ? 'badge-green' : 'badge-orange'}`}>
                           {internship.status}
@@ -141,17 +163,46 @@ export default function InstitutionInternshipsPage() {
 
                       {/* Meta Info */}
                       <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
-                        <span>📍 {internship.location || 'Remote'}</span>
-                        <span>💰 {internship.stipend || 'Stipend Provided'}</span>
-                        <span>⏱️ {internship.duration || '3 Months'}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <MapPin size={12} strokeWidth={2} />
+                          <span>{internship.location || 'Remote'}</span>
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <DollarSign size={12} strokeWidth={2} />
+                          <span>{internship.stipend || 'Stipend Provided'}</span>
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={12} strokeWidth={2} />
+                          <span>{internship.duration || '3 Months'}</span>
+                        </span>
                       </div>
 
                       {/* Criteria Badges */}
                       <div style={{ padding: '8px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {internship.min_cgpa && <span>🎯 Min CGPA: <strong>{internship.min_cgpa}</strong></span>}
-                        {internship.min_twelfth_marks && <span>🎯 Min 12th: <strong>{internship.min_twelfth_marks}%</strong></span>}
-                        {internship.min_tenth_marks && <span>🎯 Min 10th: <strong>{internship.min_tenth_marks}%</strong></span>}
-                        {!internship.min_cgpa && !internship.min_twelfth_marks && <span>🎯 Open to All Students</span>}
+                        {internship.min_cgpa && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Target size={12} strokeWidth={2} />
+                            <span>Min CGPA: <strong>{internship.min_cgpa}</strong></span>
+                          </span>
+                        )}
+                        {internship.min_twelfth_marks && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Target size={12} strokeWidth={2} />
+                            <span>Min 12th: <strong>{internship.min_twelfth_marks}%</strong></span>
+                          </span>
+                        )}
+                        {internship.min_tenth_marks && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Target size={12} strokeWidth={2} />
+                            <span>Min 10th: <strong>{internship.min_tenth_marks}%</strong></span>
+                          </span>
+                        )}
+                        {!internship.min_cgpa && !internship.min_twelfth_marks && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Target size={12} strokeWidth={2} />
+                            <span>Open to All Students</span>
+                          </span>
+                        )}
                       </div>
 
                       {/* Eligible Students Section */}
@@ -169,23 +220,28 @@ export default function InstitutionInternshipsPage() {
                       >
                         <div>
                           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Eligible Institute Students</span>
-                          <strong style={{ fontSize: '1rem', color: '#8b5cf6' }}>
-                            🎯 {internship.eligible_students_count || 0} Students Eligible
-                          </strong>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            <Target size={14} strokeWidth={2} color="#8b5cf6" />
+                            <strong style={{ fontSize: '1rem', color: '#8b5cf6' }}>
+                              {internship.eligible_students_count || 0} Students Eligible
+                            </strong>
+                          </div>
                         </div>
                         <button 
                           className="btn btn-ghost btn-sm"
-                          style={{ fontSize: '0.75rem', color: '#8b5cf6', borderColor: 'rgba(124, 58, 237, 0.3)' }}
+                          style={{ fontSize: '0.75rem', color: '#8b5cf6', borderColor: 'rgba(124, 58, 237, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           onClick={() => handleOpenEligibleModal(internship)}
                         >
-                          View Students →
+                          <span>View Students</span>
+                          <ArrowRight size={12} strokeWidth={2} />
                         </button>
                       </div>
 
                       {/* 4-Stage Student Progress Pipeline Summary */}
                       <div style={{ marginBottom: '1.25rem' }}>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                          📊 Student Progress Pipeline (4 Stages)
+                        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <BarChart2 size={15} strokeWidth={2} color="#8b5cf6" />
+                          <span>Student Progress Pipeline (4 Stages)</span>
                         </div>
                         
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', textAlign: 'center' }}>
@@ -215,10 +271,11 @@ export default function InstitutionInternshipsPage() {
                     <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end' }}>
                       <button 
                         className="btn btn-sm"
-                        style={{ background: 'var(--grad-purple)', color: 'white', border: 'none' }}
+                        style={{ background: 'var(--grad-purple)', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         onClick={() => handleOpenProgressModal(internship)}
                       >
-                        View Student Progress →
+                        <span>View Student Progress</span>
+                        <ArrowRight size={13} strokeWidth={2} />
                       </button>
                     </div>
                   </div>
@@ -261,14 +318,19 @@ export default function InstitutionInternshipsPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  📈 Student Hiring Progress (Read-Only Analytics)
-                </h2>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <TrendingUp size={20} strokeWidth={2} color="#8b5cf6" />
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Student Hiring Progress (Read-Only Analytics)
+                  </h2>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   {selectedInternship.title} • {selectedInternship.company_name}
                 </p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowProgressModal(false)}>✕</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowProgressModal(false)} style={{ display: 'flex', alignItems: 'center' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '1.5rem', padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border)' }}>
@@ -291,7 +353,10 @@ export default function InstitutionInternshipsPage() {
             </div>
 
             {loadingApps ? (
-              <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading student progress data...</div>
+              <div style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <MorphingInfinity className="size-10" style={{ width: '40px', height: '40px', color: '#8b5cf6' }} />
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading student progress data...</p>
+              </div>
             ) : applications.length === 0 ? (
               <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>No student applications recorded yet.</div>
             ) : (
@@ -375,14 +440,19 @@ export default function InstitutionInternshipsPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  🎯 Eligible Institute Students ({selectedInternship.eligible_students?.length || 0})
-                </h2>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={20} strokeWidth={2} color="#8b5cf6" />
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Eligible Institute Students ({selectedInternship.eligible_students?.length || 0})
+                  </h2>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   {selectedInternship.title} • {selectedInternship.company_name}
                 </p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowEligibleModal(false)}>✕</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowEligibleModal(false)} style={{ display: 'flex', alignItems: 'center' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
 
             <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(124, 58, 237, 0.08)', border: '1px solid rgba(124, 58, 237, 0.2)', marginBottom: '1.25rem' }}>
@@ -441,3 +511,4 @@ export default function InstitutionInternshipsPage() {
     </>
   )
 }
+

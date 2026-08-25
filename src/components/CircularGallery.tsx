@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 
 export interface CircularGalleryItem {
-  icon?: string
+  icon?: React.ReactNode
   title: string
   desc: string
   tag?: string

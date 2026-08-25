@@ -1,5 +1,6 @@
 'use client'
 import { useEffect } from 'react'
+import { TriangleAlert } from 'lucide-react'
 
 export default function StudentError({
   error,
@@ -31,11 +32,10 @@ export default function StudentError({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '32px',
         marginBottom: '1.5rem',
         color: '#ef4444'
       }}>
-        ⚠️
+        <TriangleAlert size={32} strokeWidth={2} />
       </div>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1rem' }}>
         Oops! Something went wrong
@@ -60,3 +60,4 @@ export default function StudentError({
     </div>
   )
 }
+

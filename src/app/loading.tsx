@@ -1,5 +1,5 @@
 import Logo from '@/components/Logo'
-import UniqueLoading from '@/components/ui/morph-loading'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 
 export default function Loading() {
   return (
@@ -14,7 +14,7 @@ export default function Loading() {
       gap: '1.5rem',
     }}>
       <Logo variant="student" size="xl" href="" withBadge badgeText="AI" />
-      <UniqueLoading variant="morph" size="sm" />
+      <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
       <p style={{ color: 'var(--text-secondary, #94a3b8)', fontSize: '13px', letterSpacing: '0.05em', fontFamily: 'var(--font-sans)' }}>
         Initializing PlaceIQ Intelligence...
       </p>

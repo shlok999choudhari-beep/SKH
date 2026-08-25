@@ -1,7 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
+import {
+  GraduationCap,
+  Rocket,
+  Building2,
+  Loader2
+} from 'lucide-react'
 
 export default function StudentPlacementsPage() {
   const [drives, setDrives] = useState<any[]>([])
@@ -52,7 +59,10 @@ export default function StudentPlacementsPage() {
       <div className={styles.layout}>
         <StudentSidebar />
         <div className={styles.content}>
-          <div style={{ padding: '60px', textAlign: 'center' }}>Loading placement drives...</div>
+          <div style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading placement drives...</p>
+          </div>
         </div>
       </div>
     )
@@ -64,14 +74,20 @@ export default function StudentPlacementsPage() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>Campus Placements</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle}>Campus Placements</h1>
+            </div>
             <p className={styles.pageSubtitle}>View and apply to mass recruitment drives hosted by your institution.</p>
           </div>
         </header>
 
         <main className={styles.main}>
           <div className={`glass ${styles.panel}`}>
-            <h3 className={styles.panelTitle}>🚀 Upcoming Drives</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <Rocket size={18} strokeWidth={2} color="#8b5cf6" />
+              <h3 className={styles.panelTitle}>Upcoming Drives</h3>
+            </div>
             {drives.length === 0 ? (
               <div style={{ color: 'var(--text-secondary)' }}>No placement drives announced yet. Keep checking!</div>
             ) : (
@@ -79,7 +95,7 @@ export default function StudentPlacementsPage() {
                 {drives.map((drive) => (
                   <div key={drive.id} className={styles.jobCard}>
                     <div className={styles.jobLogo} style={{ background: 'linear-gradient(135deg, #10b981, #3b82f6)' }}>
-                      {drive.company_name ? drive.company_name.charAt(0) : '🏢'}
+                      {drive.company_name ? drive.company_name.charAt(0) : <Building2 size={20} />}
                     </div>
                     <div className={styles.jobInfo}>
                       <div className={styles.jobTitle} style={{ fontSize: '1.125rem', marginBottom: '4px' }}>{drive.title}</div>
@@ -112,3 +128,4 @@ export default function StudentPlacementsPage() {
     </div>
   )
 }
+

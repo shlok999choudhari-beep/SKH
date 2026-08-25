@@ -2,8 +2,25 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../../institution/institution.module.css'
 import layoutStyles from '../dashboard.module.css'
+import {
+  CalendarDays,
+  Bell,
+  CheckCircle2,
+  CircleX,
+  Clock,
+  MapPin,
+  Calendar,
+  ArrowRight,
+  TriangleAlert,
+  X,
+  Laptop,
+  School,
+  Lightbulb,
+  Loader2
+} from 'lucide-react'
 
 export default function StudentBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([])
@@ -131,17 +148,24 @@ export default function StudentBookingsPage() {
       <div className={layoutStyles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>📅 My Bookings</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CalendarDays size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>My Bookings</h1>
+            </div>
             <p className={styles.pageSubtitle}>Manage your campus facility reservations, schedules, and approval logs.</p>
           </div>
         </header>
 
         <main className={styles.main}>
           {loading ? (
-            <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>Loading reservations...</div>
+            <div className="glass" style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+              <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+              <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Loading reservations...</p>
+            </div>
           ) : error ? (
-            <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>
-              <p style={{ color: '#ef4444', marginBottom: '16px' }}>Failed to load reservations</p>
+            <div className="glass" style={{ padding: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <TriangleAlert size={32} strokeWidth={2} color="#ef4444" />
+              <p style={{ color: '#ef4444' }}>Failed to load reservations</p>
               <button className="btn btn-primary" onClick={fetchBookings}>Try Again</button>
             </div>
           ) : (
@@ -149,11 +173,20 @@ export default function StudentBookingsPage() {
               {/* Dynamic Notification Banners */}
               {notifications.length > 0 && (
                 <div className="glass" style={{ padding: '16px', borderLeft: '4px solid var(--accent-purple)' }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '10px', color: 'var(--text-primary)' }}>🔔 Booking Notifications</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                    <Bell size={16} strokeWidth={2} color="var(--accent-purple)" />
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>Booking Notifications</h4>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {notifications.map((n, idx) => (
                       <div key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span>{n.type === 'approved' ? '🟢' : n.type === 'rejected' ? '🔴' : '🟡'}</span>
+                        {n.type === 'approved' ? (
+                          <CheckCircle2 size={13} strokeWidth={2} color="#10b981" />
+                        ) : n.type === 'rejected' ? (
+                          <CircleX size={13} strokeWidth={2} color="#ef4444" />
+                        ) : (
+                          <Clock size={13} strokeWidth={2} color="#f59e0b" />
+                        )}
                         <span>{n.message}</span>
                       </div>
                     ))}
@@ -162,21 +195,29 @@ export default function StudentBookingsPage() {
               )}
 
               {bookings.length === 0 ? (
-                <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>You have no resource bookings yet</h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Reserve seminar halls, lab rooms, or specialized systems to get started.</p>
-                  <Link href="/student/campus-resources" className="btn btn-primary">Book Campus Resources →</Link>
+                <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <CalendarDays size={48} strokeWidth={1.5} color="#8b5cf6" />
+                  </div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>You have no resource bookings yet</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>Reserve seminar halls, lab rooms, or specialized systems to get started.</p>
+                  <Link href="/student/campus-resources" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span>Book Campus Resources</span>
+                    <ArrowRight size={14} strokeWidth={2} />
+                  </Link>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
                   
                   {/* A. Upcoming Confirmed Section */}
                   <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      🟢 Upcoming Bookings
-                      <span className="badge badge-green" style={{ fontSize: '10px' }}>{upcomingBookings.length} Approved</span>
-                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                      <CheckCircle2 size={18} strokeWidth={2} color="#10b981" />
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        Upcoming Bookings
+                        <span className="badge badge-green" style={{ fontSize: '10px' }}>{upcomingBookings.length} Approved</span>
+                      </h3>
+                    </div>
                     {upcomingBookings.length === 0 ? (
                       <div className="glass" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                         No upcoming confirmed reservations.
@@ -189,10 +230,19 @@ export default function StudentBookingsPage() {
                               <h4 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>{b.resourceName}</h4>
                               <span className="badge badge-green" style={{ fontSize: '10px' }}>Confirmed</span>
                             </div>
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                              <div>📍 <strong>Location:</strong> {b.location || 'N/A'}</div>
-                              <div>📅 <strong>Date:</strong> {formatDate(b.startTime)}</div>
-                              <div>⏰ <strong>Time:</strong> {formatTime(b.startTime)} - {formatTime(b.endTime)}</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <MapPin size={12} strokeWidth={2} />
+                                <span><strong>Location:</strong> {b.location || 'N/A'}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Calendar size={12} strokeWidth={2} />
+                                <span><strong>Date:</strong> {formatDate(b.startTime)}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Clock size={12} strokeWidth={2} />
+                                <span><strong>Time:</strong> {formatTime(b.startTime)} - {formatTime(b.endTime)}</span>
+                              </div>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
                               <button className="btn btn-sm btn-ghost" onClick={() => setViewingBooking(b)}>View Details</button>
@@ -206,10 +256,13 @@ export default function StudentBookingsPage() {
 
                   {/* B. Pending Section */}
                   <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      🟡 Pending Approval
-                      <span className="badge badge-orange" style={{ fontSize: '10px' }}>{pendingBookings.length} Requests</span>
-                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                      <Clock size={18} strokeWidth={2} color="#f59e0b" />
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        Pending Approval
+                        <span className="badge badge-orange" style={{ fontSize: '10px' }}>{pendingBookings.length} Requests</span>
+                      </h3>
+                    </div>
                     {pendingBookings.length === 0 ? (
                       <div className="glass" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                         No pending booking requests.
@@ -222,10 +275,19 @@ export default function StudentBookingsPage() {
                               <h4 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>{b.resourceName}</h4>
                               <span className="badge badge-orange" style={{ fontSize: '10px' }}>Pending Approval</span>
                             </div>
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                              <div>📍 <strong>Location:</strong> {b.location || 'N/A'}</div>
-                              <div>📅 <strong>Date:</strong> {formatDate(b.startTime)}</div>
-                              <div>⏰ <strong>Time:</strong> {formatTime(b.startTime)} - {formatTime(b.endTime)}</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <MapPin size={12} strokeWidth={2} />
+                                <span><strong>Location:</strong> {b.location || 'N/A'}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Calendar size={12} strokeWidth={2} />
+                                <span><strong>Date:</strong> {formatDate(b.startTime)}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Clock size={12} strokeWidth={2} />
+                                <span><strong>Time:</strong> {formatTime(b.startTime)} - {formatTime(b.endTime)}</span>
+                              </div>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
                               <button className="btn btn-sm btn-ghost" onClick={() => setViewingBooking(b)}>View Details</button>
@@ -239,7 +301,10 @@ export default function StudentBookingsPage() {
 
                   {/* C. Completed & Cancelled Section */}
                   <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>Reservation History</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                      <Calendar size={18} strokeWidth={2} color="#8b5cf6" />
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>Reservation History</h3>
+                    </div>
                     {completedBookings.length === 0 ? (
                       <div className="glass" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                         No previous booking history.
@@ -303,8 +368,9 @@ export default function StudentBookingsPage() {
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
               Are you sure you want to cancel your booking request for <strong>{bookingToCancel.resourceName}</strong> on {formatDate(bookingToCancel.startTime)}?
             </p>
-            <p style={{ fontSize: '0.75rem', color: '#f59e0b', margin: 0 }}>
-              ⚠️ This action is irreversible and the time slot will immediately become available for other students.
+            <p style={{ fontSize: '0.75rem', color: '#f59e0b', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <TriangleAlert size={14} strokeWidth={2} color="#f59e0b" />
+              <span>This action is irreversible and the time slot will immediately become available for other students.</span>
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
               <button className="btn btn-secondary" onClick={() => setBookingToCancel(null)} disabled={actionSubmitting}>No, Keep It</button>
@@ -325,16 +391,36 @@ export default function StudentBookingsPage() {
                 <span className="badge badge-purple" style={{ fontSize: '10px', marginBottom: '6px' }}>{viewingBooking.category}</span>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Booking Details</h3>
               </div>
-              <button className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '18px', fontWeight: 'bold' }} onClick={() => setViewingBooking(null)}>✕</button>
+              <button className="btn btn-ghost" style={{ padding: '4px 8px', display: 'flex', alignItems: 'center' }} onClick={() => setViewingBooking(null)}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
 
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div>🖥️ <strong>Resource Name:</strong> {viewingBooking.resourceName}</div>
-              <div>📍 <strong>Location:</strong> {viewingBooking.location || 'N/A'}</div>
-              <div>🏫 <strong>Owner Institution:</strong> {viewingBooking.ownerName}</div>
-              <div>📅 <strong>Date:</strong> {formatDate(viewingBooking.startTime)}</div>
-              <div>⏰ <strong>Time:</strong> {formatTime(viewingBooking.startTime)} - {formatTime(viewingBooking.endTime)}</div>
-              <div>💡 <strong>Purpose:</strong> {viewingBooking.purpose || 'N/A'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Laptop size={14} strokeWidth={2} />
+                <span><strong>Resource Name:</strong> {viewingBooking.resourceName}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <MapPin size={14} strokeWidth={2} />
+                <span><strong>Location:</strong> {viewingBooking.location || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <School size={14} strokeWidth={2} />
+                <span><strong>Owner Institution:</strong> {viewingBooking.ownerName}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Calendar size={14} strokeWidth={2} />
+                <span><strong>Date:</strong> {formatDate(viewingBooking.startTime)}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={14} strokeWidth={2} />
+                <span><strong>Time:</strong> {formatTime(viewingBooking.startTime)} - {formatTime(viewingBooking.endTime)}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Lightbulb size={14} strokeWidth={2} />
+                <span><strong>Purpose:</strong> {viewingBooking.purpose || 'N/A'}</span>
+              </div>
               
               <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <strong>Status:</strong>
@@ -375,3 +461,4 @@ export default function StudentBookingsPage() {
     </div>
   )
 }
+

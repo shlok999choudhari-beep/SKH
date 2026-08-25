@@ -4,17 +4,53 @@ import Link from 'next/link'
 import StudentSidebar from '@/components/StudentSidebar'
 import styles from '../../institution/institution.module.css'
 import layoutStyles from '../dashboard.module.css'
+import {
+  Landmark,
+  CheckCircle2,
+  Handshake,
+  FlaskConical,
+  Target,
+  Search,
+  Users,
+  MapPin,
+  Calendar,
+  School,
+  ArrowRight,
+  Clock,
+  ShieldCheck,
+  Laptop,
+  Lightbulb,
+  TriangleAlert,
+  X,
+  BookOpen,
+  Wrench,
+  Building2,
+  Globe
+} from 'lucide-react'
+
+const getCategoryIconComponent = (cat: string) => {
+  const lower = cat.toLowerCase()
+  if (lower.includes('lab') && lower.includes('computer')) return <Laptop size={20} color="#3b82f6" />
+  if (lower.includes('lab')) return <FlaskConical size={20} color="#a855f7" />
+  if (lower.includes('classroom')) return <School size={20} color="#10b981" />
+  if (lower.includes('library')) return <BookOpen size={20} color="#f59e0b" />
+  if (lower.includes('training') || lower.includes('facility')) return <Target size={20} color="#ec4899" />
+  if (lower.includes('equipment')) return <Wrench size={20} color="#6366f1" />
+  if (lower.includes('software')) return <Laptop size={20} color="#06b6d4" />
+  if (lower.includes('seminar') || lower.includes('hall')) return <Building2 size={20} color="#8b5cf6" />
+  return <Globe size={20} color="#64748b" />
+}
 
 const CATEGORIES = [
-  { value: 'Computer Labs', icon: '🖥️' },
-  { value: 'Classrooms', icon: '🏫' },
-  { value: 'Laboratories', icon: '🔬' },
-  { value: 'Library', icon: '📚' },
-  { value: 'Training Facilities', icon: '🎯' },
-  { value: 'Equipment', icon: '🛠️' },
-  { value: 'Software/Licenses', icon: '💻' },
-  { value: 'Seminar Halls', icon: '🏢' },
-  { value: 'Other', icon: '🌐' }
+  { value: 'Computer Labs' },
+  { value: 'Classrooms' },
+  { value: 'Laboratories' },
+  { value: 'Library' },
+  { value: 'Training Facilities' },
+  { value: 'Equipment' },
+  { value: 'Software/Licenses' },
+  { value: 'Seminar Halls' },
+  { value: 'Other' }
 ]
 
 export default function StudentCampusResources() {
@@ -133,12 +169,6 @@ export default function StudentCampusResources() {
     }
   }
 
-  // Get icon based on category
-  const getIcon = (cat: string) => {
-    const found = CATEGORIES.find(c => cat.toLowerCase().includes(c.value.toLowerCase().split('/')[0].trim()))
-    return found?.icon || '🏢'
-  }
-
   // Formatting helper
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -193,7 +223,10 @@ export default function StudentCampusResources() {
       <div className={layoutStyles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>🎓 Campus Resources</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Landmark size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>Campus Resources</h1>
+            </div>
             <p className={styles.pageSubtitle}>Explore labs, facilities, training infrastructure, and other resources available through your institution.</p>
           </div>
         </header>
@@ -223,7 +256,9 @@ export default function StudentCampusResources() {
         ) : error ? (
           // Error State
           <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+            <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+              <TriangleAlert size={48} strokeWidth={1.5} color="#ef4444" />
+            </div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', color: '#ef4444' }}>Unable to load campus resources</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>A network error occurred while connecting to the resource server.</p>
             <button className="btn btn-primary" onClick={fetchResources}>Try Again</button>
@@ -231,7 +266,9 @@ export default function StudentCampusResources() {
         ) : resources.length === 0 ? (
           // Empty State
           <div className="glass" style={{ padding: '5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-            <div style={{ fontSize: '4rem' }}>🎓</div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Landmark size={48} strokeWidth={1.5} color="#8b5cf6" />
+            </div>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>No Campus Resources Available</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '480px', margin: 0 }}>
               Your institution has not added any student-accessible resources yet.
@@ -240,8 +277,9 @@ export default function StudentCampusResources() {
               Resources are managed by your institution. Check back when new facilities become available.
             </p>
             <div style={{ marginTop: '16px' }}>
-              <Link href="/student/resources" className="btn btn-secondary">
-                View Learning Resources →
+              <Link href="/student/resources" className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <span>View Learning Resources</span>
+                <ArrowRight size={14} strokeWidth={2} />
               </Link>
             </div>
           </div>
@@ -250,28 +288,36 @@ export default function StudentCampusResources() {
             {/* Stats Row */}
             <div className={styles.statsRow}>
               <div className={styles.statCard}>
-                <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>🟢</div>
+                <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CheckCircle2 size={20} strokeWidth={2} color="#10b981" />
+                </div>
                 <div>
                   <div className={styles.statLabel}>Available Resources</div>
                   <div className={styles.statValue}>{stats.availableCount}</div>
                 </div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statIcon} style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}>🤝</div>
+                <div className={styles.statIcon} style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Handshake size={20} strokeWidth={2} color="#3b82f6" />
+                </div>
                 <div>
                   <div className={styles.statLabel}>Shared via Partnerships</div>
                   <div className={styles.statValue}>{stats.sharedCount}</div>
                 </div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statIcon} style={{ background: 'rgba(168,85,247,0.1)', color: '#a855f7' }}>🔬</div>
+                <div className={styles.statIcon} style={{ background: 'rgba(168,85,247,0.1)', color: '#a855f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FlaskConical size={20} strokeWidth={2} color="#a855f7" />
+                </div>
                 <div>
                   <div className={styles.statLabel}>Available Labs</div>
                   <div className={styles.statValue}>{stats.labsCount}</div>
                 </div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statIcon} style={{ background: 'rgba(236,72,153,0.1)', color: '#ec4899' }}>🎯</div>
+                <div className={styles.statIcon} style={{ background: 'rgba(236,72,153,0.1)', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Target size={20} strokeWidth={2} color="#ec4899" />
+                </div>
                 <div>
                   <div className={styles.statLabel}>Training Facilities</div>
                   <div className={styles.statValue}>{stats.facilitiesCount}</div>
@@ -279,12 +325,13 @@ export default function StudentCampusResources() {
               </div>
             </div>
 
+
             {/* Filter Bar */}
             <div className="glass" style={{ padding: '16px', display: 'grid', gridTemplateColumns: '1fr repeat(4, minmax(130px, 170px))', gap: '12px', alignItems: 'center' }}>
               <input
                 type="text"
                 className="form-input"
-                placeholder="🔍 Search resources, labs, spaces..."
+                placeholder="Search resources, labs, spaces..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -310,7 +357,7 @@ export default function StudentCampusResources() {
               <input
                 type="number"
                 className="form-input"
-                placeholder="👥 Min Capacity"
+                placeholder="Min Capacity"
                 value={capacityFilter}
                 onChange={(e) => setCapacityFilter(e.target.value)}
               />
@@ -320,9 +367,9 @@ export default function StudentCampusResources() {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="all">All Statuses</option>
-                <option value="available">🟢 Available</option>
-                <option value="booked">🟡 Booked</option>
-                <option value="maintenance">🔴 Maintenance</option>
+                <option value="available">Available</option>
+                <option value="booked">Booked</option>
+                <option value="maintenance">Maintenance</option>
               </select>
             </div>
 
@@ -330,7 +377,8 @@ export default function StudentCampusResources() {
             {sharedResources.length > 0 && (
               <div className="glass" style={{ padding: '24px', background: 'rgba(59,130,246,0.03)', borderLeft: '4px solid #3b82f6', borderRadius: '16px' }}>
                 <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  🤝 Resources Available Through Partnerships
+                  <Handshake size={18} strokeWidth={2} color="#3b82f6" />
+                  <span>Resources Available Through Partnerships</span>
                   <span className="badge badge-blue" style={{ fontSize: '10px', padding: '2px 8px' }}>
                     {sharedResources.length} Assets
                   </span>
@@ -339,20 +387,31 @@ export default function StudentCampusResources() {
                   {sharedResources.map((resource) => (
                     <div key={resource.id} className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', background: 'var(--bg-secondary)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <span style={{ fontSize: '1.4rem' }}>{getIcon(resource.category)}</span>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {getCategoryIconComponent(resource.category)}
+                        </div>
                         <span className="badge badge-blue" style={{ fontSize: '10px' }}>
-                          🔵 Shared with Your Institution
+                          Shared with Your Institution
                         </span>
                       </div>
                       <div>
                         <h4 style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>{resource.name}</h4>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{resource.category}</span>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        📍 {resource.location} | 👥 {resource.capacity ? `Capacity: ${resource.capacity}` : 'N/A'}
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <MapPin size={12} strokeWidth={2} />
+                          <span>{resource.location}</span>
+                        </span>
+                        <span>•</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Users size={12} strokeWidth={2} />
+                          <span>{resource.capacity ? `Capacity: ${resource.capacity}` : 'N/A'}</span>
+                        </span>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                        Shared by: 🏫 <strong>{resource.ownerName}</strong>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <School size={13} strokeWidth={2} color="#8b5cf6" />
+                        <span>Shared by: <strong>{resource.ownerName}</strong></span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
                         <span className={`badge ${
@@ -366,10 +425,11 @@ export default function StudentCampusResources() {
                         </span>
                         <button
                           className="btn btn-sm btn-ghost"
-                          style={{ padding: '4px 10px', fontSize: '12px' }}
+                          style={{ padding: '4px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           onClick={() => openDetailsModal(resource)}
                         >
-                          View Details →
+                          <span>View Details</span>
+                          <ArrowRight size={12} strokeWidth={2} />
                         </button>
                       </div>
                     </div>
@@ -390,11 +450,13 @@ export default function StudentCampusResources() {
                   {filteredResources.map((resource) => (
                     <div key={resource.id} className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <span style={{ fontSize: '1.5rem' }}>{getIcon(resource.category)}</span>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {getCategoryIconComponent(resource.category)}
+                        </div>
                         <span className={`badge ${
                           resource.accessType === 'SHARED_RESOURCE' ? 'badge-blue' : 'badge-green'
                         }`} style={{ fontSize: '10px' }}>
-                          {resource.accessType === 'SHARED_RESOURCE' ? '🔵 Shared with Your Institution' : '🟢 Institution Resource'}
+                          {resource.accessType === 'SHARED_RESOURCE' ? 'Shared with Your Institution' : 'Institution Resource'}
                         </span>
                       </div>
                       <div>
@@ -405,15 +467,25 @@ export default function StudentCampusResources() {
                         {resource.description || 'No description provided.'}
                       </p>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-                        <div>📍 <strong>Location:</strong> {resource.location || 'N/A'}</div>
-                        <div>👥 <strong>Capacity:</strong> {resource.capacity ? `${resource.capacity}` : 'N/A'}</div>
-                        <div style={{ gridColumn: 'span 2' }}>📅 <strong>Availability:</strong> {resource.availability || 'N/A'}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <MapPin size={12} strokeWidth={2} />
+                          <span><strong>Location:</strong> {resource.location || 'N/A'}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Users size={12} strokeWidth={2} />
+                          <span><strong>Capacity:</strong> {resource.capacity ? `${resource.capacity}` : 'N/A'}</span>
+                        </div>
+                        <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Calendar size={12} strokeWidth={2} />
+                          <span><strong>Availability:</strong> {resource.availability || 'N/A'}</span>
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <School size={13} strokeWidth={2} color="#8b5cf6" />
                         {resource.accessType === 'SHARED_RESOURCE' ? (
-                          <>Shared by: 🏫 <strong>{resource.ownerName}</strong></>
+                          <span>Shared by: <strong>{resource.ownerName}</strong></span>
                         ) : (
-                          <>Available through: 🏫 <strong>Your Institution</strong></>
+                          <span>Available through: <strong>Your Institution</strong></span>
                         )}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
@@ -428,9 +500,11 @@ export default function StudentCampusResources() {
                         </span>
                         <button
                           className="btn btn-sm btn-ghost"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           onClick={() => openDetailsModal(resource)}
                         >
-                          View Details →
+                          <span>View Details</span>
+                          <ArrowRight size={12} strokeWidth={2} />
                         </button>
                       </div>
                     </div>
@@ -455,19 +529,34 @@ export default function StudentCampusResources() {
               </div>
               <button
                 className="btn btn-ghost"
-                style={{ padding: '4px 8px', fontSize: '18px', fontWeight: 'bold' }}
+                style={{ padding: '4px 8px', display: 'flex', alignItems: 'center' }}
                 onClick={() => setSelectedResource(null)}
               >
-                ✕
+                <X size={18} strokeWidth={2} />
               </button>
             </div>
 
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div>📍 <strong>Location:</strong> {selectedResource.location || 'N/A'}</div>
-              <div>👥 <strong>Capacity:</strong> {selectedResource.capacity ? `${selectedResource.capacity} students` : 'N/A'}</div>
-              <div>🕐 <strong>Availability:</strong> {selectedResource.availability}</div>
-              <div>🏫 <strong>Owner Institution:</strong> {selectedResource.ownerName}</div>
-              <div>🛡️ <strong>Access Type:</strong> {selectedResource.accessType === 'SHARED_RESOURCE' ? '🔵 Shared with Your Institution' : '🟢 Host Institution Resource'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <MapPin size={14} strokeWidth={2} />
+                <span><strong>Location:</strong> {selectedResource.location || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Users size={14} strokeWidth={2} />
+                <span><strong>Capacity:</strong> {selectedResource.capacity ? `${selectedResource.capacity} students` : 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={14} strokeWidth={2} />
+                <span><strong>Availability:</strong> {selectedResource.availability}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <School size={14} strokeWidth={2} />
+                <span><strong>Owner Institution:</strong> {selectedResource.ownerName}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <ShieldCheck size={14} strokeWidth={2} />
+                <span><strong>Access Type:</strong> {selectedResource.accessType === 'SHARED_RESOURCE' ? 'Shared with Your Institution' : 'Host Institution Resource'}</span>
+              </div>
               
               {selectedResource.description && (
                 <div style={{ marginTop: '4px', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
@@ -486,7 +575,10 @@ export default function StudentCampusResources() {
 
             {/* Check Availability Section */}
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginTop: '4px' }}>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary)' }}>📅 Check Availability & Book</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                <Calendar size={16} strokeWidth={2} color="#8b5cf6" />
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>Check Availability & Book</h4>
+              </div>
               
               <div className="form-group" style={{ marginBottom: '12px' }}>
                 <label className="form-label" style={{ fontSize: '12px' }}>Select Date</label>
@@ -547,7 +639,7 @@ export default function StudentCampusResources() {
                       >
                         {slot.start} - {slot.end}
                         <div style={{ fontSize: '9px', fontWeight: 400, marginTop: '2px' }}>
-                          {isBooked ? '🔴 Booked' : '🟢 Free'}
+                          {isBooked ? 'Booked' : 'Free'}
                         </div>
                       </button>
                     )
@@ -612,22 +704,39 @@ export default function StudentCampusResources() {
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Confirm Booking Request</h3>
             
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div>🖥️ <strong>Resource:</strong> {selectedResource.name}</div>
-              <div>📅 <strong>Date:</strong> {bookingDate}</div>
-              <div>⏰ <strong>Time:</strong> {bookingStartTime} - {bookingEndTime}</div>
-              <div>👥 <strong>Number of Students:</strong> 1</div>
-              <div>💡 <strong>Purpose:</strong> {bookingPurpose || 'N/A'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Laptop size={14} strokeWidth={2} />
+                <span><strong>Resource:</strong> {selectedResource.name}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Calendar size={14} strokeWidth={2} />
+                <span><strong>Date:</strong> {bookingDate}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={14} strokeWidth={2} />
+                <span><strong>Time:</strong> {bookingStartTime} - {bookingEndTime}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Users size={14} strokeWidth={2} />
+                <span><strong>Number of Students:</strong> 1</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Lightbulb size={14} strokeWidth={2} />
+                <span><strong>Purpose:</strong> {bookingPurpose || 'N/A'}</span>
+              </div>
             </div>
 
             {confirmError && (
-              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500 }}>
-                ⚠️ {confirmError}
+              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <TriangleAlert size={14} strokeWidth={2} />
+                <span>{confirmError}</span>
               </div>
             )}
 
             {confirmSuccess && (
-              <div style={{ padding: '8px 12px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500 }}>
-                🎉 {confirmSuccess}
+              <div style={{ padding: '8px 12px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <CheckCircle2 size={14} strokeWidth={2} />
+                <span>{confirmSuccess}</span>
               </div>
             )}
 
@@ -648,3 +757,4 @@ export default function StudentCampusResources() {
     </div>
   )
 }
+

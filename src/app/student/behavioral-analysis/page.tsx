@@ -1,8 +1,30 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Vapi from '@vapi-ai/web'
+import {
+  Brain,
+  Video,
+  Radio,
+  Mic,
+  Square,
+  ListOrdered,
+  MessageSquare,
+  Bot,
+  User,
+  BarChart2,
+  Download,
+  FileCode,
+  TrendingUp,
+  FileText,
+  CheckCircle2,
+  Lightbulb,
+  Sparkles,
+  RotateCcw,
+  Loader2
+} from 'lucide-react'
 
 export default function BehavioralAnalysis() {
   const [isInterviewActive, setIsInterviewActive] = useState(false)
@@ -253,20 +275,20 @@ export default function BehavioralAnalysis() {
     `).join('')}
   </div>
   
-  <h2>📊 Detailed Analysis</h2>
+  <h2>Detailed Analysis</h2>
   <p>${analysisReport.summary}</p>
   
-  <h2>💪 Strengths</h2>
+  <h2>Strengths</h2>
   <ul>
     ${(analysisReport.strengths || []).map((s: string) => `<li>${s}</li>`).join('')}
   </ul>
   
-  <h2>🎯 Areas for Improvement</h2>
+  <h2>Areas for Improvement</h2>
   <ul>
     ${(analysisReport.improvements || []).map((i: string) => `<li>${i}</li>`).join('')}
   </ul>
   
-  <h2>📝 Recommendations</h2>
+  <h2>Recommendations</h2>
   <p>${analysisReport.recommendations}</p>
 </body>
 </html>
@@ -279,7 +301,10 @@ export default function BehavioralAnalysis() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>🎭 Behavioral Analysis</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Brain size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle}>Behavioral Analysis</h1>
+            </div>
             <p className={styles.pageSubtitle}>AI-powered interview assessment with video analysis</p>
           </div>
         </header>
@@ -288,9 +313,12 @@ export default function BehavioralAnalysis() {
           {!analysisReport ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '20px' }}>
               <div className={`glass ${styles.panel}`} style={{ padding: '20px' }}>
-                <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>
-                  {isInterviewActive ? '🔴 Interview in Progress' : '📹 Video Preview'}
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  {isInterviewActive ? <Radio size={18} strokeWidth={2} color="#ef4444" /> : <Video size={18} strokeWidth={2} color="#8b5cf6" />}
+                  <h3 style={{ fontSize: '18px' }}>
+                    {isInterviewActive ? 'Interview in Progress' : 'Video Preview'}
+                  </h3>
+                </div>
                 
                 <video
                   ref={videoRef}
@@ -329,12 +357,14 @@ export default function BehavioralAnalysis() {
 
                 <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   {!isInterviewActive ? (
-                    <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '200px' }}>
-                      🎤 Start Interview
+                    <button onClick={startInterview} className="btn btn-primary btn-lg" style={{ minWidth: '200px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <Mic size={18} strokeWidth={2} />
+                      <span>Start Interview</span>
                     </button>
                   ) : (
-                    <button onClick={endInterview} className="btn btn-secondary btn-lg" style={{ minWidth: '200px' }}>
-                      ⏹️ End Interview
+                    <button onClick={endInterview} className="btn btn-secondary btn-lg" style={{ minWidth: '200px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <Square size={18} strokeWidth={2} />
+                      <span>End Interview</span>
                     </button>
                   )}
                 </div>
@@ -342,9 +372,12 @@ export default function BehavioralAnalysis() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div className={`glass ${styles.panel}`} style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '16px', marginBottom: '12px' }}>📋 Instructions</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <ListOrdered size={16} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '16px' }}>Instructions</h3>
+                  </div>
                   <ul style={{ fontSize: '14px', lineHeight: '1.8', color: 'var(--text-secondary)' }}>
-                    <li>Click "Start Interview" to begin</li>
+                    <li>Click &quot;Start Interview&quot; to begin</li>
                     <li>Answer behavioral questions naturally</li>
                     <li>Maintain eye contact with camera</li>
                     <li>Use the STAR method</li>
@@ -354,7 +387,10 @@ export default function BehavioralAnalysis() {
                 </div>
 
                 <div className={`glass ${styles.panel}`} style={{ padding: '20px', flex: 1, maxHeight: '400px', overflow: 'auto' }}>
-                  <h3 style={{ fontSize: '16px', marginBottom: '12px' }}>💬 Live Transcript</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <MessageSquare size={16} strokeWidth={2} color="#3b82f6" />
+                    <h3 style={{ fontSize: '16px' }}>Live Transcript</h3>
+                  </div>
                   {transcript.length === 0 ? (
                     <p style={{ fontSize: '14px', color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>
                       Transcript will appear here
@@ -371,9 +407,10 @@ export default function BehavioralAnalysis() {
                             borderLeft: `3px solid ${item.role === 'assistant' ? '#7c3aed' : '#10b981'}`
                           }}
                         >
-                          <p style={{ fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>
-                            {item.role === 'assistant' ? '🤖 Interviewer' : '👤 You'}
-                          </p>
+                          <div style={{ fontSize: '12px', fontWeight: '600', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            {item.role === 'assistant' ? <Bot size={13} strokeWidth={2} color="#7c3aed" /> : <User size={13} strokeWidth={2} color="#10b981" />}
+                            <span>{item.role === 'assistant' ? 'Interviewer' : 'You'}</span>
+                          </div>
                           <p style={{ fontSize: '13px' }}>{item.text}</p>
                         </div>
                       ))}
@@ -386,13 +423,18 @@ export default function BehavioralAnalysis() {
             <div>
               <div className={`glass ${styles.panel}`} style={{ padding: '24px 16px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-                  <h2 style={{ fontSize: '20px' }}>📊 Analysis Report</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <BarChart2 size={20} strokeWidth={2} color="#8b5cf6" />
+                    <h2 style={{ fontSize: '20px' }}>Analysis Report</h2>
+                  </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <button onClick={downloadPDF} className="btn btn-primary btn-sm">
-                      📄 Download PDF
+                    <button onClick={downloadPDF} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <Download size={14} strokeWidth={2} />
+                      <span>Download PDF</span>
                     </button>
-                    <button onClick={downloadHTML} className="btn btn-secondary btn-sm">
-                      🌐 Download HTML
+                    <button onClick={downloadHTML} className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <FileCode size={14} strokeWidth={2} />
+                      <span>Download HTML</span>
                     </button>
                   </div>
                 </div>
@@ -411,7 +453,10 @@ export default function BehavioralAnalysis() {
                 </div>
 
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>📈 Score Breakdown</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                    <TrendingUp size={18} strokeWidth={2} color="#3b82f6" />
+                    <h3 style={{ fontSize: '18px' }}>Score Breakdown</h3>
+                  </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     {Object.entries(analysisReport.scores || {}).map(([key, value]: any) => (
                       <div key={key} style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
@@ -425,30 +470,44 @@ export default function BehavioralAnalysis() {
                 </div>
 
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '18px', marginBottom: '12px' }}>📝 Summary</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <FileText size={18} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '18px' }}>Summary</h3>
+                  </div>
                   <p style={{ fontSize: '14px', lineHeight: '1.8' }}>{analysisReport.summary}</p>
                 </div>
 
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '18px', marginBottom: '12px' }}>💪 Strengths</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <CheckCircle2 size={18} strokeWidth={2} color="#10b981" />
+                    <h3 style={{ fontSize: '18px' }}>Strengths</h3>
+                  </div>
                   {(analysisReport.strengths || []).map((s: string, i: number) => (
-                    <div key={i} style={{ padding: '12px', background: 'rgba(16,185,129,0.1)', borderRadius: '8px', marginBottom: '8px' }}>
-                      ✅ {s}
+                    <div key={i} style={{ padding: '12px', background: 'rgba(16,185,129,0.1)', borderRadius: '8px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CheckCircle2 size={15} strokeWidth={2} color="#10b981" />
+                      <span>{s}</span>
                     </div>
                   ))}
                 </div>
 
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '18px', marginBottom: '12px' }}>🎯 Improvements</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <Lightbulb size={18} strokeWidth={2} color="#f59e0b" />
+                    <h3 style={{ fontSize: '18px' }}>Improvements</h3>
+                  </div>
                   {(analysisReport.improvements || []).map((i: string, idx: number) => (
-                    <div key={idx} style={{ padding: '12px', background: 'rgba(245,158,11,0.1)', borderRadius: '8px', marginBottom: '8px' }}>
-                      💡 {i}
+                    <div key={idx} style={{ padding: '12px', background: 'rgba(245,158,11,0.1)', borderRadius: '8px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Lightbulb size={15} strokeWidth={2} color="#f59e0b" />
+                      <span>{i}</span>
                     </div>
                   ))}
                 </div>
 
                 <div>
-                  <h3 style={{ fontSize: '18px', marginBottom: '12px' }}>🚀 Recommendations</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <Sparkles size={18} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '18px' }}>Recommendations</h3>
+                  </div>
                   <p style={{ fontSize: '14px', lineHeight: '1.8' }}>{analysisReport.recommendations}</p>
                 </div>
               </div>
@@ -461,8 +520,10 @@ export default function BehavioralAnalysis() {
                     setInterviewDuration(0)
                   }} 
                   className="btn btn-primary btn-lg"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 >
-                  🔄 Start New Interview
+                  <RotateCcw size={16} strokeWidth={2} />
+                  <span>Start New Interview</span>
                 </button>
               </div>
             </div>
@@ -481,10 +542,14 @@ export default function BehavioralAnalysis() {
               justifyContent: 'center',
               zIndex: 1000
             }}>
-              <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>
-                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🤖</div>
-                <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Analyzing Your Interview...</h3>
-                <p>AI is processing your responses and body language</p>
+              <div className="glass" style={{ padding: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(124,58,237,0.15)', color: '#7c3aed' }}>
+                  <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#7c3aed' }} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '20px', margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Analyzing Your Interview...</h3>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>AI is processing your responses and behavioral patterns</p>
+                </div>
               </div>
             </div>
           )}
@@ -493,3 +558,4 @@ export default function BehavioralAnalysis() {
     </div>
   )
 }
+

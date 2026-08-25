@@ -3,6 +3,24 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import styles from './NotificationBell.module.css'
+import {
+  Bell,
+  Brain,
+  GraduationCap,
+  Mic,
+  Briefcase,
+  Zap,
+  Target,
+  Code2,
+  Landmark,
+  TrendingUp,
+  FolderLock,
+  Presentation,
+  Sparkles,
+  X,
+  ArrowRight,
+  CheckCheck
+} from 'lucide-react'
 
 export type NotificationRole = 'student' | 'company' | 'institution'
 export type NotificationType = 'update' | 'recommendation'
@@ -37,7 +55,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/student/roadmap',
       actionLabel: 'Open Roadmap',
-      icon: '🧠',
+      icon: 'brain',
       color: '#8b5cf6',
     },
     {
@@ -50,7 +68,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/student/placements',
       actionLabel: 'View Drive',
-      icon: '🎓',
+      icon: 'placement',
       color: '#3b82f6',
     },
     {
@@ -63,7 +81,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/student/mock-interview',
       actionLabel: 'Start Practice',
-      icon: '🎙️',
+      icon: 'interview',
       color: '#ec4899',
     },
     {
@@ -76,7 +94,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: true,
       actionUrl: '/student/internships',
       actionLabel: 'View Status',
-      icon: '💼',
+      icon: 'internship',
       color: '#10b981',
     },
     {
@@ -89,7 +107,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: true,
       actionUrl: '/student/resume',
       actionLabel: 'Analyze Resume',
-      icon: '⚡',
+      icon: 'zap',
       color: '#f59e0b',
     },
   ],
@@ -104,7 +122,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/company/dashboard',
       actionLabel: 'View Candidates',
-      icon: '🎯',
+      icon: 'target',
       color: '#10b981',
     },
     {
@@ -117,7 +135,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/company/coding-judge',
       actionLabel: 'Review Scores',
-      icon: '💻',
+      icon: 'code',
       color: '#06b6d4',
     },
     {
@@ -130,7 +148,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/company/internships',
       actionLabel: 'Review Applicants',
-      icon: '💼',
+      icon: 'internship',
       color: '#34d399',
     },
     {
@@ -143,7 +161,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: true,
       actionUrl: '/company/dashboard',
       actionLabel: 'Explore Pool',
-      icon: '⚡',
+      icon: 'zap',
       color: '#8b5cf6',
     },
   ],
@@ -158,7 +176,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/institution/resources',
       actionLabel: 'Review Request',
-      icon: '🏛️',
+      icon: 'resource',
       color: '#a855f7',
     },
     {
@@ -171,7 +189,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/institution/analytics',
       actionLabel: 'View Analytics',
-      icon: '📈',
+      icon: 'analytics',
       color: '#ec4899',
     },
     {
@@ -184,7 +202,7 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: false,
       actionUrl: '/institution/documents',
       actionLabel: 'Verify Docs',
-      icon: '📁',
+      icon: 'document',
       color: '#c084fc',
     },
     {
@@ -197,10 +215,53 @@ const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
       read: true,
       actionUrl: '/institution/trainers',
       actionLabel: 'Manage Sessions',
-      icon: '👨‍🏫',
+      icon: 'trainer',
       color: '#3b82f6',
     },
   ],
+}
+
+function renderNotificationIcon(icon: string) {
+  switch (icon) {
+    case 'brain':
+    case '🧠':
+      return <Brain size={18} strokeWidth={2} />
+    case 'placement':
+    case '🎓':
+      return <GraduationCap size={18} strokeWidth={2} />
+    case 'interview':
+    case '🎙️':
+    case '🎤':
+      return <Mic size={18} strokeWidth={2} />
+    case 'internship':
+    case '💼':
+      return <Briefcase size={18} strokeWidth={2} />
+    case 'zap':
+    case '⚡':
+      return <Zap size={18} strokeWidth={2} />
+    case 'target':
+    case '🎯':
+      return <Target size={18} strokeWidth={2} />
+    case 'code':
+    case '💻':
+      return <Code2 size={18} strokeWidth={2} />
+    case 'resource':
+    case '🏛️':
+    case '🏢':
+      return <Landmark size={18} strokeWidth={2} />
+    case 'analytics':
+    case '📈':
+    case '📊':
+      return <TrendingUp size={18} strokeWidth={2} />
+    case 'document':
+    case '📁':
+      return <FolderLock size={18} strokeWidth={2} />
+    case 'trainer':
+    case '👨‍🏫':
+      return <Presentation size={18} strokeWidth={2} />
+    default:
+      return <Sparkles size={18} strokeWidth={2} />
+  }
 }
 
 export default function NotificationBell({ role }: NotificationBellProps) {
@@ -291,20 +352,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
         title="Notifications & AI Recommendations"
       >
         <div className={styles.bellIconWrapper}>
-          <svg
-            width="19"
-            height="19"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={styles.bellSvg}
-          >
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
+          <Bell size={18} strokeWidth={2} className={styles.bellSvg} />
 
           {/* Unread badge / beacon */}
           {unreadCount > 0 && (
@@ -322,7 +370,9 @@ export default function NotificationBell({ role }: NotificationBellProps) {
           <div className={styles.header}>
             <div className={styles.headerTitleRow}>
               <div className={styles.headerTitle}>
-                <span className={styles.headerIcon}>🔔</span>
+                <span className={styles.headerIcon}>
+                  <Bell size={16} strokeWidth={2} />
+                </span>
                 <span className={styles.headerText}>Notifications</span>
                 {unreadCount > 0 && (
                   <span className={styles.unreadPill}>{unreadCount} new</span>
@@ -330,6 +380,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
               </div>
               {unreadCount > 0 && (
                 <button className={styles.markAllBtn} onClick={handleMarkAllRead}>
+                  <CheckCheck size={13} strokeWidth={2} style={{ display: 'inline', marginRight: 4 }} />
                   Mark all as read
                 </button>
               )}
@@ -346,15 +397,18 @@ export default function NotificationBell({ role }: NotificationBellProps) {
               <button
                 className={`${styles.tabBtn} ${activeTab === 'recommendation' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('recommendation')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
               >
-                🧠 Recommendations (
-                {notifications.filter(n => n.type === 'recommendation').length})
+                <Brain size={13} strokeWidth={2} />
+                <span>Recommendations ({notifications.filter(n => n.type === 'recommendation').length})</span>
               </button>
               <button
                 className={`${styles.tabBtn} ${activeTab === 'update' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('update')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
               >
-                ⚡ Updates ({notifications.filter(n => n.type === 'update').length})
+                <Zap size={13} strokeWidth={2} />
+                <span>Updates ({notifications.filter(n => n.type === 'update').length})</span>
               </button>
             </div>
           </div>
@@ -363,8 +417,10 @@ export default function NotificationBell({ role }: NotificationBellProps) {
           <div className={styles.list}>
             {filteredNotifications.length === 0 ? (
               <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>✨</span>
-                <p className={styles.emptyTitle}>You're all caught up!</p>
+                <span className={styles.emptyIcon}>
+                  <Sparkles size={28} strokeWidth={1.75} />
+                </span>
+                <p className={styles.emptyTitle}>You&apos;re all caught up!</p>
                 <p className={styles.emptySubtitle}>
                   No new {activeTab !== 'all' ? activeTab + ' ' : ''}notifications at the moment.
                 </p>
@@ -381,7 +437,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                     className={styles.itemIcon}
                     style={{ background: `${item.color}20`, color: item.color }}
                   >
-                    {item.icon}
+                    {renderNotificationIcon(item.icon)}
                   </div>
 
                   {/* Content */}
@@ -413,8 +469,10 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                             handleMarkSingleRead(item.id)
                             setIsOpen(false)
                           }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
                         >
-                          {item.actionLabel || 'View Details'} →
+                          <span>{item.actionLabel || 'View Details'}</span>
+                          <ArrowRight size={13} strokeWidth={2} />
                         </Link>
                       </div>
                     )}
@@ -427,7 +485,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                     title="Dismiss"
                     aria-label="Dismiss notification"
                   >
-                    ✕
+                    <X size={13} strokeWidth={2} />
                   </button>
                 </div>
               ))
@@ -447,3 +505,4 @@ export default function NotificationBell({ role }: NotificationBellProps) {
     </div>
   )
 }
+

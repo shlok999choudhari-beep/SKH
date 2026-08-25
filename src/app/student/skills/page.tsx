@@ -3,8 +3,23 @@
 import { useState } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
 import StudentSidebar from '@/components/StudentSidebar';
+import { MorphingInfinity } from '@/components/ui/morphing-infinity';
 import styles from './skills.module.css';
 import dashboardStyles from '../dashboard.module.css';
+import {
+  Target,
+  Building2,
+  Sparkles,
+  Loader2,
+  FileText,
+  BarChart2,
+  RotateCcw,
+  TrendingUp,
+  TriangleAlert,
+  Zap,
+  Pin,
+  Award
+} from 'lucide-react';
 
 interface Question {
   skill: string;
@@ -83,185 +98,220 @@ export default function SkillRadarChart() {
     <div className={dashboardStyles.layout}>
       <StudentSidebar />
       <div className={dashboardStyles.content}>
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>📊 Skill Radar Chart</h1>
-        <p>AI-powered skill gap analysis for your dream company</p>
-      </div>
-
-      {step === 1 && (
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2>🎯 Step 1: Company Analysis</h2>
-            <p>Enter your target company and let Grok AI analyze the required skills</p>
-          </div>
-          
-          <div className={styles.form}>
-            <div className={styles.inputGroup}>
-              <label>🏢 Target Company</label>
-              <input
-                type="text"
-                placeholder="e.g., Google, Amazon, Microsoft, Netflix"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                className={styles.input}
-              />
+        <div className={styles.container}>
+          <div className={styles.header}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Target size={26} strokeWidth={2} color="#8b5cf6" />
+              <h1>Skill Radar Chart</h1>
             </div>
-
-            <button 
-              onClick={analyzeCompany} 
-              disabled={loading || !company} 
-              className={styles.button}
-            >
-              {loading ? '🔄 Analyzing...' : '🚀 Analyze Company'}
-            </button>
+            <p>AI-powered skill gap analysis for your dream company</p>
           </div>
-        </div>
-      )}
 
-      {step === 2 && (
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2>📝 Step 2: Skill Assessment for {company}</h2>
-            <div className={styles.analysis}>{companyAnalysis}</div>
-          </div>
-          
-          <div className={styles.questions}>
-            {questions.map((q, idx) => (
-              <div key={idx} className={styles.question}>
-                <div className={styles.questionHeader}>
-                  <label>{q.question}</label>
-                  <span className={styles.score}>{answers[q.skill] || 0}/10</span>
+          {step === 1 && (
+            <div className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <Target size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h2>Step 1: Company Analysis</h2>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  value={answers[q.skill] || 0}
-                  onChange={(e) => handleAnswerChange(q.skill, parseInt(e.target.value))}
-                  className={styles.slider}
-                />
-                <div className={styles.sliderLabels}>
-                  <span>Beginner</span>
-                  <span>Expert</span>
-                </div>
+                <p>Enter your target company and let Grok AI analyze the required skills</p>
               </div>
-            ))}
-          </div>
-          
-          <button onClick={generateResults} className={styles.button}>
-            📊 Generate Analysis
-          </button>
-        </div>
-      )}
+              
+              <div className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Building2 size={15} strokeWidth={2} color="#8b5cf6" />
+                    <span>Target Company</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Google, Amazon, Microsoft, Netflix"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className={styles.input}
+                  />
+                </div>
 
-      {step === 3 && (
-        <div className={styles.results}>
-          <div className={styles.resultsHeader}>
-            <h2>🎯 Your Skill Gap Analysis</h2>
-            <button onClick={() => { setStep(1); setResults([]); setAnswers({}); }} className={styles.resetBtn}>
-              🔄 New Analysis
-            </button>
-          </div>
-          
-          <div className={styles.chartGrid}>
-            <div className={styles.chartCard}>
-              <h3>🎯 Radar Chart - Overall Profile</h3>
-              <p className={styles.chartDesc}>Compare your skills against {company} requirements</p>
-              <ResponsiveContainer width="100%" height={350}>
-                <RadarChart data={results}>
-                  <PolarGrid stroke="#e0e0e0" />
-                  <PolarAngleAxis dataKey="skill" tick={{ fill: '#666', fontSize: 12 }} />
-                  <PolarRadiusAxis angle={90} domain={[0, 10]} tick={{ fill: '#999' }} />
-                  <Radar name="Your Score" dataKey="score" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  <Radar name="Required" dataKey="required" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
-                  <Legend />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
+                <button 
+                  onClick={analyzeCompany} 
+                  disabled={loading || !company} 
+                  className={styles.button}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  {loading ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : <Sparkles size={16} strokeWidth={2} />}
+                  <span>{loading ? 'Analyzing...' : 'Analyze Company'}</span>
+                </button>
+              </div>
             </div>
+          )}
 
-            <div className={styles.chartCard}>
-              <h3>📊 Bar Chart - Skill Comparison</h3>
-              <p className={styles.chartDesc}>Side-by-side comparison of current vs required levels</p>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={results}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
-                  <YAxis domain={[0, 10]} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="score" fill="#8884d8" name="Your Score" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="required" fill="#82ca9d" name="Required" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className={styles.chartCard}>
-              <h3>📈 Line Chart - Progress Tracking</h3>
-              <p className={styles.chartDesc}>Visualize your skill trajectory</p>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={results}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
-                  <YAxis domain={[0, 10]} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="score" stroke="#8884d8" strokeWidth={3} name="Your Score" dot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="required" stroke="#82ca9d" strokeWidth={3} name="Required" dot={{ r: 5 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className={styles.chartCard}>
-              <h3>🔴 Gap Analysis</h3>
-              <p className={styles.chartDesc}>Focus areas - higher bars need more attention</p>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={results}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="gap" fill="#ff6b6b" name="Skill Gap" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className={styles.summary}>
-            <h3>🎯 Priority Areas for Improvement</h3>
-            <div className={styles.summaryGrid}>
-              {results
-                .filter(r => r.gap > 2)
-                .sort((a, b) => b.gap - a.gap)
-                .map((r, idx) => (
-                  <div key={idx} className={styles.summaryCard}>
-                    <div className={styles.summaryIcon}>
-                      {idx === 0 ? '🔥' : idx === 1 ? '⚠️' : '📌'}
+          {step === 2 && (
+            <div className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <FileText size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h2>Step 2: Skill Assessment for {company}</h2>
+                </div>
+                <div className={styles.analysis}>{companyAnalysis}</div>
+              </div>
+              
+              <div className={styles.questions}>
+                {questions.map((q, idx) => (
+                  <div key={idx} className={styles.question}>
+                    <div className={styles.questionHeader}>
+                      <label>{q.question}</label>
+                      <span className={styles.score}>{answers[q.skill] || 0}/10</span>
                     </div>
-                    <div className={styles.summaryContent}>
-                      <h4>{r.skill}</h4>
-                      <p>Gap: <strong>{r.gap} points</strong></p>
-                      <div className={styles.summaryBar}>
-                        <div className={styles.summaryProgress} style={{ width: `${(r.score / r.required) * 100}%` }} />
-                      </div>
-                      <small>Current: {r.score}/10 | Required: {r.required}/10</small>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={answers[q.skill] || 0}
+                      onChange={(e) => handleAnswerChange(q.skill, parseInt(e.target.value))}
+                      className={styles.slider}
+                    />
+                    <div className={styles.sliderLabels}>
+                      <span>Beginner</span>
+                      <span>Expert</span>
                     </div>
                   </div>
                 ))}
-            </div>
-            {results.filter(r => r.gap > 2).length === 0 && (
-              <div className={styles.noGaps}>
-                <span>🎉</span>
-                <p>Great job! You meet or exceed all requirements!</p>
               </div>
-            )}
-          </div>
+              
+              <button onClick={generateResults} className={styles.button} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <BarChart2 size={16} strokeWidth={2} />
+                <span>Generate Analysis</span>
+              </button>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className={styles.results}>
+              <div className={styles.resultsHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={20} strokeWidth={2} color="#8b5cf6" />
+                  <h2>Your Skill Gap Analysis</h2>
+                </div>
+                <button onClick={() => { setStep(1); setResults([]); setAnswers({}); }} className={styles.resetBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <RotateCcw size={14} strokeWidth={2} />
+                  <span>New Analysis</span>
+                </button>
+              </div>
+              
+              <div className={styles.chartGrid}>
+                <div className={styles.chartCard}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <Target size={16} strokeWidth={2} color="#8884d8" />
+                    <h3>Radar Chart - Overall Profile</h3>
+                  </div>
+                  <p className={styles.chartDesc}>Compare your skills against {company} requirements</p>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <RadarChart data={results}>
+                      <PolarGrid stroke="#e0e0e0" />
+                      <PolarAngleAxis dataKey="skill" tick={{ fill: '#666', fontSize: 12 }} />
+                      <PolarRadiusAxis angle={90} domain={[0, 10]} tick={{ fill: '#999' }} />
+                      <Radar name="Your Score" dataKey="score" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      <Radar name="Required" dataKey="required" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                      <Legend />
+                      <Tooltip />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className={styles.chartCard}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <BarChart2 size={16} strokeWidth={2} color="#82ca9d" />
+                    <h3>Bar Chart - Skill Comparison</h3>
+                  </div>
+                  <p className={styles.chartDesc}>Side-by-side comparison of current vs required levels</p>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={results}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
+                      <YAxis domain={[0, 10]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="score" fill="#8884d8" name="Your Score" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="required" fill="#82ca9d" name="Required" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className={styles.chartCard}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <TrendingUp size={16} strokeWidth={2} color="#8884d8" />
+                    <h3>Line Chart - Progress Tracking</h3>
+                  </div>
+                  <p className={styles.chartDesc}>Visualize your skill trajectory</p>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <LineChart data={results}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
+                      <YAxis domain={[0, 10]} />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="score" stroke="#8884d8" strokeWidth={3} name="Your Score" dot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="required" stroke="#82ca9d" strokeWidth={3} name="Required" dot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className={styles.chartCard}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <TriangleAlert size={16} strokeWidth={2} color="#ff6b6b" />
+                    <h3>Gap Analysis</h3>
+                  </div>
+                  <p className={styles.chartDesc}>Focus areas - higher bars need more attention</p>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={results}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="gap" fill="#ff6b6b" name="Skill Gap" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className={styles.summary}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <Target size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h3>Priority Areas for Improvement</h3>
+                </div>
+                <div className={styles.summaryGrid}>
+                  {results
+                    .filter(r => r.gap > 2)
+                    .sort((a, b) => b.gap - a.gap)
+                    .map((r, idx) => (
+                      <div key={idx} className={styles.summaryCard}>
+                        <div className={styles.summaryIcon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {idx === 0 ? <Zap size={20} strokeWidth={2} color="#ef4444" /> : idx === 1 ? <TriangleAlert size={20} strokeWidth={2} color="#f59e0b" /> : <Pin size={20} strokeWidth={2} color="#8b5cf6" />}
+                        </div>
+                        <div className={styles.summaryContent}>
+                          <h4>{r.skill}</h4>
+                          <p>Gap: <strong>{r.gap} points</strong></p>
+                          <div className={styles.summaryBar}>
+                            <div className={styles.summaryProgress} style={{ width: `${(r.score / r.required) * 100}%` }} />
+                          </div>
+                          <small>Current: {r.score}/10 | Required: {r.required}/10</small>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                {results.filter(r => r.gap > 2).length === 0 && (
+                  <div className={styles.noGaps} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Award size={24} strokeWidth={2} color="#10b981" />
+                    <p>Great job! You meet or exceed all requirements!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
       </div>
     </div>
   );
 }
+

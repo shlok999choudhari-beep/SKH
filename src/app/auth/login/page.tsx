@@ -7,14 +7,17 @@ import { studentLogin } from '@/app/actions/studentAuth'
 import { companyLogin } from '@/app/actions/companyAuth'
 import { institutionLogin } from '@/app/actions/institutionAuth'
 import Logo from '@/components/Logo'
+import SpecularButton from '@/components/SpecularButton'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './login.module.css'
+import { GraduationCap, Building2, Landmark, ArrowLeft, ArrowRight } from 'lucide-react'
 
 type Role = 'student' | 'company' | 'institution'
 
 const ROLES = [
   {
     id: 'student' as Role,
-    icon: '🎓',
+    icon: GraduationCap,
     label: 'Student',
     desc: 'Analyze resume & get placed',
     color: '#EAB308',
@@ -22,7 +25,7 @@ const ROLES = [
   },
   {
     id: 'company' as Role,
-    icon: '🏢',
+    icon: Building2,
     label: 'Company',
     desc: 'Hire skill-verified talent',
     color: '#10b981',
@@ -30,7 +33,7 @@ const ROLES = [
   },
   {
     id: 'institution' as Role,
-    icon: '🏛️',
+    icon: Landmark,
     label: 'Institution',
     desc: 'Manage cohorts & placements',
     color: '#f472b6',
@@ -51,10 +54,14 @@ function LoginContent() {
   const currentAction = role === 'student' ? studentAction : role === 'company' ? companyAction : institutionAction
   const currentPending = role === 'student' ? studentPending : role === 'company' ? companyPending : institutionPending
   const currentRole = ROLES.find(r => r.id === role)!
+  const RoleIcon = currentRole.icon
 
   return (
     <div className={styles.page}>
-      <Link href="/" className={styles.backBtn}>← Back to home</Link>
+      <Link href="/" className={styles.backBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        <ArrowLeft size={16} strokeWidth={2} />
+        <span>Back to home</span>
+      </Link>
 
       <div className={styles.card}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
@@ -63,26 +70,31 @@ function LoginContent() {
 
         {/* Role Selector */}
         <div className={styles.roleSelector}>
-          {ROLES.map(r => (
-            <button
-              key={r.id}
-              className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
-              onClick={() => setRole(r.id)}
-              style={role === r.id ? { borderColor: r.color, boxShadow: `0 0 16px ${r.color}30` } : {}}
-            >
-              <span className={styles.roleTabIcon}>{r.icon}</span>
-              <div className={styles.roleTabText}>
-                <span className={styles.roleTabLabel}>{r.label}</span>
-                <span className={styles.roleTabDesc}>{r.desc}</span>
-              </div>
-            </button>
-          ))}
+          {ROLES.map(r => {
+            const TabIcon = r.icon
+            return (
+              <button
+                key={r.id}
+                className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
+                onClick={() => setRole(r.id)}
+                style={role === r.id ? { borderColor: r.color, boxShadow: `0 0 16px ${r.color}30` } : {}}
+              >
+                <span className={styles.roleTabIcon}>
+                  <TabIcon size={20} strokeWidth={2} />
+                </span>
+                <div className={styles.roleTabText}>
+                  <span className={styles.roleTabLabel}>{r.label}</span>
+                  <span className={styles.roleTabDesc}>{r.desc}</span>
+                </div>
+              </button>
+            )
+          })}
         </div>
 
         {/* Header */}
         <div className={styles.cardHeader}>
-          <div className={styles.roleIcon} style={{ background: currentRole.gradient }}>
-            {currentRole.icon}
+          <div className={styles.roleIcon} style={{ background: currentRole.gradient, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#000' }}>
+            <RoleIcon size={24} strokeWidth={2} />
           </div>
           <h1 className={styles.title}>{currentRole.label} Login</h1>
           <p className={styles.subtitle}>
@@ -121,15 +133,32 @@ function LoginContent() {
 
           {currentState?.message && <p className={styles.error}>{currentState.message}</p>}
 
-          <button
-            type="submit"
-            disabled={currentPending}
-            className={styles.submitBtn}
-            style={{ background: currentRole.gradient }}
-          >
-            {currentPending ? <span className={styles.spinner} /> : null}
-            {currentPending ? 'Signing in...' : `Sign in as ${currentRole.label} →`}
-          </button>
+          <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+            <SpecularButton
+              type="submit"
+              disabled={currentPending}
+              size="md"
+              radius={8}
+              tint={role === 'student' ? '#7c3aed' : role === 'company' ? '#059669' : '#2563eb'}
+              tintOpacity={0.2}
+              blur={0}
+              textColor="#ffffff"
+              lineColor={role === 'student' ? '#c4b5fd' : role === 'company' ? '#6ee7b7' : '#93c5fd'}
+              baseColor={role === 'student' ? '#581c87' : role === 'company' ? '#065f46' : '#1e3a8a'}
+              intensity={0.85}
+              shineSize={8}
+              shineFade={35}
+              thickness={1}
+              speed={0.3}
+              followMouse
+              proximity={220}
+              style={{ width: '100%', minHeight: '46px' }}
+            >
+              {currentPending ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : null}
+              <span>{currentPending ? 'Signing in...' : `Sign in as ${currentRole.label}`}</span>
+              {!currentPending && <ArrowRight size={16} strokeWidth={2} />}
+            </SpecularButton>
+          </div>
         </form>
 
         {/* Sign up links */}
@@ -139,8 +168,10 @@ function LoginContent() {
             <Link
               href={`/auth/signup?role=${role}`}
               className={styles.signupBtn}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
-              Create {currentRole.label} Account →
+              <span>Create {currentRole.label} Account</span>
+              <ArrowRight size={14} strokeWidth={2} />
             </Link>
           </>
         )}
@@ -156,3 +187,4 @@ export default function UnifiedLoginPage() {
     </Suspense>
   )
 }
+

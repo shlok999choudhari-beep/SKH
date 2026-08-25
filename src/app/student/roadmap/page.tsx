@@ -1,8 +1,24 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
-import UniqueLoading from '@/components/ui/morph-loading'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
+import {
+  Milestone,
+  ListOrdered,
+  TriangleAlert,
+  Zap,
+  Clock,
+  CheckSquare,
+  Play,
+  Target,
+  Lightbulb,
+  MessageSquare,
+  User,
+  Bot,
+  Sparkles,
+  Loader2
+} from 'lucide-react'
 
 export default function RoadmapPage() {
   const [analyses, setAnalyses] = useState<any[]>([])
@@ -99,14 +115,20 @@ export default function RoadmapPage() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.pageTitle}>🗺️ Learning Roadmap</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Milestone size={24} strokeWidth={2} color="#8b5cf6" />
+              <h1 className={styles.pageTitle}>Learning Roadmap</h1>
+            </div>
             <p className={styles.pageSubtitle}>Personalized 4-6 week learning path</p>
           </div>
         </header>
 
         <main className={styles.main}>
           <div className={`glass ${styles.panel}`}>
-            <h3 className={styles.panelTitle}>📋 Select Your Analysis</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <ListOrdered size={18} strokeWidth={2} color="#8b5cf6" />
+              <h3 className={styles.panelTitle}>Select Your Analysis</h3>
+            </div>
             {loading ? (
               <p style={{ color: 'var(--text-secondary)' }}>Loading analyses...</p>
             ) : analyses.length === 0 ? (
@@ -138,7 +160,10 @@ export default function RoadmapPage() {
           {selectedAnalysis && (
             <>
               <div className={`glass ${styles.panel}`} style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(245,158,11,0.1))' }}>
-                <h3 className={styles.panelTitle} style={{ color: '#ef4444', marginBottom: '16px' }}>🚨 Critical Skills to Learn First</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <TriangleAlert size={18} strokeWidth={2} color="#ef4444" />
+                  <h3 className={styles.panelTitle} style={{ color: '#ef4444' }}>Critical Skills to Learn First</h3>
+                </div>
                 <div className={styles.skillTags}>
                   {roadmap?.critical_skills?.map((skill: string, i: number) => (
                     <span key={i} className={styles.skillTag} style={{ 
@@ -147,9 +172,13 @@ export default function RoadmapPage() {
                       color: '#ef4444',
                       fontSize: '14px',
                       padding: '10px 16px',
-                      fontWeight: '700'
+                      fontWeight: '700',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
                     }}>
-                      🔥 {skill}
+                      <Zap size={14} strokeWidth={2} color="#ef4444" />
+                      <span>{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -157,7 +186,7 @@ export default function RoadmapPage() {
 
               {generating && (
                 <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
-                  <UniqueLoading variant="morph" size="lg" />
+                  <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
                   <p style={{ color: 'var(--text-secondary)' }}>Generating your personalized roadmap...</p>
                 </div>
               )}
@@ -165,7 +194,10 @@ export default function RoadmapPage() {
               {roadmap && !generating && (
                 <>
                   <div className={`glass ${styles.panel}`}>
-                    <h3 className={styles.panelTitle} style={{ marginBottom: '12px' }}>⏰ Daily Schedule</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                      <Clock size={18} strokeWidth={2} color="#3b82f6" />
+                      <h3 className={styles.panelTitle}>Daily Schedule</h3>
+                    </div>
                     <p style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: '600', marginBottom: '8px' }}>
                       {roadmap.daily_schedule?.hours_per_day}
                     </p>
@@ -203,7 +235,7 @@ export default function RoadmapPage() {
                           {week.skills?.map((skill: string, j: number) => (
                             <span key={j} className={styles.skillTag} style={{ 
                               background: 'rgba(124,58,237,0.15)', 
-                              borderColor: 'rgba(124,58,237,0.3)',
+                              borderColor: 'rgba(124,58,237,0.3)', 
                               fontSize: '12px'
                             }}>
                               {skill}
@@ -213,7 +245,10 @@ export default function RoadmapPage() {
                       </div>
 
                       <div style={{ marginBottom: '16px' }}>
-                        <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>📝 Tasks:</h4>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                          <CheckSquare size={16} strokeWidth={2} color="#8b5cf6" />
+                          <h4 style={{ fontSize: '14px', fontWeight: '600' }}>Tasks:</h4>
+                        </div>
                         {week.tasks?.map((task: any, j: number) => (
                           <div key={j} style={{ 
                             marginBottom: '16px', 
@@ -222,9 +257,12 @@ export default function RoadmapPage() {
                             borderRadius: '8px',
                             border: '1px solid var(--border)'
                           }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
                               <p style={{ fontSize: '14px', fontWeight: '600' }}>{task.task}</p>
-                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>⏱️ {task.duration}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Clock size={12} strokeWidth={2} />
+                                <span>{task.duration}</span>
+                              </span>
                             </div>
                             {task.resources && task.resources.length > 0 && (
                               <div style={{ marginTop: '12px' }}>
@@ -238,7 +276,7 @@ export default function RoadmapPage() {
                                     style={{
                                       display: 'inline-flex',
                                       alignItems: 'center',
-                                      gap: '8px',
+                                      gap: '6px',
                                       padding: '8px 12px',
                                       background: 'rgba(255,0,0,0.1)',
                                       border: '1px solid rgba(255,0,0,0.3)',
@@ -260,7 +298,8 @@ export default function RoadmapPage() {
                                       e.currentTarget.style.transform = 'translateY(0)'
                                     }}
                                   >
-                                    ▶️ {resource.title}
+                                    <Play size={13} fill="#ff0000" strokeWidth={2} />
+                                    <span>{resource.title}</span>
                                   </a>
                                 ))}
                               </div>
@@ -273,26 +312,36 @@ export default function RoadmapPage() {
                         padding: '12px 16px', 
                         background: 'rgba(16,185,129,0.1)',
                         borderRadius: '8px',
-                        borderLeft: '4px solid #10b981'
+                        borderLeft: '4px solid #10b981',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                       }}>
+                        <Target size={16} strokeWidth={2} color="#10b981" />
                         <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          <strong style={{ color: '#10b981' }}>🎯 Milestone:</strong> {week.milestone}
+                          <strong style={{ color: '#10b981' }}>Milestone:</strong> {week.milestone}
                         </p>
                       </div>
                     </div>
                   ))}
 
                   <div className={`glass ${styles.panel}`}>
-                    <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>💡 Pro Tips</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                      <Lightbulb size={18} strokeWidth={2} color="#f59e0b" />
+                      <h3 className={styles.panelTitle}>Pro Tips</h3>
+                    </div>
                     <div className={styles.listItems}>
                       {roadmap.tips?.map((tip: string, i: number) => (
                         <div key={i} className={styles.listItem} style={{ 
                           padding: '12px', 
                           background: 'rgba(124,58,237,0.05)', 
                           borderRadius: '8px',
-                          border: '1px solid rgba(124,58,237,0.15)'
+                          border: '1px solid rgba(124,58,237,0.15)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px'
                         }}>
-                          <span style={{ fontSize: '16px' }}>💡</span>
+                          <Lightbulb size={16} strokeWidth={2} color="#f59e0b" />
                           <span style={{ fontSize: '14px', lineHeight: '1.6' }}>{tip}</span>
                         </div>
                       ))}
@@ -303,28 +352,32 @@ export default function RoadmapPage() {
 
               {roadmap && (
                 <div className={`glass ${styles.panel}`}>
-                  <h3 className={styles.panelTitle} style={{ marginBottom: '16px' }}>💬 Optimize Your Roadmap</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                    <MessageSquare size={18} strokeWidth={2} color="#3b82f6" />
+                    <h3 className={styles.panelTitle}>Optimize Your Roadmap</h3>
+                  </div>
                   
                   {chatHistory.length > 0 && (
                     <div style={{ 
                       maxHeight: '300px', 
                       overflowY: 'auto', 
-                      marginBottom: '16px',
-                      padding: '12px',
-                      background: 'rgba(255,255,255,0.02)',
+                      marginBottom: '16px', 
+                      padding: '12px', 
+                      background: 'rgba(255,255,255,0.02)', 
                       borderRadius: '8px'
                     }}>
                       {chatHistory.map((msg, i) => (
                         <div key={i} style={{ 
-                          marginBottom: '12px',
-                          padding: '10px 14px',
-                          background: msg.type === 'user' ? 'rgba(124,58,237,0.1)' : 'rgba(16,185,129,0.1)',
-                          borderRadius: '8px',
+                          marginBottom: '12px', 
+                          padding: '10px 14px', 
+                          background: msg.type === 'user' ? 'rgba(124,58,237,0.1)' : 'rgba(16,185,129,0.1)', 
+                          borderRadius: '8px', 
                           borderLeft: `3px solid ${msg.type === 'user' ? '#7c3aed' : '#10b981'}`
                         }}>
-                          <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', fontWeight: '600' }}>
-                            {msg.type === 'user' ? '👤 You' : '🤖 Assistant'}
-                          </p>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            {msg.type === 'user' ? <User size={12} strokeWidth={2} color="#7c3aed" /> : <Bot size={12} strokeWidth={2} color="#10b981" />}
+                            <span>{msg.type === 'user' ? 'You' : 'Assistant'}</span>
+                          </div>
                           <p style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{msg.message}</p>
                         </div>
                       ))}
@@ -353,9 +406,10 @@ export default function RoadmapPage() {
                       type="submit"
                       disabled={generating || !chatQuery.trim()}
                       className="btn btn-primary"
-                      style={{ padding: '12px 24px' }}
+                      style={{ padding: '12px 24px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                     >
-                      {generating ? '⏳' : '🚀'} {generating ? 'Updating...' : 'Optimize'}
+                      {generating ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : <Sparkles size={16} strokeWidth={2} />}
+                      <span>{generating ? 'Updating...' : 'Optimize'}</span>
                     </button>
                   </form>
                 </div>
@@ -367,3 +421,4 @@ export default function RoadmapPage() {
     </div>
   )
 }
+

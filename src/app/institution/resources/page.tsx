@@ -1,20 +1,74 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../institution.module.css'
+import {
+  Share2,
+  Building2,
+  Laptop,
+  Monitor,
+  FlaskConical,
+  BookOpen,
+  Target,
+  Wrench,
+  Code2,
+  UserCheck,
+  Globe,
+  Plus,
+  LayoutDashboard,
+  FolderKanban,
+  Inbox,
+  Handshake,
+  GraduationCap,
+  Calendar,
+  Box,
+  CheckCircle2,
+  Bell,
+  Clock,
+  MapPin,
+  Users,
+  Search,
+  RotateCcw,
+  ArrowRight,
+  AlertCircle,
+  X,
+  Edit2,
+  Trash2,
+  SlidersHorizontal,
+  FileText,
+  Loader2,
+  Sparkles
+} from 'lucide-react'
 
 const CATEGORY_OPTIONS = [
-  { value: 'Computer Labs', icon: '🏫' },
-  { value: 'Computers / Systems', icon: '🖥️' },
-  { value: 'Laboratories', icon: '🔬' },
-  { value: 'Library Resources', icon: '📚' },
-  { value: 'Classrooms / Seminar Halls', icon: '🏢' },
-  { value: 'Training Infrastructure', icon: '🎯' },
-  { value: 'Equipment', icon: '🛠️' },
-  { value: 'Software / Licenses', icon: '💻' },
-  { value: 'Training Facilities', icon: '👨‍🏫' },
-  { value: 'Other Institutional Resources', icon: '🌐' }
+  { value: 'Computer Labs', label: 'Computer Labs' },
+  { value: 'Computers / Systems', label: 'Computers / Systems' },
+  { value: 'Laboratories', label: 'Laboratories' },
+  { value: 'Library Resources', label: 'Library Resources' },
+  { value: 'Classrooms / Seminar Halls', label: 'Classrooms / Seminar Halls' },
+  { value: 'Training Infrastructure', label: 'Training Infrastructure' },
+  { value: 'Equipment', label: 'Equipment' },
+  { value: 'Software / Licenses', label: 'Software / Licenses' },
+  { value: 'Training Facilities', label: 'Training Facilities' },
+  { value: 'Other Institutional Resources', label: 'Other Institutional Resources' }
 ]
+
+function getCategoryIcon(cat: string, size = 16) {
+  switch (cat) {
+    case 'Computer Labs': return <Laptop size={size} strokeWidth={2} />
+    case 'Computers / Systems': return <Monitor size={size} strokeWidth={2} />
+    case 'Laboratories': return <FlaskConical size={size} strokeWidth={2} />
+    case 'Library Resources': return <BookOpen size={size} strokeWidth={2} />
+    case 'Classrooms / Seminar Halls': return <Building2 size={size} strokeWidth={2} />
+    case 'Training Infrastructure': return <Target size={size} strokeWidth={2} />
+    case 'Equipment': return <Wrench size={size} strokeWidth={2} />
+    case 'Software / Licenses': return <Code2 size={size} strokeWidth={2} />
+    case 'Training Facilities': return <UserCheck size={size} strokeWidth={2} />
+    default: return <Globe size={size} strokeWidth={2} />
+  }
+}
+
 
 export default function ResourcesPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'my-resources' | 'marketplace' | 'requests' | 'agreements' | 'calendar' | 'student-bookings'>('overview')
@@ -572,11 +626,6 @@ export default function ResourcesPage() {
   const pendingRequests = incomingRequests.filter(r => r.status === 'pending').length
   const activeAgreements = agreements.filter(r => r.status === 'active').length
 
-  // Resource Category Icons helper
-  const getIcon = (cat: string) => {
-    return CATEGORY_OPTIONS.find(c => c.value === cat)?.icon || '🏢'
-  }
-
   // Format date helper
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -611,15 +660,16 @@ export default function ResourcesPage() {
     <>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.pageTitle}>🏛️ Institutional Resource Sharing</h1>
+          <h1 className={styles.pageTitle}>Resource Sharing</h1>
           <p className={styles.pageSubtitle}>Manage and share laboratory equipment, system spaces, and training facilities.</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <span className="badge badge-purple" style={{ padding: '6px 12px', fontSize: '11px' }}>
-            📍 {myInstitutionName}
+          <span className="badge badge-purple" style={{ padding: '6px 12px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <Building2 size={12} strokeWidth={2} />
+            <span>{myInstitutionName}</span>
           </span>
           <button
-            className="btn btn-sm btn-institution"
+            className="btn btn-primary btn-sm"
             onClick={() => {
               setResourceForm({
                 name: '',
@@ -636,94 +686,120 @@ export default function ResourcesPage() {
               setShowAddModal(true)
             }}
           >
-            + Add Resource
+            <Plus size={14} strokeWidth={2} />
+            <span>Add Resource</span>
           </button>
         </div>
       </header>
 
       <main className={styles.main}>
         {/* Navigation Tabs */}
-        <div className="glass" style={{ display: 'flex', padding: '0.5rem', gap: '0.5rem', borderRadius: '12px', overflowX: 'auto' }}>
+        <div className="glass" style={{ display: 'flex', padding: '0.375rem', gap: '0.375rem', borderRadius: 'var(--radius-lg)', overflowX: 'auto' }}>
           <button
             className={`btn btn-sm ${activeTab === 'overview' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('overview')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            📊 Overview
+            <LayoutDashboard size={14} strokeWidth={2} />
+            <span>Overview</span>
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'my-resources' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('my-resources')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            🏢 My Resources ({totalRes})
+            <FolderKanban size={14} strokeWidth={2} />
+            <span>My Resources ({totalRes})</span>
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'marketplace' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('marketplace')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            🌐 Shared Marketplace
+            <Globe size={14} strokeWidth={2} />
+            <span>Shared Marketplace</span>
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'requests' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('requests')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            📥 Incoming Requests {pendingRequests > 0 && <span className="badge badge-orange" style={{ marginLeft: 4, padding: '2px 6px' }}>{pendingRequests}</span>}
+            <Inbox size={14} strokeWidth={2} />
+            <span>Incoming Requests</span>
+            {pendingRequests > 0 && <span className="badge badge-orange" style={{ marginLeft: 4, padding: '1px 6px', fontSize: '10px' }}>{pendingRequests}</span>}
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'agreements' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('agreements')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            🤝 Requests & Agreements
+            <Handshake size={14} strokeWidth={2} />
+            <span>Requests & Agreements</span>
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'student-bookings' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('student-bookings')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            🎓 Student Bookings {bookingStats.pendingRequests > 0 && <span className="badge badge-orange" style={{ marginLeft: 4, padding: '2px 6px' }}>{bookingStats.pendingRequests}</span>}
+            <GraduationCap size={14} strokeWidth={2} />
+            <span>Student Bookings</span>
+            {bookingStats.pendingRequests > 0 && <span className="badge badge-orange" style={{ marginLeft: 4, padding: '1px 6px', fontSize: '10px' }}>{bookingStats.pendingRequests}</span>}
           </button>
           {selectedResourceForCalendar && (
             <button
               className={`btn btn-sm ${activeTab === 'calendar' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('calendar')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              📅 Schedule: {selectedResourceForCalendar.name}
+              <Calendar size={14} strokeWidth={2} />
+              <span>Schedule: {selectedResourceForCalendar.name}</span>
             </button>
           )}
         </div>
 
         {loading ? (
-          <div className="glass" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            Loading resources and sharing agreements...
+          <div className="glass" style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>Loading resources and sharing agreements...</p>
           </div>
         ) : (
           <>
             {/* 1. OVERVIEW TAB */}
             {activeTab === 'overview' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Stats Row */}
                 <div className={styles.statsRow}>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(124,58,237,0.1)', color: '#a78bfa' }}>📦</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(124,58,237,0.1)', color: '#a78bfa' }}>
+                      <Box size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Total Resources</div>
                       <div className={styles.statValue}>{totalRes}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399' }}>✓</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399' }}>
+                      <CheckCircle2 size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Available</div>
                       <div className={styles.statValue}>{availableRes}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>🤝</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>
+                      <Share2 size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Shared Enabled</div>
                       <div className={styles.statValue}>{sharedRes}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(245,158,11,0.1)', color: '#fbbf24' }}>📥</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(245,158,11,0.1)', color: '#fbbf24' }}>
+                      <Inbox size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Pending Requests</div>
                       <div className={styles.statValue}>{pendingRequests}</div>
@@ -731,18 +807,18 @@ export default function ResourcesPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px' }}>
                   {/* Utilization Chart */}
-                  <div className="glass" style={{ padding: '24px' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+                  <div className="glass" style={{ padding: '20px' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
                       Resource Utilization Analytics
                     </h3>
                     {utilizationData.length === 0 ? (
-                      <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+                      <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
                         No utilization data available. Add resources to view analytics.
                       </div>
                     ) : (
-                      <div style={{ width: '100%', height: 250 }}>
+                      <div style={{ width: '100%', height: 240 }}>
                         <ResponsiveContainer>
                           <BarChart data={utilizationData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -752,7 +828,7 @@ export default function ResourcesPage() {
                               contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px' }}
                               itemStyle={{ color: 'var(--text-primary)' }}
                             />
-                            <Bar dataKey="utilization" fill="#06b6d4" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                            <Bar dataKey="utilization" fill="#8b5cf6" radius={[4, 4, 0, 0]} maxBarSize={36} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -760,12 +836,15 @@ export default function ResourcesPage() {
                   </div>
 
                   {/* Notification Feed */}
-                  <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>🔔 Notifications</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Bell size={15} strokeWidth={2} color="#8b5cf6" />
+                        <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Notifications</h3>
+                      </div>
                       {notifications.length > 0 && (
                         <button
-                          className="btn btn-ghost"
+                          className="btn btn-ghost btn-sm"
                           style={{ fontSize: '11px', padding: '2px 8px' }}
                           onClick={handleClearNotifications}
                         >
@@ -773,9 +852,9 @@ export default function ResourcesPage() {
                         </button>
                       )}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '230px', overflowY: 'auto', paddingRight: '4px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '230px', overflowY: 'auto', paddingRight: '4px' }}>
                       {notifications.length === 0 ? (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>
+                        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>
                           No recent updates.
                         </div>
                       ) : (
@@ -784,7 +863,7 @@ export default function ResourcesPage() {
                             key={n.id}
                             style={{
                               padding: '10px',
-                              borderRadius: '8px',
+                              borderRadius: 'var(--radius-sm)',
                               background: n.read ? 'rgba(255,255,255,0.01)' : 'rgba(124,58,237,0.05)',
                               borderLeft: n.read ? '2px solid transparent' : '2px solid var(--accent-purple)',
                               fontSize: '0.8rem',
@@ -792,7 +871,7 @@ export default function ResourcesPage() {
                             }}
                           >
                             <div style={{ color: 'var(--text-primary)', marginBottom: '3px' }}>{n.message}</div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDate(n.createdAt)}</div>
+                            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{formatDate(n.createdAt)}</div>
                           </div>
                         ))
                       )}
@@ -806,49 +885,76 @@ export default function ResourcesPage() {
             {activeTab === 'my-resources' && (
               <div>
                 {myResources.length === 0 ? (
-                  <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏢</div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>No Resources Registered</h3>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                  <div className="glass" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                      <FolderKanban size={36} strokeWidth={1.5} color="var(--text-muted)" />
+                    </div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 600, marginBottom: '0.5rem' }}>No Resources Registered</h3>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
                       Register systems, seminar rooms, and labs to schedule them and enable institutional sharing.
                     </p>
-                    <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                      + Add Your First Resource
+                    <button className="btn btn-primary btn-sm" onClick={() => setShowAddModal(true)}>
+                      <Plus size={14} strokeWidth={2} />
+                      <span>Add Your First Resource</span>
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
                     {myResources.map((resource) => (
-                      <div key={resource.id} className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative' }}>
+                      <div key={resource.id} className="glass" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <span style={{ fontSize: '1.5rem' }}>{getIcon(resource.category || resource.type)}</span>
+                          <div style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-md)', background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {getCategoryIcon(resource.category || resource.type, 18)}
+                          </div>
                           <span className={`badge ${resource.status === 'AVAILABLE' ? 'badge-green' : 'badge-orange'}`} style={{ textTransform: 'capitalize' }}>
                             {resource.status?.toLowerCase()}
                           </span>
                         </div>
                         <div>
-                          <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{resource.name}</h4>
+                          <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>{resource.name}</h4>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{resource.category || resource.type}</span>
                         </div>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', minHeight: '38px', lineBreak: 'anywhere' }}>
+                        <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', minHeight: '36px', lineBreak: 'anywhere', margin: 0 }}>
                           {resource.description || 'No description provided.'}
                         </p>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-                          <div>📍 <strong>Location:</strong> {resource.location || 'N/A'}</div>
-                          <div>👥 <strong>Capacity:</strong> {resource.capacity ? `${resource.capacity} students` : 'N/A'}</div>
-                          <div>📅 <strong>Availability:</strong> {resource.availability || 'N/A'}</div>
-                          <div>🛠️ <strong>Sharing:</strong> <span style={{ color: resource.sharingEnabled ? '#34d399' : '#fbbf24', fontWeight: 600 }}>{resource.sharingEnabled ? 'Enabled' : 'Disabled'}</span></div>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button className="btn btn-sm btn-ghost" style={{ padding: '6px 12px' }} onClick={() => openEditModal(resource)}>Edit</button>
-                            <button className="btn btn-sm btn-ghost" style={{ padding: '6px 12px', color: '#ef4444' }} onClick={() => handleDeleteResource(resource.id)}>Delete</button>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.78rem', color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <MapPin size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.location || 'N/A'}</span>
                           </div>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button className="btn btn-sm btn-secondary" style={{ padding: '6px 12px' }} onClick={() => viewCalendar(resource)}>Calendar</button>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Users size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.capacity ? `${resource.capacity} seats` : 'N/A'}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Clock size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.availability || 'N/A'}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Share2 size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span style={{ color: resource.sharingEnabled ? '#34d399' : '#fbbf24', fontWeight: 500 }}>
+                              {resource.sharingEnabled ? 'Sharing' : 'Private'}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button className="btn btn-sm btn-ghost" style={{ padding: '5px 10px', fontSize: '12px' }} onClick={() => openEditModal(resource)}>
+                              <Edit2 size={12} strokeWidth={2} />
+                              <span>Edit</span>
+                            </button>
+                            <button className="btn btn-sm btn-ghost" style={{ padding: '5px 10px', fontSize: '12px', color: '#ef4444' }} onClick={() => handleDeleteResource(resource.id)}>
+                              <Trash2 size={12} strokeWidth={2} />
+                            </button>
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button className="btn btn-sm btn-secondary" style={{ padding: '5px 10px', fontSize: '12px' }} onClick={() => viewCalendar(resource)}>
+                              <Calendar size={12} strokeWidth={2} />
+                              <span>Calendar</span>
+                            </button>
                             <button
                               className={`btn btn-sm ${resource.sharingEnabled ? 'btn-ghost' : 'btn-primary'}`}
-                              style={{ padding: '6px 12px' }}
+                              style={{ padding: '5px 10px', fontSize: '12px' }}
                               onClick={() => handleToggleSharing(resource)}
                             >
                               {resource.sharingEnabled ? 'Unshare' : 'Share'}
@@ -864,16 +970,18 @@ export default function ResourcesPage() {
 
             {/* 3. MARKETPLACE TAB */}
             {activeTab === 'marketplace' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {/* Search & Filters */}
-                <div className="glass" style={{ padding: '16px', display: 'grid', gridTemplateColumns: '1fr repeat(3, 160px) 100px', gap: '12px', alignItems: 'center' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="🔍 Search shared resources, labs, specs..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+                <div className="glass" style={{ padding: '14px', display: 'grid', gridTemplateColumns: '1fr repeat(3, 160px) 100px', gap: '10px', alignItems: 'center' }}>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Search shared resources, labs, specs..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
                   <select
                     className="form-select"
                     value={selectedCategory}
@@ -887,14 +995,14 @@ export default function ResourcesPage() {
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="📍 Filter by location"
+                    placeholder="Filter by location"
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
                   />
                   <input
                     type="number"
                     className="form-input"
-                    placeholder="👥 Min Capacity"
+                    placeholder="Min Capacity"
                     value={minCapacity}
                     onChange={(e) => setMinCapacity(e.target.value)}
                   />
@@ -906,45 +1014,70 @@ export default function ResourcesPage() {
                       setSelectedLocation('')
                       setMinCapacity('')
                     }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                   >
-                    Reset
+                    <RotateCcw size={12} strokeWidth={2} />
+                    <span>Reset</span>
                   </button>
                 </div>
 
                 {/* Marketplace Items */}
                 {marketplaceResources.length === 0 ? (
-                  <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌐</div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Marketplace is Empty</h3>
-                    <p style={{ fontSize: '0.9rem' }}>No other institutions are sharing resources matching your filters currently.</p>
+                  <div className="glass" style={{ padding: '3.5rem 2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                      <Globe size={36} strokeWidth={1.5} color="var(--text-muted)" />
+                    </div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Marketplace is Empty</h3>
+                    <p style={{ fontSize: '0.85rem' }}>No other institutions are sharing resources matching your filters currently.</p>
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
                     {marketplaceResources.map((resource) => (
-                      <div key={resource.id} className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div key={resource.id} className="glass" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <span style={{ fontSize: '1.5rem' }}>{getIcon(resource.category || resource.type)}</span>
-                          <span className="badge badge-purple" style={{ fontSize: '10px' }}>
-                            🏫 {resource.institution?.name || 'Partner Inst'}
+                          <div style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-md)', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {getCategoryIcon(resource.category || resource.type, 18)}
+                          </div>
+                          <span className="badge badge-purple" style={{ fontSize: '10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Building2 size={10} strokeWidth={2} />
+                            <span>{resource.institution?.name || 'Partner Inst'}</span>
                           </span>
                         </div>
                         <div>
-                          <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{resource.name}</h4>
+                          <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>{resource.name}</h4>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{resource.category || resource.type}</span>
                         </div>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', minHeight: '38px', lineBreak: 'anywhere' }}>
+                        <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', minHeight: '36px', lineBreak: 'anywhere', margin: 0 }}>
                           {resource.description || 'No description provided.'}
                         </p>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-                          <div>📍 <strong>Location:</strong> {resource.location || 'N/A'}</div>
-                          <div>👥 <strong>Capacity:</strong> {resource.capacity ? `${resource.capacity} students` : 'N/A'}</div>
-                          <div style={{ gridColumn: 'span 2' }}>📅 <strong>Available times:</strong> {resource.availability || 'N/A'}</div>
-                          {resource.facilities && <div style={{ gridColumn: 'span 2' }}>🛠️ <strong>Specs:</strong> {resource.facilities}</div>}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.78rem', color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <MapPin size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.location || 'N/A'}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Users size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.capacity ? `${resource.capacity} students` : 'N/A'}</span>
+                          </div>
+                          <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Clock size={12} strokeWidth={2} color="var(--text-muted)" />
+                            <span>{resource.availability || 'N/A'}</span>
+                          </div>
+                          {resource.facilities && (
+                            <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                              <Wrench size={12} strokeWidth={2} color="var(--text-muted)" />
+                              <span>{resource.facilities}</span>
+                            </div>
+                          )}
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                          <button className="btn btn-sm btn-ghost" onClick={() => viewCalendar(resource)}>Check Schedule</button>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                          <button className="btn btn-sm btn-ghost" onClick={() => viewCalendar(resource)} style={{ padding: '5px 10px', fontSize: '12px' }}>
+                            <Calendar size={12} strokeWidth={2} />
+                            <span>Schedule</span>
+                          </button>
                           <button
-                            className="btn btn-sm btn-institution"
+                            className="btn btn-sm btn-primary"
+                            style={{ padding: '5px 12px', fontSize: '12px' }}
                             onClick={() => {
                               setSelectedResource(resource)
                               setRequestForm({
@@ -960,7 +1093,8 @@ export default function ResourcesPage() {
                               setShowRequestModal(true)
                             }}
                           >
-                            Request Access →
+                            <span>Request Access</span>
+                            <ArrowRight size={12} strokeWidth={2} />
                           </button>
                         </div>
                       </div>
@@ -973,36 +1107,39 @@ export default function ResourcesPage() {
             {/* 4. INCOMING REQUESTS TAB */}
             {activeTab === 'requests' && (
               <div className="glass" style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>📥 Requests Received from Partners</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
+                  <Inbox size={18} strokeWidth={2} color="#8b5cf6" />
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Requests Received from Partners</h3>
+                </div>
                 {incomingRequests.length === 0 ? (
-                  <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '3rem 0' }}>
+                  <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '3rem 0', fontSize: '0.875rem' }}>
                     No incoming requests found.
                   </div>
                 ) : (
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
-                          <th style={{ padding: '12px' }}>Institution</th>
-                          <th style={{ padding: '12px' }}>Resource</th>
-                          <th style={{ padding: '12px' }}>Date</th>
-                          <th style={{ padding: '12px' }}>Time</th>
-                          <th style={{ padding: '12px' }}>Purpose</th>
-                          <th style={{ padding: '12px', textAlign: 'right' }}>Students</th>
-                          <th style={{ padding: '12px', textAlign: 'center' }}>Status</th>
-                          <th style={{ padding: '12px', textAlign: 'right' }}>Actions</th>
+                          <th style={{ padding: '10px 12px' }}>Institution</th>
+                          <th style={{ padding: '10px 12px' }}>Resource</th>
+                          <th style={{ padding: '10px 12px' }}>Date</th>
+                          <th style={{ padding: '10px 12px' }}>Time</th>
+                          <th style={{ padding: '10px 12px' }}>Purpose</th>
+                          <th style={{ padding: '10px 12px', textAlign: 'right' }}>Students</th>
+                          <th style={{ padding: '10px 12px', textAlign: 'center' }}>Status</th>
+                          <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {incomingRequests.map((req) => (
                           <tr key={req.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                            <td style={{ padding: '12px', fontWeight: 500 }}>{req.requestingInstitution?.name}</td>
-                            <td style={{ padding: '12px' }}>{req.resource?.name}</td>
-                            <td style={{ padding: '12px' }}>{formatDate(req.requestedDate)}</td>
-                            <td style={{ padding: '12px' }}>{formatTime(req.startTime)} - {formatTime(req.endTime)}</td>
-                            <td style={{ padding: '12px' }}>{req.purpose}</td>
-                            <td style={{ padding: '12px', textAlign: 'right' }}>{req.studentCount}</td>
-                            <td style={{ padding: '12px', textAlign: 'center' }}>
+                            <td style={{ padding: '12px 10px', fontWeight: 500 }}>{req.requestingInstitution?.name}</td>
+                            <td style={{ padding: '12px 10px' }}>{req.resource?.name}</td>
+                            <td style={{ padding: '12px 10px' }}>{formatDate(req.requestedDate)}</td>
+                            <td style={{ padding: '12px 10px' }}>{formatTime(req.startTime)} - {formatTime(req.endTime)}</td>
+                            <td style={{ padding: '12px 10px' }}>{req.purpose}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'right' }}>{req.studentCount}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                               <span className={`badge ${
                                 req.status === 'approved' ? 'badge-green' :
                                 req.status === 'rejected' ? 'badge-orange' :
@@ -1012,11 +1149,11 @@ export default function ResourcesPage() {
                                 {req.status}
                               </span>
                             </td>
-                            <td style={{ padding: '12px', textAlign: 'right' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                               {req.status === 'pending' && (
                                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                   <button
-                                    className="btn btn-sm btn-institution"
+                                    className="btn btn-sm btn-primary"
                                     style={{ padding: '4px 10px', fontSize: '11px' }}
                                     onClick={() => handleActionRequest(req.id, 'approve')}
                                   >
@@ -1052,39 +1189,42 @@ export default function ResourcesPage() {
 
             {/* 5. REQUESTS & AGREEMENTS TAB */}
             {activeTab === 'agreements' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Outgoing requests */}
                 <div className="glass" style={{ padding: '24px' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>📤 Requests Sent to Partners</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
+                    <Share2 size={18} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Requests Sent to Partners</h3>
+                  </div>
                   {outgoingRequests.length === 0 ? (
-                    <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>
+                    <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0', fontSize: '0.875rem' }}>
                       No sent requests found. Explore the Marketplace to request resources.
                     </div>
                   ) : (
                     <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
                         <thead>
                           <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
-                            <th style={{ padding: '12px' }}>Owner Institution</th>
-                            <th style={{ padding: '12px' }}>Resource</th>
-                            <th style={{ padding: '12px' }}>Date</th>
-                            <th style={{ padding: '12px' }}>Time</th>
-                            <th style={{ padding: '12px' }}>Purpose</th>
-                            <th style={{ padding: '12px', textAlign: 'right' }}>Students</th>
-                            <th style={{ padding: '12px', textAlign: 'center' }}>Status</th>
-                            <th style={{ padding: '12px', textAlign: 'right' }}>Actions</th>
+                            <th style={{ padding: '10px 12px' }}>Owner Institution</th>
+                            <th style={{ padding: '10px 12px' }}>Resource</th>
+                            <th style={{ padding: '10px 12px' }}>Date</th>
+                            <th style={{ padding: '10px 12px' }}>Time</th>
+                            <th style={{ padding: '10px 12px' }}>Purpose</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Students</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'center' }}>Status</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {outgoingRequests.map((req) => (
                             <tr key={req.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={{ padding: '12px', fontWeight: 500 }}>{req.resource?.institution?.name}</td>
-                              <td style={{ padding: '12px' }}>{req.resource?.name}</td>
-                              <td style={{ padding: '12px' }}>{formatDate(req.requestedDate)}</td>
-                              <td style={{ padding: '12px' }}>{formatTime(req.startTime)} - {formatTime(req.endTime)}</td>
-                              <td style={{ padding: '12px' }}>{req.purpose}</td>
-                              <td style={{ padding: '12px', textAlign: 'right' }}>{req.studentCount}</td>
-                              <td style={{ padding: '12px', textAlign: 'center' }}>
+                              <td style={{ padding: '12px 10px', fontWeight: 500 }}>{req.resource?.institution?.name}</td>
+                              <td style={{ padding: '12px 10px' }}>{req.resource?.name}</td>
+                              <td style={{ padding: '12px 10px' }}>{formatDate(req.requestedDate)}</td>
+                              <td style={{ padding: '12px 10px' }}>{formatTime(req.startTime)} - {formatTime(req.endTime)}</td>
+                              <td style={{ padding: '12px 10px' }}>{req.purpose}</td>
+                              <td style={{ padding: '12px 10px', textAlign: 'right' }}>{req.studentCount}</td>
+                              <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                                 <span className={`badge ${
                                   req.status === 'approved' ? 'badge-green' :
                                   req.status === 'rejected' ? 'badge-orange' :
@@ -1094,7 +1234,7 @@ export default function ResourcesPage() {
                                   {req.status}
                                 </span>
                               </td>
-                              <td style={{ padding: '12px', textAlign: 'right' }}>
+                              <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                                 {(req.status === 'pending' || req.status === 'approved') && (
                                   <button
                                     className="btn btn-sm btn-ghost"
@@ -1120,36 +1260,39 @@ export default function ResourcesPage() {
 
                 {/* Sharing Agreements */}
                 <div className="glass" style={{ padding: '24px' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>🤝 Active Sharing Agreements</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
+                    <Handshake size={18} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Active Sharing Agreements</h3>
+                  </div>
                   {agreements.length === 0 ? (
-                    <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>
+                    <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0', fontSize: '0.875rem' }}>
                       No active sharing agreements currently.
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
                       {agreements.map((agr) => {
                         const isOwner = agr.ownerInstitutionId === myInstitutionId
                         return (
-                          <div key={agr.id} className="glass" style={{ padding: '20px', borderLeft: '4px solid var(--accent-cyan)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div key={agr.id} className="glass" style={{ padding: '18px', borderLeft: '3px solid var(--accent-primary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <h4 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{agr.resource?.name}</h4>
+                              <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>{agr.resource?.name}</h4>
                               <span className={`badge ${agr.status === 'active' ? 'badge-green' : 'badge-orange'}`} style={{ textTransform: 'capitalize' }}>
                                 {agr.status}
                               </span>
                             </div>
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                              <div>🏫 <strong>Owner:</strong> {agr.ownerInstitution?.name}</div>
-                              <div>👥 <strong>Requestor:</strong> {agr.requestingInstitution?.name}</div>
-                              <div style={{ margin: '6px 0', borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
-                                📅 <strong>Usage Period:</strong> {formatDate(agr.startDate)}
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div><strong>Owner:</strong> {agr.ownerInstitution?.name}</div>
+                              <div><strong>Requestor:</strong> {agr.requestingInstitution?.name}</div>
+                              <div style={{ margin: '4px 0', borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
+                                <strong>Usage Period:</strong> {formatDate(agr.startDate)}
                               </div>
-                              <div>⏰ <strong>Usage Time:</strong> {formatTime(agr.startDate)} – {formatTime(agr.endDate)}</div>
-                              <div>👥 <strong>Capacity:</strong> {agr.request?.studentCount || agr.resource?.capacity} students</div>
-                              <div>🎯 <strong>Purpose:</strong> {agr.request?.purpose || 'Institutional sharing'}</div>
+                              <div><strong>Usage Time:</strong> {formatTime(agr.startDate)} – {formatTime(agr.endDate)}</div>
+                              <div><strong>Capacity:</strong> {agr.request?.studentCount || agr.resource?.capacity} students</div>
+                              <div><strong>Purpose:</strong> {agr.request?.purpose || 'Institutional sharing'}</div>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                              <span>Agreement ID: #{agr.id}</span>
-                              <span className="badge badge-purple" style={{ fontSize: '9px' }}>
+                              <span>Agreement #{agr.id}</span>
+                              <span className="badge badge-purple" style={{ fontSize: '10px' }}>
                                 {isOwner ? 'Hosting' : 'Visiting'}
                               </span>
                             </div>
@@ -1165,13 +1308,15 @@ export default function ResourcesPage() {
             {/* 6. CALENDAR VIEW */}
             {activeTab === 'calendar' && selectedResourceForCalendar && (
               <div className="glass" style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>📅 Schedule Calendar for {selectedResourceForCalendar.name}</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Category: {selectedResourceForCalendar.category || selectedResourceForCalendar.type} | Location: {selectedResourceForCalendar.location}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Calendar size={18} strokeWidth={2} color="#8b5cf6" />
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Schedule: {selectedResourceForCalendar.name}</h3>
+                    </div>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Category: {selectedResourceForCalendar.category || selectedResourceForCalendar.type} | Location: {selectedResourceForCalendar.location}</p>
                   </div>
-                  <button className="btn btn-sm btn-ghost" onClick={() => {
-                    // Switch tab based on owner
+                  <button className="btn btn-sm btn-secondary" onClick={() => {
                     const isMine = myResources.some(r => r.id === selectedResourceForCalendar.id)
                     setActiveTab(isMine ? 'my-resources' : 'marketplace')
                   }}>
@@ -1179,16 +1324,16 @@ export default function ResourcesPage() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px' }}>
                   {/* Left Column: Details */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div className="glass" style={{ padding: '16px', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <h4 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>About the asset</h4>
-                      <div>🏢 <strong>Capacity:</strong> {selectedResourceForCalendar.capacity || 'N/A'}</div>
-                      <div>📍 <strong>Location:</strong> {selectedResourceForCalendar.location || 'N/A'}</div>
-                      <div>📅 <strong>Availability:</strong> {selectedResourceForCalendar.availability || 'N/A'}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div className="glass" style={{ padding: '16px', fontSize: '0.825rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <h4 style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>About the asset</h4>
+                      <div><strong>Capacity:</strong> {selectedResourceForCalendar.capacity || 'N/A'}</div>
+                      <div><strong>Location:</strong> {selectedResourceForCalendar.location || 'N/A'}</div>
+                      <div><strong>Availability:</strong> {selectedResourceForCalendar.availability || 'N/A'}</div>
                       {selectedResourceForCalendar.facilities && (
-                        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '8px', marginTop: '4px' }}>
+                        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px', marginTop: '4px' }}>
                           <strong>Specifications:</strong>
                           <p style={{ color: 'var(--text-secondary)', marginTop: '2px' }}>{selectedResourceForCalendar.facilities}</p>
                         </div>
@@ -1197,37 +1342,37 @@ export default function ResourcesPage() {
                   </div>
 
                   {/* Right Column: Bookings Timeline */}
-                  <div className="glass" style={{ padding: '20px' }}>
-                    <h4 style={{ fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>Confirmed Bookings</h4>
+                  <div className="glass" style={{ padding: '18px' }}>
+                    <h4 style={{ fontWeight: 600, marginBottom: '0.875rem', color: 'var(--text-primary)', fontSize: '0.95rem' }}>Confirmed Bookings</h4>
                     {resourceBookings.filter(b => b.status !== 'cancelled').length === 0 ? (
-                      <div style={{ color: 'var(--text-secondary)', padding: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
-                        No active bookings schedules for this resource. It is fully available!
+                      <div style={{ color: 'var(--text-secondary)', padding: '2rem', textAlign: 'center', fontSize: '0.85rem' }}>
+                        No active bookings scheduled for this resource. It is fully available!
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {resourceBookings.filter(b => b.status !== 'cancelled').map((booking) => (
                           <div
                             key={booking.id}
                             style={{
-                              padding: '14px',
-                              borderRadius: '8px',
-                              background: 'rgba(255,255,255,0.03)',
-                              borderLeft: '4px solid var(--accent-purple)',
+                              padding: '12px 14px',
+                              borderRadius: 'var(--radius-md)',
+                              background: 'var(--bg-secondary)',
+                              borderLeft: '3px solid var(--accent-primary)',
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'center'
                             }}
                           >
                             <div>
-                              <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
                                 {booking.purpose || 'Institutional Booking'}
                               </div>
-                              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                                📅 {formatDate(booking.startTime)} | ⏰ {formatTime(booking.startTime)} – {formatTime(booking.endTime)}
+                              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                                {formatDate(booking.startTime)} | {formatTime(booking.startTime)} – {formatTime(booking.endTime)}
                               </div>
                             </div>
                             <span className="badge badge-purple" style={{ fontSize: '10px' }}>
-                              👤 Booked by {booking.booked_by_name || 'Admin'}
+                              Booked by {booking.booked_by_name || 'Admin'}
                             </span>
                           </div>
                         ))}
@@ -1240,32 +1385,40 @@ export default function ResourcesPage() {
 
             {/* 7. STUDENT BOOKINGS VIEW */}
             {activeTab === 'student-bookings' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Stats Row */}
                 <div className={styles.statsRow}>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>🟡</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>
+                      <Clock size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Pending Requests</div>
                       <div className={styles.statValue}>{bookingStats.pendingRequests}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399' }}>🟢</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399' }}>
+                      <CheckCircle2 size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Approved Today</div>
                       <div className={styles.statValue}>{bookingStats.approvedToday}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(124,58,237,0.1)', color: '#a78bfa' }}>📅</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(124,58,237,0.1)', color: '#a78bfa' }}>
+                      <Calendar size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Upcoming Bookings</div>
                       <div className={styles.statValue}>{bookingStats.upcomingBookings}</div>
                     </div>
                   </div>
                   <div className={styles.statCard}>
-                    <div className={styles.statIcon} style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>🏢</div>
+                    <div className={styles.statIcon} style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>
+                      <Building2 size={20} strokeWidth={2} />
+                    </div>
                     <div>
                       <div className={styles.statLabel}>Active Resources</div>
                       <div className={styles.statValue}>{bookingStats.activeResources}</div>
@@ -1274,24 +1427,29 @@ export default function ResourcesPage() {
                 </div>
 
                 <div className="glass" style={{ padding: '24px' }}>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
-                    🎓 Student Reservation Requests
-                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
+                    <GraduationCap size={18} strokeWidth={2} color="#8b5cf6" />
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                      Student Reservation Requests
+                    </h3>
+                  </div>
 
                   {actionSuccess && (
-                    <div style={{ padding: '10px 14px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '16px', fontWeight: 600 }}>
-                      🎉 {actionSuccess}
+                    <div style={{ padding: '10px 14px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CheckCircle2 size={15} strokeWidth={2} />
+                      <span>{actionSuccess}</span>
                     </div>
                   )}
 
                   {actionError && (
-                    <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '16px', fontWeight: 600 }}>
-                      ⚠️ {actionError}
+                    <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <AlertCircle size={15} strokeWidth={2} />
+                      <span>{actionError}</span>
                     </div>
                   )}
 
                   {studentBookings.length === 0 ? (
-                    <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                       No student booking requests found.
                     </div>
                   ) : (
@@ -1299,34 +1457,34 @@ export default function ResourcesPage() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
                         <thead>
                           <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border)' }}>
-                            <th style={{ padding: '12px 16px' }}>Student</th>
-                            <th style={{ padding: '12px 16px' }}>Resource</th>
-                            <th style={{ padding: '12px 16px' }}>Schedule</th>
-                            <th style={{ padding: '12px 16px' }}>Purpose</th>
-                            <th style={{ padding: '12px 16px' }}>Status</th>
-                            <th style={{ padding: '12px 16px' }}>Action</th>
+                            <th style={{ padding: '10px 14px' }}>Student</th>
+                            <th style={{ padding: '10px 14px' }}>Resource</th>
+                            <th style={{ padding: '10px 14px' }}>Schedule</th>
+                            <th style={{ padding: '10px 14px' }}>Purpose</th>
+                            <th style={{ padding: '10px 14px' }}>Status</th>
+                            <th style={{ padding: '10px 14px' }}>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {studentBookings.map((b: any) => (
                             <tr key={b.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 14px' }}>
                                 <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.requester.name}</div>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{b.requester.email}</div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>🏫 {b.requester.college || 'Host Institution'}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{b.requester.college || 'Host Institution'}</div>
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 14px' }}>
                                 <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.resourceName}</div>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{b.category} | {b.location}</div>
                               </td>
-                              <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
+                              <td style={{ padding: '12px 14px', color: 'var(--text-secondary)' }}>
                                 <div>{formatDate(b.startTime)}</div>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatTime(b.startTime)} - {formatTime(b.endTime)}</div>
                               </td>
-                              <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', maxWidth: '200px', wordWrap: 'break-word' }}>
+                              <td style={{ padding: '12px 14px', color: 'var(--text-secondary)', maxWidth: '200px', wordWrap: 'break-word' }}>
                                 {b.purpose}
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 14px' }}>
                                 <span className={`badge ${
                                   b.status === 'pending' ? 'badge-orange' :
                                   b.status === 'rejected' ? 'badge-orange' :
@@ -1339,9 +1497,9 @@ export default function ResourcesPage() {
                                    'Approved'}
                                 </span>
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 14px' }}>
                                 {b.status === 'pending' ? (
-                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
                                     <button
                                       className="btn btn-sm btn-primary"
                                       disabled={actionSubmitting}
@@ -1386,10 +1544,25 @@ export default function ResourcesPage() {
 
       {/* A. Add Resource Modal */}
       {showAddModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass" style={{ width: '560px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>+ Register New Resource</h3>
-            {actionError && <div style={{ color: '#ef4444', fontSize: '0.85rem' }}>⚠️ {actionError}</div>}
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: '1rem' }} onClick={() => setShowAddModal(false)}>
+          <div className="glass" style={{ width: '100%', maxWidth: '560px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '90vh', overflowY: 'auto', borderRadius: 'var(--radius-lg)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Plus size={18} strokeWidth={2} color="#8b5cf6" />
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Register New Resource</h3>
+              </div>
+              <button onClick={() => setShowAddModal(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
+            </div>
+
+            {actionError && (
+              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertCircle size={14} strokeWidth={2} />
+                <span>{actionError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleAddResource} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="form-group">
                 <label className="form-label">Resource Name *</label>
@@ -1468,34 +1641,34 @@ export default function ResourcesPage() {
                   onChange={(e) => setResourceForm({ ...resourceForm, facilities: e.target.value })}
                 />
               </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '6px 0' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '4px 0' }}>
                 <input
                   type="checkbox"
                   id="availableToStudents"
                   checked={resourceForm.availableToStudents}
                   onChange={(e) => setResourceForm({ ...resourceForm, availableToStudents: e.target.checked })}
-                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                  style={{ width: '15px', height: '15px', cursor: 'pointer' }}
                 />
-                <label htmlFor="availableToStudents" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                <label htmlFor="availableToStudents" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--text-secondary)' }}>
                   Make this resource available to students of my institution
                 </label>
               </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '6px 0' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '4px 0' }}>
                 <input
                   type="checkbox"
                   id="sharingEnabled"
                   checked={resourceForm.sharingEnabled}
                   onChange={(e) => setResourceForm({ ...resourceForm, sharingEnabled: e.target.checked })}
-                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                  style={{ width: '15px', height: '15px', cursor: 'pointer' }}
                 />
-                <label htmlFor="sharingEnabled" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                <label htmlFor="sharingEnabled" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--text-secondary)' }}>
                   Enable sharing with other institutions in the marketplace immediately
                 </label>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '10px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                   {submitting ? 'Creating...' : 'Register Asset'}
                 </button>
               </div>
@@ -1506,10 +1679,25 @@ export default function ResourcesPage() {
 
       {/* B. Edit Resource Modal */}
       {showEditModal && selectedResource && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass" style={{ width: '560px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Edit Resource Details</h3>
-            {actionError && <div style={{ color: '#ef4444', fontSize: '0.85rem' }}>⚠️ {actionError}</div>}
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: '1rem' }} onClick={() => setShowEditModal(false)}>
+          <div className="glass" style={{ width: '100%', maxWidth: '560px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '90vh', overflowY: 'auto', borderRadius: 'var(--radius-lg)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Edit2 size={18} strokeWidth={2} color="#8b5cf6" />
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Edit Resource Details</h3>
+              </div>
+              <button onClick={() => setShowEditModal(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
+            </div>
+
+            {actionError && (
+              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertCircle size={14} strokeWidth={2} />
+                <span>{actionError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleEditResource} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="form-group">
                 <label className="form-label">Resource Name *</label>
@@ -1582,34 +1770,34 @@ export default function ResourcesPage() {
                   onChange={(e) => setResourceForm({ ...resourceForm, facilities: e.target.value })}
                 />
               </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '6px 0' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '4px 0' }}>
                 <input
                   type="checkbox"
                   id="availableToStudentsEdit"
                   checked={resourceForm.availableToStudents}
                   onChange={(e) => setResourceForm({ ...resourceForm, availableToStudents: e.target.checked })}
-                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                  style={{ width: '15px', height: '15px', cursor: 'pointer' }}
                 />
-                <label htmlFor="availableToStudentsEdit" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                <label htmlFor="availableToStudentsEdit" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--text-secondary)' }}>
                   Make this resource available to students of my institution
                 </label>
               </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '6px 0' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '4px 0' }}>
                 <input
                   type="checkbox"
                   id="sharingEnabledEdit"
                   checked={resourceForm.sharingEnabled}
                   onChange={(e) => setResourceForm({ ...resourceForm, sharingEnabled: e.target.checked })}
-                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                  style={{ width: '15px', height: '15px', cursor: 'pointer' }}
                 />
-                <label htmlFor="sharingEnabledEdit" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                <label htmlFor="sharingEnabledEdit" style={{ fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--text-secondary)' }}>
                   Enable sharing with other institutions in the marketplace
                 </label>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '10px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowEditModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                   {submitting ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
@@ -1620,14 +1808,32 @@ export default function ResourcesPage() {
 
       {/* C. Request Access Modal */}
       {showRequestModal && selectedResource && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass" style={{ width: '500px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Request Access</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Asset: {selectedResource.name} | Owner: {selectedResource.institution?.name}</p>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: '1rem' }} onClick={() => setShowRequestModal(false)}>
+          <div className="glass" style={{ width: '100%', maxWidth: '500px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: 'var(--radius-lg)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Request Resource Access</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{selectedResource.name} • {selectedResource.institution?.name}</p>
+              </div>
+              <button onClick={() => setShowRequestModal(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
-            {actionError && <div style={{ color: '#ef4444', fontSize: '0.85rem' }}>⚠️ {actionError}</div>}
-            {actionSuccess && <div style={{ color: '#34d399', fontSize: '0.85rem', fontWeight: 600 }}>✓ {actionSuccess}</div>}
+
+            {actionError && (
+              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertCircle size={14} strokeWidth={2} />
+                <span>{actionError}</span>
+              </div>
+            )}
+
+            {actionSuccess && (
+              <div style={{ padding: '8px 12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <CheckCircle2 size={14} strokeWidth={2} />
+                <span>{actionSuccess}</span>
+              </div>
+            )}
+
             <form onSubmit={handleRequestAccess} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="form-group">
                 <label className="form-label">Purpose of Usage *</label>
@@ -1696,9 +1902,9 @@ export default function ResourcesPage() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowRequestModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowRequestModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                   {submitting ? 'Sending...' : 'Send Request'}
                 </button>
               </div>
@@ -1707,32 +1913,38 @@ export default function ResourcesPage() {
         </div>
       )}
 
-      {/* D. Reject Request Modal (Enter Reason) */}
+      {/* D. Reject Request Modal */}
       {showRejectModal && selectedRequest && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass" style={{ width: '420px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Reject Access Request</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Request from: {selectedRequest.requestingInstitution?.name}</p>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: '1rem' }} onClick={() => setShowRejectModal(false)}>
+          <div className="glass" style={{ width: '100%', maxWidth: '420px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: 'var(--radius-lg)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Reject Access Request</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Request from: {selectedRequest.requestingInstitution?.name}</p>
+              </div>
+              <button onClick={() => setShowRejectModal(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
             </div>
+
             <form onSubmit={handleRejectRequestSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="form-group">
                 <label className="form-label">Reason for Rejection *</label>
                 <textarea
                   className="form-input"
-                  style={{ minHeight: '80px', resize: 'none' }}
+                  style={{ minHeight: '80px', resize: 'vertical' }}
                   placeholder="Please state why this request cannot be approved (e.g. maintenance work, prior internal booking)..."
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   required
                 />
               </div>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => {
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => {
                   setShowRejectModal(false)
                   setRejectionReason('')
                 }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" style={{ background: 'var(--grad-orange)' }}>
+                <button type="submit" className="btn btn-sm" style={{ background: '#ef4444', color: 'white', border: 'none' }}>
                   Reject Request
                 </button>
               </div>
@@ -1743,14 +1955,22 @@ export default function ResourcesPage() {
 
       {/* Student Booking Rejection Modal */}
       {selectedBookingForRejection && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass" style={{ width: '420px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Reject Booking Request</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-              Specify the reason for rejecting the booking request for <strong>{selectedBookingForRejection.resourceName}</strong> by student <strong>{selectedBookingForRejection.requester.name}</strong>.
-            </p>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: '1rem' }} onClick={() => setSelectedBookingForRejection(null)}>
+          <div className="glass" style={{ width: '100%', maxWidth: '420px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: 'var(--radius-lg)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Reject Booking Request</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  {selectedBookingForRejection.resourceName} • {selectedBookingForRejection.requester.name}
+                </p>
+              </div>
+              <button onClick={() => setSelectedBookingForRejection(null)} className="btn btn-ghost btn-sm" style={{ padding: '4px' }}>
+                <X size={18} strokeWidth={2} />
+              </button>
+            </div>
+
             <div className="form-group">
-              <label className="form-label" style={{ fontSize: '12px' }}>Reason for Rejection *</label>
+              <label className="form-label">Reason for Rejection *</label>
               <textarea
                 className="form-input"
                 style={{ minHeight: '80px', resize: 'vertical' }}
@@ -1760,19 +1980,24 @@ export default function ResourcesPage() {
                 required
               />
             </div>
-            {actionError && <div style={{ color: '#ef4444', fontSize: '0.85rem' }}>⚠️ {actionError}</div>}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
-              <button className="btn btn-secondary" onClick={() => {
+            {actionError && (
+              <div style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertCircle size={14} strokeWidth={2} />
+                <span>{actionError}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => {
                 setSelectedBookingForRejection(null)
                 setBookingRejectionReason('')
               }} disabled={actionSubmitting}>Cancel</button>
               <button
-                className="btn btn-primary"
+                className="btn btn-sm"
                 onClick={handleRejectBookingSubmit}
                 disabled={actionSubmitting || !bookingRejectionReason.trim()}
-                style={{ background: '#ef4444', borderColor: '#ef4444' }}
+                style={{ background: '#ef4444', color: 'white', border: 'none' }}
               >
-                {actionSubmitting ? 'Rejecting...' : 'Reject Booking Request'}
+                {actionSubmitting ? 'Rejecting...' : 'Reject Booking'}
               </button>
             </div>
           </div>

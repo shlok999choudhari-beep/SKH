@@ -1,6 +1,23 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../institution.module.css'
+import {
+  FolderLock,
+  FileQuestion,
+  FileText,
+  Lock,
+  User,
+  Image as ImageIcon,
+  CheckCircle2,
+  CircleX,
+  Clock,
+  Eye,
+  X,
+  TriangleAlert,
+  Loader2,
+  Search
+} from 'lucide-react'
 
 interface SharedDocument {
   id: number
@@ -138,12 +155,12 @@ export default function InstitutionStudentDocumentsPage() {
 
   const handleSendRequest = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!requestStudentId || !requestTitle || !requestReason) return
+    if (!requestStudentId || !requestTitle.trim() || !requestReason.trim()) return
     setSendingRequest(true)
     setRequestMessage('')
 
     try {
-      const res = await fetch('/api/institution/document-requests', {
+      const res = await fetch('/api/documents/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -155,48 +172,48 @@ export default function InstitutionStudentDocumentsPage() {
       })
 
       const data = await res.json()
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to send request')
+      if (res.ok && data.request) {
+        setRequests(prev => [data.request, ...prev])
+        setIsRequestModalOpen(false)
+        setRequestTitle('')
+        setRequestReason('')
+        setRequestStudentId('')
+      } else {
+        setRequestMessage(data.error || 'Failed to submit document request')
       }
-
-      setIsRequestModalOpen(false)
-      setRequestStudentId('')
-      setRequestTitle('')
-      setRequestReason('')
-      fetchData()
-    } catch (err: any) {
-      setRequestMessage(err.message || 'Error sending document request')
+    } catch (err) {
+      console.error('Send request error:', err)
+      setRequestMessage('Network error submitting request')
     } finally {
       setSendingRequest(false)
     }
   }
 
   const filteredDocs = documents.filter(doc => {
-    if (selectedCategory !== 'ALL' && doc.category !== selectedCategory) return false
-    if (selectedStatus !== 'ALL' && doc.verificationStatus !== selectedStatus) return false
+    const matchesSearch = doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.student.email.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesCategory = selectedCategory === 'ALL' || doc.category === selectedCategory
+    const matchesStatus = selectedStatus === 'ALL' || doc.verificationStatus === selectedStatus
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      const studentMatch = doc.student.name.toLowerCase().includes(q) || doc.student.email.toLowerCase().includes(q)
-      const docMatch = doc.fileName.toLowerCase().includes(q) || doc.documentType.toLowerCase().includes(q)
-      return studentMatch || docMatch
-    }
-    return true
+    return matchesSearch && matchesCategory && matchesStatus
   })
 
   const totalShared = documents.length
-  const pendingCount = documents.filter(d => d.verificationStatus === 'PENDING').length
+  const pendingCount = documents.filter(d => d.verificationStatus === 'PENDING' || d.verificationStatus === 'NEEDS_REVIEW').length
   const verifiedCount = documents.filter(d => d.verificationStatus === 'VERIFIED').length
   const openRequestsCount = requests.filter(r => r.status === 'PENDING').length
 
   return (
     <>
       <header className={styles.header}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', width: '100%' }}>
           <div>
-            <h1 className={styles.pageTitle} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              📁 Student Documents
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FolderLock size={24} strokeWidth={2} color="#a855f7" />
+              <h1 className={styles.pageTitle}>Student Documents Vault</h1>
+            </div>
             <p className={styles.pageSubtitle}>
               Review, verify, and request academic and verification documents explicitly shared by students.
             </p>
@@ -212,102 +229,144 @@ export default function InstitutionStudentDocumentsPage() {
               color: 'white',
               boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px'
             }}
           >
-            📋 Request Document from Student
+            <FileQuestion size={16} strokeWidth={2} />
+            <span>Request Document from Student</span>
           </button>
         </div>
       </header>
 
       <main className={styles.main}>
         {/* Metric Cards */}
-        <div className={styles.statsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '1.5rem' }}>
-          <div className={styles.card} style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Total Shared Documents</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {totalShared}
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#a855f7' }}>
+              <FolderLock size={22} strokeWidth={2} />
+            </div>
+            <div>
+              <div className={styles.statValue}>{totalShared}</div>
+              <div className={styles.statLabel}>Total Shared Documents</div>
             </div>
           </div>
-          <div className={styles.card} style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Pending Verification</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent-orange)', marginTop: '0.25rem' }}>
-              {pendingCount}
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' }}>
+              <Clock size={22} strokeWidth={2} />
+            </div>
+            <div>
+              <div className={styles.statValue} style={{ color: '#f59e0b' }}>{pendingCount}</div>
+              <div className={styles.statLabel}>Pending Verification</div>
             </div>
           </div>
-          <div className={styles.card} style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Verified Documents</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent-green)', marginTop: '0.25rem' }}>
-              {verifiedCount}
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981' }}>
+              <CheckCircle2 size={22} strokeWidth={2} />
+            </div>
+            <div>
+              <div className={styles.statValue} style={{ color: '#10b981' }}>{verifiedCount}</div>
+              <div className={styles.statLabel}>Verified Documents</div>
             </div>
           </div>
-          <div className={styles.card} style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Open Document Requests</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent-violet)', marginTop: '0.25rem' }}>
-              {openRequestsCount}
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ background: 'rgba(99, 102, 241, 0.12)', color: '#6366f1' }}>
+              <FileQuestion size={22} strokeWidth={2} />
+            </div>
+            <div>
+              <div className={styles.statValue} style={{ color: '#818cf8' }}>{openRequestsCount}</div>
+              <div className={styles.statLabel}>Open Document Requests</div>
             </div>
           </div>
         </div>
 
         {/* Tab & Search Bar */}
-        <div className={styles.card} style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
+        <div className={styles.card} style={{ padding: '1rem 1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => setActiveTab('shared')}
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'shared' ? 'var(--accent-violet)' : 'transparent',
-                  color: activeTab === 'shared' ? 'white' : 'var(--text-secondary)',
+                  border: activeTab === 'shared' ? '1px solid rgba(168, 85, 247, 0.4)' : '1px solid var(--border)',
+                  background: activeTab === 'shared' ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
+                  color: activeTab === 'shared' ? '#ffffff' : 'var(--text-secondary)',
                   fontWeight: 600,
-                  cursor: 'pointer'
+                  fontSize: '13.5px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                📁 Shared Documents ({totalShared})
+                <FolderLock size={15} strokeWidth={2} color={activeTab === 'shared' ? '#c084fc' : 'currentColor'} />
+                <span>Shared Documents ({totalShared})</span>
               </button>
               <button
                 onClick={() => setActiveTab('requests')}
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'requests' ? 'var(--accent-violet)' : 'transparent',
-                  color: activeTab === 'requests' ? 'white' : 'var(--text-secondary)',
+                  border: activeTab === 'requests' ? '1px solid rgba(168, 85, 247, 0.4)' : '1px solid var(--border)',
+                  background: activeTab === 'requests' ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
+                  color: activeTab === 'requests' ? '#ffffff' : 'var(--text-secondary)',
                   fontWeight: 600,
-                  cursor: 'pointer'
+                  fontSize: '13.5px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                📋 Requested Documents ({requests.length})
+                <FileQuestion size={15} strokeWidth={2} color={activeTab === 'requests' ? '#c084fc' : 'currentColor'} />
+                <span>Requested Documents ({requests.length})</span>
               </button>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                placeholder="Search student or document..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <span style={{ position: 'absolute', left: '10px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                  <Search size={14} strokeWidth={2} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search student or document..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{
+                    padding: '8px 12px 8px 32px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    fontSize: '13.5px',
+                    minWidth: '240px'
+                  }}
+                />
+              </div>
+
+              <select
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value)}
                 style={{
                   padding: '8px 12px',
                   borderRadius: '8px',
                   border: '1px solid var(--border)',
                   background: 'var(--bg-secondary)',
                   color: 'var(--text-primary)',
-                  minWidth: '220px'
+                  fontSize: '13.5px',
+                  cursor: 'pointer'
                 }}
-              />
-
-              <select
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
               >
                 <option value="ALL">All Statuses</option>
-                <option value="PENDING">🟡 Pending Review</option>
-                <option value="VERIFIED">🟢 Verified</option>
-                <option value="REJECTED">🔴 Rejected</option>
+                <option value="PENDING">Pending Review</option>
+                <option value="VERIFIED">Verified</option>
+                <option value="REJECTED">Rejected</option>
               </select>
             </div>
           </div>
@@ -315,21 +374,25 @@ export default function InstitutionStudentDocumentsPage() {
 
         {/* Content */}
         {loading ? (
-          <div className={styles.card} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-            Loading student documents...
+          <div className={styles.card} style={{ textAlign: 'center', padding: '3.5rem 1.5rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#a855f7' }} />
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>Loading student documents...</p>
           </div>
         ) : activeTab === 'requests' ? (
           /* REQUESTS LIST */
           <div className={styles.card}>
-            <h2 style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Sent Document Requests
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                Sent Document Requests
+              </h2>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{requests.length} active requests</span>
+            </div>
             {requests.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-secondary)' }}>
-                No document requests sent yet. Click "Request Document from Student" to get started.
+              <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+                No document requests sent yet. Click &quot;Request Document from Student&quot; above to request missing credentials.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {requests.map(req => (
                   <div
                     key={req.id}
@@ -337,25 +400,26 @@ export default function InstitutionStudentDocumentsPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '1.25rem',
+                      padding: '1rem 1.25rem',
                       borderRadius: '10px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-secondary)'
+                      background: 'rgba(255, 255, 255, 0.02)'
                     }}
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <h3 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                          📄 {req.title}
+                        <FileText size={16} strokeWidth={2} color="#a855f7" />
+                        <h3 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0, fontSize: '14.5px' }}>
+                          {req.title}
                         </h3>
                         <span className={`badge ${req.status === 'COMPLETED' ? 'badge-green' : 'badge-orange'}`}>
                           {req.status}
                         </span>
                       </div>
-                      <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', marginBottom: '2px' }}>
                         Student: <strong>{req.student.name}</strong> ({req.student.email}) • Reason: {req.reason}
                       </p>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         Sent on: {new Date(req.requestedAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -366,18 +430,22 @@ export default function InstitutionStudentDocumentsPage() {
           </div>
         ) : filteredDocs.length === 0 ? (
           /* EMPTY SHARED DOCUMENTS */
-          <div className={styles.card} style={{ textAlign: 'center', padding: '3.5rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              No Shared Documents
+          <div className={styles.card} style={{ textAlign: 'center', padding: '4rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ marginBottom: '1rem', width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Lock size={28} strokeWidth={1.5} color="var(--text-muted)" />
+            </div>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+              No Shared Documents Found
             </h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto' }}>
-              Students have not explicitly shared documents with your institution yet. You can request specific documents using the button above.
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto', fontSize: '13.5px' }}>
+              {searchQuery || selectedStatus !== 'ALL'
+                ? 'No documents match your current search or status filter.'
+                : 'Students have not shared documents with your institution yet. You can request specific documents using the button above.'}
             </p>
           </div>
         ) : (
           /* SHARED DOCUMENTS GRID */
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          <div className={styles.docGrid}>
             {filteredDocs.map(doc => {
               const parsedExtracted = doc.extractedInformation ? JSON.parse(doc.extractedInformation) : null
 
@@ -390,42 +458,74 @@ export default function InstitutionStudentDocumentsPage() {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     padding: '1.25rem',
-                    border: '1px solid var(--border)'
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg, 12px)',
+                    gap: '12px'
                   }}
                 >
                   <div>
                     {/* Student Info header */}
-                    <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
-                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.05rem' }}>
-                        👤 {doc.student.name}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        {doc.student.email} {doc.student.college ? `• ${doc.student.college}` : ''}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(168, 85, 247, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c084fc', fontWeight: 700, fontSize: '13px' }}>
+                          {doc.student.name ? doc.student.name.charAt(0).toUpperCase() : 'S'}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                            {doc.student.name}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            {doc.student.email} {doc.student.college ? `• ${doc.student.college}` : ''}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Document details */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem' }}>
-                      <div style={{ fontSize: '1.8rem', padding: '6px', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                        {doc.fileType.includes('pdf') ? '📕' : doc.fileType.startsWith('image') ? '🖼️' : '📄'}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '0.75rem' }}>
+                      <div style={{ padding: '8px', background: 'rgba(255, 255, 255, 0.04)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {doc.fileType.includes('pdf') ? (
+                          <FileText size={22} strokeWidth={2} color="#ef4444" />
+                        ) : doc.fileType.startsWith('image') ? (
+                          <ImageIcon size={22} strokeWidth={2} color="#3b82f6" />
+                        ) : (
+                          <FileText size={22} strokeWidth={2} color="#a855f7" />
+                        )}
                       </div>
-                      <div>
-                        <h4 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h4 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px 0', fontSize: '14.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.fileName}>
                           {doc.fileName}
                         </h4>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                           Category: {doc.category}
                         </span>
                       </div>
                     </div>
 
+                    {/* Badges */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '0.75rem' }}>
-                      <span className={`badge ${doc.verificationStatus === 'VERIFIED' ? 'badge-green' : doc.verificationStatus === 'REJECTED' ? 'badge-orange' : 'badge-purple'}`}>
-                        {doc.verificationStatus === 'VERIFIED' ? '🟢 Verified' : doc.verificationStatus === 'REJECTED' ? '🔴 Rejected' : '🟡 Pending Review'}
+                      <span className={`badge ${doc.verificationStatus === 'VERIFIED' ? 'badge-green' : doc.verificationStatus === 'REJECTED' ? 'badge-orange' : 'badge-purple'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px' }}>
+                        {doc.verificationStatus === 'VERIFIED' ? (
+                          <>
+                            <CheckCircle2 size={12} strokeWidth={2} />
+                            <span>Verified</span>
+                          </>
+                        ) : doc.verificationStatus === 'REJECTED' ? (
+                          <>
+                            <CircleX size={12} strokeWidth={2} />
+                            <span>Rejected</span>
+                          </>
+                        ) : (
+                          <>
+                            <Clock size={12} strokeWidth={2} />
+                            <span>Pending Review</span>
+                          </>
+                        )}
                       </span>
 
                       {doc.qualityScore !== undefined && (
-                        <span className="badge badge-green" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
+                        <span className="badge badge-green" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontSize: '11.5px' }}>
                           AI Score: {doc.qualityScore}%
                         </span>
                       )}
@@ -433,29 +533,30 @@ export default function InstitutionStudentDocumentsPage() {
 
                     {/* Rejection Reason if rejected */}
                     {doc.verificationStatus === 'REJECTED' && doc.rejectionReason && (
-                      <div style={{ padding: '8px 10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '6px', color: '#f87171', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+                      <div style={{ padding: '8px 10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', color: '#f87171', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
                         Reason: {doc.rejectionReason}
                       </div>
                     )}
 
                     {/* Extracted Details */}
                     {parsedExtracted && (
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-secondary)', padding: '8px 10px', borderRadius: '6px', marginBottom: '0.75rem' }}>
-                        {parsedExtracted.name && <div>• Student Name: <strong>{parsedExtracted.name}</strong></div>}
-                        {parsedExtracted.institution && <div>• Institution: <strong>{parsedExtracted.institution}</strong></div>}
-                        {parsedExtracted.documentNumber && <div>• Doc No: <strong>{parsedExtracted.documentNumber}</strong></div>}
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '8px 10px', borderRadius: '6px', marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        {parsedExtracted.name && <div>• Student Name: <strong style={{ color: 'var(--text-primary)' }}>{parsedExtracted.name}</strong></div>}
+                        {parsedExtracted.institution && <div>• Institution: <strong style={{ color: 'var(--text-primary)' }}>{parsedExtracted.institution}</strong></div>}
+                        {parsedExtracted.documentNumber && <div>• Doc No: <strong style={{ color: 'var(--text-primary)' }}>{parsedExtracted.documentNumber}</strong></div>}
                       </div>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: '0.75rem', marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => setPreviewDoc(doc)}
-                      className="btn btn-sm"
-                      style={{ padding: '6px 12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '6px', cursor: 'pointer' }}
+                      className="btn btn-sm btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '12.5px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                     >
-                      👁️ View Document
+                      <Eye size={13} strokeWidth={2} />
+                      <span>View Document</span>
                     </button>
 
                     <div style={{ display: 'flex', gap: '6px' }}>
@@ -463,18 +564,42 @@ export default function InstitutionStudentDocumentsPage() {
                         onClick={() => handleVerify(doc.id)}
                         disabled={doc.verificationStatus === 'VERIFIED'}
                         className="btn btn-sm"
-                        style={{ padding: '6px 12px', background: 'var(--accent-green)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', opacity: doc.verificationStatus === 'VERIFIED' ? 0.6 : 1 }}
+                        style={{
+                          padding: '6px 12px',
+                          background: doc.verificationStatus === 'VERIFIED' ? 'rgba(16, 185, 129, 0.2)' : 'var(--accent-green)',
+                          color: doc.verificationStatus === 'VERIFIED' ? '#6ee7b7' : 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: doc.verificationStatus === 'VERIFIED' ? 'default' : 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '12.5px'
+                        }}
                       >
-                        ✓ Verify
+                        <CheckCircle2 size={13} strokeWidth={2} />
+                        <span>Verify</span>
                       </button>
 
                       <button
                         onClick={() => { setRejectDoc(doc); setRejectionReason(''); }}
                         disabled={doc.verificationStatus === 'REJECTED'}
                         className="btn btn-sm"
-                        style={{ padding: '6px 12px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', opacity: doc.verificationStatus === 'REJECTED' ? 0.6 : 1 }}
+                        style={{
+                          padding: '6px 12px',
+                          background: doc.verificationStatus === 'REJECTED' ? 'rgba(239, 68, 68, 0.2)' : '#ef4444',
+                          color: doc.verificationStatus === 'REJECTED' ? '#fca5a5' : 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: doc.verificationStatus === 'REJECTED' ? 'default' : 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '12.5px'
+                        }}
                       >
-                        ✕ Reject
+                        <CircleX size={13} strokeWidth={2} />
+                        <span>Reject</span>
                       </button>
                     </div>
                   </div>
@@ -493,14 +618,15 @@ export default function InstitutionStudentDocumentsPage() {
               <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                 Request Document from Student
               </h2>
-              <button onClick={() => setIsRequestModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                ✕
+              <button onClick={() => setIsRequestModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <X size={18} strokeWidth={2} />
               </button>
             </div>
 
             {requestMessage && (
-              <div style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                ⚠️ {requestMessage}
+              <div style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <TriangleAlert size={14} strokeWidth={2} color="#ef4444" />
+                <span>{requestMessage}</span>
               </div>
             )}
 
@@ -631,15 +757,18 @@ export default function InstitutionStudentDocumentsPage() {
           <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '16px', maxWidth: '800px', width: '100%', height: '85vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                  📄 {previewDoc.fileName} (Student: {previewDoc.student.name})
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={16} strokeWidth={2} color="#a855f7" />
+                  <h3 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                    {previewDoc.fileName} (Student: {previewDoc.student.name})
+                  </h3>
+                </div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
                   Category: {previewDoc.category} • Access: {previewDoc.accessLevel}
                 </span>
               </div>
-              <button onClick={() => setPreviewDoc(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                ✕
+              <button onClick={() => setPreviewDoc(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <X size={18} strokeWidth={2} />
               </button>
             </div>
 
