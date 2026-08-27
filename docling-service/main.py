@@ -42,6 +42,8 @@ def get_converter():
 
 class ExtractedFieldData(BaseModel):
     name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
     studentId: Optional[str] = None
     rollNumber: Optional[str] = None
     institution: Optional[str] = None
@@ -77,30 +79,54 @@ def extract_heuristic_fields(text: str, markdown: str) -> ExtractedFieldData:
     fields = ExtractedFieldData()
     combined = f"{text}\n{markdown}"
 
-    # 1. Roll Number / Student ID
+    # 1. Candidate Name
+    name_match = re.search(r'(?:Name|Candidate\s*Name|Student\s*Name)[:\s]+([A-Za-z\s]{3,35})', combined, re.IGNORECASE)
+    if name_match:
+        fields.name = name_match.group(1).strip()
+    else:
+        # Check first non-empty lines for probable name
+        for line in combined.split('\n')[:8]:
+            clean_line = line.strip().lstrip('#').strip()
+            if not clean_line or any(w in clean_line.lower() for w in ['resume', 'curriculum', 'page', 'email', 'phone', 'http']):
+                continue
+            if re.match(r'^[A-Z][a-zA-Z\.\s]{2,35}$', clean_line) and len(clean_line.split()) <= 4:
+                fields.name = clean_line
+                break
+
+    # 2. Email
+    email_match = re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', combined)
+    if email_match:
+        fields.email = email_match.group(0).strip()
+
+    # 3. Phone
+    phone_match = re.search(r'(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\+?91[-.\s]?[6-9]\d{9}', combined)
+    if phone_match:
+        fields.phone = phone_match.group(0).strip()
+
+    # 4. Roll Number / Student ID
     roll_match = re.search(r'(?:Roll\s*(?:No|Number|#)?|PRN|Registration\s*(?:No|Number)?|Student\s*ID)[:\s]+([A-Za-z0-9\-_/]{4,20})', combined, re.IGNORECASE)
     if roll_match:
         fields.rollNumber = roll_match.group(1).strip()
         fields.studentId = roll_match.group(1).strip()
 
-    # 2. Certificate Number
+    # 5. Certificate Number
     cert_match = re.search(r'(?:Certificate\s*(?:No|Number|ID)|Doc\s*(?:No|Number))[:\s]+([A-Za-z0-9\-_/]{4,25})', combined, re.IGNORECASE)
     if cert_match:
         fields.certificateNumber = cert_match.group(1).strip()
 
-    # 3. CGPA / Percentage / Marks
+    # 6. CGPA / Percentage / Marks
     cgpa_match = re.search(r'(?:CGPA|SGPA|GPA|Percentage|Marks\s*Obtained)[:\s]+(\d+(?:\.\d+)?(?:\s*%)?(?:\s*/\s*10(?:\.0)?)?)', combined, re.IGNORECASE)
     if cgpa_match:
         fields.cgpaOrGrade = cgpa_match.group(1).strip()
 
-    # 4. Dates
+    # 7. Dates
     date_matches = re.findall(r'\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4})\b', combined, re.IGNORECASE)
     if date_matches:
         fields.dates = list(dict.fromkeys(date_matches))[:5]
 
-    # 5. Inferred Document Type
+    # 8. Inferred Document Type
     lower_text = combined.lower()
-    if 'resume' in lower_text or 'curriculum vitae' in lower_text or 'experience' in lower_text and 'skills' in lower_text:
+    if 'resume' in lower_text or 'curriculum vitae' in lower_text or ('experience' in lower_text and 'skills' in lower_text):
         fields.documentType = 'Resume'
     elif 'marksheet' in lower_text or 'grade card' in lower_text or 'statement of marks' in lower_text:
         fields.documentType = 'Marksheet'
@@ -117,7 +143,7 @@ def extract_heuristic_fields(text: str, markdown: str) -> ExtractedFieldData:
     else:
         fields.documentType = 'Other'
 
-    # 6. Institution
+    # 9. Institution
     inst_match = re.search(r'(?:University|Institute|College|Academy|School)\s+(?:of\s+)?[A-Za-z\s&,\.]{3,50}', combined)
     if inst_match:
         fields.institution = inst_match.group(0).strip()
@@ -167,7 +193,10 @@ async def process_document(
         if hasattr(doc, "tables") and doc.tables:
             for idx, tbl in enumerate(doc.tables):
                 try:
-                    df = tbl.export_to_dataframe()
+                    try:
+                        df = tbl.export_to_dataframe(doc=doc)
+                    except TypeError:
+                        df = tbl.export_to_dataframe()
                     headers = [str(c) for c in df.columns]
                     rows = [[str(val) for val in row] for row in df.values]
                     tables.append(DocumentTable(

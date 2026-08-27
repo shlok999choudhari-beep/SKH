@@ -18,6 +18,8 @@ export interface DoclingTable {
 
 export interface DoclingExtractedFields {
   name?: string | null
+  email?: string | null
+  phone?: string | null
   studentId?: string | null
   rollNumber?: string | null
   institution?: string | null

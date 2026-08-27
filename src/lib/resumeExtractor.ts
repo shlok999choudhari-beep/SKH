@@ -66,7 +66,17 @@ export async function extractTextFromImage(buffer: Buffer): Promise<string> {
 
 export async function extractResumeText(file: File): Promise<string> {
   const buffer = Buffer.from(await file.arrayBuffer())
-  const fileType = file.type
+  const fileType = file.type || 'application/pdf'
+
+  try {
+    const { extractWithDocling } = await import('./doclingService')
+    const doclingResult = await extractWithDocling(buffer, file.name, fileType, 'Resume')
+    if (doclingResult && doclingResult.success && doclingResult.text && doclingResult.text.trim().length >= 10) {
+      return doclingResult.markdown || doclingResult.text
+    }
+  } catch (doclingErr) {
+    console.warn('[ResumeExtractor] Docling extraction fallback triggered:', doclingErr)
+  }
 
   if (fileType === 'application/pdf') {
     const text = await extractTextFromPDF(buffer)
