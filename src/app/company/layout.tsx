@@ -7,9 +7,9 @@ export default function CompanyLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={styles.layout}>
+    <div className={styles.layout} suppressHydrationWarning>
       <CompanySidebar />
-      <div className={styles.content}>
+      <div className={styles.content} suppressHydrationWarning>
         {children}
       </div>
     </div>

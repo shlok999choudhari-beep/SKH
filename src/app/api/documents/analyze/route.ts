@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { analyzeDocumentQuality } from '@/lib/documentQualityService'
+import { normalizeFileType, isSupportedDocumentOrImage } from '@/lib/resumeExtractor'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,10 +17,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
+    if (!isSupportedDocumentOrImage(file.name, file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Please upload a PDF, PNG, JPG, JPEG, or WEBP file.' }, { status: 400 })
+    }
+
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    const normalizedType = normalizeFileType(file.name, file.type)
 
-    const result = await analyzeDocumentQuality(buffer, file.name, file.type)
+    const result = await analyzeDocumentQuality(buffer, file.name, normalizedType)
 
     return NextResponse.json({
       success: true,

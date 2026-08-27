@@ -4,6 +4,7 @@ import StudentSidebar from '@/components/StudentSidebar'
 import AcademicProfileModal from '@/components/AcademicProfileModal'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import Card1 from '@/components/ui/card-1'
+import CampusResourcesSection from '@/components/CampusResourcesSection'
 import styles from '../dashboard.module.css'
 import Link from 'next/link'
 import {
@@ -256,6 +257,9 @@ export default function StudentDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Campus & Resources Hub Section */}
+          <CampusResourcesSection showHeader={true} />
 
           {/* Real Job Offers */}
           <div className={`glass ${styles.panel}`}>

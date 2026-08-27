@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import AcademicProfileModal from '@/components/AcademicProfileModal'
 import styles from '../dashboard.module.css'
 import {
@@ -229,14 +230,17 @@ export default function StudentInternshipsPage() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Internship Opportunities</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Internship Opportunities</h1>
+              </div>
+              <p className={styles.pageSubtitle}>
+                Discover partner company internships, accept opportunities, and track your live hiring pipeline progress.
+              </p>
             </div>
-            <p className={styles.pageSubtitle}>
-              Discover partner company internships, accept opportunities, and track your live hiring pipeline progress.
-            </p>
           </div>
           <button 
             className="btn btn-ghost btn-sm"

@@ -3,7 +3,14 @@ import path from 'path'
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
-  serverExternalPackages: ['better-sqlite3', 'linkedin-jobs-api'],
+  serverExternalPackages: [
+    'better-sqlite3',
+    'linkedin-jobs-api',
+    'sharp',
+    'tesseract.js',
+    'canvas',
+    'pdf-parse'
+  ],
   experimental: {
     serverActions: {
       bodySizeLimit: '20mb',

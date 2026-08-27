@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { saveToVault } from '@/lib/storage'
 import { processAndVerifyDocument } from '@/lib/documentQualityService'
+import { normalizeFileType, isSupportedDocumentOrImage } from '@/lib/resumeExtractor'
 import { z } from 'zod'
 
 const uploadDocSchema = z.object({
@@ -63,6 +64,13 @@ export async function GET(request: NextRequest) {
       include: {
         parentDocument: {
           select: { id: true, fileName: true, version: true }
+        },
+        verification: true,
+        ocrResult: {
+          select: { confidence: true, engine: true, pageCount: true }
+        },
+        qrCodeResults: {
+          select: { codeType: true, matchStatus: true, certificateId: true }
         }
       }
     })
@@ -87,6 +95,12 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
+
+    if (!isSupportedDocumentOrImage(file.name, file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Please upload a PDF, PNG, JPG, JPEG, or WEBP file.' }, { status: 400 })
+    }
+
+    const normalizedType = normalizeFileType(file.name, file.type)
 
     const bodyData = {
       fileName: (formData.get('fileName') as string) || file.name,
@@ -114,7 +128,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
 
     // Save to private vault storage (Supabase Cloud Storage)
-    const filePath = await saveToVault(session.userId, file.name, buffer, file.type)
+    const filePath = await saveToVault(session.userId, file.name, buffer, normalizedType)
 
     // Calculate version number if replacing/versioning existing document
     let version = 1
@@ -133,7 +147,7 @@ export async function POST(request: NextRequest) {
         institutionId: student?.institutionId || null,
         fileName: validated.fileName,
         filePath,
-        fileType: file.type,
+        fileType: normalizedType,
         fileSize: file.size,
         documentType: validated.documentType,
         category: validated.category,
@@ -167,38 +181,31 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Asynchronous background processing with Docling + Groq
+    // Asynchronous background processing with Phase 1 AI Document Intelligence Pipeline
     (async () => {
       try {
         const studentRecord = await prisma.student.findUnique({
           where: { id: session.userId },
-          select: { name: true, email: true, college: true }
+          select: { id: true, name: true, email: true, college: true, degree: true, cgpa: true }
         })
-        const report = await processAndVerifyDocument(
+        const { executeDocumentVerificationPipeline } = await import('@/lib/verificationService')
+        await executeDocumentVerificationPipeline(
+          newDoc.id,
+          session.userId,
           buffer,
           file.name,
-          file.type,
+          normalizedType,
+          validated.category,
+          validated.documentType,
           studentRecord || undefined
         )
-
-        await prisma.document.update({
-          where: { id: newDoc.id },
-          data: {
-            documentType: report.documentType || validated.documentType,
-            verificationStatus: report.verificationStatus,
-            qualityScore: report.qualityScore,
-            qualityResult: JSON.stringify(report),
-            extractedInformation: JSON.stringify(report.extractedInformation),
-            verifiedAt: report.verificationStatus === 'VERIFIED' ? new Date() : null,
-            rejectionReason: report.verificationStatus === 'REJECTED' ? (report.warnings[0] || report.explanation) : null
-          }
-        })
       } catch (bgError) {
-        console.error(`[Background Docling] Error processing doc ${newDoc.id}:`, bgError)
+        console.error(`[Background Pipeline] Error processing doc ${newDoc.id}:`, bgError)
         await prisma.document.update({
           where: { id: newDoc.id },
           data: {
-            verificationStatus: 'NEEDS_REVIEW'
+            verificationStatus: 'UNDER_REVIEW',
+            processingStatus: 'FAILED'
           }
         }).catch(() => {})
       }

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Logo from '@/components/Logo'
 import NotificationBell from '@/components/NotificationBell'
+import BackButton from '@/components/BackButton'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
 import { logout } from '@/app/actions/logout'
@@ -33,6 +34,7 @@ import {
   Sun,
   Moon,
   LogOut,
+  ArrowRight,
   LucideIcon
 } from 'lucide-react'
 
@@ -77,7 +79,6 @@ const CATEGORIES: NavCategory[] = [
       { href: '/student/internships', icon: Target, label: 'Internships', desc: 'Paid Roles' },
       { href: '/student/placements', icon: GraduationCap, label: 'Placements', desc: 'On-Campus Drives' },
       { href: '/student/companies', icon: Building2, label: 'Top Companies', desc: 'Hiring Insights' },
-      { href: '/student/profile', icon: User, label: 'My Profile', desc: 'Skills & Achievements' },
     ]
   },
   {
@@ -169,11 +170,21 @@ export default function StudentSidebar() {
     : []
 
   return (
-    <header className={styles.sidebar}>
+    <header className={styles.sidebar} suppressHydrationWarning>
 
       {/* Left Logo */}
       <div className={styles.sidebarTop}>
         <Logo variant="student" size="md" href="/" />
+        {pathname !== '/student/dashboard' && (
+          <BackButton
+            variant="compact"
+            label="Back"
+            showLabel={false}
+            fallbackHref="/student/dashboard"
+            title="Go back"
+            style={{ marginLeft: '6px' }}
+          />
+        )}
       </div>
 
       {/* Mobile Backdrop */}
@@ -182,7 +193,7 @@ export default function StudentSidebar() {
       )}
 
       {/* Center Navbar Categories & Search */}
-      <div className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} ref={navRef}>
+      <div className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} ref={navRef} suppressHydrationWarning>
         {/* Dashboard Direct Link */}
         <Link
           href="/student/dashboard"
@@ -200,8 +211,10 @@ export default function StudentSidebar() {
           const hasActiveItem = cat.items.some(i => pathname === i.href)
 
           return (
-            <div key={cat.id} className={styles.categoryGroup}>
+            <div key={cat.id} className={styles.categoryGroup} suppressHydrationWarning>
               <button
+                type="button"
+                suppressHydrationWarning
                 className={`${styles.categoryBtn} ${hasActiveItem || isOpen ? styles.categoryBtnActive : ''}`}
                 onClick={() => setActiveCategory(isOpen ? null : cat.id)}
               >
@@ -219,7 +232,32 @@ export default function StudentSidebar() {
 
               {isOpen && (
                 <div className={`${styles.megaDropdown} ${cat.id === 'ai-tools' ? styles.megaDropdownWide : ''}`}>
-                  <div className={styles.megaHeader}>{cat.title}</div>
+                  <div className={styles.megaHeader} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{cat.title}</span>
+                    {cat.id === 'campus' && (
+                      <Link
+                        href="/student/campus"
+                        onClick={() => {
+                          setActiveCategory(null)
+                          setMobileOpen(false)
+                        }}
+                        style={{
+                          fontSize: '10px',
+                          color: '#c084fc',
+                          textDecoration: 'none',
+                          fontWeight: 600,
+                          textTransform: 'none',
+                          letterSpacing: 'normal',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        <span>Open Hub</span>
+                        <ArrowRight size={11} />
+                      </Link>
+                    )}
+                  </div>
                   <div className={styles.megaGrid}>
                     {cat.items.map(item => {
                       const ItemIcon = item.icon
@@ -249,10 +287,11 @@ export default function StudentSidebar() {
           )})}
 
         {/* Feature Quick Search Bar */}
-        <div className={styles.searchBox}>
+        <div className={styles.searchBox} suppressHydrationWarning>
           <Search className={styles.searchIcon} size={14} strokeWidth={2} />
           <input
             type="text"
+            suppressHydrationWarning
             className={styles.searchInput}
             placeholder="Search features..."
             value={searchQuery}
@@ -298,31 +337,47 @@ export default function StudentSidebar() {
       </div>
 
       {/* Right User & Controls */}
-      <div className={styles.userTag}>
+      <div className={styles.userTag} suppressHydrationWarning>
         <NotificationBell role="student" />
         {userData && (
-          <>
-            <div className={styles.userAvatar}>{getInitials(userData.name)}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              suppressHydrationWarning
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              title="Open Profile Menu"
+            >
+              <div className={styles.userAvatar}>{getInitials(userData.name)}</div>
+            </button>
             <div className={styles.userInfo}>
-              <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
+              <button type="button" suppressHydrationWarning className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <span className={styles.userName}>{userData.name}</span>
                 <ChevronDown size={14} strokeWidth={2} />
               </button>
             </div>
-          </>
+          </div>
         )}
 
-        <button className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+        <button type="button" suppressHydrationWarning className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
           <span /><span /><span />
         </button>
 
         {dropdownOpen && (
-          <div className={styles.userDropdown}>
-            <button onClick={toggleTheme} className={styles.dropdownItem}>
+          <div className={styles.userDropdown} suppressHydrationWarning>
+            <Link
+              href="/student/profile"
+              className={styles.dropdownItem}
+              onClick={() => setDropdownOpen(false)}
+            >
+              <User size={16} strokeWidth={2} />
+              <span>My Profile</span>
+            </Link>
+            <button type="button" suppressHydrationWarning onClick={toggleTheme} className={styles.dropdownItem}>
               {theme === 'dark' ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
-            <button onClick={handleLogout} className={styles.dropdownItem}>
+            <button type="button" suppressHydrationWarning onClick={handleLogout} className={styles.dropdownItem}>
               <LogOut size={16} strokeWidth={2} />
               <span>Sign Out</span>
             </button>

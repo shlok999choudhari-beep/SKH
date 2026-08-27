@@ -33,10 +33,35 @@ export async function GET(
       where: { id: docId },
       include: {
         student: {
-          select: { id: true, name: true, email: true, college: true }
+          select: { id: true, name: true, email: true, college: true, degree: true, cgpa: true }
         },
         institution: {
           select: { id: true, name: true }
+        },
+        ocrResult: true,
+        extractedFields: true,
+        verification: true,
+        qrCodeResults: true,
+        sourceDuplicates: {
+          include: {
+            matchedDocument: {
+              select: { id: true, fileName: true, uploadedAt: true }
+            }
+          }
+        },
+        history: {
+          orderBy: { changedAt: 'desc' }
+        },
+        yoloDetections: true,
+        faceVerifications: true,
+        tamperAnalysis: {
+          include: { signals: true }
+        },
+        aiAnalysis: {
+          include: { evidences: true }
+        },
+        verificationStages: {
+          orderBy: { timestamp: 'asc' }
         }
       }
     })

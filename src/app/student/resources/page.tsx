@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import dashboardStyles from '../dashboard.module.css'
 import styles from './resources.module.css'
@@ -253,16 +254,19 @@ export default function LearningResources() {
       <StudentSidebar />
       <div className={dashboardStyles.content}>
         <header className={dashboardStyles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <BookOpen size={20} strokeWidth={2} color="#8b5cf6" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/campus" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <BookOpen size={20} strokeWidth={2} color="#8b5cf6" />
+                </div>
+                <h1 className={dashboardStyles.pageTitle}>Learning Resources</h1>
               </div>
-              <h1 className={dashboardStyles.pageTitle}>Learning Resources</h1>
+              <p className={dashboardStyles.pageSubtitle}>
+                Interactive video courses, official API documentation, AI smart notes, online books & developer communities.
+              </p>
             </div>
-            <p className={dashboardStyles.pageSubtitle}>
-              Interactive video courses, official API documentation, AI smart notes, online books & developer communities.
-            </p>
           </div>
         </header>
 

@@ -76,7 +76,7 @@ export default function InstitutionSidebar() {
   }
 
   return (
-    <header className={`${styles.sidebar} ${styles.sidebarInstitution}`}>
+    <header className={`${styles.sidebar} ${styles.sidebarInstitution}`} suppressHydrationWarning>
 
       {/* Left Logo */}
       <div className={styles.sidebarTop}>
@@ -89,9 +89,9 @@ export default function InstitutionSidebar() {
       )}
 
       {/* Center Nav */}
-      <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`}>
+      <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} suppressHydrationWarning>
         {INSTITUTION_NAV.map(group => (
-          <div key={group.group} className={styles.navGroup}>
+          <div key={group.group} className={styles.navGroup} suppressHydrationWarning>
             {group.items.map(item => {
               const ItemIcon = item.icon
               const active = pathname === item.href || pathname.startsWith(item.href + '/')
@@ -114,13 +114,13 @@ export default function InstitutionSidebar() {
       </nav>
 
       {/* Right User & Controls */}
-      <div className={`${styles.userTag} ${styles.userTagInstitution}`}>
+      <div className={`${styles.userTag} ${styles.userTagInstitution}`} suppressHydrationWarning>
         <NotificationBell role="institution" />
         {userData && (
           <>
             <div className={`${styles.userAvatar} ${styles.userAvatarInstitution}`}>{getInitials(userData.name)}</div>
             <div className={styles.userInfo}>
-              <button className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
+              <button type="button" suppressHydrationWarning className={styles.userNameBtn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <span className={styles.userName}>{userData.name}</span>
                 <ChevronDown size={14} strokeWidth={2} />
               </button>
@@ -128,17 +128,17 @@ export default function InstitutionSidebar() {
           </>
         )}
 
-        <button className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+        <button type="button" suppressHydrationWarning className={styles.hamburger} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
           <span /><span /><span />
         </button>
 
         {dropdownOpen && (
-          <div className={styles.userDropdown}>
-            <button onClick={toggleTheme} className={styles.dropdownItem}>
+          <div className={styles.userDropdown} suppressHydrationWarning>
+            <button type="button" suppressHydrationWarning onClick={toggleTheme} className={styles.dropdownItem}>
               {theme === 'dark' ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
-            <button onClick={handleLogout} className={styles.dropdownItem}>
+            <button type="button" suppressHydrationWarning onClick={handleLogout} className={styles.dropdownItem}>
               <LogOut size={16} strokeWidth={2} />
               <span>Sign Out</span>
             </button>

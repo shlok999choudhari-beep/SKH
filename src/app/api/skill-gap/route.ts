@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
-import { extractResumeText } from '@/lib/resumeExtractor'
+import { extractResumeText, isSupportedDocumentOrImage } from '@/lib/resumeExtractor'
 import { prisma } from '@/lib/prisma'
 import axios from 'axios'
 
@@ -19,9 +19,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Both resume and job description required' }, { status: 400 })
     }
 
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
-    if (!validTypes.includes(resumeFile.type) || !validTypes.includes(jobDescFile.type)) {
-      return NextResponse.json({ error: 'Invalid file type. Upload PDF or image.' }, { status: 400 })
+    if (
+      !isSupportedDocumentOrImage(resumeFile.name, resumeFile.type) ||
+      !isSupportedDocumentOrImage(jobDescFile.name, jobDescFile.type)
+    ) {
+      return NextResponse.json({ error: 'Invalid file type. Upload PDF or image (PNG, JPG, JPEG, WEBP).' }, { status: 400 })
     }
 
     const resumeText = await extractResumeText(resumeFile)

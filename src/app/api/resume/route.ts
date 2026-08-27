@@ -3,7 +3,11 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
-import { extractResumeText } from '@/lib/resumeExtractor'
+import {
+  extractResumeText,
+  normalizeFileType,
+  isSupportedDocumentOrImage
+} from '@/lib/resumeExtractor'
 import { analyzeResumeWithGroq } from '@/lib/groqService'
 import {
   BUCKETS,
@@ -25,11 +29,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
     }
 
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
-    if (!validTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file type. Upload PDF or image.' }, { status: 400 })
+    if (!isSupportedDocumentOrImage(file.name, file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Please upload a PDF, PNG, JPG, JPEG, or WEBP file.' }, { status: 400 })
     }
 
+    const normalizedType = normalizeFileType(file.name, file.type)
     let extractedText = await extractResumeText(file)
     if (!extractedText || extractedText.trim().length < 10) {
       extractedText = `Resume file: ${file.name} - Extracted profile details and candidate skills summary.`
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest) {
           BUCKETS.RESUMES,
           storagePath,
           buffer,
-          file.type
+          normalizedType
         )
         if (uploadResult) {
           filePath = `supabase:${BUCKETS.RESUMES}/${storagePath}`

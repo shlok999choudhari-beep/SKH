@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import Card1 from '@/components/ui/card-1'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './jobs.module.css'
@@ -88,9 +89,12 @@ export default function BrowseJobsPage() {
         <div className={styles.container}>
           <div className={styles.header}>
             <div className={styles.headerTop}>
-              <div>
-                <h1 className={styles.title}>Browse <span className="grad-text">Jobs</span></h1>
-                <p className={styles.subtitle}>Discover opportunities from top companies worldwide</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <BackButton fallbackHref="/student/dashboard" />
+                <div>
+                  <h1 className={styles.title}>Browse <span className="grad-text">Jobs</span></h1>
+                  <p className={styles.subtitle}>Discover opportunities from top companies worldwide</p>
+                </div>
               </div>
               <div className={styles.stats}>
                 <div className={styles.statItem}>

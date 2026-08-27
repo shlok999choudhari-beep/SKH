@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import styles from '../../institution/institution.module.css'
 import layoutStyles from '../dashboard.module.css'
 import {
@@ -222,12 +223,15 @@ export default function StudentCampusResources() {
       <StudentSidebar />
       <div className={layoutStyles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Landmark size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>Campus Resources</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/campus" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Landmark size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle} style={{ fontFamily: 'Outfit, sans-serif' }}>Campus Resources</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Explore labs, facilities, training infrastructure, and other resources available through your institution.</p>
             </div>
-            <p className={styles.pageSubtitle}>Explore labs, facilities, training infrastructure, and other resources available through your institution.</p>
           </div>
         </header>
 

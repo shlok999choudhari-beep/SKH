@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import SpecularButton from '@/components/SpecularButton'
@@ -298,12 +299,15 @@ export default function ResumeAnalyzer() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText size={24} strokeWidth={2} color="#7c3aed" />
-              <h1 className={styles.pageTitle}>Resume Analyzer</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={24} strokeWidth={2} color="#7c3aed" />
+                <h1 className={styles.pageTitle}>Resume Analyzer</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Smart resume analysis • Upload PDF or Images</p>
             </div>
-            <p className={styles.pageSubtitle}>Smart resume analysis • Upload PDF or Images</p>
           </div>
           {analysis && (
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -378,7 +382,7 @@ export default function ResumeAnalyzer() {
               <input
                 type="file"
                 id="resume-upload"
-                accept=".pdf,image/*"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
               />
@@ -389,7 +393,7 @@ export default function ResumeAnalyzer() {
                 <div className={styles.uploadText}>
                   {file ? file.name : 'Drag & drop or click to upload'}
                 </div>
-                <div className={styles.uploadHint}>Supports PDF, JPG, PNG</div>
+                <div className={styles.uploadHint}>Supports PDF, PNG, JPG, JPEG, WEBP</div>
               </label>
             </div>
             {file && (

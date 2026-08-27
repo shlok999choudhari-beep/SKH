@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
 import StudentSidebar from '@/components/StudentSidebar';
+import BackButton from '@/components/BackButton';
 import { MorphingInfinity } from '@/components/ui/morphing-infinity';
 import styles from './skills.module.css';
 import dashboardStyles from '../dashboard.module.css';
@@ -100,11 +101,16 @@ export default function SkillRadarChart() {
       <div className={dashboardStyles.content}>
         <div className={styles.container}>
           <div className={styles.header}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Target size={26} strokeWidth={2} color="#8b5cf6" />
-              <h1>Skill Radar Chart</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <BackButton fallbackHref="/student/dashboard" />
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={26} strokeWidth={2} color="#8b5cf6" />
+                  <h1>Skill Radar Chart</h1>
+                </div>
+                <p>AI-powered skill gap analysis for your dream company</p>
+              </div>
             </div>
-            <p>AI-powered skill gap analysis for your dream company</p>
           </div>
 
           {step === 1 && (

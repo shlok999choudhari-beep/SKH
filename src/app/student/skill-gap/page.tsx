@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import {
@@ -215,12 +216,15 @@ export default function SkillGapDetector() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ChartNoAxesCombined size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Skill Gap Detector</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ChartNoAxesCombined size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Skill Gap Detector</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Compare your resume with job requirements</p>
             </div>
-            <p className={styles.pageSubtitle}>Compare your resume with job requirements</p>
           </div>
           {analysis && (
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -252,7 +256,7 @@ export default function SkillGapDetector() {
                 <input
                   type="file"
                   id="resume-upload"
-                  accept=".pdf,image/*"
+                  accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                   onChange={handleResumeUpload}
                   style={{ display: 'none' }}
                 />
@@ -261,7 +265,7 @@ export default function SkillGapDetector() {
                     <Upload size={32} strokeWidth={1.75} color="#8b5cf6" />
                   </div>
                   <div className={styles.uploadText}>
-                    {resumeFile ? resumeFile.name : 'Upload your resume (PDF or Image)'}
+                    {resumeFile ? resumeFile.name : 'Upload your resume (PDF, PNG, JPG)'}
                   </div>
                 </label>
               </div>
@@ -288,7 +292,7 @@ export default function SkillGapDetector() {
                   <input
                     type="file"
                     id="job-desc-upload"
-                    accept=".pdf,image/*"
+                    accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                     onChange={handleJobDescUpload}
                     style={{ display: 'none' }}
                   />
@@ -297,7 +301,7 @@ export default function SkillGapDetector() {
                       <Upload size={32} strokeWidth={1.75} color="#8b5cf6" />
                     </div>
                     <div className={styles.uploadText}>
-                      {jobDescFile ? jobDescFile.name : 'Upload job description (PDF or Image)'}
+                      {jobDescFile ? jobDescFile.name : 'Upload job description (PDF, PNG, JPG)'}
                     </div>
                   </label>
                 </div>

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Vapi from '@vapi-ai/web'
@@ -300,12 +301,15 @@ export default function BehavioralAnalysis() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Brain size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Behavioral Analysis</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Brain size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Behavioral Analysis</h1>
+              </div>
+              <p className={styles.pageSubtitle}>AI-powered interview assessment with video analysis</p>
             </div>
-            <p className={styles.pageSubtitle}>AI-powered interview assessment with video analysis</p>
           </div>
         </header>
 

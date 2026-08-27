@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import {
@@ -114,12 +115,15 @@ export default function RoadmapPage() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Milestone size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Learning Roadmap</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Milestone size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Learning Roadmap</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Personalized 4-6 week learning path</p>
             </div>
-            <p className={styles.pageSubtitle}>Personalized 4-6 week learning path</p>
           </div>
         </header>
 

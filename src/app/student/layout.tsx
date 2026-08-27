@@ -7,9 +7,9 @@ export default function StudentLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={styles.layout}>
+    <div className={styles.layout} suppressHydrationWarning>
       <StudentSidebar />
-      <div className={styles.content}>
+      <div className={styles.content} suppressHydrationWarning>
         {children}
       </div>
     </div>
