@@ -506,6 +506,26 @@ model Document {
   faceMatchStatus      String?   @map("face_match_status")
   aiRiskLevel          String?   @map("ai_risk_level")
 
+  // Production-Ready Document Security Layer Fields
+  securityLevel        String    @default("STANDARD") @map("security_level") // STANDARD, PROTECTED, HIGHLY_PROTECTED
+  isEncrypted          Boolean   @default(false) @map("is_encrypted")
+  encryptionIv         String?   @map("encryption_iv")
+  encryptionTag        String?   @map("encryption_tag")
+  passwordHash         String?   @map("password_hash")
+  isPasswordProtected  Boolean   @default(false) @map("is_password_protected")
+  failedPasswordAttempts Int     @default(0) @map("failed_password_attempts")
+  isLocked             Boolean   @default(false) @map("is_locked")
+  lockedUntil          DateTime? @map("locked_until")
+  isViewOnly           Boolean   @default(false) @map("is_view_only")
+  downloadPolicy       String    @default("UNLIMITED") @map("download_policy") // UNLIMITED, LIMITED, DISABLED
+  maxDownloads         Int?      @map("max_downloads")
+  downloadCount        Int       @default(0) @map("download_count")
+  accessExpiry         String    @default("NEVER") @map("access_expiry") // NEVER, 1_HOUR, 24_HOURS, 7_DAYS, CUSTOM
+  watermarkEnabled     Boolean   @default(false) @map("watermark_enabled")
+  watermarkText        String?   @map("watermark_text")
+  versionNotes         String?   @map("version_notes")
+  publicVerificationId String?   @unique @map("public_verification_id")
+
   student              Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
   institution          Institution?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   parentDocument       Document?              @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
@@ -524,10 +544,13 @@ model Document {
   tamperAnalysis       TamperAnalysis?
   aiAnalysis           AIAnalysis?
   verificationStages   VerificationStage[]
+  activities           DocumentActivity[]
+  shares               DocumentShare[]
 
   @@index([studentId])
   @@index([institutionId])
   @@index([accessLevel])
+  @@index([securityLevel])
   @@index([verificationStatus])
   @@index([processingStatus])
   @@index([sha256Hash])
@@ -814,4 +837,133 @@ model VerificationStage {
   @@index([stageName])
   @@map("verification_stages")
 }
+
+model DocumentActivity {
+  id         Int      @id @default(autoincrement())
+  documentId Int      @map("document_id")
+  actorId    Int?     @map("actor_id")
+  actorName  String?  @map("actor_name")
+  actorRole  String?  @map("actor_role")
+  action     String   // DOCUMENT_UPLOADED, DOCUMENT_VIEWED, DOCUMENT_DOWNLOADED, DOCUMENT_SHARED, DOCUMENT_PASSWORD_SUCCESS, DOCUMENT_PASSWORD_FAILED, DOCUMENT_LOCKED, DOCUMENT_UNLOCKED, DOCUMENT_EXPIRED, DOCUMENT_DELETED, DOCUMENT_RESTORED, DOCUMENT_VERSION_CREATED, DOCUMENT_INTEGRITY_FAILURE, DOCUMENT_INTEGRITY_VERIFIED, DOCUMENT_SECURITY_UPDATED
+  details    String?
+  ip         String?
+  location   String?
+  device     String?
+  status     String   @default("SUCCESS") // SUCCESS, FAILED, WARNING, BLOCKED
+  timestamp  DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([action])
+  @@index([timestamp])
+  @@map("document_activities")
+}
+
+model DocumentShare {
+  id              Int       @id @default(autoincrement())
+  documentId      Int       @map("document_id")
+  shareToken      String    @unique @map("share_token")
+  createdByUserId Int       @map("created_by_user_id")
+  recipientEmail  String?   @map("recipient_email")
+  isViewOnly      Boolean   @default(true) @map("is_view_only")
+  allowDownload   Boolean   @default(false) @map("allow_download")
+  passwordHash    String?   @map("password_hash")
+  maxAccessCount  Int?      @map("max_access_count")
+  accessCount     Int       @default(0) @map("access_count")
+  expiresAt       DateTime? @map("expires_at")
+  isRevoked       Boolean   @default(false) @map("is_revoked")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([shareToken])
+  @@index([expiresAt])
+  @@map("document_shares")
+}
+
+// -------------------------------------------------------------
+// PlaceIQ Intelligent Login Security & Adaptive Shield Models
+// -------------------------------------------------------------
+
+model TrustedDevice {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  userRole    String    @map("user_role") // student, company, institution-admin
+  deviceId    String    @map("device_id")
+  browser     String?
+  os          String?
+  deviceType  String?   @default("desktop") @map("device_type")
+  ip          String?
+  location    String?
+  isTrusted   Boolean   @default(true) @map("is_trusted")
+  trustedAt   DateTime  @default(now()) @map("trusted_at")
+  lastUsedAt  DateTime  @default(now()) @map("last_used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@unique([userId, userRole, deviceId])
+  @@index([userId, userRole])
+  @@index([deviceId])
+  @@map("trusted_devices")
+}
+
+model LoginOtp {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @map("user_id")
+  userRole       String    @map("user_role")
+  email          String
+  otpHash        String    @map("otp_hash")
+  purpose        String    @default("LOGIN_VERIFICATION")
+  challengeToken String?   @map("challenge_token")
+  deviceId       String?   @map("device_id")
+  browser        String?
+  os             String?
+  ip             String?
+  location       String?
+  attemptCount   Int       @default(0) @map("attempt_count")
+  maxAttempts    Int       @default(5) @map("max_attempts")
+  isUsed         Boolean   @default(false) @map("is_used")
+  usedAt         DateTime? @map("used_at")
+  expiresAt      DateTime  @map("expires_at")
+  resendCount    Int       @default(0) @map("resend_count")
+  lastResentAt   DateTime? @map("last_resent_at")
+  trustDevice    Boolean   @default(false) @map("trust_device")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@index([userId, userRole])
+  @@index([email])
+  @@index([challengeToken])
+  @@index([expiresAt])
+  @@map("login_otps")
+}
+
+model LoginAudit {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  userRole   String?  @map("user_role")
+  email      String
+  action     String   // LOGIN_SUCCESS, LOGIN_FAILED, NEW_DEVICE, NEW_LOCATION, IMPOSSIBLE_TRAVEL, OTP_GENERATED, OTP_SENT, OTP_VERIFIED, OTP_FAILED, OTP_EXPIRED, OTP_LOCKED, DEVICE_TRUSTED, DEVICE_REVOKED, SESSION_CREATED, SESSION_REVOKED, LOGIN_RESTRICTED, SUSPICIOUS_LOGIN
+  status     String   @default("SUCCESS") // SUCCESS, FAILED, CHALLENGE_REQUIRED, RESTRICTED, BLOCKED
+  riskLevel  String   @default("LOW") @map("risk_level") // LOW, MEDIUM, HIGH, CRITICAL
+  riskScore  Int      @default(0) @map("risk_score")
+  riskReason String?  @map("risk_reason")
+  deviceId   String?  @map("device_id")
+  browser    String?
+  os         String?
+  deviceType String?  @map("device_type")
+  ip         String?
+  location   String?
+  details    String?
+  timestamp  DateTime @default(now())
+
+  @@index([userId, userRole])
+  @@index([email])
+  @@index([action])
+  @@index([riskLevel])
+  @@index([timestamp])
+  @@map("login_audits")
+}
+
+
 

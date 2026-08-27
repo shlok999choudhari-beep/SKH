@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
 import BackButton from '@/components/BackButton'
+import DocumentSecurityModal from '@/components/DocumentSecurityModal'
+import SecureDocumentViewer from '@/components/SecureDocumentViewer'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import {
@@ -37,7 +39,10 @@ import {
   History,
   ShieldAlert,
   Check,
-  AlertTriangle
+  AlertTriangle,
+  Flame,
+  KeyRound,
+  Shield
 } from 'lucide-react'
 
 interface OCRBlockData {
@@ -96,11 +101,35 @@ interface DocumentItem {
   rejectionReason?: string
   version: number
   uploadedAt: string
+  // Document Security Layer fields
+  securityLevel?: 'STANDARD' | 'PROTECTED' | 'HIGHLY_PROTECTED'
+  isEncrypted?: boolean
+  isPasswordProtected?: boolean
+  isLocked?: boolean
+  isViewOnly?: boolean
+  downloadPolicy?: 'UNLIMITED' | 'LIMITED' | 'DISABLED'
+  downloadCount?: number
+  maxDownloads?: number
+  watermarkEnabled?: boolean
+  publicVerificationId?: string
+  shares?: Array<{
+    id: number
+    shareToken: string
+    accessCount: number
+    maxAccessCount?: number
+    expiresAt?: string
+    isViewOnly: boolean
+  }>
+  _count?: {
+    activities?: number
+    shares?: number
+  }
   yoloDetections?: Array<{
     objectType: string
     confidence: number
     boundingBox?: string | number[]
   }>
+
   verification?: {
     verificationScore: number
     riskScore: number
@@ -175,11 +204,27 @@ export default function StudentDocumentVaultPage() {
   const [expiryDate, setExpiryDate] = useState('')
   const [linkedRequestId, setLinkedRequestId] = useState<number | null>(null)
 
+  // Security Layer Modal States
+  const [securityModalDocId, setSecurityModalDocId] = useState<number | null>(null)
+  const [securityModalDocName, setSecurityModalDocName] = useState('')
+  const [viewerDocId, setViewerDocId] = useState<number | null>(null)
+  const [viewerDocName, setViewerDocName] = useState('')
+
+  // Upload Security Level Form States
+  const [uploadSecurityLevel, setUploadSecurityLevel] = useState<'STANDARD' | 'PROTECTED' | 'HIGHLY_PROTECTED'>('STANDARD')
+  const [uploadPassword, setUploadPassword] = useState('')
+  const [uploadIsViewOnly, setUploadIsViewOnly] = useState(false)
+  const [uploadDownloadPolicy, setUploadDownloadPolicy] = useState<'UNLIMITED' | 'LIMITED' | 'DISABLED'>('UNLIMITED')
+  const [uploadMaxDownloads, setUploadMaxDownloads] = useState<number>(3)
+  const [uploadWatermark, setUploadWatermark] = useState(false)
+  const [uploadAccessExpiry, setUploadAccessExpiry] = useState('NEVER')
+
   // AI Quality Analysis State
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<any | null>(null)
   const [savingDoc, setSavingDoc] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
 
   // Details Modal State (8 Tabs)
   const [detailsDoc, setDetailsDoc] = useState<DocumentItem | null>(null)
@@ -196,10 +241,10 @@ export default function StudentDocumentVaultPage() {
         fetch('/api/documents'),
         fetch('/api/documents/requests')
       ])
-      const docsData = await docsRes.json()
-      const reqsData = await reqsRes.json()
+      const docsData = docsRes.ok ? await docsRes.json().catch(() => ({})) : {}
+      const reqsData = reqsRes.ok ? await reqsRes.json().catch(() => ({})) : {}
 
-      if (docsData.documents) {
+      if (docsData && docsData.documents) {
         setDocuments(docsData.documents)
         setDetailsDoc(prev => {
           if (!prev) return null
@@ -207,7 +252,8 @@ export default function StudentDocumentVaultPage() {
           return updated || prev
         })
       }
-      if (reqsData.requests) setRequests(reqsData.requests)
+      if (reqsData && reqsData.requests) setRequests(reqsData.requests)
+
     } catch (err) {
       console.error('Error fetching vault data:', err)
     } finally {
@@ -310,6 +356,15 @@ export default function StudentDocumentVaultPage() {
       if (expiryDate) formData.append('expiryDate', expiryDate)
       if (linkedRequestId) formData.append('requestId', linkedRequestId.toString())
 
+      // Append Document Security Parameters
+      formData.append('securityLevel', uploadSecurityLevel)
+      if (uploadPassword.trim()) formData.append('password', uploadPassword.trim())
+      formData.append('isViewOnly', uploadIsViewOnly.toString())
+      formData.append('downloadPolicy', uploadDownloadPolicy)
+      if (uploadDownloadPolicy === 'LIMITED') formData.append('maxDownloads', uploadMaxDownloads.toString())
+      formData.append('watermarkEnabled', uploadWatermark.toString())
+      formData.append('accessExpiry', uploadAccessExpiry)
+
       if (analysisResult) {
         formData.append('qualityScore', (analysisResult.qualityScore || 80).toString())
         formData.append('qualityResult', JSON.stringify(analysisResult))
@@ -383,7 +438,15 @@ export default function StudentDocumentVaultPage() {
     setAnalysisResult(null)
     setUploadStep(1)
     setErrorMessage('')
+    setUploadSecurityLevel('STANDARD')
+    setUploadPassword('')
+    setUploadIsViewOnly(false)
+    setUploadDownloadPolicy('UNLIMITED')
+    setUploadMaxDownloads(3)
+    setUploadWatermark(false)
+    setUploadAccessExpiry('NEVER')
   }
+
 
   const closeUploadModal = () => {
     setIsUploadOpen(false)
@@ -512,6 +575,72 @@ export default function StudentDocumentVaultPage() {
         </header>
 
         <main className={styles.main}>
+          {/* Document Security Overview Banner */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gap: '12px',
+            marginBottom: '1.5rem',
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%)',
+            border: '1px solid rgba(139, 92, 246, 0.2)',
+            borderRadius: '14px',
+            padding: '14px 18px'
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Shield size={12} color="#a78bfa" /> Protected Docs
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {documents.filter(d => d.securityLevel === 'PROTECTED' || d.securityLevel === 'HIGHLY_PROTECTED').length}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Flame size={12} color="#10b981" /> Highly Protected
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: '#34d399' }}>
+                {documents.filter(d => d.securityLevel === 'HIGHLY_PROTECTED').length}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Globe size={12} color="#60a5fa" /> Active Shares
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: '#60a5fa' }}>
+                {documents.reduce((acc, d) => acc + (d.shares?.length || 0), 0)}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Clock size={12} color="#f59e0b" /> Expiring Soon
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: '#f59e0b' }}>
+                {documents.filter(d => d.expiryDate && new Date(d.expiryDate).getTime() - Date.now() < 7 * 86400000 && new Date(d.expiryDate).getTime() > Date.now()).length}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Lock size={12} color="#c084fc" /> Locked Docs
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: '#c084fc' }}>
+                {documents.filter(d => d.isLocked).length}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <AlertTriangle size={12} color="#ef4444" /> Integrity Alerts
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
+                {documents.filter(d => d.verificationStatus === 'SUSPICIOUS' || (d.tamperScore && d.tamperScore > 40)).length}
+              </span>
+            </div>
+          </div>
+
           {/* Tab Navigation */}
           <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem', paddingBottom: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <button
@@ -659,22 +788,26 @@ export default function StudentDocumentVaultPage() {
               </div>
             ) : (
               <div style={{ background: 'var(--bg-secondary)', borderRadius: '14px', border: '1px solid var(--border)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
-                <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
 
                 <thead>
                   <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    <th style={{ padding: '12px 16px' }}>Document</th>
+                    <th style={{ padding: '12px 16px' }}>Document & Security</th>
                     <th style={{ padding: '12px 16px' }}>Category</th>
                     <th style={{ padding: '12px 16px' }}>Verification Status</th>
                     <th style={{ padding: '12px 16px' }}>Score</th>
                     <th style={{ padding: '12px 16px' }}>Uploaded</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Security Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredDocs.map((doc, idx) => {
                     const isImg = doc.fileType?.startsWith('image/') || /\.(png|jpe?g|webp|bmp|gif)$/i.test(doc.fileName)
                     const score = doc.verificationScore ?? doc.qualityScore ?? 80
+                    const isHighlyProtected = doc.securityLevel === 'HIGHLY_PROTECTED'
+                    const isProtected = doc.securityLevel === 'PROTECTED' || isHighlyProtected
+                    const isViewOnly = doc.isViewOnly || doc.downloadPolicy === 'DISABLED'
+
                     return (
                       <tr
                         key={doc.id}
@@ -690,9 +823,30 @@ export default function StudentDocumentVaultPage() {
                               {isImg ? <ImageIcon size={18} /> : <FileText size={18} />}
                             </div>
                             <div>
-                              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{doc.fileName}</div>
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                {doc.documentType} • {formatFileSize(doc.fileSize)}
+                              <div style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span>{doc.fileName}</span>
+                                {isHighlyProtected ? (
+                                  <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)' }}>
+                                    🔒 Highly Protected
+                                  </span>
+                                ) : isProtected ? (
+                                  <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 6px', borderRadius: '4px', background: 'rgba(139, 92, 246, 0.15)', color: '#c084fc', border: '1px solid rgba(139,92,246,0.3)' }}>
+                                    🛡 Protected
+                                  </span>
+                                ) : null}
+                                {doc.isPasswordProtected && (
+                                  <span style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '4px', background: 'rgba(192, 132, 252, 0.15)', color: '#c084fc' }}>
+                                    🔑 Pwd
+                                  </span>
+                                )}
+                                {isViewOnly && (
+                                  <span style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>
+                                    👁 View Only
+                                  </span>
+                                )}
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                                {doc.documentType} • {formatFileSize(doc.fileSize)} • SHA-256 Verified
                               </div>
                             </div>
                           </div>
@@ -717,30 +871,58 @@ export default function StudentDocumentVaultPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            {/* Open in Secure Vault Viewer */}
+                            <button
+                              onClick={() => { setViewerDocId(doc.id); setViewerDocName(doc.fileName); }}
+                              className="btn btn-sm"
+                              title="Open Secure Vault Viewer"
+                              style={{ padding: '6px 10px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#c084fc', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Eye size={13} />
+                              <span style={{ fontSize: '11px', fontWeight: 600 }}>Vault View</span>
+                            </button>
+
+                            {/* Open Security Settings Modal */}
+                            <button
+                              onClick={() => { setSecurityModalDocId(doc.id); setSecurityModalDocName(doc.fileName); }}
+                              className="btn btn-sm"
+                              title="Manage Document Security & Sharing"
+                              style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: '#38bdf8', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Lock size={13} />
+                              <span style={{ fontSize: '11px', fontWeight: 600 }}>Security</span>
+                            </button>
+
+                            {/* View AI Details / OCR Drawer */}
                             <button
                               onClick={() => { setDetailsDoc(doc); setModalTab('overview'); }}
                               className="btn btn-sm"
-                              title="View Document Details"
-                              style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '6px', cursor: 'pointer' }}
+                              title="View AI Forensics & OCR"
+                              style={{ padding: '6px 8px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-secondary)', borderRadius: '6px', cursor: 'pointer' }}
                             >
-                              <Eye size={14} />
+                              <Scan size={13} />
                             </button>
-                            <a
-                              href={`/api/documents/${doc.id}/download?download=true`}
-                              download
-                              className="btn btn-sm"
-                              title="Download Original"
-                              style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '6px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-                            >
-                              <Download size={14} />
-                            </a>
+
+                            {/* Download if allowed */}
+                            {!isViewOnly ? (
+                              <a
+                                href={`/api/documents/${doc.id}/download?download=true`}
+                                download
+                                className="btn btn-sm"
+                                title="Download Document Copy"
+                                style={{ padding: '6px 8px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-secondary)', borderRadius: '6px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                              >
+                                <Download size={13} />
+                              </a>
+                            ) : null}
+
                             <button
                               onClick={() => handleDelete(doc.id)}
                               className="btn btn-sm"
                               title="Delete Document"
-                              style={{ padding: '6px 10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', borderRadius: '6px', cursor: 'pointer' }}
+                              style={{ padding: '6px 8px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', borderRadius: '6px', cursor: 'pointer' }}
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </td>
@@ -756,17 +938,18 @@ export default function StudentDocumentVaultPage() {
       </div>
 
 
-      {/* UPLOAD MODAL */}
+      {/* UPLOAD MODAL WITH DOCUMENT SECURITY SELECTOR */}
       {isUploadOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
-          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '16px', maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '16px', maxWidth: '620px', width: '100%', maxHeight: '92vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                  Upload Document to Vault
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldCheck size={20} color="#8b5cf6" />
+                  <span>Secure Document Upload</span>
                 </h2>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  Step {uploadStep} of 3: {uploadStep === 1 ? 'Details' : uploadStep === 2 ? 'AI Processing' : 'Verification Summary'}
+                  Step {uploadStep} of 3: {uploadStep === 1 ? 'Details & Security Level' : uploadStep === 2 ? 'AI Processing' : 'Verification Summary'}
                 </span>
               </div>
               <button onClick={closeUploadModal} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -795,7 +978,7 @@ export default function StudentDocumentVaultPage() {
                     style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
                   />
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '2px', display: 'block' }}>
-                    Supported formats: PDF, PNG, JPG, JPEG, WEBP (Processed with Docling + Smart OCR)
+                    Supported formats: PDF, PNG, JPG, JPEG, WEBP (AES-256 Encrypted & Smart OCR verified)
                   </span>
                 </div>
 
@@ -850,6 +1033,79 @@ export default function StudentDocumentVaultPage() {
                   </div>
                 </div>
 
+                {/* Document Security Level Preset Selector */}
+                <div style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.2)', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c084fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Lock size={14} /> Document Security Level
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                    {[
+                      { id: 'STANDARD', label: 'Standard', desc: 'Normal Auth' },
+                      { id: 'PROTECTED', label: 'Protected', desc: 'Encryption + Watermark' },
+                      { id: 'HIGHLY_PROTECTED', label: 'Highly Protected', desc: 'Password + View-Only' }
+                    ].map(lvl => (
+                      <button
+                        key={lvl.id}
+                        type="button"
+                        onClick={() => {
+                          setUploadSecurityLevel(lvl.id as any)
+                          if (lvl.id === 'HIGHLY_PROTECTED') {
+                            setUploadIsViewOnly(true)
+                            setUploadWatermark(true)
+                          } else if (lvl.id === 'PROTECTED') {
+                            setUploadWatermark(true)
+                          }
+                        }}
+                        style={{
+                          padding: '8px',
+                          borderRadius: '8px',
+                          border: uploadSecurityLevel === lvl.id ? '1px solid #8b5cf6' : '1px solid var(--border)',
+                          background: uploadSecurityLevel === lvl.id ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-primary)',
+                          color: uploadSecurityLevel === lvl.id ? '#fff' : 'var(--text-secondary)',
+                          cursor: 'pointer',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700 }}>{lvl.label}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)' }}>{lvl.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {uploadSecurityLevel !== 'STANDARD' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                      <input
+                        type="password"
+                        placeholder="Set Document Password (Optional)"
+                        value={uploadPassword}
+                        onChange={e => setUploadPassword(e.target.value)}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
+                      />
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={uploadIsViewOnly}
+                            onChange={e => setUploadIsViewOnly(e.target.checked)}
+                          />
+                          <span>View-Only</span>
+                        </label>
+
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={uploadWatermark}
+                            onChange={e => setUploadWatermark(e.target.checked)}
+                          />
+                          <span>Watermark</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
                     Access Permission *
@@ -865,7 +1121,7 @@ export default function StudentDocumentVaultPage() {
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0.5rem' }}>
                   <button type="button" onClick={closeUploadModal} className="btn" style={{ padding: '8px 16px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '8px' }}>
                     Cancel
                   </button>
@@ -886,10 +1142,10 @@ export default function StudentDocumentVaultPage() {
                 <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
                 <div>
                   <h3 style={{ fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0', fontSize: '1.15rem' }}>
-                    AI Document Processing & Verification...
+                    AI Document Processing & Cryptographic Fingerprinting...
                   </h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, maxWidth: '420px', lineHeight: 1.5 }}>
-                    Running Docling structure parsing, Smart OCR, QR code validation, and duplicate verification.
+                    Running Docling structure parsing, Smart OCR, QR validation, SHA-256 fingerprinting, and tamper detection.
                   </p>
                 </div>
               </div>
@@ -908,10 +1164,10 @@ export default function StudentDocumentVaultPage() {
                   <div style={{ textAlign: 'right' }}>
                     <span className="badge badge-green" style={{ fontSize: '0.9rem', padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                       <CheckCircle2 size={12} strokeWidth={2} />
-                      <span>Ready to Save</span>
+                      <span>Ready to Encrypt & Store</span>
                     </span>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                      Detected Type: <strong>{analysisResult.documentType || docType}</strong>
+                      Security: <strong>{uploadSecurityLevel}</strong>
                     </div>
                   </div>
                 </div>
@@ -930,7 +1186,7 @@ export default function StudentDocumentVaultPage() {
                     className="btn btn-primary"
                     style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer' }}
                   >
-                    {savingDoc ? 'Saving Document...' : 'Confirm & Save Document'}
+                    {savingDoc ? 'Encrypting & Storing Document...' : 'Confirm & Save Document'}
                   </button>
                 </div>
               </div>
@@ -1065,6 +1321,46 @@ export default function StudentDocumentVaultPage() {
                       </div>
                     </div>
 
+                    <div style={{ background: 'rgba(139, 92, 246, 0.08)', padding: '1.25rem', borderRadius: '10px', border: '1px solid rgba(139, 92, 246, 0.25)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 600, color: '#c084fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Lock size={15} /> Document Password & Security
+                        </span>
+                        <span style={{ fontSize: '11px', color: detailsDoc.isPasswordProtected ? '#10b981' : '#94a3b8', fontWeight: 600 }}>
+                          {detailsDoc.isPasswordProtected ? '🔑 Password Protected' : '🔓 No Password'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                        Manage AES-256 encryption, password protection, view-only mode, dynamic watermark, and secure share links.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const doc = detailsDoc
+                          setDetailsDoc(null)
+                          setSecurityModalDocId(doc.id)
+                          setSecurityModalDocName(doc.fileName)
+                        }}
+                        style={{
+                          background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                          color: '#fff',
+                          border: 'none',
+                          padding: '8px 14px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Lock size={13} />
+                        <span>Set / Manage Password & Security</span>
+                      </button>
+                    </div>
+
                     {detailsDoc.yoloDetections && detailsDoc.yoloDetections.length > 0 && (
                       <div style={{ background: 'var(--bg-secondary)', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '0.8rem' }}>
                         <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>Detected Document Regions:</div>
@@ -1080,6 +1376,7 @@ export default function StudentDocumentVaultPage() {
                   </div>
                 </div>
               )}
+
 
               {/* Tab 2: Extracted Information */}
               {modalTab === 'fields' && (() => {
@@ -1308,19 +1605,71 @@ export default function StudentDocumentVaultPage() {
                   <RefreshCw size={14} strokeWidth={2} className={reprocessingId === detailsDoc.id ? 'spin' : ''} />
                   <span>{reprocessingId === detailsDoc.id ? 'Processing...' : 'Reprocess Intelligence'}</span>
                 </button>
-              </div>
 
-              <button
-                onClick={() => setDetailsDoc(null)}
-                className="btn btn-primary"
-                style={{ padding: '6px 18px', background: 'var(--accent-violet)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
-              >
-                Close
-              </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const doc = detailsDoc
+                    setDetailsDoc(null)
+                    setSecurityModalDocId(doc.id)
+                    setSecurityModalDocName(doc.fileName)
+                  }}
+                  className="btn btn-sm"
+                  style={{ padding: '6px 14px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#c084fc', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600 }}
+                >
+                  <Lock size={14} strokeWidth={2} />
+                  <span>Password & Security</span>
+                </button>
+
+                <button
+                  onClick={() => setDetailsDoc(null)}
+                  className="btn btn-primary"
+                  style={{ padding: '6px 18px', background: 'var(--accent-violet)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Close
+                </button>
+
+
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* DOCUMENT SECURITY PANEL MODAL */}
+      <DocumentSecurityModal
+        documentId={securityModalDocId}
+        documentName={securityModalDocName}
+        isOpen={Boolean(securityModalDocId)}
+        onClose={() => {
+          setSecurityModalDocId(null)
+          setSecurityModalDocName('')
+        }}
+
+        onUpdated={() => fetchData(false)}
+      />
+
+      {/* SECURE DOCUMENT VIEWER WITH WATERMARK */}
+      <SecureDocumentViewer
+        documentId={viewerDocId}
+        documentName={viewerDocName}
+        isOpen={Boolean(viewerDocId)}
+        onClose={() => {
+          setViewerDocId(null)
+          setViewerDocName('')
+        }}
+        onSecurityClick={() => {
+          if (viewerDocId) {
+            const id = viewerDocId
+            const name = viewerDocName
+            setViewerDocId(null)
+            setViewerDocName('')
+            setSecurityModalDocId(id)
+            setSecurityModalDocName(name)
+          }
+        }}
+      />
     </div>
   )
 }
+

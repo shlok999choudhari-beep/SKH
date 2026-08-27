@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import DocumentSecurityModal from '@/components/DocumentSecurityModal'
+import SecureDocumentViewer from '@/components/SecureDocumentViewer'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../institution.module.css'
 import {
@@ -37,6 +39,7 @@ import {
   TrendingUp,
   Cpu
 } from 'lucide-react'
+
 
 interface DocumentMetrics {
   totalDocuments: number
@@ -248,6 +251,14 @@ export default function InstitutionStudentDocumentsPage() {
   const [requestCategory, setRequestCategory] = useState('Academic')
   const [sendingRequest, setSendingRequest] = useState(false)
   const [requestMessage, setRequestMessage] = useState('')
+
+  // Security Modal State
+  const [securityModalDocId, setSecurityModalDocId] = useState<number | null>(null)
+  const [securityModalDocName, setSecurityModalDocName] = useState('')
+  const [viewerDocId, setViewerDocId] = useState<number | null>(null)
+  const [viewerDocName, setViewerDocName] = useState('')
+
+
 
   useEffect(() => {
     fetchData()
@@ -612,15 +623,36 @@ export default function InstitutionStudentDocumentsPage() {
                         <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '6px' }}>
                             <button
+                              onClick={() => { setViewerDocId(doc.id); setViewerDocName(doc.fileName); }}
+                              className="btn btn-sm"
+                              title="Open Secure Watermarked Viewer"
+                              style={{ padding: '6px 10px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#c084fc', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Eye size={13} />
+                              <span>View</span>
+                            </button>
+
+                            <button
+                              onClick={() => { setSecurityModalDocId(doc.id); setSecurityModalDocName(doc.fileName); }}
+                              className="btn btn-sm"
+                              title="Audit Document Security & Cryptographic Fingerprint"
+                              style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: '#38bdf8', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Lock size={13} />
+                              <span>Security</span>
+                            </button>
+
+                            <button
                               onClick={() => { setReviewDoc(doc); setForensicTab('overview'); }}
                               className="btn btn-sm"
-                              style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                              style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-primary)', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                             >
                               <Scan size={13} color="#a78bfa" />
                               <span>Forensics</span>
                             </button>
                           </div>
                         </td>
+
                       </tr>
                     )
                   })}
@@ -1093,6 +1125,41 @@ export default function InstitutionStudentDocumentsPage() {
           </div>
         </div>
       )}
+
+      {/* DOCUMENT SECURITY PANEL MODAL */}
+
+      <DocumentSecurityModal
+        documentId={securityModalDocId}
+        documentName={securityModalDocName}
+        isOpen={Boolean(securityModalDocId)}
+        onClose={() => {
+          setSecurityModalDocId(null)
+          setSecurityModalDocName('')
+        }}
+        onUpdated={() => fetchData()}
+      />
+
+      {/* SECURE DOCUMENT VIEWER WITH WATERMARK */}
+      <SecureDocumentViewer
+        documentId={viewerDocId}
+        documentName={viewerDocName}
+        isOpen={Boolean(viewerDocId)}
+        onClose={() => {
+          setViewerDocId(null)
+          setViewerDocName('')
+        }}
+        onSecurityClick={() => {
+          if (viewerDocId) {
+            const id = viewerDocId
+            const name = viewerDocName
+            setViewerDocId(null)
+            setViewerDocName('')
+            setSecurityModalDocId(id)
+            setSecurityModalDocName(name)
+          }
+        }}
+      />
     </div>
   )
 }
+

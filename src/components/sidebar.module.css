@@ -260,46 +260,193 @@
   color: #a78bfa;
 }
 
-/* ── SEARCH TRIGGER ── */
-.searchBox {
+/* ── AESTHETIC SEARCH BAR TRIGGER & FLYOUT ── */
+.searchContainer {
   position: relative;
-  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
-.searchInput {
+.searchTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  padding: 6px 14px 6px 34px;
-  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
-  font-size: 11px !important;
-  color: var(--text-primary);
-  width: 180px;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 6px 12px 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text-secondary, #94a3b8);
+  font-family: inherit;
+  white-space: nowrap;
 }
 
-.searchInput:focus {
-  outline: none;
-  width: 230px;
-  border-color: rgba(139, 92, 246, 0.5);
+.searchTrigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.searchTriggerIcon {
+  color: #a78bfa;
+  flex-shrink: 0;
+}
+
+.searchTriggerText {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.searchTrigger:hover .searchTriggerText {
+  color: #f8fafc;
+}
+
+.searchKbd {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 1.5px 5.5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  letter-spacing: 0.03em;
+  margin-left: 4px;
+}
+
+.searchFlyout {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: rgba(15, 12, 34, 0.98);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 24px rgba(139, 92, 246, 0.18);
+  z-index: 500;
+  padding: 10px;
+  animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.searchBarInner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+.searchBarInner:focus-within {
+  border-color: rgba(139, 92, 246, 0.6);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
 }
 
-.searchIcon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  pointer-events: none;
+.searchInnerIcon {
+  color: #a78bfa;
+  flex-shrink: 0;
 }
 
-/* ── USER TAG ── */
+.searchInput {
+  background: none;
+  border: none;
+  color: #f8fafc;
+  font-size: 12.5px;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted, #94a3b8);
+}
+
+.clearSearch {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.searchResultList {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s ease;
+}
+
+.searchResultItem:hover {
+  background: rgba(139, 92, 246, 0.16);
+  transform: translateX(2px);
+}
+
+.searchResultIconWrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.searchResultTextWrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.searchResultLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.searchResultDesc {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchEmpty {
+  padding: 14px 10px;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+}
+
+/* ── AESTHETIC USER PROFILE PILL ── */
 .userTag {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 0;
   border-bottom: none;
   flex-shrink: 0;
@@ -307,97 +454,195 @@
   background: transparent;
 }
 
+.userPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.09) 0%, rgba(59, 130, 246, 0.06) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 4px 12px 4px 4px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  position: relative;
+}
+
+.userPillBtn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.14) 100%);
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.22);
+  transform: translateY(-1px);
+}
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .userAvatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12.5px;
   font-weight: 700;
   color: #ffffff !important;
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3), 0 3px 10px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s ease;
+}
+
+.userPillBtn:hover .userAvatar {
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.6), 0 4px 14px rgba(139, 92, 246, 0.5);
+  transform: scale(1.04);
+}
+
+.onlineDot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 8.5px;
+  height: 8.5px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 1.5px solid #0d0a1f;
+  box-shadow: 0 0 6px #10b981;
 }
 
 .userAvatarCompany {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #06b6d4 100%);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3), 0 3px 10px rgba(16, 185, 129, 0.35);
 }
 
 .userAvatarInstitution {
-  background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
-  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #ec4899 100%);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.3), 0 3px 10px rgba(168, 85, 247, 0.35);
 }
 
 .userInfo {
   display: flex;
   flex-direction: column;
-}
-
-.userNameBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  color: var(--text-primary);
-  transition: var(--transition);
-}
-
-.userNameBtn:hover {
-  opacity: 0.8;
+  gap: 0px;
+  min-width: 0;
 }
 
 .userName {
-  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
-  font-size: 12px !important;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px !important;
   font-weight: 600 !important;
   color: #f8fafc !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 110px;
+  letter-spacing: -0.01em;
+}
+
+.userRoleBadge {
+  font-size: 10px;
+  color: #a78bfa;
+  font-weight: 500;
+  line-height: 1.1;
+  text-transform: capitalize;
+}
+
+.userChevron {
+  color: #a78bfa;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .userDropdown {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 180px;
-  background: rgba(13, 17, 34, 0.96);
+  min-width: 210px;
+  width: max-content;
+  max-width: 260px;
+  background: rgba(13, 17, 34, 0.97);
   backdrop-filter: blur(24px);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  z-index: 200;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  z-index: 300;
   overflow: hidden;
+}
+
+
+.logoBtnWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  position: relative;
+  text-align: left;
+}
+
+.logoBtnWrapper:hover {
+  opacity: 0.9;
+}
+
+.logoChevron {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.logoDropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  min-width: 220px;
+  width: max-content;
+  max-width: 260px;
+  background: rgba(13, 17, 34, 0.97);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  z-index: 300;
+  overflow: hidden;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
 }
 
 .dropdownItem {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   width: 100%;
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
   text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .dropdownItem:hover {
   background: var(--bg-card-hover);
   color: var(--text-primary);
 }
+
+
 
 /* ── HAMBURGER (MOBILE) ── */
 .hamburger {
