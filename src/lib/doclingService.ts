@@ -39,7 +39,7 @@ export interface DoclingExtractionResult {
   sections: DoclingSection[]
   tables: DoclingTable[]
   fields: DoclingExtractedFields
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
   error?: string
 }
 
@@ -160,8 +160,9 @@ export async function extractWithDocling(
         }
       }
     }
-  } catch (error: any) {
-    console.warn('[DoclingService] Microservice call failed, using fallback:', error?.message || error)
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error)
+    console.warn('[DoclingService] Microservice call failed, using fallback:', msg)
   }
 
   // Graceful fallback to local extraction

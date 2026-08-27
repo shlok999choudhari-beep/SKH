@@ -36,7 +36,7 @@ export interface DocumentVerificationReport {
     markdown: string
     sections: DoclingSection[]
     tables: DoclingTable[]
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
   }
   warnings: string[]
   passedChecks: string[]
