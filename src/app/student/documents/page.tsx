@@ -469,12 +469,12 @@ export default function StudentDocumentVaultPage() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.layout}>
       <StudentSidebar />
-      <div className={styles.mainContent}>
+      <div className={styles.content}>
         
         {/* Header */}
-        <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
+        <header className={styles.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <BackButton fallbackHref="/student/campus" />
             <div>
@@ -482,11 +482,11 @@ export default function StudentDocumentVaultPage() {
                 <div style={{ padding: '8px', background: 'rgba(139, 92, 246, 0.15)', borderRadius: '10px', color: '#8b5cf6' }}>
                   <FolderLock size={22} strokeWidth={2} />
                 </div>
-                <h1 className={styles.title} style={{ margin: 0, fontSize: '1.6rem' }}>
+                <h1 className={styles.pageTitle} style={{ margin: 0 }}>
                   PlaceIQ Document Vault
                 </h1>
               </div>
-              <p className={styles.subtitle} style={{ margin: '4px 0 0 0' }}>
+              <p className={styles.pageSubtitle} style={{ margin: '4px 0 0 0' }}>
                 AI Document Processing, Smart OCR, Automated Verification & Security Integrity
               </p>
             </div>
@@ -511,149 +511,156 @@ export default function StudentDocumentVaultPage() {
           </button>
         </header>
 
-        {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem', paddingBottom: '4px' }}>
-          <button
-            onClick={() => setActiveTab('my_docs')}
-            className={`btn ${activeTab === 'my_docs' ? styles.tabActive : ''}`}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              background: activeTab === 'my_docs' ? 'var(--accent-violet)' : 'transparent',
-              color: activeTab === 'my_docs' ? 'white' : 'var(--text-secondary)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <FolderLock size={15} strokeWidth={2} />
-            <span>My Documents ({documents.length})</span>
-          </button>
+        <main className={styles.main}>
+          {/* Tab Navigation */}
+          <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem', paddingBottom: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <button
+              onClick={() => setActiveTab('my_docs')}
+              className={`btn ${activeTab === 'my_docs' ? styles.tabActive : ''}`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'my_docs' ? 'var(--accent-violet)' : 'transparent',
+                color: activeTab === 'my_docs' ? 'white' : 'var(--text-secondary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <FolderLock size={15} strokeWidth={2} />
+              <span>My Documents ({documents.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('verification')}
-            className={`btn ${activeTab === 'verification' ? styles.tabActive : ''}`}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              background: activeTab === 'verification' ? 'var(--accent-violet)' : 'transparent',
-              color: activeTab === 'verification' ? 'white' : 'var(--text-secondary)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <ShieldCheck size={15} strokeWidth={2} />
-            <span>Verified Credentials</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('verification')}
+              className={`btn ${activeTab === 'verification' ? styles.tabActive : ''}`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'verification' ? 'var(--accent-violet)' : 'transparent',
+                color: activeTab === 'verification' ? 'white' : 'var(--text-secondary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <ShieldCheck size={15} strokeWidth={2} />
+              <span>Verified Credentials</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('shared')}
-            className={`btn ${activeTab === 'shared' ? styles.tabActive : ''}`}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              background: activeTab === 'shared' ? 'var(--accent-violet)' : 'transparent',
-              color: activeTab === 'shared' ? 'white' : 'var(--text-secondary)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <Building2 size={15} strokeWidth={2} />
-            <span>Shared with College</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('shared')}
+              className={`btn ${activeTab === 'shared' ? styles.tabActive : ''}`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'shared' ? 'var(--accent-violet)' : 'transparent',
+                color: activeTab === 'shared' ? 'white' : 'var(--text-secondary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Building2 size={15} strokeWidth={2} />
+              <span>Shared with College</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('requests')}
-            className={`btn ${activeTab === 'requests' ? styles.tabActive : ''}`}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              background: activeTab === 'requests' ? 'var(--accent-violet)' : 'transparent',
-              color: activeTab === 'requests' ? 'white' : 'var(--text-secondary)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <FileQuestion size={15} strokeWidth={2} />
-            <span>Document Requests ({requests.filter(r => r.status === 'PENDING').length})</span>
-          </button>
-        </div>
-
-        {/* Controls: Search & Category Filters */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '1rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-secondary)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--border)', width: '320px' }}>
-            <Search size={16} color="var(--text-secondary)" />
-            <input
-              type="text"
-              placeholder="Search document name or type..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.875rem' }}
-            />
+            <button
+              onClick={() => setActiveTab('requests')}
+              className={`btn ${activeTab === 'requests' ? styles.tabActive : ''}`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'requests' ? 'var(--accent-violet)' : 'transparent',
+                color: activeTab === 'requests' ? 'white' : 'var(--text-secondary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <FileQuestion size={15} strokeWidth={2} />
+              <span>Document Requests ({requests.filter(r => r.status === 'PENDING').length})</span>
+            </button>
           </div>
 
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: '20px',
-                  border: selectedCategory === cat ? '1px solid var(--accent-violet)' : '1px solid var(--border)',
-                  background: selectedCategory === cat ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-secondary)',
-                  color: selectedCategory === cat ? '#a78bfa' : 'var(--text-secondary)',
-                  fontSize: '0.8rem',
-                  fontWeight: selectedCategory === cat ? 600 : 500,
-                  cursor: 'pointer'
-                }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
+          {/* Controls: Search & Category Filters */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-secondary)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--border)', width: '100%', maxWidth: '320px' }}>
+              <Search size={16} color="var(--text-secondary)" />
+              <input
+                type="text"
+                placeholder="Search document name or type..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.875rem' }}
+              />
+            </div>
 
-        {/* Documents Table */}
-        <main>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-              <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#8b5cf6' }} />
-              <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading verified document vault...</p>
+            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px', width: '100%', maxWidth: '100%' }}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  style={{
+                    padding: '5px 12px',
+                    borderRadius: '20px',
+                    border: selectedCategory === cat ? '1px solid var(--accent-violet)' : '1px solid var(--border)',
+                    background: selectedCategory === cat ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-secondary)',
+                    color: selectedCategory === cat ? '#a78bfa' : 'var(--text-secondary)',
+                    fontSize: '0.8rem',
+                    fontWeight: selectedCategory === cat ? 600 : 500,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
-          ) : filteredDocs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '4rem 1rem', background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px dashed var(--border)' }}>
-              <FolderLock size={48} strokeWidth={1.5} color="var(--text-tertiary)" style={{ margin: '0 auto 1rem auto' }} />
-              <h3 style={{ color: 'var(--text-primary)', margin: '0 0 0.5rem 0' }}>No documents found</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
-                Upload your degree certificates, marksheets, ID cards, and internship letters to get AI verified.
-              </p>
-              <button
-                onClick={() => { resetUploadForm(); setIsUploadOpen(true); }}
-                className="btn btn-primary"
-                style={{ background: 'var(--accent-violet)', color: 'white', padding: '8px 18px', borderRadius: '8px', fontWeight: 600 }}
-              >
-                Upload First Document
-              </button>
-            </div>
-          ) : (
-            <div style={{ background: 'var(--bg-secondary)', borderRadius: '14px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+          </div>
+
+          {/* Documents Table */}
+          <div>
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+                <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#8b5cf6' }} />
+                <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading verified document vault...</p>
+              </div>
+            ) : filteredDocs.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '4rem 1rem', background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px dashed var(--border)' }}>
+                <FolderLock size={48} strokeWidth={1.5} color="var(--text-tertiary)" style={{ margin: '0 auto 1rem auto' }} />
+                <h3 style={{ color: 'var(--text-primary)', margin: '0 0 0.5rem 0' }}>No documents found</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
+                  Upload your degree certificates, marksheets, ID cards, and internship letters to get AI verified.
+                </p>
+                <button
+                  onClick={() => { resetUploadForm(); setIsUploadOpen(true); }}
+                  className="btn btn-primary"
+                  style={{ background: 'var(--accent-violet)', color: 'white', padding: '8px 18px', borderRadius: '8px', fontWeight: 600 }}
+                >
+                  Upload First Document
+                </button>
+              </div>
+            ) : (
+              <div style={{ background: 'var(--bg-secondary)', borderRadius: '14px', border: '1px solid var(--border)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+                <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+
                 <thead>
                   <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     <th style={{ padding: '12px 16px' }}>Document</th>
@@ -744,8 +751,10 @@ export default function StudentDocumentVaultPage() {
               </table>
             </div>
           )}
+          </div>
         </main>
       </div>
+
 
       {/* UPLOAD MODAL */}
       {isUploadOpen && (

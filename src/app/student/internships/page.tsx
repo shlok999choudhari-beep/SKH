@@ -262,9 +262,10 @@ export default function StudentInternshipsPage() {
                 background: studentProfile.cgpa ? 'rgba(16, 185, 129, 0.08)' : 'rgba(245, 158, 11, 0.08)',
                 border: `1px solid ${studentProfile.cgpa ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
                 display: 'flex',
-
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
                 marginBottom: '1.5rem'
               }}
             >
@@ -301,7 +302,7 @@ export default function StudentInternshipsPage() {
           )}
 
           {/* Sub-Tabs Navigation */}
-          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '4px' }}>
             <button 
               onClick={() => setActiveTab('available')}
               style={{
@@ -316,7 +317,8 @@ export default function StudentInternshipsPage() {
                 transition: 'all 0.2s ease',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                whiteSpace: 'nowrap'
               }}
             >
               <Briefcase size={16} strokeWidth={2} />
@@ -337,13 +339,15 @@ export default function StudentInternshipsPage() {
                 transition: 'all 0.2s ease',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                whiteSpace: 'nowrap'
               }}
             >
               <TrendingUp size={16} strokeWidth={2} />
               <span>Active Hiring Pipelines ({activeInternships.length})</span>
             </button>
           </div>
+
 
           {/* Tab 1: Available Opportunities */}
           {activeTab === 'available' && (

@@ -315,8 +315,9 @@ export default function BehavioralAnalysis() {
 
         <main className={styles.main}>
           {!analysisReport ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))', gap: '20px' }}>
               <div className={`glass ${styles.panel}`} style={{ padding: '20px' }}>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                   {isInterviewActive ? <Radio size={18} strokeWidth={2} color="#ef4444" /> : <Video size={18} strokeWidth={2} color="#8b5cf6" />}
                   <h3 style={{ fontSize: '18px' }}>

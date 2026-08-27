@@ -247,48 +247,130 @@
 /* ── RESPONSIVE ── */
 @media (max-width: 1200px) {
   .grid3 { grid-template-columns: 1fr 1fr; }
-  .span2 { grid-column: 1; }
+  .span2 { grid-column: span 2; }
   .analyticsRow { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 1024px) {
-  .statsRow { grid-template-columns: repeat(2, 1fr); }
-  .grid2 { grid-template-columns: 1fr; }
-  
-  /* Coding Judge Responsive */
-  .main > div[style*="grid-template-columns: 1fr 300px"] {
-    grid-template-columns: 1fr !important;
-  }
+  .statsRow { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .span2 { grid-column: span 1; }
+  .header { padding: 0 24px; }
+  .main { padding: 24px; gap: 20px; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 960px) {
+  .content { padding-top: 60px; }
+  .header {
+    height: auto;
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .headerActions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .analyticsRow { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
   .content { margin-left: 0; width: 100%; }
-  .header { padding: 0 16px 0 64px; }
-  .main { padding: 20px 16px; }
-  .statsRow { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .header { padding: 14px 12px; }
+  .main { padding: 16px 12px; gap: 16px; }
+  .statsRow { grid-template-columns: 1fr; gap: 10px; }
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .span2 { grid-column: 1; }
-  .analyticsRow { grid-template-columns: repeat(2, 1fr); }
+  .analyticsRow { grid-template-columns: 1fr; gap: 12px; }
   .companiesRow { gap: 8px; }
+  .pageTitle { font-size: 17px !important; }
+  .pageSubtitle { font-size: 10.5px !important; }
+  .panel { padding: 16px 14px; border-radius: var(--radius-md); }
+  .statCard { padding: 14px; }
+  .statIcon { width: 40px; height: 40px; font-size: 18px; }
   
-  /* Coding Judge Mobile */
-  .main > div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr !important;
+  .jobCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .candidateCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .candidateRight {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
   }
   
-  /* Video panels stack on mobile */
-  .main video {
-    max-height: 250px !important;
+  .btn-lg { padding: 10px 18px; font-size: 13.5px; }
+}
+
+/* ── CODING JUDGE RESPONSIVE LAYOUT ── */
+.codingJudgeGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  min-height: calc(100vh - 200px);
+}
+
+.mobileTabNav {
+  display: none;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.mobileTabButton {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+  min-height: 44px;
+}
+
+.mobileTabButtonActive {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-hover);
+}
+
+@media (max-width: 1024px) {
+  .codingJudgeGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .mobileTabNav {
+    display: flex;
+  }
+
+  .hideOnMobileTab {
+    display: none !important;
   }
 }
 
-@media (max-width: 480px) {
-  .statsRow { grid-template-columns: 1fr 1fr; }
-  .pageTitle { font-size: 18px; }
-  .jobCard { flex-wrap: wrap; }
-  .candidateCard { flex-wrap: wrap; }
-  .analyticsRow { grid-template-columns: repeat(2, 1fr); }
-  
-  /* Smaller buttons on mobile */
-  .btn-lg { padding: 12px 24px; font-size: 14px; }
-}

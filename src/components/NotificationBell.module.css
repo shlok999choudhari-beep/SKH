@@ -479,3 +479,17 @@
 .clearAllBtn:hover {
   color: var(--text-secondary);
 }
+
+@media (max-width: 600px) {
+  .dropdown {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 80px);
+    border-radius: 16px;
+  }
+}
+

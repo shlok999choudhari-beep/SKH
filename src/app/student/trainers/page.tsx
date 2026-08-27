@@ -325,8 +325,9 @@ export default function StudentTrainersPage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
                   {trainers.map((trainer) => {
+
                     const subjectsList = trainer.subjects ? trainer.subjects.split(',').map((s: string) => s.trim()) : []
                     const specialtiesList = trainer.expertise_tags ? trainer.expertise_tags.split(',').map((s: string) => s.trim()) : []
 

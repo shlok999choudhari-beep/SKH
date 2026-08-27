@@ -335,3 +335,16 @@
     text-align: center;
   }
 }
+
+@media (max-width: 480px) {
+  .detailsName {
+    font-size: 24px;
+  }
+  .section {
+    padding: 18px 14px;
+  }
+  .card {
+    padding: 20px 14px;
+  }
+}
+

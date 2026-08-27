@@ -240,7 +240,7 @@
 
 .chartGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
 }
@@ -376,3 +376,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .card {
+    padding: 1.25rem 1rem;
+  }
+
+  .results {
+    padding: 1.25rem 1rem;
+  }
+
+  .chartCard {
+    padding: 1rem;
+  }
+
+  .summary {
+    padding: 1.25rem 1rem;
+  }
+}
+

@@ -331,13 +331,14 @@ export default function StudentCampusResources() {
 
 
             {/* Filter Bar */}
-            <div className="glass" style={{ padding: '16px', display: 'grid', gridTemplateColumns: '1fr repeat(4, minmax(130px, 170px))', gap: '12px', alignItems: 'center' }}>
+            <div className="glass" style={{ padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 170px), 1fr))', gap: '12px', alignItems: 'center' }}>
               <input
                 type="text"
                 className="form-input"
                 placeholder="Search resources, labs, spaces..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                style={{ minWidth: '160px' }}
               />
               <select
                 className="form-select"
@@ -376,6 +377,7 @@ export default function StudentCampusResources() {
                 <option value="maintenance">Maintenance</option>
               </select>
             </div>
+
 
             {/* A. Partnership Resources Section */}
             {sharedResources.length > 0 && (
@@ -598,7 +600,8 @@ export default function StudentCampusResources() {
               {/* Hourly Timeline */}
               <div style={{ marginBottom: '16px' }}>
                 <label className="form-label" style={{ fontSize: '12px', marginBottom: '8px', display: 'block' }}>Daily Slots Schedule (Select a Slot to Prefill)</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 80px), 1fr))', gap: '8px' }}>
+
                   {[
                     { start: '09:00', end: '10:00' },
                     { start: '10:00', end: '11:00' },

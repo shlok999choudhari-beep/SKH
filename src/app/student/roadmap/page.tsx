@@ -261,7 +261,7 @@ export default function RoadmapPage() {
                             borderRadius: '8px',
                             border: '1px solid var(--border)'
                           }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
                               <p style={{ fontSize: '14px', fontWeight: '600' }}>{task.task}</p>
                               <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <Clock size={12} strokeWidth={2} />
@@ -281,28 +281,20 @@ export default function RoadmapPage() {
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       gap: '6px',
-                                      padding: '8px 12px',
-                                      background: 'rgba(255,0,0,0.1)',
-                                      border: '1px solid rgba(255,0,0,0.3)',
-                                      borderRadius: '6px',
-                                      color: '#ff0000',
-                                      fontSize: '13px',
-                                      fontWeight: '600',
-                                      textDecoration: 'none',
                                       marginRight: '8px',
                                       marginBottom: '8px',
-                                      transition: 'all 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.background = 'rgba(255,0,0,0.2)'
-                                      e.currentTarget.style.transform = 'translateY(-2px)'
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.background = 'rgba(255,0,0,0.1)'
-                                      e.currentTarget.style.transform = 'translateY(0)'
+                                      padding: '6px 12px',
+                                      background: 'rgba(239,68,68,0.1)',
+                                      border: '1px solid rgba(239,68,68,0.2)',
+                                      borderRadius: '6px',
+                                      color: '#ef4444',
+                                      fontSize: '12px',
+                                      textDecoration: 'none',
+                                      maxWidth: '100%',
+                                      wordBreak: 'break-word'
                                     }}
                                   >
-                                    <Play size={13} fill="#ff0000" strokeWidth={2} />
+                                    <Play size={12} strokeWidth={2} />
                                     <span>{resource.title}</span>
                                   </a>
                                 ))}
@@ -332,11 +324,11 @@ export default function RoadmapPage() {
                   <div className={`glass ${styles.panel}`}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                       <Lightbulb size={18} strokeWidth={2} color="#f59e0b" />
-                      <h3 className={styles.panelTitle}>Pro Tips</h3>
+                      <h3 className={styles.panelTitle}>Learning Tips</h3>
                     </div>
-                    <div className={styles.listItems}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {roadmap.tips?.map((tip: string, i: number) => (
-                        <div key={i} className={styles.listItem} style={{ 
+                        <div key={i} style={{ 
                           padding: '12px', 
                           background: 'rgba(124,58,237,0.05)', 
                           borderRadius: '8px',
@@ -389,7 +381,7 @@ export default function RoadmapPage() {
                     </div>
                   )}
 
-                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', gap: '12px' }}>
+                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     <input
                       type="text"
                       value={chatQuery}
@@ -398,6 +390,7 @@ export default function RoadmapPage() {
                       disabled={generating}
                       style={{
                         flex: 1,
+                        minWidth: '220px',
                         padding: '12px 16px',
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid var(--border)',

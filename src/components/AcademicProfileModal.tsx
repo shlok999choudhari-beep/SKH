@@ -141,7 +141,7 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary)' }}>
                 12th / Diploma Marks % *
@@ -161,7 +161,8 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
                   border: '1px solid var(--border)',
                   background: 'var(--bg-secondary)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  minHeight: '44px'
                 }}
                 required
               />
@@ -186,16 +187,17 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
                   border: '1px solid var(--border)',
                   background: 'var(--bg-secondary)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  minHeight: '44px'
                 }}
                 required
               />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px', marginTop: '1rem', flexWrap: 'wrap' }}>
             {onClose && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={onClose}>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={onClose} style={{ minHeight: '42px' }}>
                 Remind Later
               </button>
             )}
@@ -203,7 +205,7 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
               type="submit" 
               className="btn btn-primary btn-sm"
               disabled={submitting}
-              style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+              style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px', minHeight: '42px' }}
             >
               <span>{submitting ? 'Saving...' : 'Save & Unlock Internships'}</span>
               {!submitting && <ArrowRight size={16} strokeWidth={2} />}
@@ -214,3 +216,4 @@ export default function AcademicProfileModal({ studentProfile, onSave, onClose }
     </div>
   )
 }
+

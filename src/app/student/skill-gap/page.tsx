@@ -227,8 +227,7 @@ export default function SkillGapDetector() {
             </div>
           </div>
           {analysis && (
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)', marginRight: '8px' }}>Download Report:</span>
+            <div className={styles.headerActions} style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button onClick={exportToPDF} disabled={exporting} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <Download size={14} strokeWidth={2} />
                 <span>{exporting ? 'Exporting...' : 'Download PDF'}</span>
@@ -243,6 +242,7 @@ export default function SkillGapDetector() {
               </button>
             </div>
           )}
+
         </header>
 
         <main className={styles.main}>

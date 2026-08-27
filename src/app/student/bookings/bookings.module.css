@@ -634,3 +634,24 @@
     width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .bookingCard {
+    padding: 16px 14px;
+  }
+  .scheduleBlock {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .cardFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .actionBtnGroup {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+

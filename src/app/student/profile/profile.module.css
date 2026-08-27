@@ -510,3 +510,21 @@
     flex: 1;
   }
 }
+
+@media (max-width: 480px) {
+  .heroCard {
+    padding: 16px 14px;
+  }
+  .card {
+    padding: 18px 14px;
+  }
+  .avatarRing {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+  .heroName {
+    font-size: 20px;
+  }
+}
+
