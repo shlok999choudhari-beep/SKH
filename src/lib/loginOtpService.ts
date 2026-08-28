@@ -14,7 +14,7 @@ const encodedChallengeKey = new TextEncoder().encode(CHALLENGE_SECRET)
 export interface ChallengePayload {
   challengeId: string
   userId: number
-  userRole: 'student' | 'company' | 'institution-admin'
+  userRole: 'student' | 'company' | 'institution-admin' | 'trainer'
   email: string
   name: string
   otpHash: string
@@ -112,7 +112,7 @@ export async function initiateLoginChallenge({
   riskReasons
 }: {
   userId: number
-  userRole: 'student' | 'company' | 'institution-admin'
+  userRole: 'student' | 'company' | 'institution-admin' | 'trainer'
   email: string
   name: string
   deviceId?: string
@@ -254,7 +254,7 @@ export async function verifySubmittedOtp({
   deviceId?: string
   user?: {
     id: number
-    role: 'student' | 'company' | 'institution-admin'
+    role: 'student' | 'company' | 'institution-admin' | 'trainer'
     email: string
     name: string
   }
