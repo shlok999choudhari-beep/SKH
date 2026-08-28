@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { downloadFromSupabaseStorage, BUCKETS } from '@/lib/supabaseStorage'
+import { normalizeFileType } from '@/lib/resumeExtractor'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
@@ -65,7 +66,7 @@ export async function GET(
 
     const downloadMode = request.nextUrl.searchParams.get('download') === 'true'
     const disposition = downloadMode ? 'attachment' : 'inline'
-    const contentType = resume.filename.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream'
+    const contentType = normalizeFileType(resume.filename)
 
     return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {

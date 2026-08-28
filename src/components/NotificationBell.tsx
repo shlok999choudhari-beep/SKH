@@ -343,20 +343,22 @@ export default function NotificationBell({ role }: NotificationBellProps) {
       : styles.studentTheme
 
   return (
-    <div className={`${styles.container} ${roleClass}`} ref={containerRef}>
+    <div className={`${styles.container} ${roleClass}`} ref={containerRef} suppressHydrationWarning>
       {/* ── BELL BUTTON ── */}
       <button
+        type="button"
+        suppressHydrationWarning
         className={`${styles.bellBtn} ${isOpen ? styles.bellBtnActive : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Notifications & Recommendations"
         title="Notifications & AI Recommendations"
       >
-        <div className={styles.bellIconWrapper}>
+        <div className={styles.bellIconWrapper} suppressHydrationWarning>
           <Bell size={18} strokeWidth={2} className={styles.bellSvg} />
 
           {/* Unread badge / beacon */}
           {unreadCount > 0 && (
-            <span className={styles.unreadBadge}>
+            <span className={styles.unreadBadge} suppressHydrationWarning>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
@@ -365,9 +367,9 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
       {/* ── NOTIFICATION FLYOUT DROPDOWN ── */}
       {isOpen && (
-        <div className={styles.dropdown}>
+        <div className={styles.dropdown} suppressHydrationWarning>
           {/* Header */}
-          <div className={styles.header}>
+          <div className={styles.header} suppressHydrationWarning>
             <div className={styles.headerTitleRow}>
               <div className={styles.headerTitle}>
                 <span className={styles.headerIcon}>
@@ -379,7 +381,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                 )}
               </div>
               {unreadCount > 0 && (
-                <button className={styles.markAllBtn} onClick={handleMarkAllRead}>
+                <button type="button" suppressHydrationWarning className={styles.markAllBtn} onClick={handleMarkAllRead}>
                   <CheckCheck size={13} strokeWidth={2} style={{ display: 'inline', marginRight: 4 }} />
                   Mark all as read
                 </button>
@@ -387,14 +389,18 @@ export default function NotificationBell({ role }: NotificationBellProps) {
             </div>
 
             {/* Filter Tabs */}
-            <div className={styles.tabRow}>
+            <div className={styles.tabRow} suppressHydrationWarning>
               <button
+                type="button"
+                suppressHydrationWarning
                 className={`${styles.tabBtn} ${activeTab === 'all' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('all')}
               >
                 All ({notifications.length})
               </button>
               <button
+                type="button"
+                suppressHydrationWarning
                 className={`${styles.tabBtn} ${activeTab === 'recommendation' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('recommendation')}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
@@ -403,6 +409,8 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                 <span>Recommendations ({notifications.filter(n => n.type === 'recommendation').length})</span>
               </button>
               <button
+                type="button"
+                suppressHydrationWarning
                 className={`${styles.tabBtn} ${activeTab === 'update' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('update')}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
@@ -414,7 +422,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
           </div>
 
           {/* Notification List */}
-          <div className={styles.list}>
+          <div className={styles.list} suppressHydrationWarning>
             {filteredNotifications.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>
@@ -480,6 +488,8 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
                   {/* Dismiss Button */}
                   <button
+                    type="button"
+                    suppressHydrationWarning
                     className={styles.dismissBtn}
                     onClick={e => handleDismiss(e, item.id)}
                     title="Dismiss"
@@ -494,8 +504,8 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className={styles.footer}>
-              <button className={styles.clearAllBtn} onClick={handleClearAll}>
+            <div className={styles.footer} suppressHydrationWarning>
+              <button type="button" suppressHydrationWarning className={styles.clearAllBtn} onClick={handleClearAll}>
                 Clear all notifications
               </button>
             </div>
@@ -505,4 +515,3 @@ export default function NotificationBell({ role }: NotificationBellProps) {
     </div>
   )
 }
-

@@ -7,9 +7,9 @@ export default function InstitutionLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={styles.layout}>
+    <div className={styles.layout} suppressHydrationWarning>
       <InstitutionSidebar />
-      <div className={styles.content}>
+      <div className={styles.content} suppressHydrationWarning>
         {children}
       </div>
     </div>

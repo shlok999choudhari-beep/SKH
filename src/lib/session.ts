@@ -1,11 +1,13 @@
 import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
+import { registerSession } from '@/lib/securityService'
 
 const secretKey = process.env.SESSION_SECRET || 'fallback-secret-32-chars-minimum!!'
 const encodedKey = new TextEncoder().encode(secretKey)
 
 export type SessionPayload = {
+  sessionId?: string
   userId: number
   role: 'student' | 'company' | 'institution-admin'
   email: string
@@ -33,7 +35,32 @@ export async function decrypt(token: string | undefined): Promise<SessionPayload
 
 export async function createSession(payload: SessionPayload): Promise<void> {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  const token = await encrypt({ ...payload, expiresAt })
+  const sessionId =
+    payload.sessionId ||
+    `sess_${payload.userId}_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`
+
+  try {
+    const headerStore = await headers()
+    const userAgent = headerStore.get('user-agent') || ''
+    const ip =
+      headerStore.get('x-forwarded-for')?.split(',')[0].trim() ||
+      headerStore.get('x-real-ip') ||
+      '103.211.54.21'
+
+    registerSession({
+      sessionId,
+      userId: payload.userId,
+      role: payload.role,
+      email: payload.email,
+      name: payload.name,
+      userAgent,
+      ip
+    })
+  } catch (err) {
+    console.warn('[Session] Failed to read headers for security telemetry:', err)
+  }
+
+  const token = await encrypt({ ...payload, sessionId, expiresAt })
   const cookieStore = await cookies()
   cookieStore.set('demo_session', token, {
     httpOnly: true,

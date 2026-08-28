@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import {
@@ -202,12 +203,15 @@ export default function StudentTrainersPage() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Presentation size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Book a Trainer & 1-on-1 Sessions</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/campus" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Presentation size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Book a Trainer & 1-on-1 Sessions</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Find expert trainers, select your subject, and schedule personalized 1-on-1 teaching sessions.</p>
             </div>
-            <p className={styles.pageSubtitle}>Find expert trainers, select your subject, and schedule personalized 1-on-1 teaching sessions.</p>
           </div>
         </header>
 
@@ -321,8 +325,9 @@ export default function StudentTrainersPage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
                   {trainers.map((trainer) => {
+
                     const subjectsList = trainer.subjects ? trainer.subjects.split(',').map((s: string) => s.trim()) : []
                     const specialtiesList = trainer.expertise_tags ? trainer.expertise_tags.split(',').map((s: string) => s.trim()) : []
 

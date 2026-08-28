@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './companies.module.css'
 import {
@@ -69,14 +70,17 @@ export default function Companies() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Building2 size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Company Profiles</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Building2 size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Company Profiles</h1>
+              </div>
+              <p className={styles.pageSubtitle}>
+                Explore companies, their culture, jobs, and important insights
+              </p>
             </div>
-            <p className={styles.pageSubtitle}>
-              Explore companies, their culture, jobs, and important insights
-            </p>
           </div>
           {selectedCompany && (
             <button 

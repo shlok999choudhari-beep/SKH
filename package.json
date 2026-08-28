@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev --webpack\" \"node server/socket-server.js\"",
+    "dev:all": "concurrently \"next dev --webpack\" \"node server/socket-server.js\" \"npm run docling\"",
     "dev:next": "next dev --webpack",
+    "docling": "cd docling-service && .venv\\Scripts\\uvicorn main:app --port 8000 --reload",
     "socket": "node server/socket-server.js",
     "build": "next build --webpack",
     "start": "node server/server.js",

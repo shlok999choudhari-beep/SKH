@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import styles from './mentor.module.css'
 import dashboardStyles from '../dashboard.module.css'
 import {
@@ -105,13 +106,16 @@ export default function AIMentorChat() {
       <div className={dashboardStyles.content}>
         <div className={styles.container}>
           <div className={styles.header}>
-            <div className={styles.headerContent}>
-              <div className={styles.headerIcon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Bot size={28} strokeWidth={2} color="#8b5cf6" />
-              </div>
-              <div>
-                <h1 className={styles.title}>AI Mentor Chat</h1>
-                <p className={styles.subtitle}>Your personal career & learning assistant</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <BackButton fallbackHref="/student/dashboard" />
+              <div className={styles.headerContent}>
+                <div className={styles.headerIcon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Bot size={28} strokeWidth={2} color="#8b5cf6" />
+                </div>
+                <div>
+                  <h1 className={styles.title}>AI Mentor Chat</h1>
+                  <p className={styles.subtitle}>Your personal career & learning assistant</p>
+                </div>
               </div>
             </div>
             <div className={styles.badge}>

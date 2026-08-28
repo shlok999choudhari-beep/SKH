@@ -72,6 +72,19 @@
 }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .header {
+    padding: 0 24px;
+  }
+  .main {
+    padding: 24px;
+    gap: 20px;
+  }
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 960px) {
   .content {
     padding-top: 60px;
@@ -92,9 +105,21 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .header {
+    padding: 14px 12px;
+  }
+  .main {
+    padding: 16px 12px;
+    gap: 16px;
+  }
   .statsRow {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
   .pageTitle {
     font-size: 17px !important;
@@ -103,7 +128,19 @@
     font-size: 10.5px !important;
   }
   .card {
-    padding: 16px;
+    padding: 16px 14px;
+    border-radius: var(--radius-md);
+  }
+  .statCard {
+    padding: 14px;
+  }
+  .statIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  .statValue {
+    font-size: 20px;
   }
 }
 
@@ -129,7 +166,7 @@
 
 .docGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 16px;
 }
 
@@ -138,4 +175,5 @@
     grid-template-columns: 1fr;
   }
 }
+
 

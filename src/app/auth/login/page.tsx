@@ -1,16 +1,14 @@
 'use client'
 
-import { useState, useActionState, Suspense } from 'react'
+import { useState, useEffect, Suspense, FormEvent } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { studentLogin } from '@/app/actions/studentAuth'
-import { companyLogin } from '@/app/actions/companyAuth'
-import { institutionLogin } from '@/app/actions/institutionAuth'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
 import SpecularButton from '@/components/SpecularButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
+import LoginSecurityChallenge from '@/components/LoginSecurityChallenge'
 import styles from './login.module.css'
-import { GraduationCap, Building2, Landmark, ArrowLeft, ArrowRight } from 'lucide-react'
+import { GraduationCap, Building2, Landmark, ArrowLeft, ArrowRight, ShieldCheck, AlertTriangle } from 'lucide-react'
 
 type Role = 'student' | 'company' | 'institution'
 
@@ -41,20 +39,110 @@ const ROLES = [
   },
 ]
 
+function getClientDeviceId(): string {
+  if (typeof window === 'undefined') return 'dev_server'
+  let id = localStorage.getItem('placeiq_device_id')
+  if (!id) {
+    id = 'dev_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36)
+    localStorage.setItem('placeiq_device_id', id)
+  }
+  return id
+}
+
+interface ChallengeState {
+  challengeToken: string
+  maskedEmail: string
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  riskReasons?: string[]
+  deviceInfo: { browser: string; os: string; location: string }
+  expiresAt: string
+}
+
 function LoginContent() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const initialRole = (searchParams.get('role') as Role) || 'student'
   const [role, setRole] = useState<Role>(initialRole)
 
-  const [studentState, studentAction, studentPending] = useActionState(studentLogin, undefined)
-  const [companyState, companyAction, companyPending] = useActionState(companyLogin, undefined)
-  const [institutionState, institutionAction, institutionPending] = useActionState(institutionLogin, undefined)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [pending, setPending] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [challengeState, setChallengeState] = useState<ChallengeState | null>(null)
 
-  const currentState = role === 'student' ? studentState : role === 'company' ? companyState : institutionState
-  const currentAction = role === 'student' ? studentAction : role === 'company' ? companyAction : institutionAction
-  const currentPending = role === 'student' ? studentPending : role === 'company' ? companyPending : institutionPending
   const currentRole = ROLES.find(r => r.id === role)!
   const RoleIcon = currentRole.icon
+
+  const handleLoginSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setErrorMessage(null)
+    setFieldErrors({})
+
+    if (!email.trim()) {
+      setFieldErrors(prev => ({ ...prev, email: 'Email address is required' }))
+      return
+    }
+    if (!password) {
+      setFieldErrors(prev => ({ ...prev, password: 'Password is required' }))
+      return
+    }
+
+    setPending(true)
+    const deviceId = getClientDeviceId()
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          role,
+          deviceId
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setErrorMessage(data.error || 'Invalid email or password.')
+        setPending(false)
+        return
+      }
+
+      if (data.status === 'CHALLENGE_REQUIRED') {
+        setChallengeState({
+          challengeToken: data.challengeToken,
+          maskedEmail: data.maskedEmail,
+          riskLevel: data.riskLevel,
+          riskReasons: data.riskReasons,
+          deviceInfo: data.deviceInfo,
+          expiresAt: data.expiresAt
+        })
+        setPending(false)
+        return
+      }
+
+      if (data.status === 'SUCCESS') {
+        const dest = data.redirectUrl || (role === 'student' ? '/student/dashboard' : role === 'company' ? '/company/dashboard' : '/institution/dashboard')
+        router.push(dest)
+      }
+    } catch (err: any) {
+      setErrorMessage('Network connection error. Please try again.')
+      setPending(false)
+    }
+  }
+
+  const handleChallengeSuccess = (redirectUrl: string) => {
+    router.push(redirectUrl)
+  }
+
+  const handleChallengeCancel = () => {
+    setChallengeState(null)
+    setPassword('')
+    setErrorMessage(null)
+  }
 
   return (
     <div className={styles.page}>
@@ -68,111 +156,161 @@ function LoginContent() {
           <Logo variant={role === 'company' ? 'company' : role === 'institution' ? 'institution' : 'student'} size="lg" href="/" withBadge badgeText={role.toUpperCase()} />
         </div>
 
-        {/* Role Selector */}
-        <div className={styles.roleSelector}>
-          {ROLES.map(r => {
-            const TabIcon = r.icon
-            return (
-              <button
-                key={r.id}
-                className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
-                onClick={() => setRole(r.id)}
-                style={role === r.id ? { borderColor: r.color, boxShadow: `0 0 16px ${r.color}30` } : {}}
-              >
-                <span className={styles.roleTabIcon}>
-                  <TabIcon size={20} strokeWidth={2} />
-                </span>
-                <div className={styles.roleTabText}>
-                  <span className={styles.roleTabLabel}>{r.label}</span>
-                  <span className={styles.roleTabDesc}>{r.desc}</span>
-                </div>
-              </button>
-            )
-          })}
-        </div>
+        {/* Challenge State Active */}
+        {challengeState ? (
+          <div>
+            <div className={styles.cardHeader} style={{ marginBottom: '1rem' }}>
+              <h1 className={styles.title}>Identity Verification</h1>
+              <p className={styles.subtitle}>
+                PlaceIQ Intelligent Login Shield
+              </p>
+            </div>
 
-        {/* Header */}
-        <div className={styles.cardHeader}>
-          <div className={styles.roleIcon} style={{ background: currentRole.gradient, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#000' }}>
-            <RoleIcon size={24} strokeWidth={2} />
-          </div>
-          <h1 className={styles.title}>{currentRole.label} Login</h1>
-          <p className={styles.subtitle}>
-            {role === 'student' && "Welcome back! Let's continue your placement journey."}
-            {role === 'company' && "Find your next great hire today."}
-            {role === 'institution' && "Manage your placement drives and cohorts."}
-          </p>
-        </div>
-
-        {/* Form */}
-        <form action={currentAction} className={styles.form}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">Email address</label>
-            <input
-              id="email" name="email" type="email" required
-              className="form-input"
-              placeholder={role === 'student' ? 'you@college.edu' : role === 'company' ? 'hr@company.com' : 'admin@institution.edu'}
-              autoComplete="email"
+            <LoginSecurityChallenge
+              challengeToken={challengeState.challengeToken}
+              maskedEmail={challengeState.maskedEmail}
+              riskLevel={challengeState.riskLevel}
+              riskReasons={challengeState.riskReasons}
+              deviceInfo={challengeState.deviceInfo}
+              expiresAt={challengeState.expiresAt}
+              onSuccess={handleChallengeSuccess}
+              onCancel={handleChallengeCancel}
             />
-            {currentState?.errors?.email && (
-              <p className={styles.fieldError}>{currentState.errors.email[0]}</p>
-            )}
           </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">Password</label>
-            <input
-              id="password" name="password" type="password" required
-              className="form-input" placeholder="••••••••"
-              autoComplete="current-password"
-            />
-            {currentState?.errors?.password && (
-              <p className={styles.fieldError}>{currentState.errors.password[0]}</p>
-            )}
-          </div>
-
-          {currentState?.message && <p className={styles.error}>{currentState.message}</p>}
-
-          <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-            <SpecularButton
-              type="submit"
-              disabled={currentPending}
-              size="md"
-              radius={8}
-              tint={role === 'student' ? '#7c3aed' : role === 'company' ? '#059669' : '#2563eb'}
-              tintOpacity={0.2}
-              blur={0}
-              textColor="#ffffff"
-              lineColor={role === 'student' ? '#c4b5fd' : role === 'company' ? '#6ee7b7' : '#93c5fd'}
-              baseColor={role === 'student' ? '#581c87' : role === 'company' ? '#065f46' : '#1e3a8a'}
-              intensity={0.85}
-              shineSize={8}
-              shineFade={35}
-              thickness={1}
-              speed={0.3}
-              followMouse
-              proximity={220}
-              style={{ width: '100%', minHeight: '46px' }}
-            >
-              {currentPending ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : null}
-              <span>{currentPending ? 'Signing in...' : `Sign in as ${currentRole.label}`}</span>
-              {!currentPending && <ArrowRight size={16} strokeWidth={2} />}
-            </SpecularButton>
-          </div>
-        </form>
-
-        {/* Sign up links */}
-        {role !== 'institution' && (
+        ) : (
           <>
-            <div className={styles.divider}><span>don&apos;t have an account?</span></div>
-            <Link
-              href={`/auth/signup?role=${role}`}
-              className={styles.signupBtn}
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-            >
-              <span>Create {currentRole.label} Account</span>
-              <ArrowRight size={14} strokeWidth={2} />
-            </Link>
+            {/* Role Selector */}
+            <div className={styles.roleSelector}>
+              {ROLES.map(r => {
+                const TabIcon = r.icon
+                return (
+                  <button
+                    key={r.id}
+                    className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
+                    onClick={() => {
+                      setRole(r.id)
+                      setErrorMessage(null)
+                    }}
+                    style={role === r.id ? { borderColor: r.color, boxShadow: `0 0 16px ${r.color}30` } : {}}
+                  >
+                    <span className={styles.roleTabIcon}>
+                      <TabIcon size={20} strokeWidth={2} />
+                    </span>
+                    <div className={styles.roleTabText}>
+                      <span className={styles.roleTabLabel}>{r.label}</span>
+                      <span className={styles.roleTabDesc}>{r.desc}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Header */}
+            <div className={styles.cardHeader}>
+              <div className={styles.roleIcon} style={{ background: currentRole.gradient, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#000' }}>
+                <RoleIcon size={24} strokeWidth={2} />
+              </div>
+              <h1 className={styles.title}>{currentRole.label} Login</h1>
+              <p className={styles.subtitle}>
+                {role === 'student' && "Welcome back! Let's continue your placement journey."}
+                {role === 'company' && "Find your next great hire today."}
+                {role === 'institution' && "Manage your placement drives and cohorts."}
+              </p>
+
+              {/* Security Shield Badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '6px', padding: '3px 10px', background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '20px', fontSize: '11px', color: '#c4b5fd', fontWeight: 600 }}>
+                <ShieldCheck size={12} color="#a78bfa" />
+                <span>Protected by PlaceIQ Intelligent Login Shield</span>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleLoginSubmit} className={styles.form}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="email">Email address</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="form-input"
+                  placeholder={role === 'student' ? 'you@college.edu' : role === 'company' ? 'hr@company.com' : 'admin@institution.edu'}
+                  autoComplete="email"
+                />
+                {fieldErrors.email && (
+                  <p className={styles.fieldError}>{fieldErrors.email}</p>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                />
+                {fieldErrors.password && (
+                  <p className={styles.fieldError}>{fieldErrors.password}</p>
+                )}
+              </div>
+
+              {errorMessage && (
+                <div style={{ background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', padding: '8px 12px', borderRadius: '8px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <AlertTriangle size={14} style={{ flexShrink: 0 }} />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+                <SpecularButton
+                  type="submit"
+                  disabled={pending}
+                  size="md"
+                  radius={8}
+                  tint={role === 'student' ? '#7c3aed' : role === 'company' ? '#059669' : '#2563eb'}
+                  tintOpacity={0.2}
+                  blur={0}
+                  textColor="#ffffff"
+                  lineColor={role === 'student' ? '#c4b5fd' : role === 'company' ? '#6ee7b7' : '#93c5fd'}
+                  baseColor={role === 'student' ? '#581c87' : role === 'company' ? '#065f46' : '#1e3a8a'}
+                  intensity={0.85}
+                  shineSize={8}
+                  shineFade={35}
+                  thickness={1}
+                  speed={0.3}
+                  followMouse
+                  proximity={220}
+                  style={{ width: '100%', minHeight: '46px' }}
+                >
+                  {pending ? <MorphingInfinity className="size-4" style={{ width: '16px', height: '16px' }} /> : null}
+                  <span>{pending ? 'Evaluating Security...' : `Sign in as ${currentRole.label}`}</span>
+                  {!pending && <ArrowRight size={16} strokeWidth={2} />}
+                </SpecularButton>
+              </div>
+            </form>
+
+            {/* Sign up links */}
+            {role !== 'institution' && (
+              <>
+                <div className={styles.divider}><span>don&apos;t have an account?</span></div>
+                <Link
+                  href={`/auth/signup?role=${role}`}
+                  className={styles.signupBtn}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <span>Create {currentRole.label} Account</span>
+                  <ArrowRight size={14} strokeWidth={2} />
+                </Link>
+              </>
+            )}
           </>
         )}
       </div>
@@ -187,4 +325,5 @@ export default function UnifiedLoginPage() {
     </Suspense>
   )
 }
+
 

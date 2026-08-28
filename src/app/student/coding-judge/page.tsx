@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import Editor from '@monaco-editor/react'
@@ -475,12 +476,15 @@ export default function StudentCodingJudge() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Code2 size={24} strokeWidth={2} color="#10b981" />
-              <h1 className={styles.pageTitle}>Coding Judge</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Code2 size={24} strokeWidth={2} color="#10b981" />
+                <h1 className={styles.pageTitle}>Coding Judge</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Join coding interview sessions</p>
             </div>
-            <p className={styles.pageSubtitle}>Join coding interview sessions</p>
           </div>
         </header>
 

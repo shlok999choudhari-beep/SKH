@@ -169,7 +169,7 @@
 
 .jobsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 20px;
 }
 
@@ -294,7 +294,7 @@
   }
 
   .container {
-    padding: 20px;
+    padding: 20px 16px;
   }
 
   .headerTop {
@@ -303,7 +303,7 @@
   }
 
   .title {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .searchBar {
@@ -323,3 +323,22 @@
     white-space: nowrap;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 12px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .jobCard {
+    padding: 16px;
+  }
+
+  .jobActions {
+    flex-direction: column;
+  }
+}
+

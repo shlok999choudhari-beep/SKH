@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from './dream.module.css'
 import {
@@ -116,12 +117,15 @@ export default function DreamMode() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Dream Company Mode</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Dream Company Mode</h1>
+              </div>
+              <p className={styles.pageSubtitle}>Complete hiring insights for your dream companies</p>
             </div>
-            <p className={styles.pageSubtitle}>Complete hiring insights for your dream companies</p>
           </div>
           {selected && (
             <button className="btn btn-secondary btn-sm" onClick={() => { setSelected(null); setData(null) }} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>

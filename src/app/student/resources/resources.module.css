@@ -737,3 +737,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .searchHero {
+    padding: 1.25rem;
+  }
+  .inputWrapper {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .searchSubmitBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .docsGrid {
+    grid-template-columns: 1fr;
+  }
+  .videoGrid {
+    grid-template-columns: 1fr;
+  }
+  .communityGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionCard {
+    padding: 1.25rem 1rem;
+  }
+  .playerModalOverlay {
+    padding: 8px;
+  }
+}
+

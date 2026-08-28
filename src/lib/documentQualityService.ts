@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { extractWithDocling, DoclingExtractionResult, DoclingSection, DoclingTable } from './doclingService'
+import { normalizeFileType } from './resumeExtractor'
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -36,7 +37,7 @@ export interface DocumentVerificationReport {
     markdown: string
     sections: DoclingSection[]
     tables: DoclingTable[]
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
   }
   warnings: string[]
   passedChecks: string[]
@@ -73,11 +74,13 @@ export async function processAndVerifyDocument(
     college?: string | null
   }
 ): Promise<DocumentVerificationReport> {
+  const normalizedType = normalizeFileType(fileName, fileType)
+
   // Step 1: Docling Extraction
   const doclingResult: DoclingExtractionResult = await extractWithDocling(
     buffer,
     fileName,
-    fileType
+    normalizedType
   )
 
   const extractedText = doclingResult.text.trim()
@@ -145,7 +148,7 @@ export async function processAndVerifyDocument(
 You are evaluating a document extracted using Docling.
 
 File Name: ${fileName}
-File Type: ${fileType}
+File Type: ${normalizedType}
 Registered Student Name: ${studentProfile?.name || 'Unknown'}
 Registered College: ${studentProfile?.college || 'Unknown'}
 Docling Detected Document Type: ${doclingResult.documentType}

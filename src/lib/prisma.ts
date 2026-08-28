@@ -105,11 +105,32 @@ const MODEL_MAPPING: Record<string, string> = {
   documentRequests: 'documentRequest',
   document_request: 'documentRequest',
   document_requests: 'documentRequest',
+  documentActivity: 'documentActivity',
+  documentActivities: 'documentActivity',
+  document_activity: 'documentActivity',
+  document_activities: 'documentActivity',
+  documentShare: 'documentShare',
+  documentShares: 'documentShare',
+  document_share: 'documentShare',
+  document_shares: 'documentShare',
   auditLog: 'auditLog',
   auditLogs: 'auditLog',
   audit_log: 'auditLog',
   audit_logs: 'auditLog',
+  trustedDevice: 'trustedDevice',
+  trustedDevices: 'trustedDevice',
+  trusted_device: 'trustedDevice',
+  trusted_devices: 'trustedDevice',
+  loginOtp: 'loginOtp',
+  loginOtps: 'loginOtp',
+  login_otp: 'loginOtp',
+  login_otps: 'loginOtp',
+  loginAudit: 'loginAudit',
+  loginAudits: 'loginAudit',
+  login_audit: 'loginAudit',
+  login_audits: 'loginAudit',
 }
+
 
 // Map custom relation names used in include/select
 const RELATION_MAP: Record<string, string> = {

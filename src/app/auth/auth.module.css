@@ -128,6 +128,13 @@
   .backBtn { top: 12px; left: 12px; }
 }
 
+@media (max-width: 480px) {
+  .page { padding: 60px 12px 24px; }
+  .card { padding: 20px 14px; border-radius: 18px; }
+  .title { font-size: 22px; }
+}
+
+
 .institutionPage { background: radial-gradient(ellipse at top left, rgba(236,72,153,0.08) 0%, transparent 60%), var(--bg-primary); }
 
 .orb1purple {

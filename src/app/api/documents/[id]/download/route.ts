@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { readFromVault } from '@/lib/storage'
+import { normalizeFileType } from '@/lib/resumeExtractor'
 
 export async function GET(
   request: NextRequest,
@@ -53,10 +54,11 @@ export async function GET(
 
     const downloadMode = request.nextUrl.searchParams.get('download') === 'true'
     const disposition = downloadMode ? 'attachment' : 'inline'
+    const contentType = normalizeFileType(document.fileName, document.fileType)
 
     return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
-        'Content-Type': document.fileType || 'application/octet-stream',
+        'Content-Type': contentType,
         'Content-Disposition': `${disposition}; filename="${encodeURIComponent(document.fileName)}"`,
         'Cache-Control': 'private, max-age=3600',
       }

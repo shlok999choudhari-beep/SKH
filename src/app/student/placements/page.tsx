@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import styles from '../dashboard.module.css'
 import {
@@ -73,12 +74,15 @@ export default function StudentPlacementsPage() {
       <StudentSidebar />
       <div className={styles.content}>
         <header className={styles.header}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
-              <h1 className={styles.pageTitle}>Campus Placements</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <BackButton fallbackHref="/student/dashboard" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <GraduationCap size={24} strokeWidth={2} color="#8b5cf6" />
+                <h1 className={styles.pageTitle}>Campus Placements</h1>
+              </div>
+              <p className={styles.pageSubtitle}>View and apply to mass recruitment drives hosted by your institution.</p>
             </div>
-            <p className={styles.pageSubtitle}>View and apply to mass recruitment drives hosted by your institution.</p>
           </div>
         </header>
 

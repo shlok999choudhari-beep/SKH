@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { readFromVault } from '@/lib/storage'
 import { processAndVerifyDocument } from '@/lib/documentQualityService'
+import { normalizeFileType } from '@/lib/resumeExtractor'
 
 export async function POST(
   request: NextRequest,
@@ -60,36 +61,36 @@ export async function POST(
       return NextResponse.json({ error: 'File content not found in vault' }, { status: 404 })
     }
 
-    // Run Docling + Groq pipeline
-    const report = await processAndVerifyDocument(
+    const normalizedType = normalizeFileType(document.fileName, document.fileType)
+
+    // Run Full PlaceIQ Phase 1 AI Document Intelligence Pipeline
+    const { executeDocumentVerificationPipeline } = await import('@/lib/verificationService')
+    const pipelineResult = await executeDocumentVerificationPipeline(
+      docId,
+      document.studentId,
       buffer,
       document.fileName,
-      document.fileType,
-      {
-        name: document.student?.name,
-        email: document.student?.email,
-        college: document.student?.college || undefined
-      }
+      normalizedType,
+      document.category,
+      document.documentType,
+      document.student || undefined
     )
 
-    // Persist verified results to database
-    const updatedDoc = await prisma.document.update({
+    const updatedDoc = await prisma.document.findUnique({
       where: { id: docId },
-      data: {
-        documentType: report.documentType || document.documentType,
-        verificationStatus: report.verificationStatus,
-        qualityScore: report.qualityScore,
-        qualityResult: JSON.stringify(report),
-        extractedInformation: JSON.stringify(report.extractedInformation),
-        verifiedAt: report.verificationStatus === 'VERIFIED' ? new Date() : null,
-        rejectionReason: report.verificationStatus === 'REJECTED' ? (report.warnings[0] || report.explanation) : null
+      include: {
+        ocrResult: true,
+        extractedFields: true,
+        verification: true,
+        qrCodeResults: true,
+        sourceDuplicates: true
       }
     })
 
     return NextResponse.json({
       success: true,
       document: updatedDoc,
-      report
+      pipelineResult
     })
   } catch (error: any) {
     console.error('Document processing error:', error)
