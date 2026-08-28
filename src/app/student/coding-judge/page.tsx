@@ -210,10 +210,20 @@ export default function StudentCodingJudge() {
   const fetchSessions = async () => {
     try {
       const res = await fetch('/api/coding-session')
-      const data = await res.json()
-      setSessions(data.sessions || [])
+      if (!res.ok) {
+        setSessions([])
+        return
+      }
+      const contentType = res.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json()
+        setSessions(data.sessions || [])
+      } else {
+        setSessions([])
+      }
     } catch (error) {
-      console.error('Failed to fetch sessions:', error)
+      console.warn('Failed to fetch sessions:', error)
+      setSessions([])
     }
   }
 
@@ -610,7 +620,15 @@ export default function StudentCodingJudge() {
         body: JSON.stringify({ code, language, input })
       })
       
-      const data = await res.json()
+      let data: any = {}
+      const contentType = res.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const rawText = await res.text()
+        data = { output: rawText || 'Execution completed with no output.', error: res.ok ? undefined : `Server returned status ${res.status}` }
+      }
+      
       const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's'
 
       const resultText = data.output || data.error || 'Execution finished with no output.'

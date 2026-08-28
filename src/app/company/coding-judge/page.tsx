@@ -615,7 +615,14 @@ export default function CompanyCodingJudge() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language, input })
       })
-      const data = await res.json()
+      let data: any = {}
+      const contentType = res.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const rawText = await res.text()
+        data = { output: rawText || 'Execution completed with no output.', error: res.ok ? undefined : `Server returned status ${res.status}` }
+      }
       const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's'
       
       const resultText = data.output || data.error || 'Execution finished with no output.'
