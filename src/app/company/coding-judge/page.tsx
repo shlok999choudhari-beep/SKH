@@ -38,6 +38,7 @@ export default function CompanyCodingJudge() {
   const [mobileTab, setMobileTab] = useState<'code' | 'video' | 'io'>('code')
   const [mounted, setMounted] = useState(false)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+  const [copied, setCopied] = useState(false)
   
   const roomIdRef = useRef('')
   const socketRef = useRef<any>(null)
@@ -48,6 +49,14 @@ export default function CompanyCodingJudge() {
   const localStreamRef = useRef<MediaStream | null>(null)
   const remoteStreamRef = useRef<MediaStream | null>(null)
   const pendingCandidatesRef = useRef<RTCIceCandidate[]>([])
+
+  const handleCopyRoomId = () => {
+    const idToCopy = roomId || roomIdRef.current
+    if (!idToCopy) return
+    navigator.clipboard.writeText(idToCopy)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
 
   const languageMap: any = {
     cpp: 'cpp',
@@ -445,10 +454,39 @@ if __name__ == "__main__":
             <p className={styles.pageSubtitle}>Real-time collaborative coding interview</p>
           </div>
           {connected && (
-            <button onClick={endSession} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <Square size={14} strokeWidth={2} fill="currentColor" />
-              <span>End Session</span>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '30px',
+                boxShadow: '0 0 20px rgba(16, 185, 129, 0.15)'
+              }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Judge ID:
+                </span>
+                <span style={{ fontSize: '15px', fontWeight: 800, color: '#10b981', letterSpacing: '2px', fontFamily: 'monospace' }}>
+                  {roomId}
+                </span>
+                <button
+                  onClick={handleCopyRoomId}
+                  className="btn btn-secondary btn-sm"
+                  style={{ padding: '3px 10px', fontSize: '11px', height: '26px', display: 'inline-flex', alignItems: 'center', gap: '4px', borderRadius: '14px' }}
+                  title="Copy Judge Room ID"
+                >
+                  {copied ? <CheckCircle2 size={12} color="#10b981" /> : <Copy size={12} />}
+                  <span>{copied ? 'Copied!' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <button onClick={endSession} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Square size={14} strokeWidth={2} fill="currentColor" />
+                <span>End Session</span>
+              </button>
+            </div>
           )}
         </header>
 
@@ -504,12 +542,12 @@ if __name__ == "__main__":
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
                     <p style={{ fontSize: '32px', fontWeight: '800', color: '#10b981', letterSpacing: '4px', margin: 0 }}>{roomId}</p>
                     <button 
-                      onClick={() => { navigator.clipboard.writeText(roomId); alert('Room ID copied!') }}
+                      onClick={handleCopyRoomId}
                       className="btn btn-secondary btn-sm"
                       style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <Copy size={13} strokeWidth={2} />
-                      <span>Copy</span>
+                      {copied ? <CheckCircle2 size={13} color="#10b981" /> : <Copy size={13} strokeWidth={2} />}
+                      <span>{copied ? 'Copied!' : 'Copy'}</span>
                     </button>
                   </div>
                 </div>
@@ -517,6 +555,47 @@ if __name__ == "__main__":
             </div>
           ) : (
             <div className={styles.codingJudgeGrid}>
+              {!studentName && (
+                <div style={{
+                  gridColumn: '1 / -1',
+                  padding: '12px 18px',
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 95, 70, 0.12) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc' }}>
+                        Coding Judge Session is Live
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        Share this Judge ID with the student so they can join the video and live coding room
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px', fontWeight: 800, color: '#10b981', letterSpacing: '3px', fontFamily: 'monospace', background: 'rgba(0,0,0,0.45)', padding: '4px 12px', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.3)' }}>
+                      {roomId}
+                    </span>
+                    <button
+                      onClick={handleCopyRoomId}
+                      className="btn btn-primary btn-sm"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                    >
+                      {copied ? <CheckCircle2 size={13} color="#ffffff" /> : <Copy size={13} />}
+                      <span>{copied ? 'Copied ID' : 'Copy Judge ID'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className={styles.mobileTabNav} style={{ gridColumn: '1 / -1' }}>
                 <button
                   onClick={() => setMobileTab('code')}
@@ -624,16 +703,25 @@ if __name__ == "__main__":
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className={mobileTab === 'code' || mobileTab === 'io' ? styles.hideOnMobileTab : ''}>
                 <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Video size={16} strokeWidth={2} color="#10b981" />
                       <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>Candidate Video</h4>
                     </div>
-                    {studentName && (
-                      <span className="badge badge-green" style={{ fontSize: '11px' }}>
-                        {studentName} (Connected)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                        Judge ID: <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{roomId}</strong>
                       </span>
-                    )}
+                      {studentName ? (
+                        <span className="badge badge-green" style={{ fontSize: '11px' }}>
+                          {studentName} (Connected)
+                        </span>
+                      ) : (
+                        <span className="badge badge-yellow" style={{ fontSize: '11px' }}>
+                          Waiting for candidate...
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div style={{ width: '100%', height: '240px', background: '#000', borderRadius: '8px', overflow: 'hidden', position: 'relative', border: '1px solid var(--border)' }}>
                     <video
