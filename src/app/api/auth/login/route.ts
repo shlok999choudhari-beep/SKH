@@ -12,12 +12,50 @@ import { sendNewLoginAlertEmail } from '@/lib/emailService'
 import { z } from 'zod'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address').trim(),
+  email: z.string().min(1, 'Email or username is required').trim(),
   password: z.string().min(1, 'Password is required'),
   role: z.enum(['student', 'company', 'institution']).default('student'),
   deviceId: z.string().optional(),
   location: z.string().optional()
 })
+
+async function findStudentByIdentifier(identifier: string) {
+  return await prisma.student.findFirst({
+    where: {
+      OR: [
+        { email: { equals: identifier, mode: 'insensitive' } },
+        { name: { equals: identifier, mode: 'insensitive' } },
+        { email: { startsWith: `${identifier}@`, mode: 'insensitive' } },
+        { phone: { equals: identifier } }
+      ]
+    }
+  })
+}
+
+async function findCompanyByIdentifier(identifier: string) {
+  return await prisma.company.findFirst({
+    where: {
+      OR: [
+        { email: { equals: identifier, mode: 'insensitive' } },
+        { companyName: { equals: identifier, mode: 'insensitive' } },
+        { email: { startsWith: `${identifier}@`, mode: 'insensitive' } },
+        { phone: { equals: identifier } }
+      ]
+    }
+  })
+}
+
+async function findInstitutionUserByIdentifier(identifier: string) {
+  return await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: { equals: identifier, mode: 'insensitive' } },
+        { name: { equals: identifier, mode: 'insensitive' } },
+        { email: { startsWith: `${identifier}@`, mode: 'insensitive' } }
+      ]
+    }
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,54 +68,115 @@ export async function POST(request: NextRequest) {
       request.headers.get('x-real-ip') ||
       '103.211.54.21'
 
-    const email = validated.email.toLowerCase()
+    const identifier = validated.email.trim()
     const role = validated.role
 
-    // 1. Retrieve User by Role
+    // 1. Retrieve User strictly by the selected Role Portal
     let user: { id: number; email: string; name: string; password: string } | null = null
     let authRole: 'student' | 'company' | 'institution-admin' = 'student'
     let redirectUrl = '/student/dashboard'
 
     if (role === 'student') {
-      const student = await prisma.student.findUnique({ where: { email } })
+      const student = await findStudentByIdentifier(identifier)
       if (student) {
         user = { id: student.id, email: student.email, name: student.name, password: student.password }
         authRole = 'student'
         redirectUrl = '/student/dashboard'
+      } else {
+        // Check if user belongs to another role to give an explicit, helpful message
+        const isCompany = await findCompanyByIdentifier(identifier)
+        if (isCompany) {
+          return NextResponse.json(
+            { error: 'This account is registered as a Company. Please select the Company tab to sign in.' },
+            { status: 400 }
+          )
+        }
+        const isInst = await findInstitutionUserByIdentifier(identifier)
+        if (isInst) {
+          return NextResponse.json(
+            { error: 'This account is registered as an Institution user. Please select the Institution tab to sign in.' },
+            { status: 400 }
+          )
+        }
       }
     } else if (role === 'company') {
-      const company = await prisma.company.findUnique({ where: { email } })
+      const company = await findCompanyByIdentifier(identifier)
       if (company) {
         user = { id: company.id, email: company.email, name: company.companyName, password: company.password }
         authRole = 'company'
         redirectUrl = '/company/dashboard'
+      } else {
+        const isStudent = await findStudentByIdentifier(identifier)
+        if (isStudent) {
+          return NextResponse.json(
+            { error: 'This account is registered as a Student. Please select the Student tab to sign in.' },
+            { status: 400 }
+          )
+        }
+        const isInst = await findInstitutionUserByIdentifier(identifier)
+        if (isInst) {
+          return NextResponse.json(
+            { error: 'This account is registered as an Institution user. Please select the Institution tab to sign in.' },
+            { status: 400 }
+          )
+        }
       }
     } else if (role === 'institution') {
-      const instUser = await prisma.user.findUnique({ where: { email } })
+      const instUser = await findInstitutionUserByIdentifier(identifier)
       if (instUser) {
         user = { id: instUser.id, email: instUser.email, name: instUser.name, password: instUser.password }
         authRole = 'institution-admin'
         redirectUrl = '/institution/dashboard'
+      } else {
+        const isStudent = await findStudentByIdentifier(identifier)
+        if (isStudent) {
+          return NextResponse.json(
+            { error: 'This account is registered as a Student. Please select the Student tab to sign in.' },
+            { status: 400 }
+          )
+        }
+        const isCompany = await findCompanyByIdentifier(identifier)
+        if (isCompany) {
+          return NextResponse.json(
+            { error: 'This account is registered as a Company. Please select the Company tab to sign in.' },
+            { status: 400 }
+          )
+        }
       }
     }
 
-    // Generic error to prevent account enumeration
+    // Generic error to prevent account enumeration if not found anywhere
     if (!user) {
-      const attempt = recordFailedLoginAttempt(email, ip)
+      const attempt = recordFailedLoginAttempt(identifier, ip)
       return NextResponse.json(
         {
           error: attempt.isLocked
             ? `Too many failed attempts. Login temporarily restricted for ${Math.ceil((attempt.lockRemainingSeconds || 900) / 60)} minutes.`
-            : 'Invalid email or password.'
+            : 'Invalid email/username or password.'
         },
         { status: 401 }
       )
     }
 
-    // 2. Validate Password
-    const passwordMatch = await bcrypt.compare(validated.password, user.password)
+    // 2. Validate Password with Legacy Support & Auto-Sync
+    let passwordMatch = false
+    const isBcrypt = user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')
+
+    if (isBcrypt) {
+      try {
+        passwordMatch = await bcrypt.compare(validated.password, user.password)
+      } catch {
+        passwordMatch = false
+      }
+    }
+
+    // Legacy plain-text password fallback
+    if (!passwordMatch && user.password === validated.password) {
+      passwordMatch = true
+    }
+
     if (!passwordMatch) {
-      const attempt = recordFailedLoginAttempt(email, ip)
+      const attempt = recordFailedLoginAttempt(user.email, ip)
 
       // Log Failed Password Attempt
       try {
@@ -93,7 +192,7 @@ export async function POST(request: NextRequest) {
             riskReason: attempt.isLocked ? 'BRUTE_FORCE_LOCK' : 'INCORRECT_PASSWORD',
             ip,
             location: validated.location || 'Pune, Maharashtra',
-            details: `Failed password attempt (${attempt.count}) from IP ${ip}`,
+            details: `Failed password attempt (${attempt.count}) for ${user.email} from IP ${ip}`,
             timestamp: new Date()
           }
         })
@@ -108,7 +207,24 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid email/username or password.' }, { status: 401 })
+    }
+
+    // If authenticated via legacy plain-text password, auto-upgrade and hash in database!
+    if (passwordMatch && !isBcrypt) {
+      try {
+        const upgradedHash = await bcrypt.hash(validated.password, 12)
+        if (authRole === 'student') {
+          await prisma.student.update({ where: { id: user.id }, data: { password: upgradedHash } })
+        } else if (authRole === 'company') {
+          await prisma.company.update({ where: { id: user.id }, data: { password: upgradedHash } })
+        } else {
+          await prisma.user.update({ where: { id: user.id }, data: { password: upgradedHash } })
+        }
+        console.log(`[Auth Security Sync] Upgraded legacy password for ${user.email} (${authRole}) to 12-round Bcrypt hash.`)
+      } catch (err) {
+        console.warn('[Auth Security Sync] Could not upgrade password in DB:', err)
+      }
     }
 
     // 3. Evaluate Adaptive Login Risk
@@ -174,12 +290,13 @@ export async function POST(request: NextRequest) {
         riskLevel: riskAssessment.riskLevel,
         riskReasons: riskAssessment.riskReasons,
         deviceInfo: challenge.deviceInfo,
-        expiresAt: challenge.expiresAt
+        expiresAt: challenge.expiresAt,
+        devOtpHint: challenge.devOtpHint
       })
     }
 
     // 6. Trusted / Low Risk Direct Login
-    resetFailedLoginAttempts(email, ip)
+    resetFailedLoginAttempts(user.email, ip)
 
     await createSession({
       userId: user.id,
@@ -206,7 +323,7 @@ export async function POST(request: NextRequest) {
           os: riskAssessment.deviceSummary.os,
           ip,
           location: riskAssessment.deviceSummary.location,
-          details: `Direct login from recognized device (${riskAssessment.deviceSummary.browser} on ${riskAssessment.deviceSummary.os})`,
+          details: `Direct login for ${user.email} (${authRole}) from recognized device (${riskAssessment.deviceSummary.browser} on ${riskAssessment.deviceSummary.os})`,
           timestamp: new Date()
         }
       })

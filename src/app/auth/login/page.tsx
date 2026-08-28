@@ -80,7 +80,7 @@ function LoginContent() {
     setFieldErrors({})
 
     if (!email.trim()) {
-      setFieldErrors(prev => ({ ...prev, email: 'Email address is required' }))
+      setFieldErrors(prev => ({ ...prev, email: 'Email address or username is required' }))
       return
     }
     if (!password) {
@@ -106,7 +106,7 @@ function LoginContent() {
       const data = await res.json()
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Invalid email or password.')
+        setErrorMessage(data.error || 'Invalid email/username or password.')
         setPending(false)
         return
       }
@@ -227,17 +227,17 @@ function LoginContent() {
             {/* Form */}
             <form onSubmit={handleLoginSubmit} className={styles.form}>
               <div className="form-group">
-                <label className="form-label" htmlFor="email">Email address</label>
+                <label className="form-label" htmlFor="email">Email address or Username</label>
                 <input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="form-input"
-                  placeholder={role === 'student' ? 'you@college.edu' : role === 'company' ? 'hr@company.com' : 'admin@institution.edu'}
-                  autoComplete="email"
+                  placeholder={role === 'student' ? 'you@college.edu or username' : role === 'company' ? 'hr@company.com or company name' : 'admin@institution.edu or username'}
+                  autoComplete="username"
                 />
                 {fieldErrors.email && (
                   <p className={styles.fieldError}>{fieldErrors.email}</p>

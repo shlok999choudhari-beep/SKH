@@ -129,6 +129,7 @@ export async function initiateLoginChallenge({
   expiresAt: string
   deviceInfo: { browser: string; os: string; location: string }
   error?: string
+  devOtpHint?: string
 }> {
   const otp = generateSecureOtp()
   const otpHash = hashOtp(otp)
@@ -217,23 +218,23 @@ export async function initiateLoginChallenge({
         riskLevel,
         riskScore: riskLevel === 'HIGH' ? 80 : 40,
         riskReason: riskReasons.join(', ') || 'New Device or Suspicious Activity',
-        deviceId,
-        browser,
-        os,
-        ip,
-        location,
         details: `Generated 6-digit OTP challenge for ${email} from ${browser}/${os} (${location})`,
         timestamp: new Date()
       }
     })
   } catch {}
 
+  console.log(`\n========================================\n[🔐 PlaceIQ Login Shield OTP]\nUser: ${email} (${name || userRole})\nOTP Code: ${otp}\nExpires: ${expiresAt.toLocaleTimeString()}\n========================================\n`)
+
+  const isDev = process.env.NODE_ENV !== 'production'
+
   return {
     success: true,
     challengeToken,
     maskedEmail: maskEmail(email),
     expiresAt: expiresAt.toISOString(),
-    deviceInfo: { browser, os, location }
+    deviceInfo: { browser, os, location },
+    devOtpHint: isDev ? otp : undefined
   }
 }
 
@@ -578,8 +579,14 @@ export async function resendLoginOtp({
     expiryMinutes: 5
   })
 
+  console.log(`\n========================================\n[🔐 PlaceIQ Login Shield RESENT OTP]\nUser: ${challenge.email}\nOTP Code: ${newOtp}\nExpires: ${newExpiresAt.toLocaleTimeString()}\n========================================\n`)
+
   if (!emailResult.success) {
-    return { success: false, error: 'Failed to deliver new code. Please try again.' }
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[OtpService] Resend email delivery failed, but allowing local OTP in dev mode.')
+    } else {
+      return { success: false, error: 'Failed to deliver new code. Please try again.' }
+    }
   }
 
   return {

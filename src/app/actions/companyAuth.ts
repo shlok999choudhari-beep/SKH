@@ -82,7 +82,7 @@ export async function companySignup(state: AuthState, formData: FormData): Promi
 // ── Login ────────────────────────────────────────────
 export async function companyLogin(state: AuthState, formData: FormData): Promise<AuthState> {
   const raw = {
-    email: formData.get('email') as string,
+    email: (formData.get('email') as string)?.trim(),
     password: formData.get('password') as string,
   }
 
@@ -93,22 +93,50 @@ export async function companyLogin(state: AuthState, formData: FormData): Promis
 
   const { email, password } = parsed.data
 
-  const company = await prisma.company.findUnique({
-    where: { email }
+  const company = await prisma.company.findFirst({
+    where: {
+      OR: [
+        { email: { equals: email, mode: 'insensitive' } },
+        { companyName: { equals: email, mode: 'insensitive' } },
+        { email: { startsWith: `${email}@`, mode: 'insensitive' } }
+      ]
+    }
   })
 
   if (!company) {
-    return { errors: { email: ['No company account found with this email'] } }
+    return { errors: { email: ['No company account found with this email or name'] } }
   }
 
-  const passwordMatch = await bcrypt.compare(password, company.password)
+  let passwordMatch = false
+  const isBcrypt = company.password.startsWith('$2a$') || company.password.startsWith('$2b$') || company.password.startsWith('$2y$')
+
+  if (isBcrypt) {
+    try {
+      passwordMatch = await bcrypt.compare(password, company.password)
+    } catch {
+      passwordMatch = false
+    }
+  }
+
+  if (!passwordMatch && company.password === password) {
+    passwordMatch = true
+  }
+
   if (!passwordMatch) {
     return { errors: { password: ['Incorrect password'] } }
   }
 
+  let updatedPassword = company.password
+  if (!isBcrypt) {
+    updatedPassword = await bcrypt.hash(password, 12)
+  }
+
   await prisma.company.update({
     where: { id: company.id },
-    data: { updatedAt: new Date() }
+    data: {
+      updatedAt: new Date(),
+      password: updatedPassword
+    }
   })
 
   await createSession({ userId: company.id, role: 'company', email: company.email, name: company.companyName, expiresAt: new Date() })

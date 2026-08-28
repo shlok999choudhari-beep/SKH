@@ -154,15 +154,17 @@ export async function evaluateLoginRisk({
   // 2. Device Recognition & Server-Side Trust Check
   let isNewDevice = true
   try {
+    const orConditions: any[] = [{ browser, os }]
+    if (clientDeviceId) {
+      orConditions.push({ deviceId: clientDeviceId })
+    }
+
     const trustedDevice = await (prisma as any).trustedDevice.findFirst({
       where: {
         userId,
         userRole,
         isTrusted: true,
-        OR: [
-          clientDeviceId ? { deviceId: clientDeviceId } : {},
-          { browser, os }
-        ]
+        OR: orConditions
       }
     })
 

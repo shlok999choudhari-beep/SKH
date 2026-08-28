@@ -69,7 +69,18 @@ export async function PUT(request: NextRequest) {
         select: { password: true }
       })
       if (student?.password) {
-        const validPassword = await bcrypt.compare(data.currentPassword, student.password)
+        let validPassword = false
+        if (student.password.startsWith('$2a$') || student.password.startsWith('$2b$') || student.password.startsWith('$2y$')) {
+          try {
+            validPassword = await bcrypt.compare(data.currentPassword, student.password)
+          } catch {
+            validPassword = false
+          }
+        }
+        if (!validPassword && student.password === data.currentPassword) {
+          validPassword = true
+        }
+
         if (validPassword) {
           const hashedPassword = await bcrypt.hash(data.newPassword, 12)
           await prisma.student.update({

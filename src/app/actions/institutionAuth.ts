@@ -18,7 +18,7 @@ export type AuthState = {
 
 export async function institutionLogin(state: AuthState, formData: FormData): Promise<AuthState> {
   const raw = {
-    email: formData.get('email') as string,
+    email: (formData.get('email') as string)?.trim(),
     password: formData.get('password') as string,
   }
 
@@ -29,23 +29,51 @@ export async function institutionLogin(state: AuthState, formData: FormData): Pr
 
   const { email, password } = parsed.data
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: { equals: email, mode: 'insensitive' } },
+        { name: { equals: email, mode: 'insensitive' } },
+        { email: { startsWith: `${email}@`, mode: 'insensitive' } }
+      ]
+    },
     include: { institution: true }
   })
 
   if (!user) {
-    return { errors: { email: ['No institution user found with this email'] } }
+    return { errors: { email: ['No institution user found with this email or username'] } }
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password)
+  let passwordMatch = false
+  const isBcrypt = user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')
+
+  if (isBcrypt) {
+    try {
+      passwordMatch = await bcrypt.compare(password, user.password)
+    } catch {
+      passwordMatch = false
+    }
+  }
+
+  if (!passwordMatch && user.password === password) {
+    passwordMatch = true
+  }
+
   if (!passwordMatch) {
     return { errors: { password: ['Incorrect password'] } }
   }
 
+  let updatedPassword = user.password
+  if (!isBcrypt) {
+    updatedPassword = await bcrypt.hash(password, 12)
+  }
+
   await prisma.user.update({
     where: { id: user.id },
-    data: { updatedAt: new Date() }
+    data: {
+      updatedAt: new Date(),
+      password: updatedPassword
+    }
   })
 
   // We set the role to 'institution-admin' for layout & permissions check

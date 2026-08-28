@@ -83,7 +83,7 @@ export async function studentSignup(state: AuthState, formData: FormData): Promi
 // ── Login ────────────────────────────────────────────
 export async function studentLogin(state: AuthState, formData: FormData): Promise<AuthState> {
   const raw = {
-    email: formData.get('email') as string,
+    email: (formData.get('email') as string)?.trim(),
     password: formData.get('password') as string,
   }
 
@@ -94,23 +94,52 @@ export async function studentLogin(state: AuthState, formData: FormData): Promis
 
   const { email, password } = parsed.data
 
-  const student = await prisma.student.findUnique({
-    where: { email }
+  const student = await prisma.student.findFirst({
+    where: {
+      OR: [
+        { email: { equals: email, mode: 'insensitive' } },
+        { name: { equals: email, mode: 'insensitive' } },
+        { email: { startsWith: `${email}@`, mode: 'insensitive' } }
+      ]
+    }
   })
 
   if (!student) {
-    return { errors: { email: ['No account found with this email'] } }
+    return { errors: { email: ['No account found with this email or username'] } }
   }
 
-  const passwordMatch = await bcrypt.compare(password, student.password)
+  let passwordMatch = false
+  const isBcrypt = student.password.startsWith('$2a$') || student.password.startsWith('$2b$') || student.password.startsWith('$2y$')
+
+  if (isBcrypt) {
+    try {
+      passwordMatch = await bcrypt.compare(password, student.password)
+    } catch {
+      passwordMatch = false
+    }
+  }
+
+  if (!passwordMatch && student.password === password) {
+    passwordMatch = true
+  }
+
   if (!passwordMatch) {
     return { errors: { password: ['Incorrect password'] } }
   }
 
-  // Update last login
+  // If matched via legacy plain password, upgrade to bcrypt in DB
+  let updatedPassword = student.password
+  if (!isBcrypt) {
+    updatedPassword = await bcrypt.hash(password, 12)
+  }
+
+  // Update last login & password if upgraded
   await prisma.student.update({
     where: { id: student.id },
-    data: { updatedAt: new Date() }
+    data: {
+      updatedAt: new Date(),
+      password: updatedPassword
+    }
   })
 
   await createSession({ userId: student.id, role: 'student', email: student.email, name: student.name, expiresAt: new Date() })

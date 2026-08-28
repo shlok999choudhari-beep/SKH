@@ -57,13 +57,23 @@ export async function PUT(request: NextRequest) {
       
       if (!company) return NextResponse.json({ error: 'Company not found' }, { status: 404 })
 
-      const validPassword = await bcrypt.compare(data.currentPassword, company.password)
+      let validPassword = false
+      if (company.password.startsWith('$2a$') || company.password.startsWith('$2b$') || company.password.startsWith('$2y$')) {
+        try {
+          validPassword = await bcrypt.compare(data.currentPassword, company.password)
+        } catch {
+          validPassword = false
+        }
+      }
+      if (!validPassword && company.password === data.currentPassword) {
+        validPassword = true
+      }
       
       if (!validPassword) {
         return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })
       }
 
-      const hashedPassword = await bcrypt.hash(data.newPassword, 10)
+      const hashedPassword = await bcrypt.hash(data.newPassword, 12)
       await prisma.company.update({
         where: { id: session.userId },
         data: { password: hashedPassword }
