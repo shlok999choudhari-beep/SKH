@@ -9,14 +9,15 @@ function generateCode(len = 8): string {
 }
 
 // POST /api/trainer/courses/[id]/join-code — generate or regenerate join code
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession()
     if (!session || session.role !== 'trainer' || !session.userId) {
       return NextResponse.json({ error: 'Trainer login required' }, { status: 401 })
     }
 
-    const courseId = parseInt(params.id, 10)
+    const { id } = await params
+    const courseId = parseInt(id, 10)
     if (isNaN(courseId)) {
       return NextResponse.json({ error: 'Invalid course ID' }, { status: 400 })
     }
@@ -53,14 +54,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 // PATCH /api/trainer/courses/[id]/join-code — toggle enabled/disabled
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession()
     if (!session || session.role !== 'trainer' || !session.userId) {
       return NextResponse.json({ error: 'Trainer login required' }, { status: 401 })
     }
 
-    const courseId = parseInt(params.id, 10)
+    const { id } = await params
+    const courseId = parseInt(id, 10)
     const body = await req.json()
     const enabled = Boolean(body.enabled)
 

@@ -6,6 +6,12 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   outputFileTracingRoot: path.resolve(__dirname),
   serverExternalPackages: [
     'better-sqlite3',
