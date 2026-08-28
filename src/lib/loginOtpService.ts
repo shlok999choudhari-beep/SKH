@@ -251,6 +251,7 @@ export async function verifySubmittedOtp({
   trustDevice?: boolean
 }): Promise<{
   success: boolean
+  deviceId?: string
   user?: {
     id: number
     role: 'student' | 'company' | 'institution-admin'
@@ -473,6 +474,7 @@ export async function verifySubmittedOtp({
 
   return {
     success: true,
+    deviceId: challenge.deviceId,
     user: {
       id: challenge.userId,
       role: challenge.userRole,

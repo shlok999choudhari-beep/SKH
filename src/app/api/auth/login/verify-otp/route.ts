@@ -57,11 +57,23 @@ export async function POST(request: NextRequest) {
       redirectUrl = '/institution/dashboard'
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: 'SUCCESS',
       message: 'Identity verified successfully.',
       redirectUrl
     })
+
+    if (validated.trustDevice && verificationResult.deviceId) {
+      response.cookies.set('placeiq_trusted_device', verificationResult.deviceId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 90 * 24 * 60 * 60, // 90 days
+        sameSite: 'lax',
+        path: '/'
+      })
+    }
+
+    return response
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: (error as any).errors[0]?.message || 'Validation error' }, { status: 400 })

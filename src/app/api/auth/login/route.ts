@@ -16,6 +16,9 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
   role: z.enum(['student', 'company', 'institution']).default('student'),
   deviceId: z.string().optional(),
+  browser: z.string().optional(),
+  os: z.string().optional(),
+  deviceType: z.string().optional(),
   location: z.string().optional()
 })
 
@@ -228,14 +231,20 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Evaluate Adaptive Login Risk
+    const trustedDeviceCookie = request.cookies.get('placeiq_trusted_device')?.value
+    const effectiveDeviceId = validated.deviceId || trustedDeviceCookie
+
     const riskAssessment = await evaluateLoginRisk({
       userId: user.id,
       userRole: authRole,
       email: user.email,
       userAgent,
       ip,
-      clientDeviceId: validated.deviceId,
-      clientLocation: validated.location
+      clientDeviceId: effectiveDeviceId,
+      clientBrowser: validated.browser,
+      clientOs: validated.os,
+      clientLocation: validated.location,
+      trustedDeviceCookie
     })
 
     // 4. Handle Critical / Attack Restriction
@@ -274,7 +283,7 @@ export async function POST(request: NextRequest) {
         userRole: authRole,
         email: user.email,
         name: user.name,
-        deviceId: validated.deviceId,
+        deviceId: effectiveDeviceId,
         browser: riskAssessment.deviceSummary.browser,
         os: riskAssessment.deviceSummary.os,
         ip,
@@ -318,7 +327,7 @@ export async function POST(request: NextRequest) {
           riskLevel: 'LOW',
           riskScore: 0,
           riskReason: 'TRUSTED_DEVICE',
-          deviceId: validated.deviceId,
+          deviceId: effectiveDeviceId,
           browser: riskAssessment.deviceSummary.browser,
           os: riskAssessment.deviceSummary.os,
           ip,
@@ -339,11 +348,23 @@ export async function POST(request: NextRequest) {
       }).catch(() => { })
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: 'SUCCESS',
       message: 'Login verified successfully.',
       redirectUrl
     })
+
+    if (effectiveDeviceId) {
+      response.cookies.set('placeiq_trusted_device', effectiveDeviceId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 90 * 24 * 60 * 60, // 90 days
+        sameSite: 'lax',
+        path: '/'
+      })
+    }
+
+    return response
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: (error as any).errors[0]?.message || 'Validation error' }, { status: 400 })

@@ -114,7 +114,10 @@ export async function evaluateLoginRisk({
   userAgent,
   ip,
   clientDeviceId,
-  clientLocation
+  clientBrowser,
+  clientOs,
+  clientLocation,
+  trustedDeviceCookie
 }: {
   userId: number
   userRole: string
@@ -122,9 +125,15 @@ export async function evaluateLoginRisk({
   userAgent: string
   ip: string
   clientDeviceId?: string
+  clientBrowser?: string
+  clientOs?: string
   clientLocation?: string
+  trustedDeviceCookie?: string
 }): Promise<RiskEvaluationResult> {
-  const { browser, os, deviceType } = parseUserAgent(userAgent)
+  const parsedUa = parseUserAgent(userAgent)
+  const browser = clientBrowser || parsedUa.browser
+  const os = clientOs || parsedUa.os
+  const deviceType = parsedUa.deviceType
   const location = resolveLocationFromIp(ip, clientLocation)
   const now = Date.now()
 
@@ -153,27 +162,44 @@ export async function evaluateLoginRisk({
 
   // 2. Device Recognition & Server-Side Trust Check
   let isNewDevice = true
+  let isTrustedDevice = false
+
   try {
-    const orConditions: any[] = [{ browser, os }]
+    const orConditions: any[] = []
+    
     if (clientDeviceId) {
       orConditions.push({ deviceId: clientDeviceId })
     }
+    if (trustedDeviceCookie) {
+      orConditions.push({ deviceId: trustedDeviceCookie })
+    }
+    // Browser + OS exact match fallback
+    orConditions.push({ browser, os })
 
-    const trustedDevice = await (prisma as any).trustedDevice.findFirst({
+    const trustedRecord = await (prisma as any).trustedDevice.findFirst({
       where: {
         userId,
         userRole,
         isTrusted: true,
         OR: orConditions
-      }
+      },
+      orderBy: { lastUsedAt: 'desc' }
     })
 
-    if (trustedDevice) {
+    if (trustedRecord) {
       isNewDevice = false
-      // Update lastUsedAt timestamp
+      isTrustedDevice = true
+
+      // Update device record with current IP, location, and timestamp
       await (prisma as any).trustedDevice.update({
-        where: { id: trustedDevice.id },
-        data: { lastUsedAt: new Date() }
+        where: { id: trustedRecord.id },
+        data: {
+          lastUsedAt: new Date(),
+          ip,
+          location: location || trustedRecord.location,
+          browser,
+          os
+        }
       }).catch(() => {})
     }
   } catch (err) {
@@ -185,30 +211,32 @@ export async function evaluateLoginRisk({
     riskReasons.push('NEW_DEVICE_DETECTED')
   }
 
-  // 3. Location Anomaly Check
+  // 3. Location Anomaly Check (Only evaluated if device is NOT trusted)
   let isUnusualLocation = false
-  try {
-    const historicalLocations = await (prisma as any).loginAudit.findMany({
-      where: { userId, userRole, status: 'SUCCESS' },
-      select: { location: true, timestamp: true },
-      orderBy: { timestamp: 'desc' },
-      take: 10
-    })
+  if (!isTrustedDevice) {
+    try {
+      const historicalLocations = await (prisma as any).loginAudit.findMany({
+        where: { userId, userRole, status: 'SUCCESS' },
+        select: { location: true, timestamp: true },
+        orderBy: { timestamp: 'desc' },
+        take: 10
+      })
 
-    if (historicalLocations.length > 0) {
-      const knownCities = historicalLocations
-        .map((h: any) => h.location?.split(',')[0].trim().toLowerCase())
-        .filter(Boolean)
-      const currentCity = location.split(',')[0].trim().toLowerCase()
+      if (historicalLocations.length > 0) {
+        const knownCities = historicalLocations
+          .map((h: any) => h.location?.split(',')[0].trim().toLowerCase())
+          .filter(Boolean)
+        const currentCity = location.split(',')[0].trim().toLowerCase()
 
-      if (knownCities.length > 0 && !knownCities.includes(currentCity)) {
-        isUnusualLocation = true
-        riskScore += 25
-        riskReasons.push('UNUSUAL_LOGIN_LOCATION')
+        if (knownCities.length > 0 && !knownCities.includes(currentCity)) {
+          isUnusualLocation = true
+          riskScore += 20
+          riskReasons.push('UNUSUAL_LOGIN_LOCATION')
+        }
       }
+    } catch (err) {
+      console.warn('[RiskEngine] Location history lookup warning:', err)
     }
-  } catch (err) {
-    console.warn('[RiskEngine] Location history lookup warning:', err)
   }
 
   // 4. Impossible Travel Velocity Check
@@ -224,13 +252,12 @@ export async function evaluateLoginRisk({
       const lastLoginTime = new Date(lastLogin.timestamp).getTime()
       const timeDiffHours = (now - lastLoginTime) / (1000 * 60 * 60)
 
-      if (timeDiffHours < 2.0) {
-        // Logged in recently: check distance
+      if (timeDiffHours < 1.0) {
         const distanceKm = calculateDistanceKm(lastLogin.location, location)
-        // If speed required > 600 km/h
-        if (distanceKm > 300 && (distanceKm / Math.max(0.1, timeDiffHours)) > 500) {
+        // If speed required > 800 km/h
+        if (distanceKm > 500 && (distanceKm / Math.max(0.1, timeDiffHours)) > 800) {
           isImpossibleTravel = true
-          riskScore += 35
+          riskScore += 45
           riskReasons.push('IMPOSSIBLE_TRAVEL_VELOCITY')
         }
       }
@@ -239,21 +266,26 @@ export async function evaluateLoginRisk({
     console.warn('[RiskEngine] Impossible travel lookup warning:', err)
   }
 
-  // 5. Check Recent Failed Attempts Penalty
+  // 5. Recent Failed Password Attempts
   if (attemptRecord && attemptRecord.count >= 3) {
     riskScore += 20
     riskReasons.push('RECENT_FAILED_LOGIN_ATTEMPTS')
   }
 
-  // Determine Final Risk Level
+  // Determine Final Risk Level & Challenge Requirement:
+  // If the device is TRUSTED and not locked by brute force or impossible travel, NO OTP CHALLENGE IS REQUIRED!
   let riskLevel: RiskLevel = 'LOW'
   let requiresChallenge = false
-  let isRestricted = false
 
-  if (riskScore >= 75 || isImpossibleTravel) {
+  if (isImpossibleTravel || riskScore >= 75) {
     riskLevel = 'HIGH'
     requiresChallenge = true
-  } else if (riskScore >= 30 || isNewDevice || isUnusualLocation) {
+  } else if (isTrustedDevice) {
+    // Trusted device bypasses challenge
+    riskLevel = 'LOW'
+    requiresChallenge = false
+  } else if (isNewDevice || isUnusualLocation || riskScore >= 30) {
+    // First time on new device/browser
     riskLevel = 'MEDIUM'
     requiresChallenge = true
   } else {
@@ -269,7 +301,7 @@ export async function evaluateLoginRisk({
     isUnusualLocation,
     isImpossibleTravel,
     requiresChallenge,
-    isRestricted,
+    isRestricted: false,
     deviceSummary: {
       browser,
       os,

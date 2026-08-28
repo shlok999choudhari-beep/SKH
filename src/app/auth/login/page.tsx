@@ -39,15 +39,7 @@ const ROLES = [
   },
 ]
 
-function getClientDeviceId(): string {
-  if (typeof window === 'undefined') return 'dev_server'
-  let id = localStorage.getItem('placeiq_device_id')
-  if (!id) {
-    id = 'dev_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36)
-    localStorage.setItem('placeiq_device_id', id)
-  }
-  return id
-}
+import { getClientDeviceTelemetry } from '@/lib/clientDevice'
 
 interface ChallengeState {
   challengeToken: string
@@ -71,6 +63,11 @@ function LoginContent() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [challengeState, setChallengeState] = useState<ChallengeState | null>(null)
 
+  // Warm-up client device telemetry and live location in background on mount
+  useEffect(() => {
+    getClientDeviceTelemetry().catch(() => {})
+  }, [])
+
   const currentRole = ROLES.find(r => r.id === role)!
   const RoleIcon = currentRole.icon
 
@@ -89,9 +86,10 @@ function LoginContent() {
     }
 
     setPending(true)
-    const deviceId = getClientDeviceId()
 
     try {
+      const telemetry = await getClientDeviceTelemetry()
+
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,7 +97,11 @@ function LoginContent() {
           email: email.trim(),
           password,
           role,
-          deviceId
+          deviceId: telemetry.deviceId,
+          browser: telemetry.browser,
+          os: telemetry.os,
+          deviceType: telemetry.deviceType,
+          location: telemetry.location
         })
       })
 
