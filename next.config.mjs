@@ -1,11 +1,11 @@
-import type { NextConfig } from 'next'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
   serverExternalPackages: [
     'better-sqlite3',
@@ -20,7 +20,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '20mb',
     },
   },
-}
+};
 
-export default nextConfig
-
+export default nextConfig;
