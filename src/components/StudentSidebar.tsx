@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Logo from '@/components/Logo'
 import NotificationBell from '@/components/NotificationBell'
-import BackButton from '@/components/BackButton'
 import SecurityActivityModal from '@/components/SecurityActivityModal'
 import styles from './sidebar.module.css'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -38,6 +37,10 @@ import {
   ArrowRight,
   ShieldCheck,
   Settings,
+  FileCheck,
+  HelpCircle,
+  MessageSquare,
+  Award,
   LucideIcon
 } from 'lucide-react'
 
@@ -57,6 +60,21 @@ type NavCategory = {
 }
 
 const CATEGORIES: NavCategory[] = [
+  {
+    id: 'lms',
+    title: 'Learning Hub',
+    icon: BookOpen,
+    items: [
+      { href: '/student/courses', icon: BookOpen, label: 'My Courses', desc: 'Enrolled & Active' },
+      { href: '/student/courses/explore', icon: Compass, label: 'Explore Courses', badge: 'NEW', desc: 'Course Catalog' },
+      { href: '/student/courses/progress', icon: ChartNoAxesCombined, label: 'Course Progress', desc: 'Syllabus & Mastery' },
+      { href: '/student/ai-learning', icon: Bot, label: 'AI Learning Center', badge: 'AI', desc: 'Grounded Assistant & Planner' },
+      { href: '/student/assignments', icon: FileCheck, label: 'Assignments', desc: 'Tasks & Submissions' },
+      { href: '/student/quizzes', icon: HelpCircle, label: 'Quizzes & Tests', desc: 'Timed Assessments' },
+      { href: '/student/discussions', icon: MessageSquare, label: 'Discussions', desc: 'Q&A Community' },
+      { href: '/student/certificates', icon: Award, label: 'Certificates', desc: 'Verified Credentials' },
+    ]
+  },
   {
     id: 'ai-tools',
     title: 'AI & Practice Tools',
@@ -255,17 +273,6 @@ export default function StudentSidebar() {
                 <span>Logout</span>
               </button>
             </div>
-          )}
-
-          {pathname !== '/student/dashboard' && (
-            <BackButton
-              variant="compact"
-              label="Back"
-              showLabel={false}
-              fallbackHref="/student/dashboard"
-              title="Go back"
-              style={{ marginLeft: '6px' }}
-            />
           )}
         </div>
 

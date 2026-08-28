@@ -166,25 +166,44 @@
   color: #34d399 !important;
 }
 
-/* ── MEGA MENU DROPDOWN PANEL ── */
+/* ── MEGA MENU DROPDOWN PANEL (STUDENT, TRAINER, INSTITUTION) ── */
 .megaDropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 10px);
   left: 0;
-  width: 440px;
-  background: rgba(13, 17, 34, 0.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  width: 560px;
+  min-width: 480px;
+  max-width: min(600px, calc(100vw - 32px));
+  background: #090d20 !important; /* 100% Solid opaque dark background - zero bleed-through */
+  border: 1px solid rgba(139, 92, 246, 0.4);
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.15);
-  z-index: 200;
-  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 16px 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(139, 92, 246, 0.25);
+  z-index: 9999;
+  box-sizing: border-box;
+  animation: fadeInDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .megaDropdownWide {
-  width: 480px;
+  width: 580px;
+  max-width: min(640px, calc(100vw - 32px));
+}
+
+.megaDropdownInstitution {
+  background: #090d20 !important;
+  border-color: rgba(168, 85, 247, 0.5) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(168, 85, 247, 0.3) !important;
+}
+
+.megaDropdownInstitution .megaItem:hover {
+  background: rgba(168, 85, 247, 0.18);
+  color: #ffffff;
+}
+
+.megaDropdownInstitution .megaItemActive {
+  background: rgba(168, 85, 247, 0.26) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(168, 85, 247, 0.5);
 }
 
 @keyframes fadeInDown {
@@ -199,56 +218,104 @@
 }
 
 .megaHeader {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-muted);
-  padding: 4px 8px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 10px;
+  color: var(--text-muted, #94a3b8);
+  padding: 2px 4px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .megaGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
 }
 
 .megaItem {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 10px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
   text-decoration: none;
-  color: var(--text-secondary);
-  font-size: 11.5px;
-  font-weight: 500;
+  color: var(--text-secondary, #94a3b8);
   transition: all 0.15s ease;
   background: transparent;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .megaItem:hover {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(139, 92, 246, 0.14);
   color: #ffffff;
   transform: translateX(2px);
 }
 
 .megaItemActive {
-  background: rgba(139, 92, 246, 0.22) !important;
+  background: rgba(139, 92, 246, 0.24) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  border: 1px solid rgba(139, 92, 246, 0.45);
 }
 
-.megaIcon {
-  font-size: 15px;
+.megaIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.megaDropdownInstitution .megaIconWrap {
+  background: rgba(168, 85, 247, 0.18);
+  color: #d8b4fe;
+}
+
+.megaText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.megaLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .megaLabel {
-  flex: 1;
-  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.megaItem:hover .megaLabel {
+  color: #ffffff;
+}
+
+.megaDesc {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
 }
 
 .megaBadge {
@@ -257,7 +324,14 @@
   padding: 2px 6px;
   border-radius: 99px;
   background: rgba(139, 92, 246, 0.25);
-  color: #a78bfa;
+  color: #c4b5fd;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.badgeHot {
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #fca5a5 !important;
 }
 
 /* ── AESTHETIC SEARCH BAR TRIGGER & FLYOUT ── */
@@ -270,11 +344,12 @@
 .searchTrigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 9999px;
-  padding: 6px 12px 6px 10px;
+  padding: 5px 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--text-secondary, #94a3b8);
@@ -283,9 +358,9 @@
 }
 
 .searchTrigger:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(139, 92, 246, 0.45);
-  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+  background: rgba(139, 92, 246, 0.18);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
   color: #fff;
   transform: translateY(-1px);
 }
@@ -295,42 +370,24 @@
   flex-shrink: 0;
 }
 
-.searchTriggerText {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary, #94a3b8);
-}
-
-.searchTrigger:hover .searchTriggerText {
-  color: #f8fafc;
-}
-
+/* Hide text and kbd — icon-only search trigger */
+.searchTriggerText,
 .searchKbd {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
-  font-size: 9.5px;
-  font-weight: 600;
-  padding: 1.5px 5.5px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  letter-spacing: 0.03em;
-  margin-left: 4px;
+  display: none;
 }
+
 
 .searchFlyout {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
-  width: 320px;
-  background: rgba(15, 12, 34, 0.98);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  width: 290px;
+  background: #090d20 !important;
   border: 1px solid rgba(139, 92, 246, 0.35);
-  border-radius: 16px;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 24px rgba(139, 92, 246, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), 0 0 20px rgba(139, 92, 246, 0.2);
   z-index: 500;
-  padding: 10px;
+  padding: 8px;
   animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -457,15 +514,16 @@
 .userPillBtn {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.09) 0%, rgba(59, 130, 246, 0.06) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
-  padding: 4px 12px 4px 4px;
+  padding: 3px 9px 3px 3px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
   position: relative;
+  max-width: 160px;
 }
 
 .userPillBtn:hover {
@@ -474,6 +532,7 @@
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.22);
   transform: translateY(-1px);
 }
+
 
 .avatarWrapper {
   position: relative;
@@ -533,15 +592,16 @@
 
 .userName {
   font-family: 'Outfit', sans-serif;
-  font-size: 13px !important;
+  font-size: 12.5px !important;
   font-weight: 600 !important;
   color: #f8fafc !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 110px;
+  max-width: 80px;
   letter-spacing: -0.01em;
 }
+
 
 .userRoleBadge {
   font-size: 10px;

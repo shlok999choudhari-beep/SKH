@@ -9,6 +9,7 @@ const SUPABASE_KEY =
 export const BUCKETS = {
   DOCUMENTS: 'placeiq-documents',
   RESUMES: 'placeiq-resumes',
+  ASSIGNMENTS: 'placeiq-assignments',
 } as const
 
 let supabaseAdmin: SupabaseClient | null = null

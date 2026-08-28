@@ -43,13 +43,13 @@ function SignupContent() {
   const RoleIcon = currentRole.icon
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} suppressHydrationWarning>
       <Link href="/" className={styles.backBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
         <ArrowLeft size={16} strokeWidth={2} />
         <span>Back to home</span>
       </Link>
 
-      <div className={styles.card}>
+      <div className={styles.card} suppressHydrationWarning>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
           <Logo
             variant={role === 'company' ? 'company' : 'student'}
@@ -61,13 +61,14 @@ function SignupContent() {
         </div>
 
         {/* Role Selector */}
-        <div className={styles.roleSelector}>
+        <div className={styles.roleSelector} suppressHydrationWarning>
           {ROLES.map((r) => {
             const TabIcon = r.icon
             return (
               <button
                 key={r.id}
                 type="button"
+                suppressHydrationWarning
                 className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
                 onClick={() => setRole(r.id)}
                 style={

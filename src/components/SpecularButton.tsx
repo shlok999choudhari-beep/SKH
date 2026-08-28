@@ -272,6 +272,7 @@ export const SpecularButton = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      suppressHydrationWarning
       className={`specular-button specular-button--${size}${className ? ` ${className}` : ''}`}
       style={
         {

@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     // 1. Retrieve User strictly by the selected Role Portal
     let user: { id: number; email: string; name: string; password: string } | null = null
-    let authRole: 'student' | 'company' | 'institution-admin' = 'student'
+    let authRole: 'student' | 'company' | 'institution-admin' | 'trainer' = 'student'
     let redirectUrl = '/student/dashboard'
 
     if (role === 'student') {
@@ -128,8 +128,13 @@ export async function POST(request: NextRequest) {
       const instUser = await findInstitutionUserByIdentifier(identifier)
       if (instUser) {
         user = { id: instUser.id, email: instUser.email, name: instUser.name, password: instUser.password }
-        authRole = 'institution-admin'
-        redirectUrl = '/institution/dashboard'
+        if (instUser.role === 'trainer') {
+          authRole = 'trainer'
+          redirectUrl = '/trainer/dashboard'
+        } else {
+          authRole = 'institution-admin'
+          redirectUrl = '/institution/dashboard'
+        }
       } else {
         const isStudent = await findStudentByIdentifier(identifier)
         if (isStudent) {

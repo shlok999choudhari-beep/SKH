@@ -16,6 +16,10 @@ import {
   BriefcaseBusiness,
   GraduationCap,
   ChartNoAxesCombined,
+  BookOpen,
+  TrendingUp,
+  Users,
+  Compass,
   ChevronDown,
   Sun,
   Moon,
@@ -26,41 +30,74 @@ import {
   LucideIcon
 } from 'lucide-react'
 
-type InstitutionNavItem = {
+type NavItem = {
   href: string
   icon: LucideIcon
   label: string
+  desc?: string
+  badge?: string
 }
 
-const INSTITUTION_NAV: { group: string; items: InstitutionNavItem[] }[] = [
+type NavCategory = {
+  id: string
+  title: string
+  icon: LucideIcon
+  items: NavItem[]
+}
+
+const CATEGORIES: NavCategory[] = [
   {
-    group: 'Overview',
+    id: 'lms',
+    title: 'Learning Hub',
+    icon: BookOpen,
     items: [
-      { href: '/institution/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/institution/documents', icon: FolderLock, label: 'Student Documents' },
-      { href: '/institution/resources', icon: Share2, label: 'Resources' },
-      { href: '/institution/trainers', icon: Presentation, label: 'Trainers' },
-      { href: '/institution/internships', icon: BriefcaseBusiness, label: 'Internships' },
-      { href: '/institution/placements', icon: GraduationCap, label: 'Placements' },
-      { href: '/institution/certifications', icon: ChartNoAxesCombined, label: 'Certifications' },
+      { href: '/institution/lms', icon: BookOpen, label: 'LMS Overview', desc: 'Institutional Curriculum Hub' },
+      { href: '/institution/lms/analytics', icon: TrendingUp, label: 'LMS Analytics', badge: 'NEW', desc: 'KPIs, Drop-offs & Intelligence' },
+      { href: '/institution/lms/courses', icon: Compass, label: 'All Courses', desc: 'Course Management & Review' },
+      { href: '/institution/trainers', icon: Presentation, label: 'Trainers & Faculty', desc: 'Trainer Profiles & Metrics' },
+      { href: '/institution/lms/students', icon: Users, label: 'Enrolled Students', desc: 'Learner Cohorts & Tracking' },
     ]
   },
+  {
+    id: 'placements',
+    title: 'Placements & Drives',
+    icon: GraduationCap,
+    items: [
+      { href: '/institution/placements', icon: GraduationCap, label: 'Placement Drives', desc: 'Drive Schedules & Offers' },
+      { href: '/institution/internships', icon: BriefcaseBusiness, label: 'Partner Internships', desc: 'Opportunities & Applications' },
+      { href: '/institution/certifications', icon: ChartNoAxesCombined, label: 'Certifications', desc: 'Issued Verified Credentials' },
+    ]
+  },
+  {
+    id: 'campus',
+    title: 'Campus & Vault',
+    icon: FolderLock,
+    items: [
+      { href: '/institution/documents', icon: FolderLock, label: 'Student Documents', desc: 'Document Vault & Verifications' },
+      { href: '/institution/resources', icon: Share2, label: 'Campus Resources', desc: 'Labs, Halls & Venue Bookings' },
+    ]
+  }
 ]
 
 export default function InstitutionSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [logoDropdownOpen, setLogoDropdownOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [showSecurityModal, setShowSecurityModal] = useState(false)
   const [userData, setUserData] = useState<any>({ name: 'Institution Admin' })
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
   const logoMenuRef = useRef<HTMLDivElement>(null)
   const userDropdownRef = useRef<HTMLDivElement>(null)
+  const navRef = useRef<HTMLDivElement>(null)
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setActiveCategory(null)
+      }
       if (logoMenuRef.current && !logoMenuRef.current.contains(e.target as Node)) {
         setLogoDropdownOpen(false)
       }
@@ -84,9 +121,10 @@ export default function InstitutionSidebar() {
     }
   }, [mobileOpen])
 
-  // Close mobile menu on route change
+  // Close mobile menu and dropdowns on route change
   useEffect(() => {
     setMobileOpen(false)
+    setActiveCategory(null)
     setLogoDropdownOpen(false)
     setDropdownOpen(false)
   }, [pathname])
@@ -171,29 +209,91 @@ export default function InstitutionSidebar() {
           <div className={styles.mobileBackdrop} onClick={() => setMobileOpen(false)} />
         )}
 
-        {/* Center Nav */}
-        <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} suppressHydrationWarning>
-          {INSTITUTION_NAV.map(group => (
-            <div key={group.group} className={styles.navGroup} suppressHydrationWarning>
-              {group.items.map(item => {
-                const ItemIcon = item.icon
-                const active = pathname === item.href || pathname.startsWith(item.href + '/')
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`${styles.categoryBtn} ${active ? styles.activeInstitution : ''}`}
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <span className={styles.navIcon}>
-                      <ItemIcon size={16} strokeWidth={2} />
-                    </span>
-                    <span className={styles.navLabel}>{item.label}</span>
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
+        {/* Center Nav with Categorized Mega Dropdowns */}
+        <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpenNav : ''}`} ref={navRef} suppressHydrationWarning>
+          {/* Direct Dashboard Link */}
+          <Link
+            href="/institution/dashboard"
+            className={`${styles.categoryBtn} ${pathname === '/institution/dashboard' ? styles.activeInstitution : ''}`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <span className={styles.navIcon}>
+              <LayoutDashboard size={15} strokeWidth={2} />
+            </span>
+            <span className={styles.navLabel}>Dashboard</span>
+          </Link>
+
+          {/* Categorized Dropdowns */}
+          {CATEGORIES.map(cat => {
+            const CatIcon = cat.icon
+            const isOpen = activeCategory === cat.id
+            const hasActiveItem = cat.items.some(i => pathname === i.href || pathname.startsWith(i.href + '/'))
+
+            return (
+              <div key={cat.id} className={styles.categoryGroup} suppressHydrationWarning>
+                <button
+                  type="button"
+                  suppressHydrationWarning
+                  className={`${styles.categoryBtn} ${hasActiveItem || isOpen ? styles.activeInstitution : ''}`}
+                  onClick={() => setActiveCategory(isOpen ? null : cat.id)}
+                >
+                  <span className={styles.navIcon}>
+                    <CatIcon size={15} strokeWidth={2} />
+                  </span>
+                  <span className={styles.navLabel}>{cat.title}</span>
+                  <ChevronDown
+                    size={13}
+                    strokeWidth={2}
+                    style={{
+                      transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
+                      transition: 'transform 0.2s ease',
+                      opacity: 0.8
+                    }}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className={`${styles.megaDropdown} ${styles.megaDropdownInstitution}`}>
+                    <div className={styles.megaHeader} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{cat.title}</span>
+                    </div>
+                    <div className={styles.megaGrid}>
+                      {cat.items.map(item => {
+                        const ItemIcon = item.icon
+                        const isItemActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`${styles.megaItem} ${isItemActive ? styles.megaItemActive : ''}`}
+                            onClick={() => {
+                              setActiveCategory(null)
+                              setMobileOpen(false)
+                            }}
+                          >
+                            <div className={styles.megaIconWrap}>
+                              <ItemIcon size={16} strokeWidth={2} />
+                            </div>
+                            <div className={styles.megaText}>
+                              <div className={styles.megaLabelRow}>
+                                <span className={styles.megaLabel}>{item.label}</span>
+                                {item.badge && (
+                                  <span className={styles.megaBadge} style={{ background: 'rgba(168, 85, 247, 0.25)', color: '#c084fc' }}>
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </div>
+                              {item.desc && <span className={styles.megaDesc}>{item.desc}</span>}
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </nav>
 
         {/* Right User & Controls */}

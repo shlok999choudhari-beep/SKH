@@ -147,13 +147,13 @@ function LoginContent() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} suppressHydrationWarning>
       <Link href="/" className={styles.backBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
         <ArrowLeft size={16} strokeWidth={2} />
         <span>Back to home</span>
       </Link>
 
-      <div className={styles.card}>
+      <div className={styles.card} suppressHydrationWarning>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
           <Logo variant={role === 'company' ? 'company' : role === 'institution' ? 'institution' : 'student'} size="lg" href="/" withBadge badgeText={role.toUpperCase()} />
         </div>
@@ -182,12 +182,14 @@ function LoginContent() {
         ) : (
           <>
             {/* Role Selector */}
-            <div className={styles.roleSelector}>
+            <div className={styles.roleSelector} suppressHydrationWarning>
               {ROLES.map(r => {
                 const TabIcon = r.icon
                 return (
                   <button
                     key={r.id}
+                    type="button"
+                    suppressHydrationWarning
                     className={`${styles.roleTab} ${role === r.id ? styles.roleTabActive : ''}`}
                     onClick={() => {
                       setRole(r.id)
@@ -227,7 +229,7 @@ function LoginContent() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleLoginSubmit} className={styles.form}>
+            <form onSubmit={handleLoginSubmit} className={styles.form} suppressHydrationWarning>
               <div className="form-group">
                 <label className="form-label" htmlFor="email">Email address or Username</label>
                 <input
@@ -235,6 +237,7 @@ function LoginContent() {
                   name="email"
                   type="text"
                   required
+                  suppressHydrationWarning
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="form-input"
@@ -253,6 +256,7 @@ function LoginContent() {
                   name="password"
                   type="password"
                   required
+                  suppressHydrationWarning
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   className="form-input"

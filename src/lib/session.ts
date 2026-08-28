@@ -9,7 +9,7 @@ const encodedKey = new TextEncoder().encode(secretKey)
 export type SessionPayload = {
   sessionId?: string
   userId: number
-  role: 'student' | 'company' | 'institution-admin'
+  role: 'student' | 'company' | 'institution-admin' | 'trainer'
   email: string
   name: string
   expiresAt: Date
