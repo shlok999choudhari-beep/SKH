@@ -96,8 +96,9 @@ app.prepare().then(() => {
   })
 
   const PORT = parseInt(process.env.PORT || '3000', 10)
-  httpServer.listen(PORT, (err) => {
+  const HOST = '0.0.0.0'
+  httpServer.listen(PORT, HOST, (err) => {
     if (err) throw err
-    console.log(`> PlaceIQ server listening on port ${PORT} with Socket.IO attached`)
+    console.log(`> PlaceIQ server listening on http://${HOST}:${PORT} with Socket.IO attached`)
   })
 })
