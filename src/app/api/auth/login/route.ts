@@ -358,7 +358,7 @@ export async function POST(request: NextRequest) {
       response.cookies.set('placeiq_trusted_device', effectiveDeviceId, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 90 * 24 * 60 * 60, // 90 days
+        maxAge: 7 * 24 * 60 * 60, // 7 days
         sameSite: 'lax',
         path: '/'
       })

@@ -176,11 +176,14 @@ export async function evaluateLoginRisk({
     // Browser + OS exact match fallback
     orConditions.push({ browser, os })
 
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
     const trustedRecord = await (prisma as any).trustedDevice.findFirst({
       where: {
         userId,
         userRole,
         isTrusted: true,
+        lastUsedAt: { gte: sevenDaysAgo },
         OR: orConditions
       },
       orderBy: { lastUsedAt: 'desc' }

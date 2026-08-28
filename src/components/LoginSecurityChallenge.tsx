@@ -345,7 +345,7 @@ export default function LoginSecurityChallenge({
         <div className={styles.trustDeviceText}>
           <span className={styles.trustDeviceTitle}>☑ Trust this device</span>
           <span className={styles.trustDeviceDesc}>
-            Don't ask for verification again on this browser unless suspicious activity is detected.
+            Don't ask for verification again on this browser for 7 days unless suspicious activity is detected.
           </span>
         </div>
       </label>
