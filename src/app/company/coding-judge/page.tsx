@@ -24,7 +24,13 @@ import {
   Award,
   Radio,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Trash2,
+  RotateCcw,
+  Clock,
+  Cpu,
+  Check,
+  AlertCircle
 } from 'lucide-react'
 
 const RTC_CONFIG: RTCConfiguration = {
@@ -42,33 +48,83 @@ const templates: Record<string, string> = {
 using namespace std;
 
 int main() {
-    cout << "Hello World!" << endl;
+    cout << "Hello from C++ (GCC)!" << endl;
     return 0;
 }`,
   python: `def main():
-    print("Hello World!")
+    print("Hello from Python 3!")
 
 if __name__ == "__main__":
     main()`,
-  java: `public class Main {
+  java: `import java.util.Scanner;
+
+public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        System.out.println("Hello from Java 17!");
     }
+}`,
+  javascript: `// JavaScript (Node.js Environment)
+function main() {
+    console.log("Hello from JavaScript!");
+}
+
+main();`,
+  typescript: `// TypeScript Environment
+function greet(name: string): string {
+    return \`Hello from TypeScript, \${name}!\`;
+}
+
+console.log(greet("PlaceIQ Developer"));`,
+  c: `#include <stdio.h>
+
+int main() {
+    printf("Hello from C (GCC)!\\n");
+    return 0;
+}`,
+  go: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello from Go!")
+}`,
+  rust: `fn main() {
+    println!("Hello from Rust!");
 }`
 }
 
 const languageMap: Record<string, string> = {
   cpp: 'cpp',
+  c: 'c',
   python: 'python',
-  java: 'java'
+  java: 'java',
+  javascript: 'javascript',
+  typescript: 'typescript',
+  go: 'go',
+  rust: 'rust'
+}
+
+const languageLabels: Record<string, string> = {
+  cpp: 'C++ (GCC)',
+  python: 'Python 3',
+  java: 'Java 17',
+  javascript: 'JavaScript (Node.js)',
+  typescript: 'TypeScript',
+  c: 'C (GCC)',
+  go: 'Go 1.20',
+  rust: 'Rust'
 }
 
 export default function CompanyCodingJudge() {
-  const [code, setCode] = useState('// Write your code here')
+  const [code, setCode] = useState(templates.cpp)
   const [language, setLanguage] = useState('cpp')
   const [output, setOutput] = useState('')
   const [input, setInput] = useState('')
   const [running, setRunning] = useState(false)
+  const [execStatus, setExecStatus] = useState<string | null>(null)
+  const [execTime, setExecTime] = useState<string | null>(null)
+  const [execMemory, setExecMemory] = useState<string | null>(null)
+  const [outputCopied, setOutputCopied] = useState(false)
   const [roomId, setRoomId] = useState('')
   const [studentName, setStudentName] = useState('')
   const [connected, setConnected] = useState(false)
@@ -109,6 +165,32 @@ export default function CompanyCodingJudge() {
     navigator.clipboard.writeText(idToCopy)
     setCopied(true)
     setTimeout(() => setCopied(false), 2500)
+  }
+
+  const handleCopyOutput = () => {
+    if (!output) return
+    navigator.clipboard.writeText(output)
+    setOutputCopied(true)
+    setTimeout(() => setOutputCopied(false), 2000)
+  }
+
+  const handleClearOutput = () => {
+    setOutput('')
+    setExecStatus(null)
+    setExecTime(null)
+    setExecMemory(null)
+  }
+
+  const handleResetTemplate = () => {
+    const defaultTpl = templates[language] || ''
+    setCode(defaultTpl)
+    if (socketRef.current && roomIdRef.current) {
+      socketRef.current.emit('code-change', {
+        code: defaultTpl,
+        roomId: roomIdRef.current
+      })
+    }
+    showToast(`Template reset to ${languageLabels[language] || language}`)
   }
 
   // Bind local stream to active video elements
@@ -278,6 +360,9 @@ export default function CompanyCodingJudge() {
     socket.on('code-output', (data: any) => {
       if (data && data.output !== undefined) {
         setOutput(data.output)
+        if (data.status) setExecStatus(data.status)
+        if (data.time) setExecTime(data.time)
+        if (data.memory) setExecMemory(data.memory)
       }
     })
 
@@ -287,7 +372,6 @@ export default function CompanyCodingJudge() {
       setStudentName(sName)
       setConnectionStatus('connecting')
       showToast(`🎉 ${sName} has joined the coding judge room!`)
-      // Trigger WebRTC offer creation with small delay to ensure student peer connection is ready
       setTimeout(() => {
         createOffer()
       }, 600)
@@ -516,34 +600,51 @@ export default function CompanyCodingJudge() {
         roomId: roomIdRef.current
       })
     }
+    showToast(`Switched language to ${languageLabels[newLang] || newLang}`)
   }
 
   const runCode = async () => {
     setRunning(true)
-    setOutput('Executing code...')
+    setExecStatus('Compiling & Executing...')
+    setOutput('Compiling and running code...\n')
     
     try {
+      const startTime = performance.now()
       const res = await fetch('/api/code-execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language, input })
       })
       const data = await res.json()
-      const result = data.output || data.error || 'Execution completed with no output'
-      setOutput(result)
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's'
+      
+      const resultText = data.output || data.error || 'Execution finished with no output.'
+      const statusText = data.status || (data.error ? 'Error' : 'Success')
+      const timeVal = data.executionTime || elapsed
+      const memVal = data.memory || undefined
+
+      setOutput(resultText)
+      setExecStatus(statusText)
+      setExecTime(timeVal)
+      setExecMemory(memVal)
       
       if (socketRef.current && roomIdRef.current) {
         socketRef.current.emit('code-output', {
-          output: result,
+          output: resultText,
+          status: statusText,
+          time: timeVal,
+          memory: memVal,
           roomId: roomIdRef.current
         })
       }
-    } catch (error) {
-      const err = 'Failed to execute code'
+    } catch (error: any) {
+      const err = `Execution failed: ${error.message || 'Network error'}`
       setOutput(err)
+      setExecStatus('Error')
       if (socketRef.current && roomIdRef.current) {
         socketRef.current.emit('code-output', {
           output: err,
+          status: 'Error',
           roomId: roomIdRef.current
         })
       }
@@ -642,8 +743,8 @@ export default function CompanyCodingJudge() {
                 <Code2 size={20} strokeWidth={2.2} color="#10b981" />
               </div>
               <div>
-                <h1 className={styles.pageTitle} style={{ margin: 0, fontSize: '20px' }}>Coding Judge & Live VC</h1>
-                <p className={styles.pageSubtitle} style={{ margin: 0, fontSize: '12px' }}>Real-time collaborative technical assessment</p>
+                <h1 className={styles.pageTitle} style={{ margin: 0, fontSize: '20px' }}>Coding Judge &amp; Live VC</h1>
+                <p className={styles.pageSubtitle} style={{ margin: 0, fontSize: '12px' }}>Real-time multi-language compiler &amp; technical assessment</p>
               </div>
             </div>
           </div>
@@ -684,7 +785,7 @@ export default function CompanyCodingJudge() {
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(239, 68, 68, 0.12)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' }}
               >
                 <Square size={14} strokeWidth={2} fill="currentColor" />
-                <span>End & Grade</span>
+                <span>End &amp; Grade</span>
               </button>
             </div>
           )}
@@ -714,7 +815,7 @@ export default function CompanyCodingJudge() {
               </div>
               <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>Launch Coding Interview Room</h3>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '14px', lineHeight: '1.5' }}>
-                Start your camera and generate a secure interview room ID to share with the student candidate for live code pair programming & HD video.
+                Start your camera and generate a secure interview room ID to share with the candidate for real-time code pair programming (C++, Python, Java, JS, TS, Go, Rust) &amp; HD video call.
               </p>
 
               {/* Camera Preview Box */}
@@ -773,7 +874,7 @@ export default function CompanyCodingJudge() {
                   }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <CheckCircle2 size={14} color="#10b981" />
-                      Camera Live & Ready
+                      Camera Live &amp; Ready
                     </span>
                     <span style={{ fontSize: '11px', color: micOn ? '#10b981' : '#f59e0b' }}>
                       {micOn ? 'Mic: On' : 'Mic: Off'}
@@ -852,7 +953,7 @@ export default function CompanyCodingJudge() {
                       </span>
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                      Share Judge ID with student. Code edits & WebRTC audio/video sync in real-time.
+                      Multi-language compiler (C++, Python, Java, JS, TS, Go, Rust) with synced editor &amp; real-time video.
                     </div>
                   </div>
                 </div>
@@ -928,12 +1029,26 @@ export default function CompanyCodingJudge() {
                           value={language}
                           onChange={(e) => handleLanguageChange(e.target.value)}
                           className="form-select"
-                          style={{ width: '130px', minHeight: '38px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)' }}
+                          style={{ minWidth: '160px', minHeight: '38px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)' }}
                         >
-                          <option value="cpp">C++ (GCC)</option>
-                          <option value="python">Python 3</option>
-                          <option value="java">Java 17</option>
+                          <option value="cpp">C++ (GCC 9.2)</option>
+                          <option value="python">Python 3 (3.8+)</option>
+                          <option value="java">Java 17 (OpenJDK)</option>
+                          <option value="javascript">JavaScript (Node.js)</option>
+                          <option value="typescript">TypeScript</option>
+                          <option value="c">C (GCC)</option>
+                          <option value="go">Go 1.20</option>
+                          <option value="rust">Rust</option>
                         </select>
+                        <button
+                          onClick={handleResetTemplate}
+                          className="btn btn-secondary btn-sm"
+                          title="Reset editor to starter template"
+                          style={{ height: '38px', display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '0 10px', fontSize: '11.5px' }}
+                        >
+                          <RotateCcw size={13} />
+                          <span>Reset</span>
+                        </button>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                           Synced with Candidate
                         </span>
@@ -943,12 +1058,12 @@ export default function CompanyCodingJudge() {
                         onClick={runCode} 
                         disabled={running} 
                         className="btn btn-primary btn-sm" 
-                        style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
                       >
                         {running ? (
                           <>
                             <MorphingInfinity className="size-4" style={{ width: '14px', height: '14px' }} />
-                            <span>Compiling & Running...</span>
+                            <span>Compiling &amp; Running...</span>
                           </>
                         ) : (
                           <>
@@ -962,7 +1077,7 @@ export default function CompanyCodingJudge() {
                     <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', height: '420px', width: '100%' }}>
                       <Editor
                         height="100%"
-                        language={languageMap[language]}
+                        language={languageMap[language] || 'cpp'}
                         value={code}
                         onChange={handleCodeChange}
                         theme="vs-dark"
@@ -981,19 +1096,23 @@ export default function CompanyCodingJudge() {
 
                 {(mobileTab === 'io' || (typeof window !== 'undefined' && window.innerWidth >= 1024)) && (
                   <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '14px' }}>
+                      {/* Standard Input (stdin) */}
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Terminal size={14} strokeWidth={2} color="#10b981" />
-                          <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Input (stdin)</label>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Terminal size={14} strokeWidth={2} color="#10b981" />
+                            <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Standard Input (stdin)</label>
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Optional</span>
                         </div>
                         <textarea
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
-                          placeholder="Pass custom test inputs here..."
+                          placeholder="Provide test inputs (e.g. 5 10)..."
                           style={{
                             width: '100%',
-                            height: '110px',
+                            height: '140px',
                             background: 'rgba(0,0,0,0.35)',
                             border: '1px solid var(--border)',
                             borderRadius: '8px',
@@ -1005,22 +1124,75 @@ export default function CompanyCodingJudge() {
                           }}
                         />
                       </div>
+
+                      {/* Execution Output Console Screen */}
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Terminal size={14} strokeWidth={2} color="#10b981" />
-                          <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Execution Output</label>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Terminal size={14} strokeWidth={2} color="#10b981" />
+                            <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Execution Output</label>
+                            {execStatus && (
+                              <span style={{
+                                fontSize: '10.5px',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                background: execStatus === 'Accepted' || execStatus === 'Success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                                color: execStatus === 'Accepted' || execStatus === 'Success' ? '#10b981' : '#ef4444',
+                                border: `1px solid ${execStatus === 'Accepted' || execStatus === 'Success' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`
+                              }}>
+                                {execStatus}
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {execTime && (
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Clock size={11} /> {execTime}
+                              </span>
+                            )}
+                            {execMemory && (
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Cpu size={11} /> {execMemory}
+                              </span>
+                            )}
+                            {output && (
+                              <>
+                                <button
+                                  onClick={handleCopyOutput}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ padding: '2px 6px', height: '22px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                                  title="Copy Output"
+                                >
+                                  {outputCopied ? <Check size={11} color="#10b981" /> : <Copy size={11} />}
+                                  <span>{outputCopied ? 'Copied' : 'Copy'}</span>
+                                </button>
+                                <button
+                                  onClick={handleClearOutput}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ padding: '2px 6px', height: '22px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                                  title="Clear Console Output"
+                                >
+                                  <Trash2 size={11} />
+                                  <span>Clear</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
+
                         <pre style={{
-                          height: '110px',
-                          background: 'rgba(0,0,0,0.5)',
+                          height: '140px',
+                          background: 'rgba(0,0,0,0.55)',
                           border: '1px solid var(--border)',
                           borderRadius: '8px',
                           padding: '10px',
-                          color: output.includes('Error') || output.includes('error') ? '#ef4444' : '#10b981',
+                          color: output.includes('Error') || output.includes('error') || output.includes('Exception') ? '#f43f5e' : '#10b981',
                           fontFamily: 'monospace',
                           fontSize: '12.5px',
                           overflowY: 'auto',
-                          margin: 0
+                          margin: 0,
+                          lineHeight: '1.5'
                         }}>
                           {output || 'Output will appear here when you or the candidate runs code...'}
                         </pre>

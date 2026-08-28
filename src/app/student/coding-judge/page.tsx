@@ -25,7 +25,12 @@ import {
   Sparkles,
   Radio,
   RefreshCw,
-  User
+  User,
+  Trash2,
+  RotateCcw,
+  Cpu,
+  Check,
+  Copy
 } from 'lucide-react'
 
 const RTC_CONFIG: RTCConfiguration = {
@@ -38,18 +43,88 @@ const RTC_CONFIG: RTCConfiguration = {
   ]
 }
 
+const templates: Record<string, string> = {
+  cpp: `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello from C++ (GCC)!" << endl;
+    return 0;
+}`,
+  python: `def main():
+    print("Hello from Python 3!")
+
+if __name__ == "__main__":
+    main()`,
+  java: `import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello from Java 17!");
+    }
+}`,
+  javascript: `// JavaScript (Node.js Environment)
+function main() {
+    console.log("Hello from JavaScript!");
+}
+
+main();`,
+  typescript: `// TypeScript Environment
+function greet(name: string): string {
+    return \`Hello from TypeScript, \${name}!\`;
+}
+
+console.log(greet("PlaceIQ Developer"));`,
+  c: `#include <stdio.h>
+
+int main() {
+    printf("Hello from C (GCC)!\\n");
+    return 0;
+}`,
+  go: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello from Go!")
+}`,
+  rust: `fn main() {
+    println!("Hello from Rust!");
+}`
+}
+
 const languageMap: Record<string, string> = {
   cpp: 'cpp',
+  c: 'c',
   python: 'python',
-  java: 'java'
+  java: 'java',
+  javascript: 'javascript',
+  typescript: 'typescript',
+  go: 'go',
+  rust: 'rust'
+}
+
+const languageLabels: Record<string, string> = {
+  cpp: 'C++ (GCC)',
+  python: 'Python 3',
+  java: 'Java 17',
+  javascript: 'JavaScript (Node.js)',
+  typescript: 'TypeScript',
+  c: 'C (GCC)',
+  go: 'Go 1.20',
+  rust: 'Rust'
 }
 
 export default function StudentCodingJudge() {
-  const [code, setCode] = useState('// Write your code here')
+  const [code, setCode] = useState(templates.cpp)
   const [language, setLanguage] = useState('cpp')
   const [output, setOutput] = useState('')
   const [input, setInput] = useState('')
   const [running, setRunning] = useState(false)
+  const [execStatus, setExecStatus] = useState<string | null>(null)
+  const [execTime, setExecTime] = useState<string | null>(null)
+  const [execMemory, setExecMemory] = useState<string | null>(null)
+  const [outputCopied, setOutputCopied] = useState(false)
   const [roomId, setRoomId] = useState('')
   const [searchRoomId, setSearchRoomId] = useState('')
   const [candidateName, setCandidateName] = useState('')
@@ -142,6 +217,32 @@ export default function StudentCodingJudge() {
     }
   }
 
+  const handleCopyOutput = () => {
+    if (!output) return
+    navigator.clipboard.writeText(output)
+    setOutputCopied(true)
+    setTimeout(() => setOutputCopied(false), 2000)
+  }
+
+  const handleClearOutput = () => {
+    setOutput('')
+    setExecStatus(null)
+    setExecTime(null)
+    setExecMemory(null)
+  }
+
+  const handleResetTemplate = () => {
+    const defaultTpl = templates[language] || ''
+    setCode(defaultTpl)
+    if (connected && socketRef.current && roomIdRef.current) {
+      socketRef.current.emit('code-change', {
+        code: defaultTpl,
+        roomId: roomIdRef.current
+      })
+    }
+    showToast(`Template reset to ${languageLabels[language] || language}`)
+  }
+
   const startCamera = async () => {
     try {
       let stream: MediaStream
@@ -226,7 +327,6 @@ export default function StudentCodingJudge() {
     if (envUrl) {
       return isHttps && envUrl.startsWith('http://') ? envUrl.replace(/^http:\/\//, 'https://') : envUrl
     }
-    // In local HTTP dev: Next is on 3000, standalone socket server on 3001
     if (!isHttps && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
       return `http://${window.location.hostname}:3001`
     }
@@ -258,12 +358,16 @@ export default function StudentCodingJudge() {
       if (data && data.language) {
         setLanguage(data.language)
         if (data.code) setCode(data.code)
+        showToast(`Interviewer set language to ${languageLabels[data.language] || data.language}`)
       }
     })
 
     socket.on('code-output', (data: any) => {
       if (data && data.output !== undefined) {
         setOutput(data.output)
+        if (data.status) setExecStatus(data.status)
+        if (data.time) setExecTime(data.time)
+        if (data.memory) setExecMemory(data.memory)
       }
     })
 
@@ -495,9 +599,11 @@ export default function StudentCodingJudge() {
 
   const runCode = async () => {
     setRunning(true)
-    setOutput('Compiling and running code...')
+    setExecStatus('Compiling & Executing...')
+    setOutput('Compiling and running code...\n')
     
     try {
+      const startTime = performance.now()
       const res = await fetch('/api/code-execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -505,17 +611,37 @@ export default function StudentCodingJudge() {
       })
       
       const data = await res.json()
-      const result = data.output || data.error || 'Execution completed with no output'
-      setOutput(result)
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's'
+
+      const resultText = data.output || data.error || 'Execution finished with no output.'
+      const statusText = data.status || (data.error ? 'Error' : 'Success')
+      const timeVal = data.executionTime || elapsed
+      const memVal = data.memory || undefined
+
+      setOutput(resultText)
+      setExecStatus(statusText)
+      setExecTime(timeVal)
+      setExecMemory(memVal)
 
       if (socketRef.current && roomIdRef.current) {
-        socketRef.current.emit('code-output', { roomId: roomIdRef.current, output: result })
+        socketRef.current.emit('code-output', {
+          output: resultText,
+          status: statusText,
+          time: timeVal,
+          memory: memVal,
+          roomId: roomIdRef.current
+        })
       }
-    } catch (error) {
-      const err = 'Failed to execute code'
+    } catch (error: any) {
+      const err = `Execution failed: ${error.message || 'Network error'}`
       setOutput(err)
+      setExecStatus('Error')
       if (socketRef.current && roomIdRef.current) {
-        socketRef.current.emit('code-output', { roomId: roomIdRef.current, output: err })
+        socketRef.current.emit('code-output', {
+          output: err,
+          status: 'Error',
+          roomId: roomIdRef.current
+        })
       }
     } finally {
       setRunning(false)
@@ -568,7 +694,7 @@ export default function StudentCodingJudge() {
               </div>
               <div>
                 <h1 className={styles.pageTitle} style={{ margin: 0, fontSize: '20px' }}>Coding Judge &amp; Live VC</h1>
-                <p className={styles.pageSubtitle} style={{ margin: 0, fontSize: '12px' }}>Real-time candidate coding interview session</p>
+                <p className={styles.pageSubtitle} style={{ margin: 0, fontSize: '12px' }}>Multi-language compiler &amp; real-time technical assessment</p>
               </div>
             </div>
           </div>
@@ -897,21 +1023,29 @@ export default function StudentCodingJudge() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>Language:</span>
                         <span className="badge badge-purple" style={{ fontSize: '12px', fontWeight: 600 }}>
-                          {language.toUpperCase()}
+                          {languageLabels[language] || language.toUpperCase()}
                         </span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>(Interviewer controlled)</span>
+                        <button
+                          onClick={handleResetTemplate}
+                          className="btn btn-secondary btn-sm"
+                          title="Reset editor to starter boilerplate"
+                          style={{ height: '28px', padding: '0 8px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <RotateCcw size={11} />
+                          <span>Reset</span>
+                        </button>
                       </div>
 
                       <button 
                         onClick={runCode} 
                         disabled={running} 
                         className="btn btn-primary btn-sm" 
-                        style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
                       >
                         {running ? (
                           <>
                             <MorphingInfinity className="size-4" style={{ width: '14px', height: '14px' }} />
-                            <span>Running...</span>
+                            <span>Compiling &amp; Running...</span>
                           </>
                         ) : (
                           <>
@@ -925,7 +1059,7 @@ export default function StudentCodingJudge() {
                     <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', height: '420px', width: '100%' }}>
                       <Editor
                         height="100%"
-                        language={languageMap[language]}
+                        language={languageMap[language] || 'cpp'}
                         value={code}
                         onChange={handleCodeChange}
                         theme="vs-dark"
@@ -944,19 +1078,23 @@ export default function StudentCodingJudge() {
 
                 {(mobileTab === 'io' || (typeof window !== 'undefined' && window.innerWidth >= 1024)) && (
                   <div className={`glass ${styles.panel}`} style={{ padding: '16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '14px' }}>
+                      {/* Standard Input (stdin) */}
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Terminal size={14} strokeWidth={2} color="#10b981" />
-                          <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Input (stdin)</label>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Terminal size={14} strokeWidth={2} color="#10b981" />
+                            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Standard Input (stdin)</label>
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Optional</span>
                         </div>
                         <textarea
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
-                          placeholder="Enter stdin inputs here..."
+                          placeholder="Provide test inputs (e.g. 5 10)..."
                           style={{
                             width: '100%',
-                            height: '110px',
+                            height: '140px',
                             padding: '10px',
                             background: 'rgba(0,0,0,0.35)',
                             border: '1px solid var(--border)',
@@ -969,24 +1107,76 @@ export default function StudentCodingJudge() {
                         />
                       </div>
 
+                      {/* Execution Output Console Screen */}
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Terminal size={14} strokeWidth={2} color="#10b981" />
-                          <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Terminal Output</label>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Terminal size={14} strokeWidth={2} color="#10b981" />
+                            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Execution Output</label>
+                            {execStatus && (
+                              <span style={{
+                                fontSize: '10.5px',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                background: execStatus === 'Accepted' || execStatus === 'Success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                                color: execStatus === 'Accepted' || execStatus === 'Success' ? '#10b981' : '#ef4444',
+                                border: `1px solid ${execStatus === 'Accepted' || execStatus === 'Success' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`
+                              }}>
+                                {execStatus}
+                              </span>
+                            )}
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {execTime && (
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Clock size={11} /> {execTime}
+                              </span>
+                            )}
+                            {execMemory && (
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Cpu size={11} /> {execMemory}
+                              </span>
+                            )}
+                            {output && (
+                              <>
+                                <button
+                                  onClick={handleCopyOutput}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ padding: '2px 6px', height: '22px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                                  title="Copy Output"
+                                >
+                                  {outputCopied ? <Check size={11} color="#10b981" /> : <Copy size={11} />}
+                                  <span>{outputCopied ? 'Copied' : 'Copy'}</span>
+                                </button>
+                                <button
+                                  onClick={handleClearOutput}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ padding: '2px 6px', height: '22px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                                  title="Clear Console Output"
+                                >
+                                  <Trash2 size={11} />
+                                  <span>Clear</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
+
                         <pre style={{
-                          height: '110px',
+                          height: '140px',
                           padding: '10px',
-                          background: 'rgba(0,0,0,0.5)',
+                          background: 'rgba(0,0,0,0.55)',
                           borderRadius: '8px',
                           border: '1px solid var(--border)',
                           fontSize: '12.5px',
                           fontFamily: 'monospace',
-                          color: output.includes('Error') || output.includes('error') ? '#ef4444' : '#10b981',
+                          color: output.includes('Error') || output.includes('error') || output.includes('Exception') ? '#f43f5e' : '#10b981',
                           overflow: 'auto',
-                          margin: 0
+                          margin: 0,
+                          lineHeight: '1.5'
                         }}>
-                          {output || 'Output will appear here...'}
+                          {output || 'Output will appear here when you or the interviewer runs code...'}
                         </pre>
                       </div>
                     </div>
