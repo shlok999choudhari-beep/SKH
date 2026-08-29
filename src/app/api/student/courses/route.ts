@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 
-// GET /api/student/courses - Get all courses enrolled by the current student
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
@@ -29,7 +28,9 @@ export async function GET(request: NextRequest) {
               include: {
                 lessons: {
                   orderBy: { orderIndex: 'asc' }
-                }
+                },
+                assignments: true,
+                resources: true
               }
             }
           }
@@ -40,57 +41,52 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const mappedEnrollments = enrollments.map((enr: any) => {
+    const mappedCourses = enrollments.map((enr: any) => {
       const course = enr.course
       const allLessons = course.modules.flatMap((m: any) => m.lessons)
+      const allAssignments = course.modules.flatMap((m: any) => m.assignments || [])
       const totalLessons = allLessons.length
-
-      // Find last accessed or current lesson
-      let lastLesson = null
-      let currentModule = null
-
-      if (enr.lastLessonId) {
-        lastLesson = allLessons.find((l: any) => l.id === enr.lastLessonId)
-      }
-      if (!lastLesson && allLessons.length > 0) {
-        lastLesson = allLessons[0]
-      }
-
-      if (lastLesson) {
-        currentModule = course.modules.find((m: any) =>
-          m.lessons.some((l: any) => l.id === lastLesson.id)
-        )
-      } else if (course.modules.length > 0) {
-        currentModule = course.modules[0]
-      }
+      const totalActivities = totalLessons + allAssignments.length
 
       return {
         enrollmentId: enr.id,
         courseId: course.id,
         title: course.title,
+        shortName: course.shortName || '',
+        academicYear: course.academicYear || 'AY 2026-27',
+        semester: course.semester || 'Semester I',
+        department: course.department || 'Computer Engineering',
+        joinCode: course.joinCode,
         slug: course.slug,
         description: course.description,
-        thumbnail: course.thumbnail || '/placeholder-course.jpg',
+        thumbnail: course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60',
         category: course.category?.name || 'General',
         difficulty: course.difficulty,
         estimatedDuration: course.estimatedDuration,
-        trainerName: course.trainer?.user?.name || 'PlaceIQ Faculty',
+        trainerName: course.trainer?.user?.name || 'Prof. Rajesh Sharma',
         trainerRating: course.trainer?.rating || 4.9,
-        progressPercent: enr.progressPercent,
+        progressPercent: enr.progressPercent || 0,
         status: enr.status, // 'active' | 'completed' | 'dropped'
         enrolledAt: enr.enrolledAt,
         completedAt: enr.completedAt,
-        lastAccessedAt: enr.lastAccessedAt,
-        currentModuleName: currentModule?.title || 'Module 1 — Introduction',
-        lastLessonTitle: lastLesson?.title || 'Lesson 1.1',
-        lastLessonId: lastLesson?.id || null,
+        lastAccessedAt: enr.lastAccessedAt || enr.enrolledAt,
         totalModules: course.modules.length,
         totalLessons,
+        totalActivities,
         completedLessonsCount: enr.progress.filter((p: any) => p.lessonId).length
       }
     })
 
-    return NextResponse.json({ courses: mappedEnrollments })
+    // Separate recently accessed (sorted by lastAccessedAt, max 6) and all enrolled
+    const recentlyAccessed = [...mappedCourses]
+      .sort((a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime())
+      .slice(0, 6)
+
+    return NextResponse.json({
+      courses: mappedCourses,
+      recentlyAccessed,
+      totalCount: mappedCourses.length
+    })
   } catch (error: any) {
     console.error('Error fetching student enrolled courses:', error)
     return NextResponse.json({ error: 'Failed to fetch enrolled courses' }, { status: 500 })

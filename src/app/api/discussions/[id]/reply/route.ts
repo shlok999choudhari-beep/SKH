@@ -33,11 +33,43 @@ export async function POST(
       return NextResponse.json({ error: 'Reply content cannot be empty' }, { status: 400 })
     }
 
+    let studentId: number | null = null
+    let authorUserId: number = 1
+
+    if (session.role === 'student') {
+      const student = await prisma.student.findUnique({ where: { id: session.userId } })
+      if (student) {
+        studentId = student.id
+      }
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { id: session.userId },
+            ...(session.email ? [{ email: session.email }] : [])
+          ]
+        }
+      })
+      if (user) {
+        authorUserId = user.id
+      } else {
+        const fallbackUser = await prisma.user.findFirst()
+        if (fallbackUser) authorUserId = fallbackUser.id
+      }
+    } else {
+      const user = await prisma.user.findUnique({ where: { id: session.userId } })
+      if (user) {
+        authorUserId = user.id
+      } else {
+        const fallbackUser = await prisma.user.findFirst()
+        if (fallbackUser) authorUserId = fallbackUser.id
+      }
+    }
+
     const reply = await prisma.discussionReply.create({
       data: {
         discussionId,
-        authorId: session.userId,
-        studentId: session.role === 'student' ? session.userId : null,
+        authorId: authorUserId,
+        studentId,
         content: content.trim()
       },
       include: {

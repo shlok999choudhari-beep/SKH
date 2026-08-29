@@ -3,22 +3,15 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    const existingCount = await prisma.course.count()
-    if (existingCount > 0) {
-      return NextResponse.json({ message: 'Courses already exist', count: existingCount })
-    }
-
-    // 1. Create default categories
+    // 1. Create or ensure categories
     const categoriesData = [
-      { name: 'Full Stack Web Development', slug: 'full-stack-web', description: 'Frontend, backend, APIs, and modern web application development', icon: 'Code' },
-      { name: 'Data Structures & Algorithms', slug: 'dsa-algorithms', description: 'Core problem solving, computational complexity, and interview patterns', icon: 'Binary' },
-      { name: 'AI & Machine Learning', slug: 'ai-ml', description: 'Modern LLMs, neural architectures, PyTorch, and prompt engineering', icon: 'Brain' },
-      { name: 'Cloud & DevOps Architecture', slug: 'cloud-devops', description: 'AWS, Docker, Kubernetes, CI/CD pipelines, and scalable infra', icon: 'Cloud' },
-      { name: 'System Design & Distributed Systems', slug: 'system-design', description: 'Microservices, caching, database sharding, and high throughput systems', icon: 'Network' },
-      { name: 'Soft Skills & Behavioral Mastery', slug: 'soft-skills', description: 'Leadership, interview communication, and corporate etiquette', icon: 'Users' }
+      { name: 'Computer Science & Engineering', slug: 'cse', description: 'Core CS, algorithms, graphics, and system architectures', icon: 'Code' },
+      { name: 'Humanities & Social Sciences', slug: 'humanities', description: 'Value education, ethics, and professional communication', icon: 'Users' },
+      { name: 'Full Stack Web Development', slug: 'full-stack-web', description: 'Frontend, backend, APIs, and modern web engineering', icon: 'Layers' },
+      { name: 'Data Structures & Algorithms', slug: 'dsa-algorithms', description: 'Problem solving, computational complexity, and interview patterns', icon: 'Binary' }
     ]
 
-    const categories: any = {}
+    const categories: Record<string, any> = {}
     for (const cat of categoriesData) {
       const created = await prisma.courseCategory.upsert({
         where: { slug: cat.slug },
@@ -28,246 +21,302 @@ export async function POST(request: NextRequest) {
       categories[cat.slug] = created
     }
 
-    // 2. Fetch or assign a trainer
-    let firstTrainer = await prisma.trainer.findFirst({
-      include: { user: true }
+    // 2. Fetch or create a default trainer user and profile
+    let trainerUser = await prisma.user.findFirst({
+      where: { email: 'rajesh.sharma@placeiq.internal' }
     })
 
-    const sampleCourses = [
+    if (!trainerUser) {
+      trainerUser = await prisma.user.create({
+        data: {
+          name: 'Prof. Rajesh Sharma',
+          email: 'rajesh.sharma@placeiq.internal',
+          password: 'password123',
+          role: 'trainer',
+          status: 'active'
+        }
+      })
+    }
+
+    let trainer = await prisma.trainer.findFirst({
+      where: { userId: trainerUser.id }
+    })
+
+    if (!trainer) {
+      // Find an institution or fallback
+      let inst = await prisma.institution.findFirst()
+      if (!inst) {
+        inst = await prisma.institution.create({
+          data: {
+            name: 'PlaceIQ Institute of Technology',
+            domain: 'placeiq.internal',
+            contactEmail: 'admin@placeiq.internal'
+          }
+        })
+      }
+
+      trainer = await prisma.trainer.create({
+        data: {
+          userId: trainerUser.id,
+          institutionId: inst.id,
+          expertiseTags: 'OpenGL, Computer Graphics, GPU Architecture, Shaders',
+          subjects: 'Computer Graphics Lab, Computational Geometry',
+          bio: 'Associate Professor with 12+ years of research and teaching experience in real-time computer graphics and GPU rendering pipelines.',
+          rating: 4.9
+        }
+      })
+    }
+
+    // 3. Define the benchmark courses
+    const collegeCourses = [
       {
-        title: 'Full-Stack Next.js 15 & System Architecture Masterclass',
-        slug: 'full-stack-nextjs-system-architecture',
-        description: 'Comprehensive enterprise-grade full-stack engineering covering App Router, React Server Components, high-performance database design, caching patterns, and production deployments.',
-        thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
-        categoryId: categories['full-stack-web']?.id,
-        trainerId: firstTrainer?.id || null,
+        title: 'Computer Graphics Lab',
+        shortName: 'CGL',
+        slug: 'computer-graphics-lab',
+        joinCode: 'CGL-7F42K9',
+        academicYear: 'AY 2026-27',
+        semester: 'Semester I',
+        department: 'Department of Computer Engineering',
+        description: 'Hands-on laboratory curriculum exploring 2D/3D rendering algorithms, OpenGL graphics pipeline, shader programming, polygon clipping, and geometric transformations.',
+        thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+        categoryId: categories['cse']?.id,
+        trainerId: trainer.id,
         difficulty: 'Intermediate',
-        estimatedDuration: '8 Weeks (36 Hours)',
+        estimatedDuration: '14 Weeks (42 Hours)',
         learningObjectives: JSON.stringify([
-          'Architect full-stack applications with Next.js App Router and Server Actions',
-          'Design resilient database schemas with PostgreSQL and Prisma ORM',
-          'Implement JWT security, RBAC authorization, and session telemetry',
-          'Deploy production workloads with zero-downtime CI/CD pipelines'
+          'Master OpenGL graphics rendering pipeline and shader architectures',
+          'Implement fundamental 2D line and circle drawing algorithms (Bresenham, DDA)',
+          'Apply 2D and 3D geometric matrix transformations and projections',
+          'Implement Cohen-Sutherland and Sutherland-Hodgman polygon clipping algorithms'
         ]),
-        prerequisites: 'Foundational JavaScript/TypeScript and basic React knowledge.',
+        prerequisites: 'Fundamental knowledge of C/C++ or Python and Linear Algebra (Matrix Transformations).',
         status: 'published',
         modules: [
           {
-            title: 'Module 1: Foundations of Modern Web Engineering',
-            description: 'Introduction to full-stack paradigms, server/client boundaries, and modern frontend engines.',
+            title: 'General',
+            description: 'Course administrative guides, syllabus, question papers, and software installation manuals.',
             orderIndex: 0,
-            lessons: [
+            announcements: [
               {
-                title: 'Lesson 1.1: Next.js App Router & Hybrid Rendering Architecture',
-                description: 'Deconstructing React Server Components (RSC), Client Components, and Streaming SSR.',
-                duration: '25 mins',
-                orderIndex: 0,
-                content: '# Next.js Hybrid Architecture\n\nIn modern web engineering, understanding the split between Server Components and Client Components is critical.\n\n### Key Concepts:\n- **Server Components:** Render strictly on the server; zero client JS bundle impact.\n- **Client Components:** Interactive islands using `use client`.\n- **Streaming SSR:** Stream rendered HTML chunks using Suspense boundaries.',
-                videoUrl: 'https://www.youtube.com/watch?v=wm5gMKuwSYk',
-                resources: [
-                  { title: 'Next.js 15 Architecture Handbook (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/nextjs-architecture-guide.pdf', fileSize: 2400000, orderIndex: 0 },
-                  { title: 'Official Documentation & RFC References', type: 'EXTERNAL', url: 'https://nextjs.org/docs', orderIndex: 1 }
-                ]
+                title: 'Welcome to Computer Graphics Lab (AY 2026-27)',
+                content: 'Welcome students! Please ensure you have Visual Studio / CodeBlocks and freeglut/GLEW configured before the first practical session. Review the syllabus and installation manual attached below.',
+                isPinned: true
               },
               {
-                title: 'Lesson 1.2: Database Modeling with PostgreSQL & Prisma',
-                description: 'Best practices for schema design, migrations, indices, and avoiding N+1 queries.',
-                duration: '35 mins',
-                orderIndex: 1,
-                content: '# PostgreSQL Schema Design\n\nLearn how to construct normalized relational schemas with appropriate index strategies and cascade policies.',
-                videoUrl: 'https://www.youtube.com/watch?v=FMnlyiBag2k',
-                resources: [
-                  { title: 'Database Optimization Cheatsheet (Doc)', type: 'DOCUMENT', url: 'https://placeiq.site/docs/postgres-optimization.docx', fileSize: 850000, orderIndex: 0 }
-                ]
+                title: 'Lab Submission Guidelines & Grading Policy',
+                content: 'All practical submissions must include: 1. Handwritten theory derivations as clear photos/PDF, 2. Well-commented program code, 3. Output screenshots demonstrating test cases.',
+                isPinned: false
               }
-            ]
-          },
-          {
-            title: 'Module 2: Enterprise Authentication & Threat Mitigation',
-            description: 'Securing web applications with stateless JWTs, HTTP-only cookies, and rate-limiting defense.',
-            orderIndex: 1,
-            lessons: [
+            ],
+            resources: [
               {
-                title: 'Lesson 2.1: Modern Auth & Session Tokens',
-                description: 'Implementing high-assurance session verification with Jose JWT encryption.',
-                duration: '30 mins',
-                orderIndex: 0,
-                content: '# Authentication & Token Security\n\nExplore symmetric and asymmetric cryptographic signatures, secure cookie flags, and cross-site scripting mitigation.',
-                resources: [
-                  { title: 'Authentication Security Spec (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/auth-security-spec.pdf', fileSize: 1800000, orderIndex: 0 }
-                ]
+                title: 'Syllabus- Computer Graphics Lab',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/cgl-syllabus-2026.pdf',
+                fileSize: 1850000,
+                orderIndex: 0
+              },
+              {
+                title: 'OpenGL Tutorial',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/opengl-programming-guide.pdf',
+                fileSize: 3400000,
+                orderIndex: 1
+              },
+              {
+                title: 'OpenGL Installation Manual Link',
+                type: 'EXTERNAL',
+                url: 'https://www.opengl.org/documentation/install.html',
+                orderIndex: 2
+              },
+              {
+                title: 'Previous Year Question Papers',
+                type: 'DOCUMENT',
+                url: 'https://placeiq.site/docs/cgl-pyq-papers.docx',
+                fileSize: 920000,
+                orderIndex: 3
+              },
+              {
+                title: 'Course Description & Reference Textbook',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/computer-graphics-hearn-baker.pdf',
+                fileSize: 4200000,
+                orderIndex: 4
               }
             ]
           },
           {
-            title: 'Module 3: Production Deployment & Observability',
-            description: 'Docker containerization, monitoring logs, and distributed tracing.',
+            title: 'Practical No 1',
+            description: 'Introductory OpenGL program to draw basic 2D geometric primitives.',
+            orderIndex: 1,
+            assignments: [
+              {
+                title: 'Practical No. 1 : Develop a program to draw a triangle using OpenGL.',
+                openedAt: new Date('2026-08-27T00:00:00.000Z'),
+                dueDate: new Date('2026-09-07T00:00:00.000Z'),
+                maxMarks: 10,
+                description: '1. Add Handwritten Content as an Image in assignment.\n2. Include Program Code and Output Screenshots',
+                allowedFileTypes: 'pdf,zip,png,jpg,cpp',
+                submissionType: 'both',
+                status: 'published'
+              }
+            ]
+          },
+          {
+            title: 'Practical No. 2',
+            description: 'Rasterization algorithms for line drawing.',
             orderIndex: 2,
-            lessons: [
+            assignments: [
               {
-                title: 'Lesson 3.1: Containerization with Docker & Multi-stage Builds',
-                description: 'Minimizing Docker image footprints and optimizing CI caching.',
-                duration: '40 mins',
-                orderIndex: 0,
-                content: '# Multi-stage Docker Builds\n\nConstruct lean, production-ready container artifacts.',
-                resources: [
-                  { title: 'Docker Best Practices Reference', type: 'EXTERNAL', url: 'https://docs.docker.com/develop/develop-images/dockerfile_best-practices/', orderIndex: 0 }
-                ]
+                title: 'Practical No. 2 : Implement Bresenham\'s Line Generation Algorithm with slope cases.',
+                openedAt: new Date('2026-09-08T00:00:00.000Z'),
+                dueDate: new Date('2026-09-18T00:00:00.000Z'),
+                maxMarks: 10,
+                description: '1. Derive Bresenham decision parameter pk on handwritten sheets.\n2. Write OpenGL/C++ implementation for all 8 octants.\n3. Attach test cases and raster output screenshots.',
+                allowedFileTypes: 'pdf,zip,png,jpg,cpp',
+                submissionType: 'both',
+                status: 'published'
+              }
+            ]
+          },
+          {
+            title: 'Practical No. 3',
+            description: '2D Transformations and Matrix Manipulations.',
+            orderIndex: 3,
+            assignments: [
+              {
+                title: 'Practical No. 3 : 2D Geometric Transformations (Translation, Scaling, Rotation about arbitrary point).',
+                openedAt: new Date('2026-09-19T00:00:00.000Z'),
+                dueDate: new Date('2026-09-30T00:00:00.000Z'),
+                maxMarks: 10,
+                description: '1. Include composite transformation matrix derivations.\n2. Interactive keyboard-driven transformation program.\n3. Output verification.',
+                allowedFileTypes: 'pdf,zip,png,jpg,cpp',
+                submissionType: 'both',
+                status: 'published'
+              }
+            ]
+          },
+          {
+            title: 'Practical No. 4',
+            description: 'Clipping algorithms for viewport rendering.',
+            orderIndex: 4,
+            assignments: [
+              {
+                title: 'Practical No. 4 : Cohen-Sutherland Line Clipping Algorithm against rectangular window.',
+                openedAt: new Date('2026-10-01T00:00:00.000Z'),
+                dueDate: new Date('2026-10-12T00:00:00.000Z'),
+                maxMarks: 10,
+                description: '1. Implement 4-bit region outcode evaluation.\n2. Show before-clipping and after-clipping screenshots.\n3. Test with partially and fully clipped segments.',
+                allowedFileTypes: 'pdf,zip,png,jpg,cpp',
+                submissionType: 'both',
+                status: 'published'
               }
             ]
           }
         ]
       },
       {
-        title: 'Data Structures, Algorithms & LeetCode Interview Mastery',
-        slug: 'dsa-leetcode-interview-mastery',
-        description: 'Master core algorithmic patterns, dynamic programming, graph traversal, and technical interview problem-solving with top FAANG/Tier-1 patterns.',
-        thumbnail: 'https://images.unsplash.com/photo-1516116211227-bbc00e84b802?auto=format&fit=crop&w=800&q=80',
-        categoryId: categories['dsa-algorithms']?.id,
-        trainerId: firstTrainer?.id || null,
-        difficulty: 'Advanced',
-        estimatedDuration: '10 Weeks (50 Hours)',
+        title: 'Universal Human Values',
+        shortName: 'UHV',
+        slug: 'universal-human-values',
+        joinCode: 'UHV-8X29M1',
+        academicYear: 'AY 2026-27',
+        semester: 'Semester I',
+        department: 'Humanities & Social Sciences',
+        description: 'Holistic curriculum on self-exploration, harmony in human relationships, professional ethics, society and value education for engineering graduates.',
+        thumbnail: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
+        categoryId: categories['humanities']?.id,
+        trainerId: trainer.id,
+        difficulty: 'Beginner',
+        estimatedDuration: '10 Weeks (30 Hours)',
         learningObjectives: JSON.stringify([
-          'Master Two Pointers, Sliding Window, Monotonic Stacks, and Trie algorithms',
-          'Solve complex Tree and Graph algorithms (BFS, DFS, Dijkstra, TopoSort)',
-          'Formulate Multi-Dimensional Dynamic Programming recurrence relations',
-          'Ace FAANG/Tier-1 coding rounds and live technical whiteboard interviews'
+          'Develop holistic perspective towards life, profession, and happiness',
+          'Understand harmony at self, family, society, and nature levels',
+          'Cultivate professional ethics and social responsibility'
         ]),
-        prerequisites: 'Basic knowledge of Python, Java, or C++ syntax.',
+        prerequisites: 'Open mindset for introspective self-exploration.',
         status: 'published',
         modules: [
           {
-            title: 'Module 1: High-Yield Array & Pointer Patterns',
-            description: 'Sliding window, fast & slow pointers, prefix sums, and two-pointer intervals.',
+            title: 'General',
+            description: 'Course syllabus and introductory readings.',
             orderIndex: 0,
-            lessons: [
+            announcements: [
               {
-                title: 'Lesson 1.1: Two Pointers & Two-Sum Variants',
-                description: 'Optimizing O(N^2) brute forces down to O(N) linear scans.',
-                duration: '20 mins',
-                orderIndex: 0,
-                content: '# Two Pointer Techniques\n\nMaster the standard opposite-ends two pointer scan and the sliding window window-size invariant.',
-                resources: [
-                  { title: 'Two Pointers Pattern Reference (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/dsa-two-pointers.pdf', fileSize: 1200000, orderIndex: 0 }
-                ]
+                title: 'Course Introduction & Discussion Schedule',
+                content: 'Welcome to UHV. Please review the course syllabus and join weekly cohort dialogues on human values.',
+                isPinned: true
+              }
+            ],
+            resources: [
+              {
+                title: 'Syllabus - Universal Human Values',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/uhv-syllabus.pdf',
+                fileSize: 1200000,
+                orderIndex: 0
               },
               {
-                title: 'Lesson 1.2: Sliding Window Algorithm Mastery',
-                description: 'Fixed-size and dynamically expanding/contracting window problems.',
-                duration: '30 mins',
-                orderIndex: 1,
-                content: '# Dynamic Sliding Window\n\nLearn how to track valid state frequencies using hash maps and character frequency tables.',
-                resources: [
-                  { title: 'Sliding Window Practice Sheet (Doc)', type: 'DOCUMENT', url: 'https://placeiq.site/docs/sliding-window-problems.docx', fileSize: 620000, orderIndex: 0 }
-                ]
+                title: 'Foundation Course in Human Values Textbook',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/uhv-foundation-textbook.pdf',
+                fileSize: 3100000,
+                orderIndex: 1
               }
             ]
           },
           {
-            title: 'Module 2: Trees, Graphs & Dynamic Programming',
-            description: 'Tree traversals, Union-Find disjoint sets, topological sorting, and 1D/2D memoization.',
+            title: 'Module 1: Introduction to Value Education',
+            description: 'Understanding self-exploration as the process for value education.',
             orderIndex: 1,
-            lessons: [
+            assignments: [
               {
-                title: 'Lesson 2.1: Graph Traversal — BFS, DFS & Cycle Detection',
-                description: 'Detecting cycles in directed and undirected graphs, topological sorting via Kahn\'s algorithm.',
-                duration: '45 mins',
-                orderIndex: 0,
-                content: '# Graph Theory in Technical Interviews\n\nAdjacency list representations, visited sets, recursion stack cycle checks, and topological ordering.',
-                resources: [
-                  { title: 'Graph Algorithms Guide (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/graph-algorithms.pdf', fileSize: 2100000, orderIndex: 0 }
-                ]
+                title: 'Assignment 1: Reflection on Continuous Happiness & Prosperity',
+                openedAt: new Date('2026-08-25T00:00:00.000Z'),
+                dueDate: new Date('2026-09-10T00:00:00.000Z'),
+                maxMarks: 10,
+                description: 'Write a 500-word self-reflective essay analyzing physical facilities vs. relationship harmony in daily life.',
+                allowedFileTypes: 'pdf,docx,txt',
+                submissionType: 'both',
+                status: 'published'
               }
             ]
           }
         ]
       },
       {
-        title: 'Applied AI & Generative LLM Engineering for Production',
-        slug: 'applied-ai-llm-engineering',
-        description: 'Build enterprise-grade AI systems with Retrieval-Augmented Generation (RAG), vector embeddings, function calling, agentic loops, and model evaluation.',
-        thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
-        categoryId: categories['ai-ml']?.id,
-        trainerId: firstTrainer?.id || null,
-        difficulty: 'Intermediate',
-        estimatedDuration: '6 Weeks (28 Hours)',
+        title: 'Foundations of Computing',
+        shortName: 'FC',
+        slug: 'foundations-of-computing',
+        joinCode: 'FC-4K91T7',
+        academicYear: 'AY 2025-26',
+        semester: 'Semester II',
+        department: 'Department of Computer Engineering',
+        description: 'Core fundamentals of computer systems, digital logic, binary computation, computational theory, and algorithm principles.',
+        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        categoryId: categories['cse']?.id,
+        trainerId: trainer.id,
+        difficulty: 'Beginner',
+        estimatedDuration: '12 Weeks (36 Hours)',
         learningObjectives: JSON.stringify([
-          'Understand Transformer tokenization, attention mechanisms, and context windows',
-          'Build end-to-end RAG pipelines with semantic vector indexing and re-ranking',
-          'Implement structured outputs, tool-calling agents, and hallucination guardrails',
-          'Deploy AI apps with streaming responses and latency optimizations'
+          'Analyze Boolean algebra and digital logic circuits',
+          'Understand computer memory hierarchy and instruction sets',
+          'Model state machines and finite automata'
         ]),
-        prerequisites: 'Python or JavaScript proficiency and familiarity with REST APIs.',
+        prerequisites: 'Basic high school mathematics and logic reasoning.',
         status: 'published',
         modules: [
           {
-            title: 'Module 1: Generative AI Foundations & Embeddings',
-            description: 'Token mechanics, temperature, system prompts, and vector similarity metrics.',
+            title: 'General',
+            description: 'Course resources and syllabus.',
             orderIndex: 0,
-            lessons: [
+            resources: [
               {
-                title: 'Lesson 1.1: LLM Architecture & Structured Outputs',
-                description: 'Zero-shot prompting, JSON mode schemas, and temperature control.',
-                duration: '25 mins',
-                orderIndex: 0,
-                content: '# Structured LLM Prompting\n\nTechniques for eliciting strict JSON payloads from foundation models.',
-                resources: [
-                  { title: 'Prompt Engineering Cheatsheet (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/prompt-engineering.pdf', fileSize: 1500000, orderIndex: 0 }
-                ]
-              }
-            ]
-          },
-          {
-            title: 'Module 2: Retrieval-Augmented Generation (RAG)',
-            description: 'Chunking strategies, embedding models, vector databases, and cosine similarity.',
-            orderIndex: 1,
-            lessons: [
-              {
-                title: 'Lesson 2.1: Semantic Search & Vector Databases',
-                description: 'Setting up high-throughput vector indexes and context enrichment.',
-                duration: '35 mins',
-                orderIndex: 0,
-                content: '# RAG Pipelines in Production\n\nOptimizing chunk sizes, semantic overlap, and hybrid vector/lexical retrieval.',
-                resources: [
-                  { title: 'RAG Architecture Blueprint (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/rag-blueprint.pdf', fileSize: 3200000, orderIndex: 0 }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        title: 'Cloud Architecture & Microservices with AWS',
-        slug: 'cloud-architecture-aws-microservices',
-        description: 'Design highly available, fault-tolerant cloud architectures using AWS Lambda, ECS, SQS queues, API Gateways, and infrastructure-as-code.',
-        thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
-        categoryId: categories['cloud-devops']?.id,
-        trainerId: firstTrainer?.id || null,
-        difficulty: 'All Levels',
-        estimatedDuration: '6 Weeks (24 Hours)',
-        learningObjectives: JSON.stringify([
-          'Design resilient cloud solutions using AWS Well-Architected Framework',
-          'Deploy serverless microservices with AWS Lambda, API Gateway, and DynamoDB',
-          'Implement event-driven asynchronous processing using SQS and SNS queues',
-          'Secure cloud infrastructure using VPCs, security groups, and IAM policies'
-        ]),
-        prerequisites: 'Basic knowledge of web networking and command-line interfaces.',
-        status: 'published',
-        modules: [
-          {
-            title: 'Module 1: AWS Core Services & Networking',
-            description: 'VPCs, subnets, route tables, IAM roles, and security groups.',
-            orderIndex: 0,
-            lessons: [
-              {
-                title: 'Lesson 1.1: Virtual Private Clouds (VPC) & Security Boundaries',
-                description: 'Configuring private and public subnets with NAT gateways.',
-                duration: '30 mins',
-                orderIndex: 0,
-                content: '# AWS VPC Architecture\n\nSegregating internal databases from public traffic with security groups and network ACLs.',
-                resources: [
-                  { title: 'AWS VPC Architecture Guide (PDF)', type: 'PDF', url: 'https://placeiq.site/docs/aws-vpc-guide.pdf', fileSize: 1900000, orderIndex: 0 }
-                ]
+                title: 'Syllabus - Foundations of Computing',
+                type: 'PDF',
+                url: 'https://placeiq.site/docs/fc-syllabus.pdf',
+                fileSize: 1400000,
+                orderIndex: 0
               }
             ]
           }
@@ -275,44 +324,168 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    for (const cData of sampleCourses) {
-      const { modules, ...courseFields } = cData
-      const course = await prisma.course.create({
-        data: {
-          ...courseFields,
-          modules: {
-            create: modules.map((m: any) => ({
-              title: m.title,
-              description: m.description,
-              orderIndex: m.orderIndex,
-              lessons: {
-                create: m.lessons.map((l: any) => ({
-                  title: l.title,
-                  description: l.description,
-                  duration: l.duration,
-                  orderIndex: l.orderIndex,
-                  content: l.content,
-                  videoUrl: l.videoUrl || null,
-                  resources: {
-                    create: (l.resources || []).map((r: any) => ({
-                      title: r.title,
-                      type: r.type,
-                      url: r.url,
-                      fileSize: r.fileSize || null,
-                      orderIndex: r.orderIndex
-                    }))
-                  }
-                }))
-              }
-            }))
-          }
+    // 4. Create or update each course and its hierarchy
+    for (const cData of collegeCourses) {
+      let existingCourse = await prisma.course.findFirst({
+        where: {
+          OR: [
+            { slug: cData.slug },
+            { joinCode: cData.joinCode }
+          ]
         }
       })
+
+      if (existingCourse) {
+        // Update course attributes
+        await prisma.course.update({
+          where: { id: existingCourse.id },
+          data: {
+            title: cData.title,
+            shortName: cData.shortName,
+            academicYear: cData.academicYear,
+            semester: cData.semester,
+            department: cData.department,
+            joinCode: cData.joinCode,
+            joinCodeEnabled: true,
+            status: 'published',
+            description: cData.description,
+            thumbnail: cData.thumbnail
+          }
+        })
+      } else {
+        existingCourse = await prisma.course.create({
+          data: {
+            title: cData.title,
+            shortName: cData.shortName,
+            slug: cData.slug,
+            joinCode: cData.joinCode,
+            joinCodeEnabled: true,
+            academicYear: cData.academicYear,
+            semester: cData.semester,
+            department: cData.department,
+            description: cData.description,
+            thumbnail: cData.thumbnail,
+            categoryId: cData.categoryId,
+            trainerId: cData.trainerId,
+            difficulty: cData.difficulty,
+            estimatedDuration: cData.estimatedDuration,
+            learningObjectives: cData.learningObjectives,
+            prerequisites: cData.prerequisites,
+            status: cData.status
+          }
+        })
+      }
+
+      // Check modules count
+      const existingModCount = await prisma.courseModule.count({
+        where: { courseId: existingCourse.id }
+      })
+
+      if (existingModCount === 0 && cData.modules) {
+        for (const modData of cData.modules) {
+          const mod = await prisma.courseModule.create({
+            data: {
+              courseId: existingCourse.id,
+              title: modData.title,
+              description: modData.description,
+              orderIndex: modData.orderIndex
+            }
+          })
+
+          // Create resources
+          if (modData.resources) {
+            for (const res of modData.resources) {
+              await prisma.courseResource.create({
+                data: {
+                  moduleId: mod.id,
+                  title: res.title,
+                  type: res.type,
+                  url: res.url,
+                  fileSize: res.fileSize || null,
+                  orderIndex: res.orderIndex
+                }
+              })
+            }
+          }
+
+          // Create announcements
+          if (modData.announcements) {
+            for (const ann of modData.announcements) {
+              await prisma.courseAnnouncement.create({
+                data: {
+                  courseId: existingCourse.id,
+                  moduleId: mod.id,
+                  authorId: trainerUser.id,
+                  trainerId: trainer.id,
+                  title: ann.title,
+                  content: ann.content,
+                  isPinned: ann.isPinned,
+                  status: 'published'
+                }
+              })
+            }
+          }
+
+          // Create assignments
+          if (modData.assignments) {
+            for (const assign of modData.assignments) {
+              await prisma.assignment.create({
+                data: {
+                  courseId: existingCourse.id,
+                  moduleId: mod.id,
+                  trainerId: trainer.id,
+                  title: assign.title,
+                  description: assign.description,
+                  openedAt: assign.openedAt,
+                  dueDate: assign.dueDate,
+                  maxMarks: assign.maxMarks,
+                  allowedFileTypes: assign.allowedFileTypes || 'pdf,zip,docx,png',
+                  submissionType: assign.submissionType || 'both',
+                  status: assign.status || 'published'
+                }
+              })
+            }
+          }
+        }
+      }
     }
 
-    return NextResponse.json({ success: true, message: 'Seeded initial LMS courses successfully' })
+    // 5. If a student is currently logged in or default student exists, auto-enroll them in Computer Graphics Lab
+    const defaultStudent = await prisma.student.findFirst({
+      where: { email: { in: ['student@placeiq.internal', 'soham@placeiq.internal'] } }
+    }) || await prisma.student.findFirst()
+
+    if (defaultStudent) {
+      const cglCourse = await prisma.course.findFirst({
+        where: { slug: 'computer-graphics-lab' }
+      })
+
+      if (cglCourse) {
+        await prisma.courseEnrollment.upsert({
+          where: {
+            courseId_studentId: { courseId: cglCourse.id, studentId: defaultStudent.id }
+          },
+          update: {
+            lastAccessedAt: new Date()
+          },
+          create: {
+            courseId: cglCourse.id,
+            studentId: defaultStudent.id,
+            status: 'active',
+            progressPercent: 35,
+            enrolledAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+            lastAccessedAt: new Date()
+          }
+        })
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'College LMS courses and practical curriculums seeded successfully.'
+    })
   } catch (error: any) {
-    console.error('Error seeding LMS courses:', error)
+    console.error('Error seeding college courses:', error)
     return NextResponse.json({ error: 'Failed to seed courses', details: error.message }, { status: 500 })
   }
 }

@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import styles from '../../quizzes.module.css'
+import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import {
   Clock,
@@ -14,7 +16,8 @@ import {
   Send,
   HelpCircle,
   Check,
-  AlertTriangle
+  AlertTriangle,
+  LogOut
 } from 'lucide-react'
 
 export default function TakeQuizPage() {
@@ -30,6 +33,7 @@ export default function TakeQuizPage() {
   const [submitting, setSubmitting] = useState(false)
   const [secondsRemaining, setSecondsRemaining] = useState<number | null>(null)
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -56,7 +60,7 @@ export default function TakeQuizPage() {
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg('A network error occurred.')
+      setErrorMsg('A network error occurred while initializing assessment.')
     } finally {
       setLoading(false)
     }
@@ -83,7 +87,6 @@ export default function TakeQuizPage() {
   }, [secondsRemaining !== null])
 
   const handleAutoSubmit = () => {
-    alert('Time limit expired! Submitting your answers automatically...')
     handleSubmitQuiz()
   }
 
@@ -121,40 +124,47 @@ export default function TakeQuizPage() {
           answers: selectedAnswers
         })
       })
-
       const data = await res.json()
       if (res.ok && data.success) {
-        router.push(`/student/quizzes/${quizId}/results/${data.attemptId}`)
+        router.push(`/student/quizzes/${quizId}/results/${attemptData.attemptId}`)
       } else {
-        alert(data.error || 'Failed to submit quiz.')
+        alert(data.error || 'Failed to submit assessment.')
         setSubmitting(false)
       }
     } catch (err) {
       console.error(err)
-      alert('An error occurred during submission.')
+      alert('Error submitting assessment.')
       setSubmitting(false)
     }
   }
 
   if (loading) {
     return (
-      <div className={styles.container} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: '14px' }}>
-        <MorphingInfinity className="size-16" style={{ width: '56px', height: '56px', color: '#8b5cf6' }} />
-        <p style={{ color: 'var(--text-secondary)' }}>Preparing your assessment environment...</p>
+      <div className={styles.layout}>
+        <StudentSidebar />
+        <div className={styles.content} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '14px' }}>
+          <MorphingInfinity className="size-16" style={{ width: '56px', height: '56px', color: '#8b5cf6' }} />
+          <p style={{ color: 'var(--text-secondary)' }}>Preparing your assessment environment...</p>
+        </div>
       </div>
     )
   }
 
   if (errorMsg || !attemptData) {
     return (
-      <div className={styles.container} style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center' }}>
-        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '2.5rem' }}>
-          <AlertCircle size={40} color="#ef4444" style={{ margin: '0 auto 1rem' }} />
-          <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Cannot Start Assessment</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>{errorMsg}</p>
-          <Link href={`/student/quizzes/${quizId}`} className="btn btn-primary btn-sm">
-            <span>Back to Quiz Overview</span>
-          </Link>
+      <div className={styles.layout}>
+        <StudentSidebar />
+        <div className={styles.content}>
+          <div className={styles.main}>
+            <div style={{ maxWidth: '600px', margin: '3rem auto', textAlign: 'center', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '2.5rem' }}>
+              <AlertCircle size={44} color="#ef4444" style={{ margin: '0 auto 1rem' }} />
+              <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Cannot Start Assessment</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5' }}>{errorMsg}</p>
+              <Link href={`/student/quizzes/${quizId}`} className="btn btn-primary btn-sm">
+                Back to Quiz Overview
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -164,150 +174,162 @@ export default function TakeQuizPage() {
   const currentQuestion = questions[currentIndex]
   const isLastQuestion = currentIndex === questions.length - 1
   const answeredCount = Object.keys(selectedAnswers).filter(k => (selectedAnswers[Number(k)] || []).length > 0).length
-  const progressPercent = Math.round((answeredCount / questions.length) * 100)
+  const progressPercent = Math.round(((currentIndex + 1) / questions.length) * 100)
   const isTimeWarning = secondsRemaining !== null && secondsRemaining < 120 // less than 2 mins
 
   return (
-    <div className={styles.playerLayout}>
-      {/* Sticky Player Header */}
-      <div className={styles.playerHeader}>
-        <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Attempt {attemptData.attemptNumber} • {attemptData.quizTitle}
-          </div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
-            Question {currentIndex + 1} of {questions.length}
-          </div>
-        </div>
+    <div className={styles.layout}>
+      <StudentSidebar />
+      <div className={styles.content}>
+        <main className={styles.main}>
+          <div className={styles.playerLayout}>
+            {/* Player Top Navigation Bar */}
+            <div className={styles.playerHeader}>
+              <div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  Attempt #{attemptData.attemptNumber} • {attemptData.quizTitle}
+                </div>
+                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  Question {currentIndex + 1} of {questions.length}
+                </div>
+              </div>
 
-        <div className={`${styles.timerBadge} ${isTimeWarning ? styles.timerWarning : ''}`}>
-          <Clock size={16} strokeWidth={2.5} />
-          <span>{formatTimer(secondsRemaining)}</span>
-        </div>
-      </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className={`${styles.timerBadge} ${isTimeWarning ? styles.timerWarning : ''}`}>
+                  <Clock size={16} strokeWidth={2.5} />
+                  <span>{formatTimer(secondsRemaining)}</span>
+                </div>
 
-      {/* Progress Track */}
-      <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '99px', overflow: 'hidden', marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            height: '100%',
-            width: `${((currentIndex + 1) / questions.length) * 100}%`,
-            background: 'linear-gradient(90deg, #8b5cf6, #3b82f6)',
-            borderRadius: '99px',
-            transition: 'width 0.3s ease'
-          }}
-        />
-      </div>
-
-      {/* Question Card */}
-      {currentQuestion && (
-        <div className={styles.questionCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <span className="badge badge-purple" style={{ textTransform: 'uppercase', fontSize: '10.5px' }}>
-              {currentQuestion.type === 'mcq' ? 'Single Choice (MCQ)' : currentQuestion.type === 'multiple_select' ? 'Multiple Select' : 'True / False'}
-            </span>
-            <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              {currentQuestion.marks} Marks
-            </span>
-          </div>
-
-          <h2 className={styles.questionTitle}>{currentQuestion.question}</h2>
-
-          {/* Options List */}
-          <div className={styles.optionsList}>
-            {currentQuestion.options?.map((opt: any, optIdx: number) => {
-              const selectedList = selectedAnswers[currentQuestion.id] || []
-              const isSelected = selectedList.includes(opt.id)
-
-              return (
-                <div
-                  key={opt.id}
-                  className={`${styles.optionItem} ${isSelected ? styles.optionItemSelected : ''}`}
-                  onClick={() => handleSelectOption(currentQuestion.id, opt.id, currentQuestion.type)}
+                <button
+                  type="button"
+                  onClick={() => setShowExitConfirm(true)}
+                  className="btn btn-ghost btn-sm"
+                  style={{ color: 'var(--text-muted)', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                 >
-                  <div className={styles.optionIndicator}>
-                    {isSelected && <Check size={13} strokeWidth={3} />}
-                  </div>
-                  <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                    {opt.optionText}
+                  <LogOut size={13} />
+                  <span>Exit</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Progress Track */}
+            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '99px', overflow: 'hidden' }}>
+              <div
+                style={{
+                  height: '100%',
+                  width: `${progressPercent}%`,
+                  background: 'linear-gradient(90deg, #8b5cf6, #3b82f6)',
+                  borderRadius: '99px',
+                  transition: 'width 0.3s ease'
+                }}
+              />
+            </div>
+
+            {/* Question Card */}
+            {currentQuestion && (
+              <div className={styles.questionCard}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <span className="badge badge-purple" style={{ textTransform: 'uppercase', fontSize: '10.5px' }}>
+                    {currentQuestion.type === 'mcq' ? 'Single Choice (MCQ)' : currentQuestion.type === 'multiple_select' ? 'Multiple Select' : 'True / False'}
+                  </span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    {currentQuestion.marks} {currentQuestion.marks === 1 ? 'Mark' : 'Marks'}
                   </span>
                 </div>
-              )
-            })}
+
+                <h2 className={styles.questionTitle}>{currentQuestion.question}</h2>
+
+                {/* Options List */}
+                <div className={styles.optionsList}>
+                  {currentQuestion.options?.map((opt: any) => {
+                    const selectedList = selectedAnswers[currentQuestion.id] || []
+                    const isSelected = selectedList.includes(opt.id)
+
+                    return (
+                      <div
+                        key={opt.id}
+                        className={`${styles.optionItem} ${isSelected ? styles.optionItemSelected : ''}`}
+                        onClick={() => handleSelectOption(currentQuestion.id, opt.id, currentQuestion.type)}
+                      >
+                        <div className={styles.optionIndicator}>
+                          {isSelected && <Check size={13} strokeWidth={3} />}
+                        </div>
+                        <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
+                          {opt.optionText}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Question Number Pills Navigation */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', padding: '8px 0' }}>
+              {questions.map((q: any, idx: number) => {
+                const isAnswered = (selectedAnswers[q.id] || []).length > 0
+                const isCurrent = idx === currentIndex
+
+                return (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`${styles.navPill} ${isCurrent ? styles.navPillCurrent : isAnswered ? styles.navPillAnswered : ''}`}
+                  >
+                    {idx + 1}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Footer Navigation Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', paddingTop: '10px' }}>
+              <button
+                type="button"
+                disabled={currentIndex === 0}
+                onClick={() => setCurrentIndex(prev => prev - 1)}
+                className="btn btn-secondary btn-sm"
+                style={{ opacity: currentIndex === 0 ? 0.4 : 1, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <ArrowLeft size={14} />
+                <span>Previous Question</span>
+              </button>
+
+              {isLastQuestion ? (
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmSubmit(true)}
+                  className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <span>Finish &amp; Submit Assessment</span>
+                  <Send size={14} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setCurrentIndex(prev => prev + 1)}
+                  className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <span>Next Question</span>
+                  <ArrowRight size={14} />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Question Number Pills Navigation */}
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '2rem', justifyContent: 'center' }}>
-        {questions.map((q: any, idx: number) => {
-          const isAnswered = (selectedAnswers[q.id] || []).length > 0
-          const isCurrent = idx === currentIndex
-
-          return (
-            <button
-              key={q.id}
-              onClick={() => setCurrentIndex(idx)}
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: 'var(--radius-sm)',
-                border: isCurrent ? '2px solid #8b5cf6' : '1px solid var(--border)',
-                background: isCurrent ? 'rgba(139, 92, 246, 0.2)' : isAnswered ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
-                color: isCurrent ? '#c4b5fd' : isAnswered ? '#6ee7b7' : 'var(--text-secondary)',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                cursor: 'pointer'
-              }}
-            >
-              {idx + 1}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Footer Navigation Buttons */}
-      <div className={styles.playerFooter}>
-        <button
-          type="button"
-          disabled={currentIndex === 0}
-          onClick={() => setCurrentIndex(prev => prev - 1)}
-          className="btn btn-secondary btn-sm"
-          style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}
-        >
-          <ArrowLeft size={14} />
-          <span>Previous Question</span>
-        </button>
-
-        {isLastQuestion ? (
-          <button
-            type="button"
-            onClick={() => setShowConfirmSubmit(true)}
-            className="btn btn-primary btn-sm"
-          >
-            <span>Finish & Submit Assessment</span>
-            <Send size={14} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setCurrentIndex(prev => prev + 1)}
-            className="btn btn-primary btn-sm"
-          >
-            <span>Next Question</span>
-            <ArrowRight size={14} />
-          </button>
-        )}
+        </main>
       </div>
 
       {/* Submit Confirmation Modal */}
       {showConfirmSubmit && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', maxWidth: '440px', width: '100%', padding: '2rem', textAlign: 'center' }}>
-            <AlertTriangle size={36} color="#f59e0b" style={{ margin: '0 auto 0.75rem' }} />
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Submit Assessment?</h3>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              You have answered {answeredCount} of {questions.length} questions. Are you ready to submit your answers for evaluation?
+        <div className={styles.modalBackdrop} onClick={() => setShowConfirmSubmit(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <AlertTriangle size={40} color="#f59e0b" style={{ margin: '0 auto 0.75rem' }} />
+            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '0.5rem', fontWeight: 700 }}>Submit Assessment?</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              You have answered <strong>{answeredCount}</strong> of <strong>{questions.length}</strong> questions. Are you ready to submit your answers for evaluation?
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <button
@@ -325,6 +347,35 @@ export default function TakeQuizPage() {
               >
                 {submitting ? 'Evaluating...' : 'Confirm Submit'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div className={styles.modalBackdrop} onClick={() => setShowExitConfirm(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <AlertCircle size={40} color="#ef4444" style={{ margin: '0 auto 0.75rem' }} />
+            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '0.5rem', fontWeight: 700 }}>Exit Assessment?</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              Your timer is currently running. Exiting without submitting will forfeit this attempt.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowExitConfirm(false)}
+                className="btn btn-secondary btn-sm"
+              >
+                Continue Quiz
+              </button>
+              <Link
+                href={`/student/quizzes/${quizId}`}
+                className="btn btn-primary btn-sm"
+                style={{ background: '#ef4444', borderColor: '#ef4444', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                Exit Now
+              </Link>
             </div>
           </div>
         </div>

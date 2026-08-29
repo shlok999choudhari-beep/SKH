@@ -3,8 +3,30 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { z } from 'zod'
 
+function generateCourseCode(title: string): string {
+  const words = title.trim().split(/\s+/).filter(Boolean)
+  let prefix = ''
+  if (words.length >= 2) {
+    prefix = words.map(w => w[0].toUpperCase()).slice(0, 3).join('')
+  } else if (words.length === 1) {
+    prefix = words[0].slice(0, 3).toUpperCase()
+  }
+  if (!prefix || prefix.length < 2) prefix = 'CRS'
+
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+  let randomPart = ''
+  for (let i = 0; i < 6; i++) {
+    randomPart += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return `${prefix}-${randomPart}`
+}
+
 const createCourseSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
+  shortName: z.string().optional(),
+  academicYear: z.string().optional(),
+  semester: z.string().optional(),
+  department: z.string().optional(),
   description: z.string().optional(),
   categoryId: z.number().nullable().optional(),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced', 'All Levels']).default('Beginner'),
@@ -43,7 +65,10 @@ export async function GET(request: NextRequest) {
     if (search.trim()) {
       where.OR = [
         { title: { contains: search.trim(), mode: 'insensitive' } },
-        { description: { contains: search.trim(), mode: 'insensitive' } }
+        { description: { contains: search.trim(), mode: 'insensitive' } },
+        { department: { contains: search.trim(), mode: 'insensitive' } },
+        { shortName: { contains: search.trim(), mode: 'insensitive' } },
+        { joinCode: { contains: search.trim(), mode: 'insensitive' } }
       ]
     }
 
@@ -72,7 +97,7 @@ export async function GET(request: NextRequest) {
       orderBy = { title: 'asc' }
     }
 
-    const courses = await prisma.course.findMany({
+    let courses = await prisma.course.findMany({
       where,
       orderBy,
       take: limit,
@@ -120,15 +145,16 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // If courses table is empty, auto-seed with rich sample courses
-    if (courses.length === 0 && !search && !category && !difficulty && !trainerIdParam) {
+    // If courses table is empty or missing CGL, auto-seed
+    if (courses.length === 0 || !courses.some((c: any) => c.slug === 'computer-graphics-lab')) {
       try {
         const seedUrl = new URL('/api/courses/seed', request.url)
         await fetch(seedUrl.toString(), { method: 'POST' })
         // Refetch after seeding
-        const seededCourses = await prisma.course.findMany({
+        courses = await prisma.course.findMany({
           where,
           orderBy,
+          take: limit,
           include: {
             category: true,
             trainer: {
@@ -145,12 +171,21 @@ export async function GET(request: NextRequest) {
                 title: true,
                 _count: { select: { lessons: true, resources: true } }
               }
-            }
+            },
+            enrollments: session?.role === 'student' ? {
+              where: { studentId: session.userId },
+              select: {
+                id: true,
+                status: true,
+                progressPercent: true,
+                enrolledAt: true,
+                lastAccessedAt: true
+              }
+            } : false
           }
         })
-        return NextResponse.json({ courses: seededCourses })
-      } catch {
-        // Continue with empty list if auto-seed fails
+      } catch (seedErr) {
+        console.warn('Auto-seed check warning:', seedErr)
       }
     }
 
@@ -164,9 +199,14 @@ export async function GET(request: NextRequest) {
       return {
         id: course.id,
         title: course.title,
+        shortName: course.shortName || '',
+        academicYear: course.academicYear || 'AY 2026-27',
+        semester: course.semester || 'Semester I',
+        department: course.department || 'Computer Engineering',
+        joinCode: course.joinCode,
         slug: course.slug,
         description: course.description,
-        thumbnail: course.thumbnail || '/placeholder-course.jpg',
+        thumbnail: course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60',
         category: course.category?.name || 'General',
         categorySlug: course.category?.slug || 'general',
         difficulty: course.difficulty,
@@ -222,13 +262,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate unique slug
+    // Generate unique slug and course code
     const baseSlug = validated.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     const uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`
+    const generatedCode = generateCourseCode(validated.title)
 
     const newCourse = await prisma.course.create({
       data: {
         title: validated.title,
+        shortName: validated.shortName || (validated.title.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 4)),
+        academicYear: validated.academicYear || 'AY 2026-27',
+        semester: validated.semester || 'Semester I',
+        department: validated.department || 'Computer Engineering',
+        joinCode: generatedCode,
+        joinCodeEnabled: true,
         slug: uniqueSlug,
         description: validated.description || '',
         categoryId: validated.categoryId || null,

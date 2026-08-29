@@ -5,19 +5,22 @@ import { askCourseAssistant } from '@/lib/lmsAiService'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSession(req)
+    const session = await getSession()
     const { searchParams } = new URL(req.url)
     const courseIdParam = searchParams.get('courseId')
     const conversationIdParam = searchParams.get('conversationId')
 
     const courseId = courseIdParam ? parseInt(courseIdParam, 10) : undefined
 
-    let studentId: number | undefined
+    let validStudentId: number | undefined
+    let validUserId: number | undefined
+
     if (session?.role === 'student' && session.userId) {
-      const student = await prisma.student.findFirst({
-        where: { email: session.email || '' }
-      })
-      if (student) studentId = student.id
+      const student = await prisma.student.findUnique({ where: { id: session.userId } })
+      if (student) validStudentId = student.id
+    } else if (session?.userId) {
+      const user = await prisma.user.findUnique({ where: { id: session.userId } })
+      if (user) validUserId = user.id
     }
 
     if (conversationIdParam) {
@@ -39,7 +42,7 @@ export async function GET(req: NextRequest) {
     // List recent conversations
     const conversations = await prisma.aiConversation.findMany({
       where: {
-        ...(studentId ? { studentId } : session?.userId ? { userId: session.userId } : {}),
+        ...(validStudentId ? { studentId: validStudentId } : validUserId ? { userId: validUserId } : {}),
         ...(courseId ? { courseId } : {})
       },
       include: {
@@ -63,7 +66,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getSession(req)
+    const session = await getSession()
     const body = await req.json()
     const { courseId, moduleId, lessonId, query, conversationId } = body
 
@@ -72,66 +75,58 @@ export async function POST(req: NextRequest) {
     }
 
     const cId = parseInt(courseId.toString(), 10)
-    let studentId: number | undefined
-    let userId: number | undefined = session?.userId
 
-    if (session?.role === 'student') {
-      const student = await prisma.student.findFirst({
-        where: { email: session.email || '' }
-      })
-      if (student) {
-        studentId = student.id
-        // Verify course enrollment access
-        const enrollment = await prisma.courseEnrollment.findUnique({
-          where: {
-            courseId_studentId: {
-              courseId: cId,
-              studentId: student.id
-            }
-          }
-        })
-        if (!enrollment) {
-          // If not enrolled yet, check if course is published
-          const course = await prisma.course.findUnique({ where: { id: cId } })
-          if (!course) {
-            return NextResponse.json({ error: 'Course not found or unauthorized' }, { status: 403 })
-          }
-        }
-      }
+    let validStudentId: number | null = null
+    let validUserId: number | null = null
+
+    if (session?.role === 'student' && session.userId) {
+      const student = await prisma.student.findUnique({ where: { id: session.userId } })
+      if (student) validStudentId = student.id
+    } else if (session?.userId) {
+      const user = await prisma.user.findUnique({ where: { id: session.userId } })
+      if (user) validUserId = user.id
     }
 
     // 1. Find or create AI Conversation
     let activeConversation: any = null
     if (conversationId) {
-      activeConversation = await prisma.aiConversation.findUnique({
-        where: { id: parseInt(conversationId.toString(), 10) },
-        include: {
-          messages: {
-            orderBy: { createdAt: 'asc' },
-            take: 6
+      try {
+        activeConversation = await prisma.aiConversation.findUnique({
+          where: { id: parseInt(conversationId.toString(), 10) },
+          include: {
+            messages: {
+              orderBy: { createdAt: 'asc' },
+              take: 6
+            }
           }
-        }
-      })
+        })
+      } catch (err) {
+        console.warn('[AI Assistant] Conversation lookup warning:', err)
+      }
     }
 
     if (!activeConversation) {
-      activeConversation = await prisma.aiConversation.create({
-        data: {
-          courseId: cId,
-          studentId: studentId || null,
-          userId: userId || null,
-          moduleId: moduleId ? parseInt(moduleId.toString(), 10) : null,
-          lessonId: lessonId ? parseInt(lessonId.toString(), 10) : null,
-          title: query.trim().slice(0, 50) + (query.length > 50 ? '...' : '')
-        },
-        include: {
-          messages: true
-        }
-      })
+      try {
+        activeConversation = await prisma.aiConversation.create({
+          data: {
+            courseId: cId,
+            studentId: validStudentId,
+            userId: validUserId,
+            moduleId: moduleId ? parseInt(moduleId.toString(), 10) : null,
+            lessonId: lessonId ? parseInt(lessonId.toString(), 10) : null,
+            title: query.trim().slice(0, 50) + (query.length > 50 ? '...' : '')
+          },
+          include: {
+            messages: true
+          }
+        })
+      } catch (convErr) {
+        console.warn('[AI Assistant] Conversation create warning:', convErr)
+      }
     }
 
     // Format previous messages
-    const history = (activeConversation.messages || []).map((m: any) => ({
+    const history = (activeConversation?.messages || []).map((m: any) => ({
       role: m.sender === 'user' ? ('user' as const) : ('assistant' as const),
       content: m.content
     }))
@@ -145,39 +140,49 @@ export async function POST(req: NextRequest) {
       conversationHistory: history
     })
 
-    // 3. Save User message and Assistant response
-    await prisma.aiMessage.create({
-      data: {
-        conversationId: activeConversation.id,
-        sender: 'user',
-        content: query.trim(),
-        tokensUsed: Math.ceil(query.length / 4)
+    // 3. Save User message and Assistant response if conversation exists
+    let userMsgId: number | null = null
+    let assistantMsgId: number | null = null
+
+    if (activeConversation?.id) {
+      try {
+        const uMsg = await prisma.aiMessage.create({
+          data: {
+            conversationId: activeConversation.id,
+            sender: 'user',
+            content: query.trim(),
+            tokensUsed: Math.ceil(query.length / 4)
+          }
+        })
+        userMsgId = uMsg.id
+
+        const aMsg = await prisma.aiMessage.create({
+          data: {
+            conversationId: activeConversation.id,
+            sender: 'assistant',
+            content: aiResult.answer,
+            sources: JSON.stringify(aiResult.sources),
+            tokensUsed: aiResult.tokensUsed
+          }
+        })
+        assistantMsgId = aMsg.id
+
+        await prisma.aiConversation.update({
+          where: { id: activeConversation.id },
+          data: { updatedAt: new Date() }
+        })
+      } catch (msgErr) {
+        console.warn('[AI Assistant] Message persist warning:', msgErr)
       }
-    })
+    }
 
-    const assistantMsg = await prisma.aiMessage.create({
-      data: {
-        conversationId: activeConversation.id,
-        sender: 'assistant',
-        content: aiResult.answer,
-        sources: JSON.stringify(aiResult.sources),
-        tokensUsed: aiResult.tokensUsed
-      }
-    })
-
-    // Update conversation timestamp
-    await prisma.aiConversation.update({
-      where: { id: activeConversation.id },
-      data: { updatedAt: new Date() }
-    })
-
-    // Record AI usage metric
-    if (userId) {
+    // Record AI usage metric safely
+    if (validUserId || validStudentId) {
       try {
         await prisma.aiUsage.create({
           data: {
-            userId,
-            studentId: studentId || null,
+            userId: validUserId,
+            studentId: validStudentId,
             feature: 'assistant',
             tokensUsed: aiResult.tokensUsed
           }
@@ -189,8 +194,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      conversationId: activeConversation.id,
-      messageId: assistantMsg.id,
+      conversationId: activeConversation?.id || null,
+      messageId: assistantMsgId,
       answer: aiResult.answer,
       sources: aiResult.sources,
       provider: aiResult.provider

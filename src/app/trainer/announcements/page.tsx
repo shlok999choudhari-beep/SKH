@@ -242,8 +242,8 @@ export default function TrainerAnnouncementsPage() {
 
       {/* Main Feed Content */}
       {loading ? (
-        <div className={styles.loadingBox}>
-          <MorphingInfinity className={styles.spinner} />
+        <div className={styles.loadingBox} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '30vh', gap: '1rem', padding: '3rem 1rem', textAlign: 'center' }}>
+          <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#8b5cf6', margin: '0 auto' }} />
           <div>
             <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '1rem', marginBottom: '4px' }}>
               Loading Announcements

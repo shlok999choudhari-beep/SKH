@@ -1,587 +1,219 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import styles from '../courses.module.css'
+import CourseWorkspace from '@/components/CourseWorkspace'
+import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import {
-  ChevronDown,
-  ChevronUp,
-  FileText,
-  Video,
-  ExternalLink,
   BookOpen,
-  CheckCircle2,
-  Clock,
-  Layers,
-  Award,
   ArrowLeft,
+  KeyRound,
+  CheckCircle2,
+  Lock,
   ArrowRight,
-  Zap,
-  PlayCircle,
   Sparkles,
-  ShieldCheck,
-  Check,
-  FileCheck,
-  HelpCircle,
-  Megaphone,
-  MessageSquare,
-  Download
+  Layers,
+  Clock,
+  Users
 } from 'lucide-react'
 
-export default function CourseDetailsPage() {
+export default function StudentCourseDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const courseId = params?.id as string
+  const courseId = params?.id ? parseInt(params.id as string, 10) : 0
 
   const [course, setCourse] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({})
-  const [enrolling, setEnrolling] = useState(false)
-  const [announcements, setAnnouncements] = useState<any[]>([])
-  const [completionData, setCompletionData] = useState<any>(null)
-  const [claimingCert, setClaimingCert] = useState(false)
-  const [certSuccessMsg, setCertSuccessMsg] = useState('')
+  const [joinCodeInput, setJoinCodeInput] = useState('')
+  const [joining, setJoining] = useState(false)
+  const [joinError, setJoinError] = useState('')
 
   useEffect(() => {
     if (courseId) {
-      fetchCourseDetails()
-      fetchAnnouncements()
-      fetchCompletion()
+      fetchCourseCheck()
     }
   }, [courseId])
 
-  const fetchAnnouncements = async () => {
-    try {
-      const res = await fetch(`/api/announcements?courseId=${courseId}`)
-      const data = await res.json()
-      if (data.announcements) setAnnouncements(data.announcements)
-    } catch (err) {
-      console.error('Error fetching announcements:', err)
-    }
-  }
-
-  const fetchCompletion = async () => {
-    try {
-      const res = await fetch(`/api/courses/${courseId}/completion`)
-      const data = await res.json()
-      if (data.completion) setCompletionData(data.completion)
-    } catch (err) {
-      console.error('Error fetching completion:', err)
-    }
-  }
-
-  const handleClaimCertificate = async () => {
-    setClaimingCert(true)
-    setCertSuccessMsg('')
-    try {
-      const res = await fetch(`/api/courses/${courseId}/completion`, { method: 'POST' })
-      const data = await res.json()
-      if (data.success) {
-        setCertSuccessMsg('🎉 Certificate issued successfully and added to your Document Vault!')
-        fetchCompletion()
-      } else {
-        alert(data.error || 'Failed to issue certificate')
-      }
-    } catch (err: any) {
-      alert(err.message || 'Error claiming certificate')
-    } finally {
-      setClaimingCert(false)
-    }
-  }
-
-  const fetchCourseDetails = async () => {
+  const fetchCourseCheck = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/courses/${courseId}`)
+      const res = await fetch(`/api/courses/${courseId}`, { cache: 'no-store' })
       const data = await res.json()
       if (data.course) {
         setCourse(data.course)
-        // Expand first module by default
-        const initialExpanded: Record<number, boolean> = {}
-        data.course.modules?.forEach((m: any, idx: number) => {
-          initialExpanded[m.id] = idx === 0
-        })
-        setExpandedModules(initialExpanded)
       }
     } catch (err) {
-      console.error('Error loading course details:', err)
+      console.error('Error checking course enrollment:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const toggleModule = (modId: number) => {
-    setExpandedModules(prev => ({
-      ...prev,
-      [modId]: !prev[modId]
-    }))
-  }
+  const handleJoinWithCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!joinCodeInput.trim()) return
 
-  const handleEnroll = async () => {
-    setEnrolling(true)
+    setJoining(true)
+    setJoinError('')
+
     try {
-      const res = await fetch(`/api/courses/${courseId}/enroll`, {
-        method: 'POST'
+      const res = await fetch('/api/courses/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: joinCodeInput.trim().toUpperCase() })
       })
       const data = await res.json()
-      if (res.ok && data.success) {
-        router.push(`/student/courses/${courseId}/learn`)
-      } else {
-        alert(data.error || 'Enrollment failed')
-      }
-    } catch (err) {
-      console.error(err)
-      alert('An error occurred while enrolling.')
-    } finally {
-      setEnrolling(false)
-    }
-  }
 
-  const parseJsonArray = (jsonString?: string): string[] => {
-    if (!jsonString) return []
-    try {
-      const parsed = JSON.parse(jsonString)
-      return Array.isArray(parsed) ? parsed : [jsonString]
+      if (res.ok && data.success) {
+        fetchCourseCheck()
+      } else {
+        setJoinError(data.error || 'Invalid course code. Please contact your instructor.')
+      }
     } catch {
-      return jsonString.split('\n').filter(s => s.trim().length > 0)
+      setJoinError('Network error during course enrollment.')
+    } finally {
+      setJoining(false)
     }
   }
 
   if (loading) {
     return (
-      <div className={styles.container} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#8b5cf6' }} />
-        <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading course curriculum...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <StudentSidebar />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1.25rem' }}>
+          <MorphingInfinity className="size-16" style={{ width: '60px', height: '60px', color: '#3b82f6' }} />
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '1rem', marginBottom: '4px' }}>
+              Opening Course Workspace
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
+              Verifying student enrollment and syllabus access permissions...
+            </p>
+          </div>
+        </div>
       </div>
     )
   }
 
   if (!course) {
     return (
-      <div className={styles.container}>
-        <div className={styles.emptyState}>
-          <h2 className={styles.emptyTitle}>Course Not Found</h2>
-          <p className={styles.emptyDescription}>The requested course is not available or has been archived.</p>
-          <Link href="/student/courses/explore" className="btn btn-primary btn-sm">
-            <span>Back to Course Catalog</span>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <StudentSidebar />
+        <div style={{ flex: 1, padding: '4rem 2rem', textAlign: 'center' }}>
+          <h2>Course Not Found</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>The requested course could not be located.</p>
+          <Link href="/student/courses" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
+            Back to My Courses
           </Link>
         </div>
       </div>
     )
   }
 
-  const objectives = parseJsonArray(course.learningObjectives)
-  const isEnrolled = course.isEnrolled
-  const enrollment = course.enrollment
-
-  return (
-    <div className={styles.container}>
-      {/* Back button */}
-      <div style={{ marginBottom: '1.25rem' }}>
-        <Link href="/student/courses/explore" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}>
-          <ArrowLeft size={15} strokeWidth={2} />
-          <span>Back to Catalog</span>
-        </Link>
-      </div>
-
-      {/* Main Banner Header */}
-      <div className={styles.detailsHeader}>
-        <div className={styles.detailsLeft}>
-          <div>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-              <span className="badge badge-purple">{course.category?.name || 'Computer Science'}</span>
-              <span className="badge badge-orange">{course.difficulty}</span>
-              {isEnrolled && (
-                <span className="badge badge-green">
-                  <CheckCircle2 size={12} strokeWidth={2} />
-                  <span>Enrolled ({enrollment?.progressPercent || 0}% Completed)</span>
-                </span>
-              )}
-            </div>
-
-            <h1 className={styles.headerTitle} style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>
-              {course.title}
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-              {course.description}
-            </p>
-
-            {/* Trainer card */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'rgba(139, 92, 246, 0.2)', color: '#c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.1rem' }}>
-                {course.trainer?.user?.name?.slice(0, 2).toUpperCase() || 'TR'}
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
-                  {course.trainer?.user?.name || 'PlaceIQ Instructor'}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                  ★ {course.trainer?.rating || 4.9} Instructor Rating • {course.trainer?.expertiseTags || 'Industry Veteran'}
-                </div>
-              </div>
-            </div>
-          </div>
+  // If student is enrolled (or instructor), render full CourseWorkspace
+  if (course.isEnrolled || course.isTeacher) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <StudentSidebar />
+        <div style={{ flex: 1, paddingTop: '68px' }}>
+          <CourseWorkspace courseId={courseId} role="student" />
         </div>
+      </div>
+    )
+  }
 
-        {/* Action card */}
-        <div className={styles.detailsRight}>
-          <div>
-            <div style={{ width: '100%', height: '160px', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '1.25rem' }}>
+  // If not enrolled, show course preview and Course Code prompt
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+      <StudentSidebar />
+      <div style={{ flex: 1, paddingTop: '68px', paddingBottom: '4rem' }}>
+        <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <BackButton fallbackHref="/student/courses" />
+          </div>
+
+          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+            <div style={{ width: '100%', height: '220px', position: 'relative', overflow: 'hidden' }}>
               <img
-                src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80'}
+                src={course.thumbnail}
                 alt={course.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Estimated Duration</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{course.estimatedDuration}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Curriculum</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{course.modules?.length || 0} Modules</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Lessons & Labs</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{course.totalLessonsCount} Lessons</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Enrolled Students</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{course.enrolledCount} Students</span>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-secondary) 0%, transparent 80%)' }} />
+              <div style={{ position: 'absolute', bottom: '16px', left: '24px' }}>
+                <span className="badge badge-purple" style={{ marginBottom: '6px', display: 'inline-block' }}>
+                  {course.academicYear || 'AY 2026-27'} • {course.semester || 'Semester I'}
+                </span>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                  {course.title}
+                </h1>
               </div>
             </div>
-          </div>
 
-          <div>
-            {isEnrolled ? (
-              <Link
-                href={`/student/courses/${course.id}/learn`}
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%' }}
-              >
-                <PlayCircle size={17} strokeWidth={2} />
-                <span>Continue Learning</span>
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={handleEnroll}
-                disabled={enrolling}
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%' }}
-              >
-                <Zap size={17} strokeWidth={2} />
-                <span>{enrolling ? 'Enrolling...' : 'Enroll in Course (Free)'}</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Announcements Feed Banner */}
-      {announcements.length > 0 && (
-        <div style={{
-          marginBottom: '2rem',
-          background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, var(--bg-secondary) 100%)',
-          border: '1px solid rgba(99, 102, 241, 0.25)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.25rem 1.5rem'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Megaphone size={18} color="#818cf8" />
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                Course Announcements ({announcements.length})
-              </h3>
-            </div>
-            <Link
-              href={`/student/discussions?courseId=${course.id}`}
-              className="btn btn-secondary btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem' }}
-            >
-              <MessageSquare size={12} />
-              <span>Ask in Forum</span>
-            </Link>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {announcements.slice(0, 2).map((ann: any) => (
-              <div key={ann.id} style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', background: 'var(--bg-primary)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>{ann.title}</strong>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(ann.createdAt).toLocaleDateString()}</span>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.825rem', lineHeight: 1.45, color: 'var(--text-secondary)' }}>
-                  {ann.content}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Course Completion & Certificate Claim Banner */}
-      {completionData && (completionData.isEligibleForCertificate || completionData.issuedCertificate) && (
-        <div style={{
-          marginBottom: '2rem',
-          background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)',
-          border: '1px solid #d97706',
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem'
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-              <Award size={22} color="#f59e0b" />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                {completionData.issuedCertificate ? '🎉 Certificate of Completion Issued!' : '🏆 Course Complete! Claim Your Certificate'}
-              </h3>
-            </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-              {completionData.issuedCertificate
-                ? `Certificate ID: ${completionData.issuedCertificate.certificateId} • Verified & Stored in Document Vault`
-                : 'You have satisfied 100% of curriculum lessons, assignments, and quizzes for this course.'}
-            </p>
-            {certSuccessMsg && (
-              <p style={{ color: '#34d399', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.4rem', margin: 0 }}>
-                {certSuccessMsg}
+            <div style={{ padding: '24px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                {course.description}
               </p>
-            )}
-          </div>
 
-          <div>
-            {completionData.issuedCertificate ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <a
-                  href={`/api/certificates/${completionData.issuedCertificate.id}/download`}
-                  className="btn btn-primary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
-                  download
-                >
-                  <Download size={14} />
-                  <span>Download PDF</span>
-                </a>
-                <Link
-                  href={`/verify/certificate/${completionData.issuedCertificate.certificateId}`}
-                  target="_blank"
-                  className="btn btn-secondary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
-                >
-                  <ExternalLink size={14} />
-                  <span>Verify</span>
-                </Link>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-lg)', marginBottom: '2rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Instructor</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{course.trainer?.user?.name || 'Prof. Rajesh Sharma'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Department</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{course.department || 'Computer Engineering'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Curriculum</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{course.modules?.length || 0} Sections</div>
+                </div>
               </div>
-            ) : (
-              <button
-                className="btn btn-primary"
-                onClick={handleClaimCertificate}
-                disabled={claimingCert}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#d97706', borderColor: '#d97706' }}
-              >
-                <Award size={16} />
-                <span>{claimingCert ? 'Generating Certificate...' : 'Claim Certificate Now'}</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
-      {/* Learning Objectives & Prerequisites Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-        {objectives.length > 0 && (
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-              <Sparkles size={18} strokeWidth={2} color="#a855f7" />
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                What You Will Learn
-              </h3>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {objectives.map((obj, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                  <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                    <Check size={11} strokeWidth={3} />
-                  </div>
-                  <span>{obj}</span>
+              {/* Join Code Prompt */}
+              <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: 'var(--radius-lg)', padding: '24px', textAlign: 'center' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(139, 92, 246, 0.2)', color: '#c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <Lock size={20} />
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 6px 0', color: 'var(--text-primary)' }}>
+                  Enrollment Required
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', maxWidth: '460px', margin: '0 auto 1.5rem' }}>
+                  This college course is restricted to enrolled students. Enter the course code provided by your instructor to join.
+                </p>
 
-        {course.prerequisites && (
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-              <ShieldCheck size={18} strokeWidth={2} color="#3b82f6" />
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                Prerequisites & Requirements
-              </h3>
-            </div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>
-              {course.prerequisites}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Course Curriculum Accordion */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              Course Curriculum & Modules
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-              {course.modules?.length || 0} Modules • {course.totalLessonsCount} Interactive Lessons • {course.totalResourcesCount} Resources
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.moduleAccordion}>
-          {course.modules?.map((mod: any, index: number) => {
-            const isExpanded = !!expandedModules[mod.id]
-
-            return (
-              <div key={mod.id} className={styles.moduleItem}>
-                <div className={styles.moduleHeader} onClick={() => toggleModule(mod.id)}>
-                  <div className={styles.moduleTitleWrap}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: 'var(--radius-md)', background: 'rgba(139, 92, 246, 0.15)', color: '#c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}>
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                        {mod.title}
-                      </div>
-                      {mod.description && (
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                          {mod.description}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      {mod.lessons?.length || 0} Lessons
-                    </span>
-                    {isExpanded ? <ChevronUp size={16} color="var(--text-muted)" /> : <ChevronDown size={16} color="var(--text-muted)" />}
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div className={styles.moduleLessonsList}>
-                    {mod.lessons?.map((lesson: any) => (
-                      <div key={lesson.id} className={styles.lessonRow}>
-                        <div className={styles.lessonInfo}>
-                          {lesson.isCompleted ? (
-                            <CheckCircle2 size={16} strokeWidth={2} color="#10b981" />
-                          ) : (
-                            <PlayCircle size={16} strokeWidth={2} color="var(--text-muted)" />
-                          )}
-                          <div>
-                            <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>
-                              {lesson.title}
-                            </span>
-                            {lesson.description && (
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                {lesson.description}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          {/* Attached resources indicator */}
-                          {lesson.resources?.map((res: any) => (
-                            <span key={res.id} className={styles.resourceTag}>
-                              {res.type === 'PDF' && <FileText size={10} />}
-                              {res.type === 'VIDEO' && <Video size={10} />}
-                              {res.type === 'EXTERNAL' && <ExternalLink size={10} />}
-                              <span>{res.type}</span>
-                            </span>
-                          ))}
-
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            {lesson.duration || '15 mins'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Module Assignments */}
-                    {mod.assignments?.map((assignment: any) => (
-                      <div key={`assign-${assignment.id}`} className={styles.lessonRow} style={{ background: 'rgba(139, 92, 246, 0.05)', borderLeft: '3px solid #8b5cf6' }}>
-                        <div className={styles.lessonInfo}>
-                          <FileCheck size={16} strokeWidth={2} color="#a855f7" />
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                                {assignment.title}
-                              </span>
-                              <span className="badge badge-purple" style={{ fontSize: '10px', padding: '1px 6px' }}>
-                                Assignment
-                              </span>
-                            </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                              Max {assignment.maxMarks} Marks • Due: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'No Deadline'}
-                            </div>
-                          </div>
-                        </div>
-
-                        <Link
-                          href={`/student/assignments/${assignment.id}`}
-                          className="btn btn-secondary btn-sm"
-                          style={{ padding: '3px 8px', fontSize: '12px' }}
-                        >
-                          <span>Open Task</span>
-                          <ArrowRight size={11} />
-                        </Link>
-                      </div>
-                    ))}
-
-                    {/* Module Quizzes */}
-                    {mod.quizzes?.map((quiz: any) => (
-                      <div key={`quiz-${quiz.id}`} className={styles.lessonRow} style={{ background: 'rgba(59, 130, 246, 0.05)', borderLeft: '3px solid #3b82f6' }}>
-                        <div className={styles.lessonInfo}>
-                          <HelpCircle size={16} strokeWidth={2} color="#60a5fa" />
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                                {quiz.title}
-                              </span>
-                              <span className="badge badge-blue" style={{ fontSize: '10px', padding: '1px 6px' }}>
-                                Quiz ({quiz.timeLimit > 0 ? `${quiz.timeLimit}m` : 'Untimed'})
-                              </span>
-                            </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                              Passing Score: {quiz.passingScore}% • {quiz.questions?.length || 0} Questions
-                            </div>
-                          </div>
-                        </div>
-
-                        <Link
-                          href={`/student/quizzes/${quiz.id}`}
-                          className="btn btn-primary btn-sm"
-                          style={{ padding: '3px 8px', fontSize: '12px' }}
-                        >
-                          <span>Take Quiz</span>
-                          <ArrowRight size={11} />
-                        </Link>
-                      </div>
-                    ))}
+                {joinError && (
+                  <div style={{ padding: '10px 14px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', borderRadius: '8px', fontSize: '0.85rem', maxWidth: '400px', margin: '0 auto 1.25rem' }}>
+                    {joinError}
                   </div>
                 )}
+
+                <form onSubmit={handleJoinWithCode} style={{ display: 'flex', gap: '10px', maxWidth: '400px', margin: '0 auto', flexWrap: 'wrap' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. CGL-7F42K9"
+                    value={joinCodeInput}
+                    onChange={e => setJoinCodeInput(e.target.value.toUpperCase())}
+                    className="form-input"
+                    style={{ flex: 1, minWidth: '180px', textAlign: 'center', fontFamily: 'Geist Mono, monospace', letterSpacing: '1px', textTransform: 'uppercase' }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={joining || !joinCodeInput.trim()}
+                    className="btn btn-primary"
+                    style={{ padding: '8px 20px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <span>{joining ? 'Enrolling...' : 'Join Course'}</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </form>
               </div>
-            )
-          })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

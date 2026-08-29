@@ -71,11 +71,138 @@
   padding: 32px 40px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+}
+
+/* ── RECENTLY ACCESSED COURSES HORIZONTAL DECK ── */
+.recentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeadingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sectionHeading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recentDeck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.recentCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.recentCard:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.recentThumbWrap {
+  width: 100%;
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+  background: #0d1226;
+}
+
+.recentThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.recentCard:hover .recentThumb {
+  transform: scale(1.05);
+}
+
+.recentYearBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(9, 13, 32, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.recentCardBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.recentCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recentMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.recentTeacher {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.recentLastAccessed {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.recentCardFooter {
+  padding: 0 16px 16px;
+  margin-top: auto;
 }
 
 /* ── STATS ROW ── */
@@ -195,134 +322,10 @@
   border-color: #8b5cf6;
 }
 
-/* ── EMPTY STATE HERO ── */
-.emptyHero {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 48px 32px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.emptyHero::before {
-  content: '';
-  position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 380px;
-  height: 180px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.emptyIconCircle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #c4b5fd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 24px rgba(139, 92, 246, 0.2);
-}
-
-.emptyTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.emptySubtitle {
-  font-size: 0.925rem;
-  color: var(--text-secondary);
-  max-width: 580px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.emptyActions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 6px;
-}
-
-.recommendedTracks {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  width: 100%;
-  max-width: 1080px;
-  margin-top: 16px;
-  text-align: left;
-}
-
-.trackCard {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
-  transition: all 0.2s ease;
-}
-
-.trackCard:hover {
-  border-color: rgba(139, 92, 246, 0.45);
-  background: rgba(139, 92, 246, 0.05);
-  transform: translateY(-2px);
-}
-
-.trackHeader {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.trackIcon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(139, 92, 246, 0.2);
-  color: #c4b5fd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.trackTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 3px;
-}
-
-.trackDesc {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  line-height: 1.45;
-}
-
-/* ── COURSE GRID & CARDS ── */
+/* ── ALL MY COURSES GRID ── */
 .courseGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
@@ -346,7 +349,7 @@
 
 .thumbnailWrap {
   width: 100%;
-  height: 180px;
+  height: 170px;
   position: relative;
   overflow: hidden;
   background: #0d1226;
@@ -435,10 +438,9 @@
   font-weight: 500;
 }
 
-/* ── PROGRESS BAR ── */
 .progressSection {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 12px;
 }
 
 .progressHeader {
@@ -482,6 +484,58 @@
   padding: 0 20px 20px;
 }
 
+/* ── MODAL ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  max-width: 520px;
+  width: 100%;
+  padding: 1.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modalCloseBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-primary);
+}
+
 /* ── RESPONSIVE MEDIA QUERIES ── */
 @media (max-width: 1024px) {
   .header {
@@ -493,8 +547,8 @@
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .recommendedTracks {
-    grid-template-columns: 1fr;
+  .recentDeck {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -513,6 +567,9 @@
     padding: 16px 12px;
   }
   .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .recentDeck {
     grid-template-columns: 1fr;
   }
   .courseGrid {

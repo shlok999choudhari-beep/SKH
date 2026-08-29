@@ -60553,6 +60553,10 @@ export namespace Prisma {
     estimatedDuration: string | null
     learningObjectives: string | null
     prerequisites: string | null
+    shortName: string | null
+    academicYear: string | null
+    semester: string | null
+    department: string | null
     status: string | null
     joinCode: string | null
     joinCodeEnabled: boolean | null
@@ -60579,6 +60583,10 @@ export namespace Prisma {
     estimatedDuration: string | null
     learningObjectives: string | null
     prerequisites: string | null
+    shortName: string | null
+    academicYear: string | null
+    semester: string | null
+    department: string | null
     status: string | null
     joinCode: string | null
     joinCodeEnabled: boolean | null
@@ -60605,6 +60613,10 @@ export namespace Prisma {
     estimatedDuration: number
     learningObjectives: number
     prerequisites: number
+    shortName: number
+    academicYear: number
+    semester: number
+    department: number
     status: number
     joinCode: number
     joinCodeEnabled: number
@@ -60649,6 +60661,10 @@ export namespace Prisma {
     estimatedDuration?: true
     learningObjectives?: true
     prerequisites?: true
+    shortName?: true
+    academicYear?: true
+    semester?: true
+    department?: true
     status?: true
     joinCode?: true
     joinCodeEnabled?: true
@@ -60675,6 +60691,10 @@ export namespace Prisma {
     estimatedDuration?: true
     learningObjectives?: true
     prerequisites?: true
+    shortName?: true
+    academicYear?: true
+    semester?: true
+    department?: true
     status?: true
     joinCode?: true
     joinCodeEnabled?: true
@@ -60701,6 +60721,10 @@ export namespace Prisma {
     estimatedDuration?: true
     learningObjectives?: true
     prerequisites?: true
+    shortName?: true
+    academicYear?: true
+    semester?: true
+    department?: true
     status?: true
     joinCode?: true
     joinCodeEnabled?: true
@@ -60814,6 +60838,10 @@ export namespace Prisma {
     estimatedDuration: string | null
     learningObjectives: string | null
     prerequisites: string | null
+    shortName: string | null
+    academicYear: string | null
+    semester: string | null
+    department: string | null
     status: string
     joinCode: string | null
     joinCodeEnabled: boolean
@@ -60859,6 +60887,10 @@ export namespace Prisma {
     estimatedDuration?: boolean
     learningObjectives?: boolean
     prerequisites?: boolean
+    shortName?: boolean
+    academicYear?: boolean
+    semester?: boolean
+    department?: boolean
     status?: boolean
     joinCode?: boolean
     joinCodeEnabled?: boolean
@@ -60901,6 +60933,10 @@ export namespace Prisma {
     estimatedDuration?: boolean
     learningObjectives?: boolean
     prerequisites?: boolean
+    shortName?: boolean
+    academicYear?: boolean
+    semester?: boolean
+    department?: boolean
     status?: boolean
     joinCode?: boolean
     joinCodeEnabled?: boolean
@@ -60930,6 +60966,10 @@ export namespace Prisma {
     estimatedDuration?: boolean
     learningObjectives?: boolean
     prerequisites?: boolean
+    shortName?: boolean
+    academicYear?: boolean
+    semester?: boolean
+    department?: boolean
     status?: boolean
     joinCode?: boolean
     joinCodeEnabled?: boolean
@@ -60999,6 +61039,10 @@ export namespace Prisma {
       estimatedDuration: string | null
       learningObjectives: string | null
       prerequisites: string | null
+      shortName: string | null
+      academicYear: string | null
+      semester: string | null
+      department: string | null
       status: string
       joinCode: string | null
       joinCodeEnabled: boolean
@@ -61430,6 +61474,10 @@ export namespace Prisma {
     readonly estimatedDuration: FieldRef<"Course", 'String'>
     readonly learningObjectives: FieldRef<"Course", 'String'>
     readonly prerequisites: FieldRef<"Course", 'String'>
+    readonly shortName: FieldRef<"Course", 'String'>
+    readonly academicYear: FieldRef<"Course", 'String'>
+    readonly semester: FieldRef<"Course", 'String'>
+    readonly department: FieldRef<"Course", 'String'>
     readonly status: FieldRef<"Course", 'String'>
     readonly joinCode: FieldRef<"Course", 'String'>
     readonly joinCodeEnabled: FieldRef<"Course", 'Boolean'>
@@ -67764,6 +67812,7 @@ export namespace Prisma {
     trainerId: number | null
     title: string | null
     description: string | null
+    openedAt: Date | null
     dueDate: Date | null
     maxMarks: number | null
     allowedFileTypes: string | null
@@ -67782,6 +67831,7 @@ export namespace Prisma {
     trainerId: number | null
     title: string | null
     description: string | null
+    openedAt: Date | null
     dueDate: Date | null
     maxMarks: number | null
     allowedFileTypes: string | null
@@ -67800,6 +67850,7 @@ export namespace Prisma {
     trainerId: number
     title: number
     description: number
+    openedAt: number
     dueDate: number
     maxMarks: number
     allowedFileTypes: number
@@ -67840,6 +67891,7 @@ export namespace Prisma {
     trainerId?: true
     title?: true
     description?: true
+    openedAt?: true
     dueDate?: true
     maxMarks?: true
     allowedFileTypes?: true
@@ -67858,6 +67910,7 @@ export namespace Prisma {
     trainerId?: true
     title?: true
     description?: true
+    openedAt?: true
     dueDate?: true
     maxMarks?: true
     allowedFileTypes?: true
@@ -67876,6 +67929,7 @@ export namespace Prisma {
     trainerId?: true
     title?: true
     description?: true
+    openedAt?: true
     dueDate?: true
     maxMarks?: true
     allowedFileTypes?: true
@@ -67981,6 +68035,7 @@ export namespace Prisma {
     trainerId: number | null
     title: string
     description: string | null
+    openedAt: Date | null
     dueDate: Date | null
     maxMarks: number
     allowedFileTypes: string | null
@@ -68018,6 +68073,7 @@ export namespace Prisma {
     trainerId?: boolean
     title?: boolean
     description?: boolean
+    openedAt?: boolean
     dueDate?: boolean
     maxMarks?: boolean
     allowedFileTypes?: boolean
@@ -68042,6 +68098,7 @@ export namespace Prisma {
     trainerId?: boolean
     title?: boolean
     description?: boolean
+    openedAt?: boolean
     dueDate?: boolean
     maxMarks?: boolean
     allowedFileTypes?: boolean
@@ -68063,6 +68120,7 @@ export namespace Prisma {
     trainerId?: boolean
     title?: boolean
     description?: boolean
+    openedAt?: boolean
     dueDate?: boolean
     maxMarks?: boolean
     allowedFileTypes?: boolean
@@ -68104,6 +68162,7 @@ export namespace Prisma {
       trainerId: number | null
       title: string
       description: string | null
+      openedAt: Date | null
       dueDate: Date | null
       maxMarks: number
       allowedFileTypes: string | null
@@ -68517,6 +68576,7 @@ export namespace Prisma {
     readonly trainerId: FieldRef<"Assignment", 'Int'>
     readonly title: FieldRef<"Assignment", 'String'>
     readonly description: FieldRef<"Assignment", 'String'>
+    readonly openedAt: FieldRef<"Assignment", 'DateTime'>
     readonly dueDate: FieldRef<"Assignment", 'DateTime'>
     readonly maxMarks: FieldRef<"Assignment", 'Float'>
     readonly allowedFileTypes: FieldRef<"Assignment", 'String'>
@@ -93497,6 +93557,10 @@ export namespace Prisma {
     estimatedDuration: 'estimatedDuration',
     learningObjectives: 'learningObjectives',
     prerequisites: 'prerequisites',
+    shortName: 'shortName',
+    academicYear: 'academicYear',
+    semester: 'semester',
+    department: 'department',
     status: 'status',
     joinCode: 'joinCode',
     joinCodeEnabled: 'joinCodeEnabled',
@@ -93596,6 +93660,7 @@ export namespace Prisma {
     trainerId: 'trainerId',
     title: 'title',
     description: 'description',
+    openedAt: 'openedAt',
     dueDate: 'dueDate',
     maxMarks: 'maxMarks',
     allowedFileTypes: 'allowedFileTypes',
@@ -98416,6 +98481,10 @@ export namespace Prisma {
     estimatedDuration?: StringNullableFilter<"Course"> | string | null
     learningObjectives?: StringNullableFilter<"Course"> | string | null
     prerequisites?: StringNullableFilter<"Course"> | string | null
+    shortName?: StringNullableFilter<"Course"> | string | null
+    academicYear?: StringNullableFilter<"Course"> | string | null
+    semester?: StringNullableFilter<"Course"> | string | null
+    department?: StringNullableFilter<"Course"> | string | null
     status?: StringFilter<"Course"> | string
     joinCode?: StringNullableFilter<"Course"> | string | null
     joinCodeEnabled?: BoolFilter<"Course"> | boolean
@@ -98457,6 +98526,10 @@ export namespace Prisma {
     estimatedDuration?: SortOrderInput | SortOrder
     learningObjectives?: SortOrderInput | SortOrder
     prerequisites?: SortOrderInput | SortOrder
+    shortName?: SortOrderInput | SortOrder
+    academicYear?: SortOrderInput | SortOrder
+    semester?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
     status?: SortOrder
     joinCode?: SortOrderInput | SortOrder
     joinCodeEnabled?: SortOrder
@@ -98502,6 +98575,10 @@ export namespace Prisma {
     estimatedDuration?: StringNullableFilter<"Course"> | string | null
     learningObjectives?: StringNullableFilter<"Course"> | string | null
     prerequisites?: StringNullableFilter<"Course"> | string | null
+    shortName?: StringNullableFilter<"Course"> | string | null
+    academicYear?: StringNullableFilter<"Course"> | string | null
+    semester?: StringNullableFilter<"Course"> | string | null
+    department?: StringNullableFilter<"Course"> | string | null
     status?: StringFilter<"Course"> | string
     joinCodeEnabled?: BoolFilter<"Course"> | boolean
     thumbnailUrl?: StringNullableFilter<"Course"> | string | null
@@ -98542,6 +98619,10 @@ export namespace Prisma {
     estimatedDuration?: SortOrderInput | SortOrder
     learningObjectives?: SortOrderInput | SortOrder
     prerequisites?: SortOrderInput | SortOrder
+    shortName?: SortOrderInput | SortOrder
+    academicYear?: SortOrderInput | SortOrder
+    semester?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
     status?: SortOrder
     joinCode?: SortOrderInput | SortOrder
     joinCodeEnabled?: SortOrder
@@ -98576,6 +98657,10 @@ export namespace Prisma {
     estimatedDuration?: StringNullableWithAggregatesFilter<"Course"> | string | null
     learningObjectives?: StringNullableWithAggregatesFilter<"Course"> | string | null
     prerequisites?: StringNullableWithAggregatesFilter<"Course"> | string | null
+    shortName?: StringNullableWithAggregatesFilter<"Course"> | string | null
+    academicYear?: StringNullableWithAggregatesFilter<"Course"> | string | null
+    semester?: StringNullableWithAggregatesFilter<"Course"> | string | null
+    department?: StringNullableWithAggregatesFilter<"Course"> | string | null
     status?: StringWithAggregatesFilter<"Course"> | string
     joinCode?: StringNullableWithAggregatesFilter<"Course"> | string | null
     joinCodeEnabled?: BoolWithAggregatesFilter<"Course"> | boolean
@@ -99057,6 +99142,7 @@ export namespace Prisma {
     trainerId?: IntNullableFilter<"Assignment"> | number | null
     title?: StringFilter<"Assignment"> | string
     description?: StringNullableFilter<"Assignment"> | string | null
+    openedAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     maxMarks?: FloatFilter<"Assignment"> | number
     allowedFileTypes?: StringNullableFilter<"Assignment"> | string | null
@@ -99080,6 +99166,7 @@ export namespace Prisma {
     trainerId?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
+    openedAt?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     maxMarks?: SortOrder
     allowedFileTypes?: SortOrderInput | SortOrder
@@ -99106,6 +99193,7 @@ export namespace Prisma {
     trainerId?: IntNullableFilter<"Assignment"> | number | null
     title?: StringFilter<"Assignment"> | string
     description?: StringNullableFilter<"Assignment"> | string | null
+    openedAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     maxMarks?: FloatFilter<"Assignment"> | number
     allowedFileTypes?: StringNullableFilter<"Assignment"> | string | null
@@ -99129,6 +99217,7 @@ export namespace Prisma {
     trainerId?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
+    openedAt?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     maxMarks?: SortOrder
     allowedFileTypes?: SortOrderInput | SortOrder
@@ -99155,6 +99244,7 @@ export namespace Prisma {
     trainerId?: IntNullableWithAggregatesFilter<"Assignment"> | number | null
     title?: StringWithAggregatesFilter<"Assignment"> | string
     description?: StringNullableWithAggregatesFilter<"Assignment"> | string | null
+    openedAt?: DateTimeNullableWithAggregatesFilter<"Assignment"> | Date | string | null
     dueDate?: DateTimeNullableWithAggregatesFilter<"Assignment"> | Date | string | null
     maxMarks?: FloatWithAggregatesFilter<"Assignment"> | number
     allowedFileTypes?: StringNullableWithAggregatesFilter<"Assignment"> | string | null
@@ -105788,6 +105878,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -105829,6 +105923,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -105863,6 +105961,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -105904,6 +106006,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -105942,6 +106048,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -105964,6 +106074,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -105990,6 +106104,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -106471,6 +106589,7 @@ export namespace Prisma {
   export type AssignmentCreateInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -106494,6 +106613,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -106510,6 +106630,7 @@ export namespace Prisma {
   export type AssignmentUpdateInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -106533,6 +106654,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -106553,6 +106675,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -106567,6 +106690,7 @@ export namespace Prisma {
   export type AssignmentUpdateManyMutationInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -106585,6 +106709,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -112163,6 +112288,10 @@ export namespace Prisma {
     estimatedDuration?: SortOrder
     learningObjectives?: SortOrder
     prerequisites?: SortOrder
+    shortName?: SortOrder
+    academicYear?: SortOrder
+    semester?: SortOrder
+    department?: SortOrder
     status?: SortOrder
     joinCode?: SortOrder
     joinCodeEnabled?: SortOrder
@@ -112197,6 +112326,10 @@ export namespace Prisma {
     estimatedDuration?: SortOrder
     learningObjectives?: SortOrder
     prerequisites?: SortOrder
+    shortName?: SortOrder
+    academicYear?: SortOrder
+    semester?: SortOrder
+    department?: SortOrder
     status?: SortOrder
     joinCode?: SortOrder
     joinCodeEnabled?: SortOrder
@@ -112223,6 +112356,10 @@ export namespace Prisma {
     estimatedDuration?: SortOrder
     learningObjectives?: SortOrder
     prerequisites?: SortOrder
+    shortName?: SortOrder
+    academicYear?: SortOrder
+    semester?: SortOrder
+    department?: SortOrder
     status?: SortOrder
     joinCode?: SortOrder
     joinCodeEnabled?: SortOrder
@@ -112598,6 +112735,7 @@ export namespace Prisma {
     trainerId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    openedAt?: SortOrder
     dueDate?: SortOrder
     maxMarks?: SortOrder
     allowedFileTypes?: SortOrder
@@ -112626,6 +112764,7 @@ export namespace Prisma {
     trainerId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    openedAt?: SortOrder
     dueDate?: SortOrder
     maxMarks?: SortOrder
     allowedFileTypes?: SortOrder
@@ -112644,6 +112783,7 @@ export namespace Prisma {
     trainerId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    openedAt?: SortOrder
     dueDate?: SortOrder
     maxMarks?: SortOrder
     allowedFileTypes?: SortOrder
@@ -126149,6 +126289,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -126188,6 +126332,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -126675,6 +126823,10 @@ export namespace Prisma {
     estimatedDuration?: StringNullableFilter<"Course"> | string | null
     learningObjectives?: StringNullableFilter<"Course"> | string | null
     prerequisites?: StringNullableFilter<"Course"> | string | null
+    shortName?: StringNullableFilter<"Course"> | string | null
+    academicYear?: StringNullableFilter<"Course"> | string | null
+    semester?: StringNullableFilter<"Course"> | string | null
+    department?: StringNullableFilter<"Course"> | string | null
     status?: StringFilter<"Course"> | string
     joinCode?: StringNullableFilter<"Course"> | string | null
     joinCodeEnabled?: BoolFilter<"Course"> | boolean
@@ -127314,6 +127466,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -127353,6 +127509,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -127391,6 +127551,7 @@ export namespace Prisma {
   export type AssignmentCreateWithoutTrainerInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -127412,6 +127573,7 @@ export namespace Prisma {
     moduleId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -127765,6 +127927,7 @@ export namespace Prisma {
     trainerId?: IntNullableFilter<"Assignment"> | number | null
     title?: StringFilter<"Assignment"> | string
     description?: StringNullableFilter<"Assignment"> | string | null
+    openedAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     maxMarks?: FloatFilter<"Assignment"> | number
     allowedFileTypes?: StringNullableFilter<"Assignment"> | string | null
@@ -138859,6 +139022,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -138898,6 +139065,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -139146,6 +139317,7 @@ export namespace Prisma {
   export type AssignmentCreateWithoutCourseInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -139167,6 +139339,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -139903,6 +140076,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -139943,6 +140120,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -140051,6 +140232,7 @@ export namespace Prisma {
   export type AssignmentCreateWithoutModuleInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -140072,6 +140254,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -140310,6 +140493,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -140350,6 +140537,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -141054,6 +141245,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -141094,6 +141289,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -141350,6 +141549,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -141390,6 +141593,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -141723,6 +141930,7 @@ export namespace Prisma {
   export type AssignmentCreateWithoutProgressInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -141745,6 +141953,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -141936,6 +142145,7 @@ export namespace Prisma {
   export type AssignmentUpdateWithoutProgressInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -141958,6 +142168,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142029,6 +142240,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -142069,6 +142284,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -142262,6 +142481,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -142302,6 +142525,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -142449,6 +142676,7 @@ export namespace Prisma {
   export type AssignmentCreateWithoutSubmissionsInput = {
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -142471,6 +142699,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -142622,6 +142851,7 @@ export namespace Prisma {
   export type AssignmentUpdateWithoutSubmissionsInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142644,6 +142874,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142945,6 +143176,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -142985,6 +143220,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -143217,6 +143456,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -143257,6 +143500,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -144177,6 +144424,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -144217,6 +144468,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -144382,6 +144637,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -144422,6 +144681,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -144589,6 +144852,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -144629,6 +144896,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -144881,6 +145152,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -144921,6 +145196,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -145552,6 +145831,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -145592,6 +145875,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -145775,6 +146062,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -145815,6 +146106,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -145982,6 +146277,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -146022,6 +146321,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -146391,6 +146694,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -146431,6 +146738,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -146764,6 +147075,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -146804,6 +147119,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -146927,6 +147246,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -146967,6 +147290,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -147222,6 +147549,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -147262,6 +147593,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -147560,6 +147895,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -147600,6 +147939,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -147910,6 +148253,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -147950,6 +148297,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -148101,6 +148452,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -148141,6 +148496,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -148270,6 +148629,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -148310,6 +148673,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -148461,6 +148828,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -148501,6 +148872,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -151351,6 +151726,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -152214,6 +152593,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152253,6 +152636,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152290,6 +152677,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152652,6 +153043,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -152671,6 +153066,7 @@ export namespace Prisma {
     moduleId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -152782,6 +153178,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152821,6 +153221,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152858,6 +153262,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -152874,6 +153282,7 @@ export namespace Prisma {
   export type AssignmentUpdateWithoutTrainerInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -152895,6 +153304,7 @@ export namespace Prisma {
     moduleId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -152914,6 +153324,7 @@ export namespace Prisma {
     moduleId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -154278,6 +154689,10 @@ export namespace Prisma {
     estimatedDuration?: string | null
     learningObjectives?: string | null
     prerequisites?: string | null
+    shortName?: string | null
+    academicYear?: string | null
+    semester?: string | null
+    department?: string | null
     status?: string
     joinCode?: string | null
     joinCodeEnabled?: boolean
@@ -154300,6 +154715,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -154339,6 +154758,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -154376,6 +154799,10 @@ export namespace Prisma {
     estimatedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     learningObjectives?: NullableStringFieldUpdateOperationsInput | string | null
     prerequisites?: NullableStringFieldUpdateOperationsInput | string | null
+    shortName?: NullableStringFieldUpdateOperationsInput | string | null
+    academicYear?: NullableStringFieldUpdateOperationsInput | string | null
+    semester?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     joinCode?: NullableStringFieldUpdateOperationsInput | string | null
     joinCodeEnabled?: BoolFieldUpdateOperationsInput | boolean
@@ -154415,6 +154842,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -154638,6 +155066,7 @@ export namespace Prisma {
   export type AssignmentUpdateWithoutCourseInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -154659,6 +155088,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -154678,6 +155108,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -155107,6 +155538,7 @@ export namespace Prisma {
     trainerId?: number | null
     title: string
     description?: string | null
+    openedAt?: Date | string | null
     dueDate?: Date | string | null
     maxMarks?: number
     allowedFileTypes?: string | null
@@ -155271,6 +155703,7 @@ export namespace Prisma {
   export type AssignmentUpdateWithoutModuleInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -155292,6 +155725,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -155311,6 +155745,7 @@ export namespace Prisma {
     trainerId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maxMarks?: FloatFieldUpdateOperationsInput | number
     allowedFileTypes?: NullableStringFieldUpdateOperationsInput | string | null

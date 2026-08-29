@@ -1,54 +1,96 @@
-/* Institution LMS Analytics & Placement Intelligence Stylesheet */
+/* PlaceIQ Institution LMS Analytics & Placement Intelligence Stylesheet */
 
-.container {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-.header {
+/* ── LAYOUT & PAGE CONTAINER ── */
+.layout {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  margin-bottom: 1.75rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--border);
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-primary);
 }
 
-.titleRow {
+.content {
+  margin-left: 0;
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 68px;
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky;
+  top: 68px;
+  z-index: 25;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 72px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.25rem;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-.title {
-  font-size: 1.85rem;
-  font-weight: 800;
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pageTitle {
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-.subtitle {
-  font-size: 0.925rem;
+.pageSubtitle {
+  font-size: 11px;
   color: var(--text-secondary);
+  margin-top: 2px;
+  margin-bottom: 0;
 }
 
-/* Filters Bar */
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  padding: 24px 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── FILTERS BAR ── */
 .filterBar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 1rem;
   align-items: center;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .filterGroup {
@@ -78,23 +120,22 @@
 }
 
 .filterSelect:focus {
-  border-color: #6366f1;
+  border-color: #818cf8;
 }
 
-/* KPI Cards Grid */
+/* ── KPI CARDS GRID ── */
 .kpiGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2rem;
 }
 
 .kpiCard {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -103,7 +144,7 @@
 
 .kpiCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(129, 140, 248, 0.4);
 }
 
 .kpiIconWrap {
@@ -125,64 +166,73 @@
 }
 
 .kpiTitle {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 4px;
 }
 
-/* Tabs */
+/* ── TABS BAR ── */
 .tabsBar {
   display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.75rem;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  padding: 6px 10px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabBtn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  gap: 8px;
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--text-secondary);
   background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .tabBtn:hover {
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .tabBtnActive {
-  color: #818cf8;
-  border-bottom-color: #6366f1;
+  background: rgba(129, 140, 248, 0.2) !important;
+  color: #c7d2fe !important;
+  border-color: rgba(129, 140, 248, 0.45) !important;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(129, 140, 248, 0.15);
 }
 
-/* Content Cards */
+/* ── CONTENT CARDS ── */
 .card {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1.5rem;
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 1rem;
   margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .cardTitle {
@@ -194,7 +244,7 @@
   gap: 0.5rem;
 }
 
-/* Tables */
+/* ── TABLES ── */
 .tableWrap {
   overflow-x: auto;
 }
@@ -207,7 +257,7 @@
 
 .table th {
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   background: var(--bg-primary);
   color: var(--text-muted);
   font-weight: 700;
@@ -218,7 +268,7 @@
 }
 
 .table td {
-  padding: 0.875rem 1rem;
+  padding: 0.95rem 1rem;
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
 }
@@ -227,7 +277,7 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* Drop-off Progress Bars */
+/* ── DROP-OFF PROGRESS BARS ── */
 .dropBarWrap {
   width: 100%;
   height: 8px;
@@ -241,4 +291,34 @@
   height: 100%;
   border-radius: 99px;
   transition: width 0.3s ease;
+}
+
+/* ── RESPONSIVE MEDIA QUERIES ── */
+@media (max-width: 1024px) {
+  .header {
+    padding: 0 24px;
+  }
+  .main {
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding-top: 60px;
+  }
+  .header {
+    top: 60px;
+    height: auto;
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .main {
+    padding: 16px 12px;
+  }
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

@@ -19,12 +19,18 @@ import {
   Sparkles,
   Zap,
   Users,
-  GraduationCap
+  KeyRound,
+  Lock,
+  Plus
 } from 'lucide-react'
 
 type CourseItem = {
   id: number
   title: string
+  shortName: string
+  academicYear: string
+  semester: string
+  department: string
   slug: string
   description: string
   thumbnail: string
@@ -32,6 +38,7 @@ type CourseItem = {
   categorySlug: string
   difficulty: string
   estimatedDuration: string
+  joinCode?: string
   trainer: {
     id?: number
     name: string
@@ -59,7 +66,6 @@ export default function ExploreCoursesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [enrollingId, setEnrollingId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchCategories()
@@ -101,35 +107,6 @@ export default function ExploreCoursesPage() {
     fetchCourses()
   }
 
-  const handleQuickEnroll = async (courseId: number, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setEnrollingId(courseId)
-    try {
-      const res = await fetch(`/api/courses/${courseId}/enroll`, {
-        method: 'POST'
-      })
-      const data = await res.json()
-      if (res.ok && data.success) {
-        setCourses(prev =>
-          prev.map(c =>
-            c.id === courseId
-              ? { ...c, isEnrolled: true, enrollment: data.enrollment }
-              : c
-          )
-        )
-        router.push(`/student/courses/${courseId}/learn`)
-      } else {
-        alert(data.error || 'Failed to enroll')
-      }
-    } catch (err) {
-      console.error('Enroll error:', err)
-      alert('An error occurred during enrollment.')
-    } finally {
-      setEnrollingId(null)
-    }
-  }
-
   if (loading && courses.length === 0) {
     return (
       <div className={styles.layout}>
@@ -141,7 +118,7 @@ export default function ExploreCoursesPage() {
               Loading Course Catalog
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-              Retrieving curriculum pathways and verified trainer tracks...
+              Retrieving academic curriculums, practical labs, and faculty courses...
             </p>
           </div>
         </div>
@@ -160,23 +137,23 @@ export default function ExploreCoursesPage() {
             <div>
               <h1 className={styles.pageTitle}>
                 <Compass size={22} color="#8b5cf6" strokeWidth={2} />
-                <span>Explore Course Catalog</span>
+                <span>Explore Courses</span>
               </h1>
               <p className={styles.pageSubtitle}>
-                Browse curated curriculums taught by industry professionals to master engineering and placement interview topics.
+                Browse available college courses, lab curriculums, and lecture materials.
               </p>
             </div>
           </div>
           <div className={styles.headerActions}>
             <Link href="/student/courses" className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <BookOpen size={15} strokeWidth={2} />
-              <span>My Enrolled Courses</span>
+              <span>My Courses</span>
             </Link>
           </div>
         </header>
 
         <main className={styles.main}>
-          {/* Search & Filter Card */}
+          {/* Search & Filter Bar */}
           <div className={styles.filterBar} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '1rem' }}>
             <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: '260px', position: 'relative' }}>
@@ -184,7 +161,7 @@ export default function ExploreCoursesPage() {
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  placeholder="Search courses by title, topic, or keyword..."
+                  placeholder="Search courses by title, department, or keyword..."
                   className="form-input"
                   style={{ paddingLeft: '38px', width: '100%' }}
                 />
@@ -203,7 +180,6 @@ export default function ExploreCoursesPage() {
                   <Filter size={13} /> Filters:
                 </span>
 
-                {/* Category Filter */}
                 <select
                   value={selectedCategory}
                   onChange={e => setSelectedCategory(e.target.value)}
@@ -216,7 +192,6 @@ export default function ExploreCoursesPage() {
                   ))}
                 </select>
 
-                {/* Difficulty Filter */}
                 <select
                   value={selectedDifficulty}
                   onChange={e => setSelectedDifficulty(e.target.value)}
@@ -224,13 +199,12 @@ export default function ExploreCoursesPage() {
                   style={{ padding: '4px 10px', fontSize: '0.8rem', width: 'auto' }}
                 >
                   <option value="all">All Difficulty Levels</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
                 </select>
               </div>
 
-              {/* Sort Filter */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sort by:</span>
                 <select
@@ -240,7 +214,6 @@ export default function ExploreCoursesPage() {
                   style={{ padding: '4px 10px', fontSize: '0.8rem', width: 'auto' }}
                 >
                   <option value="newest">Recently Published</option>
-                  <option value="popular">Most Popular</option>
                   <option value="title">Alphabetical (A-Z)</option>
                 </select>
               </div>
@@ -251,9 +224,9 @@ export default function ExploreCoursesPage() {
           {courses.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 1.5rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-xl)', border: '1px dashed var(--border)' }}>
               <Compass size={40} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
-              <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>No Courses Matched</h3>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>No Courses Found</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-                Try adjusting your keyword search, category filter, or difficulty settings.
+                Try adjusting your search query or reset filters.
               </p>
               <button
                 type="button"
@@ -274,12 +247,12 @@ export default function ExploreCoursesPage() {
                   <Link href={`/student/courses/${course.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <div className={styles.thumbnailWrap}>
                       <img
-                        src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60'}
+                        src={course.thumbnail}
                         alt={course.title}
                         className={styles.thumbnail}
                       />
                       <div className={styles.thumbnailBadge}>
-                        {course.category || 'Engineering'}
+                        {course.academicYear || 'AY 2026-27'} • {course.semester || 'Semester I'}
                       </div>
                       <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
                         {course.isEnrolled ? (
@@ -287,7 +260,7 @@ export default function ExploreCoursesPage() {
                             <CheckCircle2 size={11} /> Enrolled
                           </span>
                         ) : (
-                          <span className="badge badge-purple" style={{ fontSize: '0.7rem', textTransform: 'capitalize' }}>
+                          <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
                             {course.difficulty || 'All Levels'}
                           </span>
                         )}
@@ -302,19 +275,15 @@ export default function ExploreCoursesPage() {
                         <div className={styles.trainerAvatar}>
                           {(course.trainer?.name || 'T')[0]}
                         </div>
-                        <div className={styles.trainerName}>{course.trainer?.name || 'Industry Expert'}</div>
+                        <div>
+                          <div className={styles.trainerName}>Teacher: {course.trainer?.name || 'Prof. Rajesh Sharma'}</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{course.department || 'Computer Engineering'}</div>
+                        </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.78rem', color: 'var(--text-muted)', paddingTop: '10px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <Layers size={13} /> {course.moduleCount || 0} Modules
-                        </span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <Clock size={13} /> {course.estimatedDuration || '4h 30m'}
-                        </span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <Users size={13} /> {course.enrolledStudentsCount || 0} learners
-                        </span>
+                      {/* Course Code Info Box */}
+                      <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        <strong style={{ color: 'var(--text-secondary)' }}>Course Code:</strong> Available through teacher
                       </div>
                     </div>
                   </Link>
@@ -322,30 +291,22 @@ export default function ExploreCoursesPage() {
                   <div className={styles.cardFooter}>
                     {course.isEnrolled ? (
                       <Link
-                        href={`/student/courses/${course.id}/learn`}
+                        href={`/student/courses/${course.id}`}
                         className="btn btn-secondary btn-sm"
                         style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textDecoration: 'none' }}
                       >
-                        <span>Continue Learning</span>
+                        <span>Open Workspace</span>
                         <ArrowRight size={13} strokeWidth={2} />
                       </Link>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={(e) => handleQuickEnroll(course.id, e)}
-                        disabled={enrollingId === course.id}
+                      <Link
+                        href={`/student/courses/${course.id}`}
                         className="btn btn-primary btn-sm"
-                        style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                        style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textDecoration: 'none' }}
                       >
-                        {enrollingId === course.id ? (
-                          <span>Enrolling...</span>
-                        ) : (
-                          <>
-                            <span>Enroll in Course</span>
-                            <Zap size={13} strokeWidth={2} />
-                          </>
-                        )}
-                      </button>
+                        <span>View Course Preview</span>
+                        <ArrowRight size={13} strokeWidth={2} />
+                      </Link>
                     )}
                   </div>
                 </div>

@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
         course: { select: { id: true, title: true } },
         module: { select: { id: true, title: true } },
         author: { select: { id: true, name: true, role: true } },
+        student: { select: { id: true, name: true, college: true } },
         _count: { select: { replies: true } }
       }
     })
@@ -57,18 +58,35 @@ export async function POST(req: NextRequest) {
 
     const parsedCourseId = parseInt(courseId, 10)
 
-    // Verify enrollment or instructor status
+    let studentId: number | null = null
+    let authorUserId: number = 1
+
     if (session.role === 'student') {
-      const enrollment = await prisma.courseEnrollment.findUnique({
+      const student = await prisma.student.findUnique({ where: { id: session.userId } })
+      if (student) {
+        studentId = student.id
+      }
+      const user = await prisma.user.findFirst({
         where: {
-          courseId_studentId: {
-            courseId: parsedCourseId,
-            studentId: session.userId
-          }
+          OR: [
+            { id: session.userId },
+            ...(session.email ? [{ email: session.email }] : [])
+          ]
         }
       })
-      if (!enrollment) {
-        return NextResponse.json({ error: 'You must be enrolled in this course to post discussions.' }, { status: 403 })
+      if (user) {
+        authorUserId = user.id
+      } else {
+        const fallbackUser = await prisma.user.findFirst()
+        if (fallbackUser) authorUserId = fallbackUser.id
+      }
+    } else {
+      const user = await prisma.user.findUnique({ where: { id: session.userId } })
+      if (user) {
+        authorUserId = user.id
+      } else {
+        const fallbackUser = await prisma.user.findFirst()
+        if (fallbackUser) authorUserId = fallbackUser.id
       }
     }
 
@@ -76,14 +94,15 @@ export async function POST(req: NextRequest) {
       data: {
         courseId: parsedCourseId,
         moduleId: moduleId ? parseInt(moduleId, 10) : null,
-        authorId: session.userId,
-        studentId: session.role === 'student' ? session.userId : null,
+        authorId: authorUserId,
+        studentId,
         title,
         content
       },
       include: {
         course: { select: { id: true, title: true } },
         author: { select: { id: true, name: true, role: true } },
+        student: { select: { id: true, name: true, college: true } },
         _count: { select: { replies: true } }
       }
     })

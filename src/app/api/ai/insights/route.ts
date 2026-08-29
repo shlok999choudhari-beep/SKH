@@ -5,16 +5,13 @@ import { calculateStudentInsights } from '@/lib/lmsAiService'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSession(req)
+    const session = await getSession()
     const { searchParams } = new URL(req.url)
     const courseIdParam = searchParams.get('courseId')
 
     let studentId = 1
-    if (session?.role === 'student' && session.email) {
-      const student = await prisma.student.findFirst({
-        where: { email: session.email }
-      })
-      if (student) studentId = student.id
+    if (session?.role === 'student' && session.userId) {
+      studentId = session.userId
     }
 
     const courseId = courseIdParam ? parseInt(courseIdParam, 10) : null

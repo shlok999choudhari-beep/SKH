@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "motion/react";
 
 const circleA =
@@ -11,7 +12,22 @@ const infinity =
 const circleB =
   "M 12 16 C 14.21 16 16 14.21 16 12 C 16 9.79 14.21 8 12 8 C 9.79 8 8 9.79 8 12 C 8 14.21 9.79 16 12 16 Z";
 
-function MorphingInfinity(props: React.ComponentProps<"svg">) {
+export interface MorphingInfinityProps extends React.ComponentProps<"svg"> {
+  size?: number | string;
+}
+
+function MorphingInfinity({
+  size = 48,
+  width,
+  height,
+  style,
+  className,
+  ...props
+}: MorphingInfinityProps) {
+  const numericSize = typeof size === 'number' ? `${size}px` : size;
+  const finalWidth = width || numericSize;
+  const finalHeight = height || numericSize;
+
   return (
     <svg
       viewBox="0 0 24 24"
@@ -22,6 +38,18 @@ function MorphingInfinity(props: React.ComponentProps<"svg">) {
       strokeLinejoin="round"
       role="status"
       aria-label="Loading"
+      className={className}
+      width={finalWidth}
+      height={finalHeight}
+      style={{
+        width: finalWidth,
+        height: finalHeight,
+        maxWidth: finalWidth,
+        maxHeight: finalHeight,
+        flexShrink: 0,
+        display: 'inline-block',
+        ...style,
+      }}
       {...props}
     >
       <motion.path
@@ -40,7 +68,6 @@ function MorphingInfinity(props: React.ComponentProps<"svg">) {
         }}
       />
     </svg>
-
   );
 }
 

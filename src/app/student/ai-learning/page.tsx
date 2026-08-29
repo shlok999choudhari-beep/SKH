@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import styles from './ai-learning.module.css'
+import StudentSidebar from '@/components/StudentSidebar'
+import BackButton from '@/components/BackButton'
 import { MorphingInfinity } from '@/components/ui/morphing-infinity'
 import {
   Bot,
@@ -22,8 +24,77 @@ import {
   FileCheck,
   Zap,
   Target,
-  X
+  X,
+  ChevronRight,
+  Lightbulb,
+  Check
 } from 'lucide-react'
+
+function formatInlineMarkdown(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*|\`.*?\`)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{part.slice(2, -2)}</strong>
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.85em', fontFamily: 'monospace', color: '#c4b5fd' }}>{part.slice(1, -1)}</code>
+    }
+    return part
+  })
+}
+
+function renderFormattedContent(text: string) {
+  if (!text) return null
+
+  const lines = text.split('\n')
+  return (
+    <div className={styles.formattedText}>
+      {lines.map((line, idx) => {
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().split('|').filter((_, i, arr) => i > 0 && i < arr.length - 1)
+          const isSeparator = cells.every(c => c.trim().match(/^-+$/))
+          if (isSeparator) return null
+          return (
+            <div key={idx} className={styles.tableRow}>
+              {cells.map((c, cIdx) => (
+                <span key={cIdx} className={styles.tableCell}>{formatInlineMarkdown(c.trim())}</span>
+              ))}
+            </div>
+          )
+        }
+
+        // Heading
+        if (line.startsWith('### ')) {
+          return <h4 key={idx} className={styles.contentH4}>{line.replace('### ', '')}</h4>
+        }
+        if (line.startsWith('## ')) {
+          return <h3 key={idx} className={styles.contentH3}>{line.replace('## ', '')}</h3>
+        }
+        if (line.startsWith('# ')) {
+          return <h2 key={idx} className={styles.contentH2}>{line.replace('# ', '')}</h2>
+        }
+
+        // Bullet point
+        if (line.trim().startsWith('- ') || line.trim().startsWith('• ') || line.trim().startsWith('* ')) {
+          const cleanLine = line.trim().replace(/^[-•*]\s+/, '')
+          return (
+            <div key={idx} className={styles.bulletItem}>
+              <span className={styles.bulletDot}>•</span>
+              <span>{formatInlineMarkdown(cleanLine)}</span>
+            </div>
+          )
+        }
+
+        if (!line.trim()) {
+          return <div key={idx} style={{ height: '6px' }} />
+        }
+
+        return <p key={idx} className={styles.contentP}>{formatInlineMarkdown(line)}</p>
+      })}
+    </div>
+  )
+}
 
 export default function StudentAILearningPage() {
   const [activeTab, setActiveTab] = useState<'assistant' | 'planner' | 'insights' | 'practice'>('assistant')
@@ -50,7 +121,7 @@ export default function StudentAILearningPage() {
   const [insights, setInsights] = useState<any>(null)
 
   // Practice Generator State
-  const [practiceTopic, setPracticeTopic] = useState('Server Components & State Hydration')
+  const [practiceTopic, setPracticeTopic] = useState('Computer Graphics & OpenGL Rendering')
   const [practiceDifficulty, setPracticeDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate')
   const [practiceCount, setPracticeCount] = useState('3')
   const [practiceQuestions, setPracticeQuestions] = useState<any[]>([])
@@ -86,12 +157,12 @@ export default function StudentAILearningPage() {
       const iData = await iRes.json()
       if (iData.insights) setInsights(iData.insights)
 
-      // Seed greeting assistant message
+      // Seed initial greeting assistant message
       setMessages([
         {
           id: 'init-msg',
           sender: 'assistant',
-          content: 'Hello! I am your AI Course Assistant. Ask me anything about your enrolled curriculum, code concepts, module summaries, or practice exercises. All my answers are grounded in your official course materials.',
+          content: 'Hello! I am your AI Course Assistant. Ask me anything about your enrolled curriculum, practical lab exercises, OpenGL shaders, syllabus topics, or assignment guidelines. All answers are grounded in your official course materials.',
           sources: []
         }
       ])
@@ -144,18 +215,18 @@ export default function StudentAILearningPage() {
           {
             id: `err-${Date.now()}`,
             sender: 'assistant',
-            content: data.error || 'Sorry, I was unable to process your request.',
+            content: data.error || 'Sorry, I was unable to process your request at this moment.',
             sources: []
           }
         ])
       }
-    } catch (err: any) {
+    } catch {
       setMessages(prev => [
         ...prev,
         {
           id: `err-${Date.now()}`,
           sender: 'assistant',
-          content: 'Connection error while communicating with AI assistant.',
+          content: 'Network connection issue while communicating with AI assistant.',
           sources: []
         }
       ])
@@ -168,7 +239,6 @@ export default function StudentAILearningPage() {
     if (!studyPlan) return
     const newCompleted = !currentCompleted
 
-    // Optimistic UI update
     setStudyPlan((prev: any) => {
       const updatedSchedule = prev.schedule.map((day: any) => ({
         ...day,
@@ -244,533 +314,564 @@ export default function StudentAILearningPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <div className={styles.titleRow}>
-            <Sparkles size={24} color="#818cf8" />
-            <h1 className={styles.title}>AI Learning Center</h1>
-          </div>
-          <p className={styles.subtitle}>
-            Grounded Course Assistance, Personalized Study Schedules, and Continuous Weakness Diagnostics.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <BookOpen size={16} color="var(--text-muted)" />
-          <select
-            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', padding: '0.5rem 0.875rem', borderRadius: 'var(--radius-md)', fontSize: '0.875rem', outline: 'none' }}
-            value={selectedCourseId}
-            onChange={(e) => setSelectedCourseId(e.target.value)}
-          >
-            {courses.map(c => (
-              <option key={c.id} value={c.id.toString()}>{c.title}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className={styles.tabsBar}>
-        <button
-          className={`${styles.tabBtn} ${activeTab === 'assistant' ? styles.tabBtnActive : ''}`}
-          onClick={() => setActiveTab('assistant')}
-        >
-          <Bot size={16} />
-          <span>AI Course Assistant</span>
-        </button>
-
-        <button
-          className={`${styles.tabBtn} ${activeTab === 'planner' ? styles.tabBtnActive : ''}`}
-          onClick={() => setActiveTab('planner')}
-        >
-          <Calendar size={16} />
-          <span>AI Study Planner</span>
-        </button>
-
-        <button
-          className={`${styles.tabBtn} ${activeTab === 'insights' ? styles.tabBtnActive : ''}`}
-          onClick={() => setActiveTab('insights')}
-        >
-          <TrendingUp size={16} />
-          <span>Weakness Analysis & Recommendations</span>
-        </button>
-
-        <button
-          className={`${styles.tabBtn} ${activeTab === 'practice' ? styles.tabBtnActive : ''}`}
-          onClick={() => setActiveTab('practice')}
-        >
-          <Zap size={16} />
-          <span>Self-Paced Practice</span>
-        </button>
-      </div>
-
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '6rem' }}>
-          <MorphingInfinity size={48} />
-        </div>
-      ) : activeTab === 'assistant' ? (
-        /* ================= TAB 1: AI ASSISTANT ================= */
-        <div className={styles.chatContainer}>
-          <div className={styles.chatHeader}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
-              <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                Active Grounded Knowledge Base
-              </span>
-            </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              Sources automatically cited from verified syllabus & lesson notes
-            </span>
-          </div>
-
-          <div className={styles.chatMessages}>
-            {messages.map((m) => {
-              const isUser = m.sender === 'user'
-              return (
-                <div
-                  key={m.id}
-                  className={`${styles.messageBubble} ${isUser ? styles.userMessage : styles.assistantMessage}`}
-                >
-                  <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
-
-                  {!isUser && m.sources && m.sources.length > 0 && (
-                    <div className={styles.sourcesList}>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                        Sources Used:
-                      </span>
-                      <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                        {m.sources.map((src: any, sIdx: number) => (
-                          <span key={sIdx} className={styles.sourceBadge}>
-                            <BookOpen size={11} />
-                            <span>{src.sourceName || src.title}</span>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-            {asking && (
-              <div className={`${styles.messageBubble} ${styles.assistantMessage}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <RefreshCw size={14} className="spin" />
-                <span>Searching course materials & synthesizing answer...</span>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className={styles.quickPrompts}>
-            <button className={styles.promptChip} onClick={() => handleAskAssistant('Summarize the core concepts of this course.')}>
-              💡 Summarize Core Concepts
-            </button>
-            <button className={styles.promptChip} onClick={() => handleAskAssistant('What are the most important topics in this course?')}>
-              📌 Important Topics
-            </button>
-            <button className={styles.promptChip} onClick={() => handleAskAssistant('Explain key implementation best practices with an example.')}>
-              🛠 Best Practices Example
-            </button>
-            <button className={styles.promptChip} onClick={() => handleAskAssistant('Create 3 practical review questions on recent lessons.')}>
-              ✍️ Practice Questions
-            </button>
-          </div>
-
-          <div className={styles.chatInputRow}>
-            <input
-              type="text"
-              className={styles.chatInput}
-              placeholder="Ask any question about this course's curriculum, code examples, or notes..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAskAssistant()
-              }}
-              disabled={asking}
-            />
-            <button
-              className="btn btn-primary"
-              onClick={() => handleAskAssistant()}
-              disabled={asking || !query.trim()}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-            >
-              <Send size={15} />
-              <span>Send</span>
-            </button>
-          </div>
-        </div>
-      ) : activeTab === 'planner' ? (
-        /* ================= TAB 2: AI STUDY PLANNER ================= */
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+    <div className={styles.layout}>
+      <StudentSidebar />
+      <div className={styles.content}>
+        {/* Header */}
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
+            <BackButton fallbackHref="/student/dashboard" />
             <div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                {studyPlan?.title || 'Personalized Study Plan'}
-              </h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>
-                Targeting {studyPlan?.dailyHours || 1.5} hours/day based on incomplete lessons & upcoming assignments.
+              <h1 className={styles.pageTitle}>
+                <Sparkles size={22} color="#8b5cf6" strokeWidth={2} />
+                <span>AI Learning Center</span>
+              </h1>
+              <p className={styles.pageSubtitle}>
+                Grounded Course Assistance, Personalized Study Schedules, and Weakness Diagnostics
               </p>
             </div>
+          </div>
+
+          <div className={styles.headerActions}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.25)', border: '1px solid var(--border)', padding: '5px 12px', borderRadius: 'var(--radius-md)' }}>
+              <BookOpen size={15} color="var(--text-muted)" />
+              <select
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none', cursor: 'pointer', maxWidth: '240px' }}
+                value={selectedCourseId}
+                onChange={(e) => setSelectedCourseId(e.target.value)}
+              >
+                {courses.map(c => (
+                  <option key={c.id} value={c.id.toString()} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </header>
+
+        <main className={styles.main}>
+          {/* Navigation Tabs Bar */}
+          <nav className={styles.tabsBar}>
+            <button
+              type="button"
+              className={`${styles.tabBtn} ${activeTab === 'assistant' ? styles.tabBtnActive : ''}`}
+              onClick={() => setActiveTab('assistant')}
+            >
+              <Bot size={16} />
+              <span>AI Course Assistant</span>
+            </button>
 
             <button
-              className="btn btn-primary"
-              onClick={() => setShowPlanModal(true)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              type="button"
+              className={`${styles.tabBtn} ${activeTab === 'planner' ? styles.tabBtnActive : ''}`}
+              onClick={() => setActiveTab('planner')}
             >
-              <RefreshCw size={14} />
-              <span>Regenerate Study Schedule</span>
+              <Calendar size={16} />
+              <span>AI Study Planner</span>
             </button>
-          </div>
 
-          {/* Days Selector */}
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', marginBottom: '1.5rem', paddingBottom: '0.5rem' }}>
-            {(studyPlan?.schedule || []).map((day: any, idx: number) => {
-              const isSelected = selectedDayIndex === idx
-              const completedCount = (day.tasks || []).filter((t: any) => t.completed).length
-              const totalTasks = day.tasks?.length || 0
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedDayIndex(idx)}
-                  style={{
-                    background: isSelected ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-secondary)',
-                    border: isSelected ? '1px solid #6366f1' : '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.75rem 1rem',
-                    textAlign: 'left',
-                    minWidth: '140px',
-                    cursor: 'pointer',
-                    color: isSelected ? '#818cf8' : 'var(--text-primary)'
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{day.dayName}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    {completedCount}/{totalTasks} Tasks Done
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+            <button
+              type="button"
+              className={`${styles.tabBtn} ${activeTab === 'insights' ? styles.tabBtnActive : ''}`}
+              onClick={() => setActiveTab('insights')}
+            >
+              <TrendingUp size={16} />
+              <span>Weakness Analysis &amp; Diagnostics</span>
+            </button>
 
-          {/* Active Day Details */}
-          {studyPlan?.schedule?.[selectedDayIndex] && (
-            <div className={styles.widgetCard}>
-              <div className={styles.widgetHeader}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Calendar size={18} color="#818cf8" />
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                    {studyPlan.schedule[selectedDayIndex].dayName} — Focus: {studyPlan.schedule[selectedDayIndex].focusArea}
-                  </h3>
+            <button
+              type="button"
+              className={`${styles.tabBtn} ${activeTab === 'practice' ? styles.tabBtnActive : ''}`}
+              onClick={() => setActiveTab('practice')}
+            >
+              <Zap size={16} />
+              <span>Self-Paced Practice Generator</span>
+            </button>
+          </nav>
+
+          {/* Body Content */}
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '45vh', gap: '1.25rem' }}>
+              <MorphingInfinity className="size-12" style={{ width: '48px', height: '48px', color: '#8b5cf6' }} />
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                Connecting to AI Learning Center &amp; course knowledge chunks...
+              </p>
+            </div>
+          ) : activeTab === 'assistant' ? (
+            /* ================= TAB 1: AI ASSISTANT ================= */
+            <div className={styles.chatContainer}>
+              <div className={styles.chatHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span className={styles.chatStatusBadge}>
+                    <CheckCircle2 size={12} /> Grounded Knowledge Base
+                  </span>
+                  <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                    Context: <strong>{courses.find(c => c.id.toString() === selectedCourseId)?.title || 'Course'}</strong>
+                  </span>
                 </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <Clock size={13} /> {studyPlan.schedule[selectedDayIndex].targetDurationMinutes} min target
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Sources verified from syllabus, practicals &amp; reference manuals
                 </span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {studyPlan.schedule[selectedDayIndex].tasks.map((task: any) => (
-                  <div key={task.id} className={styles.taskRow}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => handleToggleTask(task.id, task.completed)}
-                        style={{ cursor: 'pointer', width: '18px', height: '18px' }}
-                      />
-                      <div className={task.completed ? styles.taskCompleted : ''}>
-                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
-                          {task.title}
+              {/* Messages View */}
+              <div className={styles.chatMessages}>
+                {messages.map((m) => {
+                  const isUser = m.sender === 'user'
+                  return (
+                    <div
+                      key={m.id}
+                      className={`${styles.messageBubble} ${isUser ? styles.userMessage : styles.assistantMessage}`}
+                    >
+                      {renderFormattedContent(m.content)}
+
+                      {!isUser && m.sources && m.sources.length > 0 && (
+                        <div className={styles.sourcesList}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Verified Course Sources:
+                          </span>
+                          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                            {m.sources.map((src: any, sIdx: number) => (
+                              <span key={sIdx} className={styles.sourceBadge}>
+                                <BookOpen size={11} />
+                                <span>{src.sourceName || src.title}</span>
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          {task.type} • {task.durationMinutes} mins
-                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+
+                {asking && (
+                  <div className={`${styles.messageBubble} ${styles.assistantMessage}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', width: 'fit-content' }}>
+                    <MorphingInfinity style={{ width: '24px', height: '24px', color: '#8b5cf6' }} />
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      Searching course materials &amp; generating grounded explanation...
+                    </span>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick Prompts Chips */}
+              <div className={styles.quickPrompts}>
+                <button
+                  type="button"
+                  className={styles.promptChip}
+                  onClick={() => handleAskAssistant('Summarize the core syllabus and practicals of this course.')}
+                >
+                  💡 Summarize Course Curriculum
+                </button>
+                <button
+                  type="button"
+                  className={styles.promptChip}
+                  onClick={() => handleAskAssistant('Explain how Practical No. 1 triangle drawing works in OpenGL with code snippet.')}
+                >
+                  📐 Practical No. 1 OpenGL Walkthrough
+                </button>
+                <button
+                  type="button"
+                  className={styles.promptChip}
+                  onClick={() => handleAskAssistant('Derive Bresenham line algorithm decision parameter step by step.')}
+                >
+                  📝 Bresenham Decision Parameter
+                </button>
+                <button
+                  type="button"
+                  className={styles.promptChip}
+                  onClick={() => handleAskAssistant('Generate 3 practical lab viva questions with model answers.')}
+                >
+                  ✍️ Lab Viva Questions
+                </button>
+              </div>
+
+              {/* Chat Input Bar */}
+              <div className={styles.chatInputRow}>
+                <input
+                  type="text"
+                  className={styles.chatInput}
+                  placeholder="Ask any question about this course's syllabus, algorithms, code, or practical assignments..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAskAssistant()
+                  }}
+                  disabled={asking}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => handleAskAssistant()}
+                  disabled={asking || !query.trim()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '10px 18px' }}
+                >
+                  <Send size={15} />
+                  <span>Send</span>
+                </button>
+              </div>
+            </div>
+          ) : activeTab === 'planner' ? (
+            /* ================= TAB 2: AI STUDY PLANNER ================= */
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    {studyPlan?.title || 'Personalized Study Plan'}
+                  </h2>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>
+                    Targeting {studyPlan?.dailyHours || 1.5} hours/day based on incomplete practicals &amp; upcoming milestones.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => setShowPlanModal(true)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <RefreshCw size={14} />
+                  <span>Regenerate Study Schedule</span>
+                </button>
+              </div>
+
+              {/* Days Selector */}
+              <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', marginBottom: '1.5rem', paddingBottom: '0.5rem' }}>
+                {(studyPlan?.schedule || []).map((day: any, idx: number) => {
+                  const isSelected = selectedDayIndex === idx
+                  const completedCount = (day.tasks || []).filter((t: any) => t.completed).length
+                  const totalTasks = day.tasks?.length || 0
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedDayIndex(idx)}
+                      style={{
+                        background: isSelected ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-secondary)',
+                        border: isSelected ? '1px solid #8b5cf6' : '1px solid var(--border)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '0.75rem 1rem',
+                        textAlign: 'left',
+                        minWidth: '140px',
+                        cursor: 'pointer',
+                        color: isSelected ? '#c4b5fd' : 'var(--text-primary)',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{day.dayName}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        {completedCount}/{totalTasks} Done
                       </div>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Selected Day Task List */}
+              {studyPlan?.schedule?.[selectedDayIndex] && (
+                <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                        {studyPlan.schedule[selectedDayIndex].dayName} Focus: {studyPlan.schedule[selectedDayIndex].focusArea}
+                      </h3>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        Target: {studyPlan.schedule[selectedDayIndex].targetDurationMinutes} mins
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {(studyPlan.schedule[selectedDayIndex].tasks || []).map((task: any) => (
+                      <div key={task.id} className={`${styles.taskRow} ${task.completed ? styles.taskCompleted : ''}`}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                          <input
+                            type="checkbox"
+                            checked={!!task.completed}
+                            onChange={() => handleToggleTask(task.id, task.completed)}
+                            style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#8b5cf6' }}
+                          />
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{task.title}</div>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              {task.type} • {task.durationMinutes} mins
+                            </span>
+                          </div>
+                        </div>
+
+                        {task.actionUrl && (
+                          <Link href={task.actionUrl} className="btn btn-secondary btn-sm" style={{ padding: '4px 10px', fontSize: '11px', textDecoration: 'none' }}>
+                            Start Task
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : activeTab === 'insights' ? (
+            /* ================= TAB 3: WEAKNESS ANALYSIS ================= */
+            <div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.3rem', fontWeight: 700, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>
+                  Continuous Weakness Diagnostics &amp; Recommendations
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
+                  Real-time analytics synthesized from practical submissions, quiz scores, and course milestones.
+                </p>
+              </div>
+
+              <div className={styles.dashboardGrid}>
+                {/* Strong Topics */}
+                <div className={styles.widgetCard}>
+                  <div className={styles.widgetHeader}>
+                    <div className={styles.widgetTitle}>
+                      <CheckCircle2 size={18} color="#34d399" />
+                      <span>Strong Mastery Topics</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {(insights?.strongTopics || ['Computer Graphics Fundamentals', 'OpenGL Primitive Drawing']).map((t: string, idx: number) => (
+                      <span key={idx} className={`${styles.topicBadge} ${styles.badgeStrong}`}>
+                        <Check size={12} strokeWidth={3} /> {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Topics Needing Practice */}
+                <div className={styles.widgetCard}>
+                  <div className={styles.widgetHeader}>
+                    <div className={styles.widgetTitle}>
+                      <AlertTriangle size={18} color="#f87171" />
+                      <span>Areas for Improvement</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {(insights?.weakTopics || [
+                      { topic: 'Bresenham Decision Parameter Derivations', status: 'Needs Practice', reason: 'Requires mathematical derivation practice for octant cases.', accuracy: 68 },
+                      { topic: '2D Composite Matrix Multiplications', status: 'Developing', reason: 'Upcoming practical requires transformation order mastery.', accuracy: 74 }
+                    ]).map((wt: any, idx: number) => (
+                      <div key={idx} style={{ padding: '8px 12px', background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{wt.topic}</span>
+                          <span className={`${styles.topicBadge} ${wt.status === 'Needs Practice' ? styles.badgeNeedsPractice : styles.badgeDeveloping}`}>
+                            {wt.status} ({wt.accuracy}%)
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0 }}>{wt.reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Recommended Actions */}
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem 0', color: 'var(--text-primary)' }}>
+                Personalized Remedial Actions
+              </h3>
+              <div className={styles.recGrid}>
+                {(insights?.recommendations || [
+                  { id: 'r1', title: 'Review Bresenham Line Generation Tutorial', type: 'LESSON', reason: 'Strengthens slope derivations before lab practical submission.', actionUrl: '/student/courses', priority: 'HIGH' },
+                  { id: 'r2', title: 'Take 2D Transformations Practice Quiz', type: 'PRACTICE_QUIZ', reason: 'Tests composite matrix multiplications and rotation logic.', actionUrl: '/student/quizzes', priority: 'MEDIUM' }
+                ]).map((rec: any) => (
+                  <div key={rec.id} className={styles.recCard}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span className="badge badge-purple" style={{ fontSize: '10px' }}>{rec.type}</span>
+                        <span className={`badge ${rec.priority === 'HIGH' ? 'badge-orange' : 'badge-blue'}`} style={{ fontSize: '10px' }}>
+                          {rec.priority} Priority
+                        </span>
+                      </div>
+                      <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>{rec.title}</h4>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>{rec.reason}</p>
                     </div>
 
-                    <Link
-                      href={task.actionUrl}
-                      className="btn btn-secondary btn-sm"
-                      style={{ padding: '3px 8px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <span>Start Task</span>
-                      <ArrowRight size={11} />
+                    <Link href={rec.actionUrl || '/student/courses'} className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textDecoration: 'none' }}>
+                      <span>Start Remedial Task</span>
+                      <ArrowRight size={13} />
                     </Link>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          ) : (
+            /* ================= TAB 4: PRACTICE GENERATOR ================= */
+            <div>
+              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '2rem' }}>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  Generate Grounded Practice Exercises
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+                  Create self-paced technical assessment questions derived strictly from your course knowledge base.
+                </p>
 
-          {/* Regenerate Plan Modal */}
-          {showPlanModal && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', maxWidth: '480px', width: '100%', padding: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                    Customize AI Study Schedule
-                  </h3>
-                  <button onClick={() => setShowPlanModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <form onSubmit={handleGeneratePlan}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                <form onSubmit={handleGeneratePractice}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
-                        Daily Study Time (Hours)
-                      </label>
-                      <select
-                        style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }}
-                        value={dailyHours}
-                        onChange={(e) => setDailyHours(e.target.value)}
-                      >
-                        <option value="1.0">1.0 Hour / day</option>
-                        <option value="1.5">1.5 Hours / day (Recommended)</option>
-                        <option value="2.0">2.0 Hours / day</option>
-                        <option value="3.0">3.0 Hours / day (Intensive)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
-                        Target Milestone / Exam Date (Optional)
-                      </label>
+                      <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '6px', fontSize: '0.85rem' }}>Topic / Concept</label>
                       <input
-                        type="date"
-                        style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }}
-                        value={targetExamDate}
-                        onChange={(e) => setTargetExamDate(e.target.value)}
+                        type="text"
+                        required
+                        value={practiceTopic}
+                        onChange={e => setPracticeTopic(e.target.value)}
+                        className="form-input"
+                        style={{ width: '100%' }}
                       />
                     </div>
+                    <div>
+                      <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '6px', fontSize: '0.85rem' }}>Difficulty</label>
+                      <select
+                        value={practiceDifficulty}
+                        onChange={e => setPracticeDifficulty(e.target.value as any)}
+                        className="form-select"
+                        style={{ width: '100%' }}
+                      >
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '6px', fontSize: '0.85rem' }}>Questions Count</label>
+                      <select
+                        value={practiceCount}
+                        onChange={e => setPracticeCount(e.target.value)}
+                        className="form-select"
+                        style={{ width: '100%' }}
+                      >
+                        <option value="3">3 Questions</option>
+                        <option value="5">5 Questions</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowPlanModal(false)}>
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary" disabled={generatingPlan}>
-                      {generatingPlan ? 'Generating...' : 'Generate New Plan'}
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={generatingPractice}
+                    className="btn btn-primary btn-sm"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 18px' }}
+                  >
+                    {generatingPractice ? (
+                      <>
+                        <MorphingInfinity style={{ width: '16px', height: '16px', color: '#ffffff' }} />
+                        <span>Generating Questions...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={14} />
+                        <span>Generate Practice Test</span>
+                      </>
+                    )}
+                  </button>
                 </form>
               </div>
+
+              {/* Questions List */}
+              {practiceQuestions.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {practiceQuestions.map((q: any, qIdx: number) => {
+                    const isRevealed = !!revealedSolutions[qIdx]
+
+                    return (
+                      <div key={qIdx} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                            Question {qIdx + 1}: {q.question}
+                          </span>
+                          <span className="badge badge-purple" style={{ fontSize: '10px' }}>{q.type?.toUpperCase()}</span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.5rem', marginBottom: '1rem' }}>
+                          {q.options?.map((opt: any, oIdx: number) => (
+                            <div
+                              key={oIdx}
+                              style={{
+                                padding: '8px 12px',
+                                background: isRevealed && opt.isCorrect ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-primary)',
+                                border: isRevealed && opt.isCorrect ? '1px solid #10b981' : '1px solid var(--border)',
+                                borderRadius: 'var(--radius-md)',
+                                fontSize: '0.85rem',
+                                color: isRevealed && opt.isCorrect ? '#34d399' : 'var(--text-primary)'
+                              }}
+                            >
+                              {opt.optionText} {isRevealed && opt.isCorrect && '✓ (Correct)'}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => setRevealedSolutions(prev => ({ ...prev, [qIdx]: !prev[qIdx] }))}
+                            className="btn btn-ghost btn-sm"
+                            style={{ fontSize: '12px' }}
+                          >
+                            {isRevealed ? 'Hide Explanation' : 'Reveal Solution & Explanation'}
+                          </button>
+                        </div>
+
+                        {isRevealed && q.explanation && (
+                          <div style={{ marginTop: '0.75rem', padding: '10px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#93c5fd' }}>
+                            <strong>Pedagogical Explanation:</strong> {q.explanation}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )}
-        </div>
-      ) : activeTab === 'insights' ? (
-        /* ================= TAB 3: WEAKNESS DIAGNOSTICS & RECOMMENDATIONS ================= */
-        <div>
-          <div className={styles.dashboardGrid}>
-            {/* Strong Topics */}
-            <div className={styles.widgetCard}>
-              <div className={styles.widgetHeader}>
-                <div className={styles.widgetTitle}>
-                  <CheckCircle2 size={18} color="#34d399" />
-                  <span>Strong & Mastered Topics</span>
-                </div>
-              </div>
+        </main>
+      </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {(insights?.strongTopics || []).map((t: string, idx: number) => (
-                  <span key={idx} className={`${styles.topicBadge} ${styles.badgeStrong}`}>
-                    ✓ {t}
-                  </span>
-                ))}
-              </div>
+      {/* Regenerate Plan Modal */}
+      {showPlanModal && (
+        <div className={styles.modalBackdrop} onClick={() => setShowPlanModal(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Configure AI Study Schedule</h3>
+              <button type="button" className={styles.modalCloseBtn} onClick={() => setShowPlanModal(false)}>✕</button>
             </div>
-
-            {/* Topics Needing Practice */}
-            <div className={styles.widgetCard}>
-              <div className={styles.widgetHeader}>
-                <div className={styles.widgetTitle}>
-                  <AlertTriangle size={18} color="#fbbf24" />
-                  <span>Topics Needing Practice</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {(insights?.weakTopics || []).map((item: any, idx: number) => {
-                  const isNeedsPractice = item.status === 'Needs Practice'
-                  return (
-                    <div key={idx} style={{ padding: '0.75rem 1rem', background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                        <span className={`${styles.topicBadge} ${isNeedsPractice ? styles.badgeNeedsPractice : styles.badgeDeveloping}`}>
-                          {item.topic}
-                        </span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isNeedsPractice ? '#f87171' : '#fbbf24' }}>
-                          {item.status} ({item.accuracy}%)
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>
-                        {item.reason}
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Recommended Next Actions */}
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Target size={18} color="#818cf8" />
-            <span>Recommended for You</span>
-          </h3>
-
-          <div className={styles.recGrid}>
-            {(insights?.recommendations || []).map((rec: any, idx: number) => (
-              <div key={idx} className={styles.recCard}>
-                <div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, background: 'rgba(99, 102, 241, 0.12)', color: '#818cf8', padding: '0.2rem 0.5rem', borderRadius: '4px', textTransform: 'uppercase' }}>
-                    {rec.type}
-                  </span>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0.5rem 0 0.25rem' }}>
-                    {rec.title}
-                  </h4>
-                  <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                    {rec.reason}
-                  </p>
-                </div>
-
-                <Link
-                  href={rec.actionUrl}
-                  className="btn btn-primary btn-sm"
-                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', width: '100%' }}
+            <form onSubmit={handleGeneratePlan}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '6px' }}>Daily Study Commitment</label>
+                <select
+                  value={dailyHours}
+                  onChange={e => setDailyHours(e.target.value)}
+                  className="form-select"
+                  style={{ width: '100%' }}
                 >
-                  <span>Start Learning</span>
-                  <ArrowRight size={13} />
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        /* ================= TAB 4: SELF-PACED PRACTICE GENERATOR ================= */
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div className={styles.widgetCard} style={{ marginBottom: '2rem' }}>
-            <div className={styles.widgetHeader}>
-              <div className={styles.widgetTitle}>
-                <Zap size={18} color="#818cf8" />
-                <span>Instant AI Self-Paced Practice Generator</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleGeneratePractice}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
-                    Topic *
-                  </label>
-                  <input
-                    type="text"
-                    style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }}
-                    value={practiceTopic}
-                    onChange={(e) => setPracticeTopic(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
-                    Difficulty
-                  </label>
-                  <select
-                    style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }}
-                    value={practiceDifficulty}
-                    onChange={(e: any) => setPracticeDifficulty(e.target.value)}
-                  >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
-                    Question Count
-                  </label>
-                  <select
-                    style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }}
-                    value={practiceCount}
-                    onChange={(e) => setPracticeCount(e.target.value)}
-                  >
-                    <option value="3">3 Questions</option>
-                    <option value="5">5 Questions</option>
-                    <option value="10">10 Questions</option>
-                  </select>
-                </div>
+                  <option value="1.0">1.0 Hour / day</option>
+                  <option value="1.5">1.5 Hours / day (Recommended)</option>
+                  <option value="2.0">2.0 Hours / day</option>
+                  <option value="3.0">3.0 Hours / day</option>
+                </select>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={generatingPractice}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                >
-                  <Sparkles size={15} />
-                  <span>{generatingPractice ? 'Generating Questions...' : 'Generate Practice Set'}</span>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '6px' }}>Target Lab / Exam Date (Optional)</label>
+                <input
+                  type="date"
+                  value={targetExamDate}
+                  onChange={e => setTargetExamDate(e.target.value)}
+                  className="form-input"
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPlanModal(false)}>Cancel</button>
+                <button type="submit" disabled={generatingPlan} className="btn btn-primary btn-sm">
+                  {generatingPlan ? 'Synthesizing Plan...' : 'Generate Schedule'}
                 </button>
               </div>
             </form>
           </div>
-
-          {/* Generated Practice Question List */}
-          {practiceQuestions.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {practiceQuestions.map((q: any, idx: number) => {
-                const isRevealed = Boolean(revealedSolutions[idx])
-                return (
-                  <div key={idx} className={styles.widgetCard}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#818cf8', textTransform: 'uppercase' }}>
-                        Question {idx + 1} ({q.type})
-                      </span>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '3px 8px', fontSize: '11px' }}
-                        onClick={() => setRevealedSolutions(prev => ({ ...prev, [idx]: !prev[idx] }))}
-                      >
-                        {isRevealed ? 'Hide Solution' : 'Reveal Solution'}
-                      </button>
-                    </div>
-
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0.25rem 0' }}>
-                      {q.question}
-                    </h4>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {(q.options || []).map((opt: any, optIdx: number) => {
-                        const showCorrect = isRevealed && opt.isCorrect
-                        return (
-                          <div
-                            key={optIdx}
-                            style={{
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: 'var(--radius-md)',
-                              background: showCorrect ? 'rgba(16, 185, 129, 0.12)' : 'var(--bg-primary)',
-                              border: showCorrect ? '1px solid #10b981' : '1px solid var(--border)',
-                              color: showCorrect ? '#34d399' : 'var(--text-primary)',
-                              fontSize: '0.875rem'
-                            }}
-                          >
-                            {opt.optionText}
-                          </div>
-                        )
-                      })}
-                    </div>
-
-                    {isRevealed && q.explanation && (
-                      <div style={{ padding: '0.75rem', background: 'rgba(99, 102, 241, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.825rem', color: '#c4b5fd' }}>
-                        <strong>Explanation:</strong> {q.explanation}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
         </div>
       )}
     </div>

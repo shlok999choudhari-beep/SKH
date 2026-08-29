@@ -219,13 +219,19 @@ export default function TrainerCoursesManagePage() {
                   <tr key={course.id}>
                     <td>
                       <div>
-                        <span style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'block', fontSize: '0.95rem' }}>
+                        <Link href={`/trainer/courses/${course.id}`} style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'block', fontSize: '0.95rem', textDecoration: 'none' }}>
                           {course.title}
-                        </span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                          <Clock size={11} />
-                          <span>{course.estimatedDuration}</span>
-                        </span>
+                        </Link>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            {course.academicYear || 'AY 2026-27'} • {course.semester || 'Semester I'}
+                          </span>
+                          {course.joinCode && (
+                            <span style={{ fontSize: '0.72rem', background: 'rgba(139, 92, 246, 0.15)', color: '#c4b5fd', padding: '1px 6px', borderRadius: '4px', fontFamily: 'Geist Mono, monospace', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                              Code: {course.joinCode}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td>
@@ -241,7 +247,7 @@ export default function TrainerCoursesManagePage() {
                     <td>
                       <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                         <Layers size={13} color="#c084fc" />
-                        <span>{course.moduleCount} Modules • {course.lessonCount} Lessons</span>
+                        <span>{course.moduleCount} Sections • {course.lessonCount + (course.resourceCount || 0)} Items</span>
                       </span>
                     </td>
                     <td>
@@ -263,12 +269,12 @@ export default function TrainerCoursesManagePage() {
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                         <Link
-                          href={`/trainer/courses/${course.id}/builder`}
+                          href={`/trainer/courses/${course.id}`}
                           className="btn btn-primary btn-sm"
                           style={{ padding: '6px 12px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                         >
                           <Edit size={12} strokeWidth={2} />
-                          <span>Builder</span>
+                          <span>Workspace</span>
                         </Link>
                         <Link
                           href={`/student/courses/${course.id}`}

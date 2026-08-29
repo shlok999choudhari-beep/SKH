@@ -59,17 +59,19 @@ export default function StudentDiscussionDetailPage() {
 
   const handlePostReply = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!replyContent.trim()) return
+    if (!replyContent.trim() || submittingReply) return
 
+    const text = replyContent.trim()
     setSubmittingReply(true)
+
     try {
       const res = await fetch(`/api/discussions/${discussionId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: replyContent.trim() })
+        body: JSON.stringify({ content: text })
       })
       const data = await res.json()
-      if (data.success && data.reply) {
+      if (res.ok && data.success && data.reply) {
         setDiscussion((prev: any) => ({
           ...prev,
           replies: [...(prev.replies || []), data.reply]
@@ -165,7 +167,8 @@ export default function StudentDiscussionDetailPage() {
     )
   }
 
-  const isInstructorAuthor = discussion.author?.role === 'trainer' || discussion.author?.role === 'institution-admin'
+  const isInstructorAuthor = !discussion.studentId && (discussion.author?.role === 'trainer' || discussion.author?.role === 'institution-admin')
+  const authorName = discussion.student?.name || discussion.author?.name || 'Student'
 
   return (
     <div className={styles.layout}>
@@ -180,130 +183,134 @@ export default function StudentDiscussionDetailPage() {
                 <MessageSquare size={22} color="#8b5cf6" strokeWidth={2} />
                 <span>Discussion Thread</span>
               </h1>
-              <p className={styles.pageSubtitle}>{discussion.course?.title}</p>
+              <p className={styles.pageSubtitle}>{discussion.course?.title || 'Course Discussion'}</p>
             </div>
           </div>
         </header>
 
         <div className={styles.detailContainer}>
+          {/* Main Post */}
+          <div className={styles.mainPost}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+              {discussion.isPinned && (
+                <span className={`${styles.badge} ${styles.badgePinned}`}>
+                  <Pin size={11} /> Pinned
+                </span>
+              )}
+              {discussion.isLocked && (
+                <span className={`${styles.badge} ${styles.badgeLocked}`}>
+                  <Lock size={11} /> Locked Thread
+                </span>
+              )}
+              {discussion.course?.title && (
+                <span className={`${styles.badge} ${styles.badgeCourse}`}>
+                  <BookOpen size={11} /> {discussion.course.title}
+                </span>
+              )}
+            </div>
 
-      {/* Main Post */}
-      <div className={styles.mainPost}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-          {discussion.isPinned && (
-            <span className={`${styles.badge} ${styles.badgePinned}`}>
-              <Pin size={11} /> Pinned
-            </span>
-          )}
-          {discussion.isLocked && (
-            <span className={`${styles.badge} ${styles.badgeLocked}`}>
-              <Lock size={11} /> Locked Thread
-            </span>
-          )}
-          <span className={`${styles.badge} ${styles.badgeCourse}`}>
-            <BookOpen size={11} /> {discussion.course?.title}
-          </span>
-        </div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem', lineHeight: 1.35 }}>
+              {discussion.title}
+            </h1>
 
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem', lineHeight: 1.35 }}>
-          {discussion.title}
-        </h1>
+            <div className={styles.authorRow}>
+              <div className={`${styles.avatar} ${isInstructorAuthor ? styles.avatarInstructor : ''}`}>
+                {authorName[0].toUpperCase()}
+              </div>
+              <div className={styles.authorInfo}>
+                <div className={styles.authorName}>
+                  <span>{authorName}</span>
+                  <span className={`${styles.roleBadge} ${isInstructorAuthor ? styles.roleInstructor : styles.roleStudent}`}>
+                    {isInstructorAuthor ? 'Instructor' : 'Student'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  Posted on {new Date(discussion.createdAt).toLocaleDateString()} at {new Date(discussion.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            </div>
 
-        <div className={styles.authorRow}>
-          <div className={`${styles.avatar} ${isInstructorAuthor ? styles.avatarInstructor : ''}`}>
-            {(discussion.author?.name || 'S')[0].toUpperCase()}
-          </div>
-          <div className={styles.authorInfo}>
-            <div className={styles.authorName}>
-              <span>{discussion.author?.name || 'Student'}</span>
-              <span className={`${styles.roleBadge} ${isInstructorAuthor ? styles.roleInstructor : styles.roleStudent}`}>
-                {isInstructorAuthor ? 'Instructor' : 'Student'}
+            <div className={styles.postContent} style={{ whiteSpace: 'pre-wrap' }}>
+              {discussion.content}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem', marginTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={handleUpvoteHelpful}
+                className="btn btn-secondary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.825rem',
+                  color: hasVotedHelpful ? '#34d399' : 'inherit',
+                  borderColor: hasVotedHelpful ? 'rgba(52,211,153,0.4)' : undefined
+                }}
+              >
+                <ThumbsUp size={14} />
+                <span>{hasVotedHelpful ? 'Marked Helpful' : 'Helpful'} ({helpfulCount})</span>
+              </button>
+
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                {discussion.replies?.length || 0} response{discussion.replies?.length === 1 ? '' : 's'}
               </span>
             </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              Posted on {new Date(discussion.createdAt).toLocaleDateString()} at {new Date(discussion.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
           </div>
-        </div>
 
-        <div className={styles.postContent}>
-          {discussion.content}
-        </div>
+          {/* Replies Thread */}
+          <div className={styles.repliesSection}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
+              Responses ({discussion.replies?.length || 0})
+            </h3>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
-          <button
-            onClick={handleUpvoteHelpful}
-            className="btn btn-secondary"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.825rem',
-              color: hasVotedHelpful ? '#34d399' : 'inherit',
-              borderColor: hasVotedHelpful ? 'rgba(52,211,153,0.4)' : undefined
-            }}
-          >
-            <ThumbsUp size={14} />
-            <span>{hasVotedHelpful ? 'Marked Helpful' : 'Helpful'} ({helpfulCount})</span>
-          </button>
-
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {discussion.replies?.length || 0} response{discussion.replies?.length === 1 ? '' : 's'}
-          </span>
-        </div>
-      </div>
-
-      {/* Replies Thread */}
-      <div className={styles.repliesSection}>
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-          Responses ({discussion.replies?.length || 0})
-        </h3>
-
-        {(!discussion.replies || discussion.replies.length === 0) ? (
-          <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-            <MessageSquare size={32} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem' }} />
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>No responses yet. Be the first to share your thoughts!</p>
-          </div>
-        ) : (
-          discussion.replies.map((reply: any) => {
-            const isReplyInstructor = reply.author?.role === 'trainer' || reply.author?.role === 'institution-admin'
-            return (
-              <div
-                key={reply.id}
-                className={`${styles.replyCard} ${reply.isHelpful ? styles.replyCardHelpful : ''}`}
-              >
-                {reply.isHelpful && (
-                  <div className={styles.helpfulBadge}>
-                    <CheckCircle2 size={12} />
-                    <span>Marked as Helpful Answer</span>
-                  </div>
-                )}
-
-                <div className={styles.authorRow}>
-                  <div className={`${styles.avatar} ${isReplyInstructor ? styles.avatarInstructor : ''}`} style={{ width: '36px', height: '36px', fontSize: '0.875rem' }}>
-                    {(reply.author?.name || 'U')[0].toUpperCase()}
-                  </div>
-                  <div className={styles.authorInfo}>
-                    <div className={styles.authorName}>
-                      <span>{reply.author?.name || 'Student'}</span>
-                      <span className={`${styles.roleBadge} ${isReplyInstructor ? styles.roleInstructor : styles.roleStudent}`}>
-                        {isReplyInstructor ? 'Instructor' : 'Peer'}
-                      </span>
-                    </div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {new Date(reply.createdAt).toLocaleDateString()} at {new Date(reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                  {reply.content}
-                </div>
+            {(!discussion.replies || discussion.replies.length === 0) ? (
+              <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                <MessageSquare size={32} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem' }} />
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>No responses yet. Be the first to share your thoughts!</p>
               </div>
-            )
-          })
-        )}
-      </div>
+            ) : (
+              discussion.replies.map((reply: any) => {
+                const isReplyInstructor = !reply.studentId && (reply.author?.role === 'trainer' || reply.author?.role === 'institution-admin')
+                const replyAuthorName = reply.student?.name || reply.author?.name || 'Student'
+
+                return (
+                  <div
+                    key={reply.id}
+                    className={`${styles.replyCard} ${reply.isHelpful ? styles.replyCardHelpful : ''}`}
+                  >
+                    {reply.isHelpful && (
+                      <div className={styles.helpfulBadge}>
+                        <CheckCircle2 size={12} />
+                        <span>Marked as Helpful Answer</span>
+                      </div>
+                    )}
+
+                    <div className={styles.authorRow}>
+                      <div className={`${styles.avatar} ${isReplyInstructor ? styles.avatarInstructor : ''}`} style={{ width: '36px', height: '36px', fontSize: '0.875rem' }}>
+                        {replyAuthorName[0].toUpperCase()}
+                      </div>
+                      <div className={styles.authorInfo}>
+                        <div className={styles.authorName}>
+                          <span>{replyAuthorName}</span>
+                          <span className={`${styles.roleBadge} ${isReplyInstructor ? styles.roleInstructor : styles.roleStudent}`}>
+                            {isReplyInstructor ? 'Instructor' : 'Peer'}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          {new Date(reply.createdAt).toLocaleDateString()} at {new Date(reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>
+                      {reply.content}
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
 
           {/* Reply Box */}
           {discussion.isLocked ? (
@@ -335,6 +342,12 @@ export default function StudentDiscussionDetailPage() {
                   placeholder="Write your explanation, suggestion, or question reply..."
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handlePostReply(e)
+                    }
+                  }}
                   required
                 />
 
@@ -352,8 +365,8 @@ export default function StudentDiscussionDetailPage() {
               </form>
             </div>
           )}
-        </div>{/* end .detailContainer */}
-      </div>{/* end .content */}
+        </div>
+      </div>
     </div>
   )
 }

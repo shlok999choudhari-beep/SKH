@@ -1023,6 +1023,10 @@ model Course {
   estimatedDuration     String?  @map("estimated_duration")
   learningObjectives    String?  @map("learning_objectives")
   prerequisites         String?
+  shortName             String?  @map("short_name")
+  academicYear          String?  @default("AY 2026-27") @map("academic_year")
+  semester              String?  @default("Semester I") @map("semester")
+  department            String?  @map("department")
   status                String   @default("draft") // draft, published, archived
   joinCode              String?  @unique @map("join_code")
   joinCodeEnabled       Boolean  @default(true) @map("join_code_enabled")
@@ -1185,6 +1189,7 @@ model Assignment {
   trainerId        Int?      @map("trainer_id")
   title            String
   description      String? // Markdown / instructions
+  openedAt         DateTime? @map("opened_at")
   dueDate          DateTime? @map("due_date")
   maxMarks         Float     @default(100) @map("max_marks")
   allowedFileTypes String?   @default("pdf,zip,docx,png") @map("allowed_file_types")

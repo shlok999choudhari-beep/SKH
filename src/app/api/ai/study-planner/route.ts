@@ -5,16 +5,13 @@ import { generateStudentStudyPlan } from '@/lib/lmsAiService'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSession(req)
+    const session = await getSession()
     const { searchParams } = new URL(req.url)
     const courseIdParam = searchParams.get('courseId')
 
-    let studentId = 1 // Default to active student profile
-    if (session?.role === 'student' && session.email) {
-      const student = await prisma.student.findFirst({
-        where: { email: session.email }
-      })
-      if (student) studentId = student.id
+    let studentId = 1
+    if (session?.role === 'student' && session.userId) {
+      studentId = session.userId
     }
 
     const courseId = courseIdParam ? parseInt(courseIdParam, 10) : undefined
@@ -81,16 +78,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getSession(req)
+    const session = await getSession()
     const body = await req.json()
     const { courseId, targetExamDate, dailyHours = 1.5 } = body
 
     let studentId = 1
-    if (session?.role === 'student' && session.email) {
-      const student = await prisma.student.findFirst({
-        where: { email: session.email }
-      })
-      if (student) studentId = student.id
+    if (session?.role === 'student' && session.userId) {
+      studentId = session.userId
     }
 
     const cId = courseId ? parseInt(courseId.toString(), 10) : null
@@ -148,7 +142,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json()
-    const { planId, dayIndex, taskId, completed } = body
+    const { planId, taskId, completed } = body
 
     if (!planId || taskId === undefined) {
       return NextResponse.json({ error: 'planId and taskId are required' }, { status: 400 })
@@ -171,7 +165,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const updated = await prisma.studyPlan.update({
+    await prisma.studyPlan.update({
       where: { id: plan.id },
       data: {
         weeklySchedule: JSON.stringify(schedule)

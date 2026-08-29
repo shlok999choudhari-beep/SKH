@@ -125,6 +125,7 @@ export async function POST(req: NextRequest) {
         trainerId,
         title,
         description: description || '',
+        openedAt: body.openedAt ? new Date(body.openedAt) : new Date(),
         dueDate: dueDate ? new Date(dueDate) : null,
         maxMarks: maxMarks ? parseFloat(maxMarks) : 100,
         allowedFileTypes: allowedFileTypes || 'pdf,zip,docx,png',

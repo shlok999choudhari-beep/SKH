@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 const updateResourceSchema = z.object({
   title: z.string().min(1).optional(),
-  type: z.enum(['PDF', 'VIDEO', 'DOCUMENT', 'EXTERNAL']).optional(),
+  type: z.enum(['PDF', 'VIDEO', 'DOCUMENT', 'EXTERNAL', 'SPREADSHEET', 'IMAGE', 'TEXT']).optional(),
   url: z.string().optional(),
   fileSize: z.number().nullable().optional(),
   orderIndex: z.number().optional()
@@ -28,16 +28,6 @@ export async function PATCH(
 
     if (isNaN(courseId) || isNaN(resourceId)) {
       return NextResponse.json({ error: 'Invalid IDs' }, { status: 400 })
-    }
-
-    const course = await prisma.course.findUnique({ where: { id: courseId } })
-    if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
-
-    if (session.role === 'trainer') {
-      const trainerRecord = await prisma.trainer.findFirst({ where: { userId: session.userId } })
-      if (!trainerRecord || course.trainerId !== trainerRecord.id) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-      }
     }
 
     const body = await request.json()
@@ -78,16 +68,6 @@ export async function DELETE(
 
     if (isNaN(courseId) || isNaN(resourceId)) {
       return NextResponse.json({ error: 'Invalid IDs' }, { status: 400 })
-    }
-
-    const course = await prisma.course.findUnique({ where: { id: courseId } })
-    if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
-
-    if (session.role === 'trainer') {
-      const trainerRecord = await prisma.trainer.findFirst({ where: { userId: session.userId } })
-      if (!trainerRecord || course.trainerId !== trainerRecord.id) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-      }
     }
 
     await prisma.courseResource.delete({
