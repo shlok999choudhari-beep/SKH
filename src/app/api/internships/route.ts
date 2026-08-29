@@ -66,7 +66,7 @@ export async function GET(request: Request) {
 
     let rawInternships = rawInternshipsRaw || []
     if (parsedInstId) {
-      rawInternships = rawInternships.filter(i => Number(i.institution_id) === parsedInstId)
+      rawInternships = rawInternships.filter(i => !i.institution_id || Number(i.institution_id) === parsedInstId)
     }
     if (parsedCompId) {
       rawInternships = rawInternships.filter(i => Number(i.company_id) === parsedCompId)
@@ -148,21 +148,21 @@ export async function POST(request: Request) {
     }
 
     if (compId) {
-      const compRows: any[] = await prisma.$queryRaw`SELECT id FROM "companies" WHERE id = ${compId}`.catch(() => [])
-      if (compRows.length === 0) {
-        const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
-        compId = firstComp[0]?.id || null
+      const compRows: any = await prisma.$queryRaw`SELECT id FROM "companies" WHERE id = ${compId}`.catch(() => [])
+      if (!compRows || compRows.length === 0) {
+        const firstComp: any = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
+        compId = firstComp?.[0]?.id || null
       }
     } else {
-      const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
-      compId = firstComp[0]?.id || null
+      const firstComp: any = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
+      compId = firstComp?.[0]?.id || null
     }
 
     let instId = validatedData.institution_id || 1
-    const instRows: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" WHERE id = ${instId}`.catch(() => [])
-    if (instRows.length === 0) {
-      const firstInst: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" LIMIT 1`.catch(() => [])
-      if (firstInst.length > 0) {
+    const instRows: any = await prisma.$queryRaw`SELECT id FROM "institutions" WHERE id = ${instId}`.catch(() => [])
+    if (!instRows || instRows.length === 0) {
+      const firstInst: any = await prisma.$queryRaw`SELECT id FROM "institutions" LIMIT 1`.catch(() => [])
+      if (firstInst && firstInst.length > 0) {
         instId = firstInst[0].id
       }
     }
