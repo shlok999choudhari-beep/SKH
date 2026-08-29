@@ -97,9 +97,9 @@ export async function applyPdfWatermark(
       minute: '2-digit'
     })
 
-    const line1 = options.customText || 'PLACEIQ CONFIDENTIAL'
-    const line2 = `Accessed by: ${options.actorName || 'Authorized User'} (${options.actorRole || 'Student'})`
-    const line3 = `${dateStr} • Doc ID: PIQ-DOC-${options.documentId}`
+    const line1 = (options.customText || 'PLACEIQ CONFIDENTIAL').replace(/[^\x20-\x7E]/g, '')
+    const line2 = `Accessed by: ${(options.actorName || 'Authorized User').replace(/[^\x20-\x7E]/g, '')} (${options.actorRole || 'Student'})`
+    const line3 = `${dateStr} | Doc ID: PIQ-DOC-${options.documentId}`
     const line4 = options.sha256Hash ? `SHA-256: ${options.sha256Hash.slice(0, 20)}...` : 'Verified Digital Vault'
 
     for (const page of pages) {
@@ -114,7 +114,7 @@ export async function applyPdfWatermark(
 
       // Draw subtle background semi-transparent stamp
       page.drawText(line1, {
-        x: centerX - textWidth / 2 + 20,
+        x: Math.max(10, centerX - textWidth / 2 + 20),
         y: centerY + 30,
         size: fontSize,
         font,
@@ -124,7 +124,7 @@ export async function applyPdfWatermark(
       })
 
       page.drawText(line2, {
-        x: centerX - font.widthOfTextAtSize(line2, fontSize * 0.45) / 2 + 20,
+        x: Math.max(10, centerX - font.widthOfTextAtSize(line2, fontSize * 0.45) / 2 + 20),
         y: centerY - 5,
         size: fontSize * 0.45,
         font: subFont,
@@ -134,7 +134,7 @@ export async function applyPdfWatermark(
       })
 
       page.drawText(line3, {
-        x: centerX - font.widthOfTextAtSize(line3, fontSize * 0.38) / 2 + 20,
+        x: Math.max(10, centerX - font.widthOfTextAtSize(line3, fontSize * 0.38) / 2 + 20),
         y: centerY - 30,
         size: fontSize * 0.38,
         font: subFont,
@@ -144,7 +144,7 @@ export async function applyPdfWatermark(
       })
 
       page.drawText(line4, {
-        x: centerX - font.widthOfTextAtSize(line4, fontSize * 0.32) / 2 + 20,
+        x: Math.max(10, centerX - font.widthOfTextAtSize(line4, fontSize * 0.32) / 2 + 20),
         y: centerY - 50,
         size: fontSize * 0.32,
         font: subFont,
@@ -154,7 +154,7 @@ export async function applyPdfWatermark(
       })
 
       // Top Security Banner Header
-      page.drawText(`🛡 PLACEIQ SECURE VAULT • DOC-ID: ${options.documentId} • ${options.actorName || 'STUDENT'} • ${dateStr}`, {
+      page.drawText(`[SECURE VAULT] PLACEIQ - DOC-ID: ${options.documentId} - ${(options.actorName || 'STUDENT').replace(/[^\x20-\x7E]/g, '')} - ${dateStr}`, {
         x: 20,
         y: height - 20,
         size: 8,
@@ -164,7 +164,7 @@ export async function applyPdfWatermark(
       })
 
       // Bottom Security Footer with Integrity Seal
-      page.drawText(`CONFIDENTIAL & PROPRIETARY — FOR VERIFICATION ONLY — SHA-256: ${options.sha256Hash || 'VALIDATED'}`, {
+      page.drawText(`CONFIDENTIAL & PROPRIETARY - FOR VERIFICATION ONLY - SHA-256: ${options.sha256Hash || 'VALIDATED'}`, {
         x: 20,
         y: 15,
         size: 7,

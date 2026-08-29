@@ -100,11 +100,20 @@ export async function GET(
 
     const disposition = isDownload ? 'attachment' : 'inline'
     const contentType = normalizeFileType(doc.fileName, doc.fileType)
+    let dispositionFilename = doc.fileName
+    if (isPdf && !dispositionFilename.toLowerCase().endsWith('.pdf')) {
+      dispositionFilename = `${dispositionFilename}.pdf`
+    } else if (contentType === 'image/png' && !dispositionFilename.toLowerCase().endsWith('.png')) {
+      dispositionFilename = `${dispositionFilename}.png`
+    } else if (contentType === 'image/jpeg' && !/\.(jpe?g)$/i.test(dispositionFilename)) {
+      dispositionFilename = `${dispositionFilename}.jpg`
+    }
 
     return new NextResponse(new Uint8Array(finalBuffer), {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `${disposition}; filename="${encodeURIComponent(doc.fileName)}"`,
+        'Content-Disposition': `${disposition}; filename="${encodeURIComponent(dispositionFilename)}"`,
+        'Content-Length': finalBuffer.length.toString(),
         'Cache-Control': 'private, no-cache, no-store, must-revalidate',
         'X-Content-Type-Options': 'nosniff',
         'X-Document-View-Only': share.isViewOnly ? 'true' : 'false'

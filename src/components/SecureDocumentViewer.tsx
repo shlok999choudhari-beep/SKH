@@ -44,6 +44,49 @@ export default function SecureDocumentViewer({
   const [lockMsg, setLockMsg] = useState('')
   const [downloading, setDownloading] = useState(false)
 
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
+  const [streamError, setStreamError] = useState<string | null>(null)
+
+  // Revoke object URL on unmount or refresh to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
+      }
+    }
+  }, [blobUrl])
+
+  // Fetch document stream buffer and create in-memory blob URL
+  const fetchDocumentStream = async (docId: number, token?: string | null) => {
+    setLoading(true)
+    setStreamError(null)
+    try {
+      const url = token
+        ? `/api/documents/${docId}/stream?grant=${token}&_t=${Date.now()}`
+        : `/api/documents/${docId}/stream?_t=${Date.now()}`
+      setStreamUrl(url)
+
+      const res = await fetch(url)
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}))
+        throw new Error(errJson.error || `HTTP ${res.status}: Failed to stream document`)
+      }
+
+      const blob = await res.blob()
+      if (blob.size === 0) {
+        throw new Error('Retrieved document stream is empty')
+      }
+
+      const urlObj = URL.createObjectURL(blob)
+      setBlobUrl(urlObj)
+    } catch (err: any) {
+      console.error('Failed to load document stream:', err)
+      setStreamError(err.message || 'Failed to stream document.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Fetch document security status first
   const initViewer = async () => {
     if (!documentId) return
@@ -52,6 +95,8 @@ export default function SecureDocumentViewer({
     setPassword('')
     setGrantToken(null)
     setStreamUrl(null)
+    setBlobUrl(null)
+    setStreamError(null)
     setIsLocked(false)
     setLockMsg('')
 
@@ -75,18 +120,15 @@ export default function SecureDocumentViewer({
           setNeedsPassword(true)
           setLoading(false)
         } else {
-          // Open directly
+          // Open and fetch stream directly
           setNeedsPassword(false)
-          setStreamUrl(`/api/documents/${documentId}/stream?_t=${Date.now()}`)
-          setLoading(false)
+          await fetchDocumentStream(documentId, null)
         }
       } else {
-        setStreamUrl(`/api/documents/${documentId}/stream?_t=${Date.now()}`)
-        setLoading(false)
+        await fetchDocumentStream(documentId, null)
       }
     } catch {
-      setStreamUrl(`/api/documents/${documentId}/stream?_t=${Date.now()}`)
-      setLoading(false)
+      await fetchDocumentStream(documentId, null)
     }
   }
 
@@ -121,7 +163,7 @@ export default function SecureDocumentViewer({
       if (data.success && data.grantToken) {
         setGrantToken(data.grantToken)
         setNeedsPassword(false)
-        setStreamUrl(`/api/documents/${documentId}/stream?grant=${data.grantToken}&_t=${Date.now()}`)
+        await fetchDocumentStream(documentId, data.grantToken)
       } else if (data.isLocked) {
         setIsLocked(true)
         setLockMsg(data.error || 'Document locked due to 5 consecutive failed attempts.')
@@ -200,9 +242,9 @@ export default function SecureDocumentViewer({
               </button>
             )}
 
-            {!needsPassword && streamUrl && (
+            {!needsPassword && (blobUrl || streamUrl) && (
               <a
-                href={streamUrl}
+                href={blobUrl || streamUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.btnSecondary}
@@ -256,6 +298,21 @@ export default function SecureDocumentViewer({
               <RefreshCw size={22} className="animate-spin" color="#8b5cf6" />
               <span>Decrypting & Loading Vault Stream...</span>
             </div>
+          ) : streamError ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '2rem', textAlign: 'center', color: '#f87171' }}>
+              <AlertTriangle size={32} color="#ef4444" />
+              <div style={{ fontWeight: 600, fontSize: '15px' }}>Unable to display document</div>
+              <div style={{ fontSize: '13px', color: '#94a3b8', maxWidth: '400px' }}>{streamError}</div>
+              <button
+                type="button"
+                onClick={initViewer}
+                className={styles.btnPrimary}
+                style={{ marginTop: '8px' }}
+              >
+                <RefreshCw size={14} />
+                <span>Retry</span>
+              </button>
+            </div>
           ) : needsPassword ? (
             /* Password Unlock Card */
             <div className={styles.unlockCard}>
@@ -302,7 +359,7 @@ export default function SecureDocumentViewer({
                 </div>
               )}
             </div>
-          ) : streamUrl ? (
+          ) : (blobUrl || streamUrl) ? (
             /* Secure Document Preview */
             <>
               {/* Dynamic Watermark Overlay on Viewer */}
@@ -322,17 +379,23 @@ export default function SecureDocumentViewer({
               {isImage ? (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto', padding: '16px' }}>
                   <img
-                    src={streamUrl}
+                    src={blobUrl || streamUrl!}
                     alt={currentFileName}
                     className={styles.imagePreview}
                   />
                 </div>
               ) : (
-                <iframe
-                  src={streamUrl}
+                <object
+                  data={blobUrl || streamUrl!}
+                  type="application/pdf"
                   className={styles.documentFrame}
-                  title={currentFileName}
-                />
+                >
+                  <iframe
+                    src={`${blobUrl || streamUrl!}#toolbar=1`}
+                    className={styles.documentFrame}
+                    title={currentFileName}
+                  />
+                </object>
               )}
             </>
           ) : (
