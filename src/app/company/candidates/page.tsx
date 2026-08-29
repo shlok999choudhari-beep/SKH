@@ -325,18 +325,20 @@ export default function CompanyCandidatesDiscoveryPage() {
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="form-select"
                     style={{
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: '8px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-card)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.88rem'
+                      background: '#0e131f',
+                      color: '#f8fafc',
+                      fontSize: '0.88rem',
+                      colorScheme: 'dark'
                     }}
                   >
                     {BRANCH_OPTIONS.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <option key={opt.value} value={opt.value} style={{ background: '#0e131f', color: '#f8fafc' }}>{opt.label}</option>
                     ))}
                   </select>
                 </div>
@@ -349,22 +351,24 @@ export default function CompanyCandidatesDiscoveryPage() {
                   <select
                     value={minCgpa.toString()}
                     onChange={(e) => setMinCgpa(parseFloat(e.target.value))}
+                    className="form-select"
                     style={{
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: '8px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-card)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.88rem'
+                      background: '#0e131f',
+                      color: '#f8fafc',
+                      fontSize: '0.88rem',
+                      colorScheme: 'dark'
                     }}
                   >
-                    <option value="0">No CGPA Cutoff</option>
-                    <option value="6.0">6.0+ CGPA</option>
-                    <option value="7.0">7.0+ CGPA</option>
-                    <option value="7.5">7.5+ CGPA</option>
-                    <option value="8.0">8.0+ CGPA</option>
-                    <option value="8.5">8.5+ CGPA</option>
+                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>No CGPA Cutoff</option>
+                    <option value="6.0" style={{ background: '#0e131f', color: '#f8fafc' }}>6.0+ CGPA</option>
+                    <option value="7.0" style={{ background: '#0e131f', color: '#f8fafc' }}>7.0+ CGPA</option>
+                    <option value="7.5" style={{ background: '#0e131f', color: '#f8fafc' }}>7.5+ CGPA</option>
+                    <option value="8.0" style={{ background: '#0e131f', color: '#f8fafc' }}>8.0+ CGPA</option>
+                    <option value="8.5" style={{ background: '#0e131f', color: '#f8fafc' }}>8.5+ CGPA</option>
                   </select>
                 </div>
 
@@ -376,19 +380,21 @@ export default function CompanyCandidatesDiscoveryPage() {
                   <select
                     value={minInternships.toString()}
                     onChange={(e) => setMinInternships(parseInt(e.target.value))}
+                    className="form-select"
                     style={{
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: '8px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-card)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.88rem'
+                      background: '#0e131f',
+                      color: '#f8fafc',
+                      fontSize: '0.88rem',
+                      colorScheme: 'dark'
                     }}
                   >
-                    <option value="0">Any Experience</option>
-                    <option value="1">1+ Technical Internship</option>
-                    <option value="2">2+ Technical Internships</option>
+                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>Any Experience</option>
+                    <option value="1" style={{ background: '#0e131f', color: '#f8fafc' }}>1+ Technical Internship</option>
+                    <option value="2" style={{ background: '#0e131f', color: '#f8fafc' }}>2+ Technical Internships</option>
                   </select>
                 </div>
 
@@ -400,21 +406,23 @@ export default function CompanyCandidatesDiscoveryPage() {
                   <select
                     value={graduationYear}
                     onChange={(e) => setGraduationYear(e.target.value)}
+                    className="form-select"
                     style={{
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: '8px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-card)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.88rem'
+                      background: '#0e131f',
+                      color: '#f8fafc',
+                      fontSize: '0.88rem',
+                      colorScheme: 'dark'
                     }}
                   >
-                    <option value="all">All Batches</option>
-                    <option value="2024">Batch 2024</option>
-                    <option value="2025">Batch 2025</option>
-                    <option value="2026">Batch 2026</option>
-                    <option value="2027">Batch 2027</option>
+                    <option value="all" style={{ background: '#0e131f', color: '#f8fafc' }}>All Batches</option>
+                    <option value="2024" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2024</option>
+                    <option value="2025" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2025</option>
+                    <option value="2026" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2026</option>
+                    <option value="2027" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2027</option>
                   </select>
                 </div>
               </div>
@@ -448,19 +456,21 @@ export default function CompanyCandidatesDiscoveryPage() {
                   <select
                     value={sortBy}
                     onChange={(e: any) => setSortBy(e.target.value)}
+                    className="form-select"
                     style={{
                       padding: '6px 12px',
                       borderRadius: '8px',
                       border: '1px solid var(--border)',
-                      background: 'var(--bg-card)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.84rem'
+                      background: '#0e131f',
+                      color: '#f8fafc',
+                      fontSize: '0.84rem',
+                      colorScheme: 'dark'
                     }}
                   >
-                    <option value="match">Job Match (Evidence First)</option>
-                    <option value="cgpa">Highest Academic CGPA</option>
-                    <option value="sources">Most Skill Evidence Sources</option>
-                    <option value="experience">Internship Experience</option>
+                    <option value="match" style={{ background: '#0e131f', color: '#f8fafc' }}>Job Match (Evidence First)</option>
+                    <option value="cgpa" style={{ background: '#0e131f', color: '#f8fafc' }}>Highest Academic CGPA</option>
+                    <option value="sources" style={{ background: '#0e131f', color: '#f8fafc' }}>Most Skill Evidence Sources</option>
+                    <option value="experience" style={{ background: '#0e131f', color: '#f8fafc' }}>Internship Experience</option>
                   </select>
                 </div>
               </div>
