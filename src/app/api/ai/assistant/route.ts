@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { askCourseAssistant } from '@/lib/lmsAiService'
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 export async function GET(req: NextRequest) {
   try {
@@ -72,6 +73,20 @@ export async function POST(req: NextRequest) {
 
     if (!courseId || !query?.trim()) {
       return NextResponse.json({ error: 'courseId and query are required' }, { status: 400 })
+    }
+
+    const cleanQuery = query.trim()
+
+    // ── Centralized LearningScopeGuard Validation ──
+    const scopeCheck = await validateLearningScope(cleanQuery)
+    if (!scopeCheck.allowed) {
+      return NextResponse.json({
+        success: true,
+        blocked: true,
+        answer: scopeCheck.blockedMessage || BLOCKED_SCOPE_MESSAGE,
+        sources: [],
+        provider: 'fallback_engine'
+      })
     }
 
     const cId = parseInt(courseId.toString(), 10)

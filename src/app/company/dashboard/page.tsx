@@ -96,16 +96,16 @@ export default function CompanyDashboard() {
         </header>
 
         <main className={styles.main}>
-          {/* Alert */}
+          {/* Candidate Intelligence Alert Banner */}
           <div className={`${styles.alertBanner} ${styles.alertGreen}`}>
             <span className={styles.alertIcon} style={{ display: 'flex', alignItems: 'center' }}>
-              <Zap size={18} strokeWidth={2} color="#10b981" />
+              <Sparkles size={18} strokeWidth={2} color="#10b981" />
             </span>
             <div>
-              <strong>12 new AI-matched candidates</strong> have applied to your SDE-1 role. Review them now!
+              <strong>Smart Candidate Intelligence Active:</strong> Discover, filter, and review evidence-backed student profiles ranked for your hiring requirements.
             </div>
-            <Link href="/company/applications" className={`btn btn-company btn-sm ${styles.alertBtn}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <span>View Candidates</span>
+            <Link href="/company/candidates" className={`btn btn-company btn-sm ${styles.alertBtn}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span>Explore Candidates</span>
               <ArrowRight size={14} strokeWidth={2} />
             </Link>
           </div>
@@ -332,10 +332,10 @@ const PIPELINE = [
 ]
 
 const COMPANY_QUICK_ACTIONS = [
-  { href: '/company/talent-search', icon: Search, label: 'Search Talent', desc: 'AI-powered candidate search', color: '#10b981' },
-  { href: '/company/match-candidates', icon: Target, label: 'Match Candidates', desc: 'Auto-match for your open roles', color: '#3b82f6' },
+  { href: '/company/candidates', icon: Sparkles, label: 'Candidate Intelligence', desc: 'Recruiter-driven smart shortlisting', color: '#10b981' },
+  { href: '/company/internships', icon: Briefcase, label: 'Manage Internships', desc: 'Post and track hiring pipelines', color: '#3b82f6' },
   { href: '/company/coding-judge', icon: Code2, label: 'Coding Interview', desc: 'Real-time coding assessment', color: '#8b5cf6' },
-  { href: '/company/dashboard', icon: TrendingUp, label: 'View Analytics', desc: 'Hiring funnel & insights', color: '#f59e0b' },
+  { href: '/company/profile', icon: Building2, label: 'Company Profile', desc: 'Hiring details & branding', color: '#f59e0b' },
 ]
 
 const TOP_CANDIDATES = [

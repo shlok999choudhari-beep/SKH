@@ -335,7 +335,7 @@ export default function StudentCampusResources() {
               <input
                 type="text"
                 className="form-input"
-                placeholder="Search resources, labs, spaces..."
+                placeholder="Search learning resources, labs, spaces..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{ minWidth: '160px' }}

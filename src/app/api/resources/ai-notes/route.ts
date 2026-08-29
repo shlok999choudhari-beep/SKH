@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -13,6 +14,17 @@ export async function POST(request: NextRequest) {
     }
 
     const topic = query.trim()
+
+    // ── Centralized LearningScopeGuard Validation ──
+    const scopeCheck = await validateLearningScope(topic)
+    if (!scopeCheck.allowed) {
+      return NextResponse.json({
+        success: false,
+        blocked: true,
+        error: scopeCheck.blockedMessage || BLOCKED_SCOPE_MESSAGE,
+        message: scopeCheck.blockedMessage || BLOCKED_SCOPE_MESSAGE
+      })
+    }
     const targetLang = language === 'hi' ? 'Hindi (हिन्दी)' : language === 'es' ? 'Spanish' : language === 'fr' ? 'French' : 'English'
 
     const prompt = `Generate simple, clear, and basic revision notes for "${topic}". Keep it beginner-friendly, straightforward, and concise.

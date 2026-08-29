@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { z } from 'zod'
+import { validateLearningScope, filterLearningSearchResults, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 const SERPER_API_KEY = process.env.SERPER_API_KEY || '5aeb9cd3c96f152dde1faf0b242e8a72a121abda'
 
@@ -111,6 +112,22 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Query is empty' }, { status: 400 })
       }
 
+      // ── Centralized LearningScopeGuard Validation ──
+      const scopeCheck = await validateLearningScope(query)
+      if (!scopeCheck.allowed) {
+        return NextResponse.json({
+          success: false,
+          blocked: true,
+          error: scopeCheck.blockedMessage || BLOCKED_SCOPE_MESSAGE,
+          message: scopeCheck.blockedMessage || BLOCKED_SCOPE_MESSAGE,
+          resources: {
+            videos: [],
+            documentation: [],
+            communities: []
+          }
+        })
+      }
+
       const region = (typeof body.region === 'string' && body.region.trim()) ? body.region.trim().toLowerCase() : 'us'
       const language = (typeof body.language === 'string' && body.language.trim()) ? body.language.trim().toLowerCase() : 'en'
       const type = (typeof body.type === 'string' && body.type.trim()) ? body.type.trim().toLowerCase() : 'all'
@@ -187,7 +204,7 @@ export async function POST(request: Request) {
           commRes.json().catch(() => ({}))
         ])
 
-        const videos = (videosData.videos || []).map((v: any) => ({
+        const rawVideos = (videosData.videos || []).map((v: any) => ({
           title: v.title || `${query} Tutorial`,
           link: v.link || `https://www.youtube.com/results?search_query=${encodeURIComponent(videoQuery)}`,
           channel: v.channel || 'YouTube',
@@ -215,13 +232,24 @@ export async function POST(request: Request) {
           docType: 'notes'
         }))
 
-        const documentation = [...officialDocs, ...books, ...notes]
+        const rawDocumentation = [...officialDocs, ...books, ...notes]
 
-        const communities = (commData.organic || []).map((c: any) => ({
+        const rawCommunities = (commData.organic || []).map((c: any) => ({
           title: c.title || `${query} Community`,
           snippet: c.snippet || `Join discussions, ask questions, and collaborate with developers learning ${query}.`,
           link: c.link || `https://reddit.com/r/search?q=${encodeURIComponent(query)}`
         }))
+
+        // Sanitize results using LearningScopeGuard result filter
+        const sanitized = filterLearningSearchResults({
+          videos: rawVideos,
+          documentation: rawDocumentation,
+          communities: rawCommunities
+        })
+
+        const videos = sanitized.videos || []
+        const documentation = sanitized.documentation || []
+        const communities = sanitized.communities || []
 
         // Fallbacks if search returned empty results
         if (videos.length === 0) {
@@ -252,6 +280,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
           success: true,
+          scopeCategory: scopeCheck.category,
           filtersApplied: {
             region,
             language,
@@ -268,6 +297,7 @@ export async function POST(request: Request) {
         console.error('Serper search error:', err)
         return NextResponse.json({
           success: true,
+          scopeCategory: scopeCheck.category,
           filtersApplied: {
             region,
             language,

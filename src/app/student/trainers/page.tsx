@@ -268,7 +268,7 @@ export default function StudentTrainersPage() {
                       type="text"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search trainer by name, subject (e.g. React, LeetCode, DSA)..."
+                      placeholder="Search learning resources, trainers, or topics (e.g. React, LeetCode, DSA)..."
                       className="form-input"
                       style={{ width: '100%', padding: '12px 14px 12px 40px', fontSize: '0.95rem' }}
                     />

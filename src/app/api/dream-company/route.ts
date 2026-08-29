@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -62,8 +63,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     companyName = body.companyName || 'Target Company'
 
-    if (!companyName) {
+    if (!companyName || !companyName.trim()) {
       return NextResponse.json({ error: 'Company name is required' }, { status: 400 })
+    }
+
+    const scopeCheck = await validateLearningScope(companyName.trim())
+    if (!scopeCheck.allowed) {
+      return NextResponse.json({ error: BLOCKED_SCOPE_MESSAGE, blocked: true }, { status: 400 })
     }
 
     // 1. Fetch web search results for context (Safe wrapper)

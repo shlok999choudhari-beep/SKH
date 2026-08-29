@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { z } from 'zod'
+import { validateLearningScope } from '@/lib/learningScopeGuard'
 
 function generateCourseCode(title: string): string {
   const words = title.trim().split(/\s+/).filter(Boolean)
@@ -63,6 +64,16 @@ export async function GET(request: NextRequest) {
     }
 
     if (search.trim()) {
+      const scopeCheck = await validateLearningScope(search.trim())
+      if (!scopeCheck.allowed) {
+        return NextResponse.json({
+          courses: [],
+          blocked: true,
+          error: scopeCheck.blockedMessage,
+          message: scopeCheck.blockedMessage
+        })
+      }
+
       where.OR = [
         { title: { contains: search.trim(), mode: 'insensitive' } },
         { description: { contains: search.trim(), mode: 'insensitive' } },

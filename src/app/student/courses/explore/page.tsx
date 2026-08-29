@@ -67,6 +67,9 @@ export default function ExploreCoursesPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
 
+  const [scopeBlocked, setScopeBlocked] = useState(false)
+  const [scopeBlockedMessage, setScopeBlockedMessage] = useState('')
+
   useEffect(() => {
     fetchCategories()
     fetchCourses()
@@ -84,6 +87,8 @@ export default function ExploreCoursesPage() {
 
   const fetchCourses = async () => {
     setLoading(true)
+    setScopeBlocked(false)
+    setScopeBlockedMessage('')
     try {
       let url = `/api/courses?sort=${sortBy}&`
       if (selectedCategory !== 'all') url += `category=${encodeURIComponent(selectedCategory)}&`
@@ -92,7 +97,12 @@ export default function ExploreCoursesPage() {
 
       const res = await fetch(url)
       const data = await res.json()
-      if (data.courses) {
+      if (data.blocked) {
+        setScopeBlocked(true)
+        setScopeBlockedMessage(data.message || data.error || "This search is outside PlaceIQ's learning scope. Try searching for academic topics, skills, languages, career preparation, or personal development.")
+        setCourses([])
+      } else if (data.courses) {
+        setScopeBlocked(false)
         setCourses(data.courses)
       }
     } catch (err) {
@@ -160,8 +170,13 @@ export default function ExploreCoursesPage() {
                 <input
                   type="text"
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  placeholder="Search courses by title, department, or keyword..."
+                  onChange={e => {
+                    setSearch(e.target.value)
+                    if (!e.target.value.trim()) {
+                      setScopeBlocked(false)
+                    }
+                  }}
+                  placeholder="Search learning resources, course titles, or subjects..."
                   className="form-input"
                   style={{ paddingLeft: '38px', width: '100%' }}
                 />
@@ -173,6 +188,20 @@ export default function ExploreCoursesPage() {
                 <span>Search</span>
               </button>
             </form>
+
+            {scopeBlocked && (
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.2rem' }}>🎓</span>
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#fca5a5' }}>
+                    Learning Scope Notice
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    {scopeBlockedMessage}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>

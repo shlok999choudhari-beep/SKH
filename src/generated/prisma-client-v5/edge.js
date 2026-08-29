@@ -1240,7 +1240,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/nishant/Desktop/SKH/src/generated/prisma-client-v5",
+      "value": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH NEW\\SKH\\src\\generated\\prisma-client-v5",
       "fromEnvVar": null
     },
     "config": {
@@ -1249,12 +1249,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/nishant/Desktop/SKH/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH NEW\\SKH\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

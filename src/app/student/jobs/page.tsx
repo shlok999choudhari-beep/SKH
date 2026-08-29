@@ -43,6 +43,7 @@ export default function BrowseJobsPage() {
   const [search, setSearch] = useState('')
   const [location, setLocation] = useState('')
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
+  const [blockedNotice, setBlockedNotice] = useState<string | null>(null)
   const [filters, setFilters] = useState({
     type: 'all',
     experience: 'all'
@@ -59,6 +60,7 @@ export default function BrowseJobsPage() {
 
   const fetchOpportunities = async () => {
     setLoading(true)
+    setBlockedNotice(null)
     try {
       const [internRes, jobsRes] = await Promise.all([
         fetch('/api/internships', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})),
@@ -69,21 +71,25 @@ export default function BrowseJobsPage() {
         }).then(r => r.json()).catch(() => ({}))
       ])
 
+      if (jobsRes?.blocked) {
+        setBlockedNotice(jobsRes.message || "This search is outside PlaceIQ's career and learning scope. Try searching for jobs, internships, placements, skills, or career preparation.")
+        setJobs([])
+      } else {
+        const externalJobs: Job[] = (jobsRes.jobs || []).map((j: any) => ({
+          position: j.position,
+          company: j.company,
+          location: j.location,
+          date: j.date,
+          jobUrl: j.jobUrl,
+          salary: j.salary,
+          companyUrl: j.companyUrl,
+          isPartner: false
+        }))
+        setJobs(externalJobs)
+      }
+
       const partnerList = internRes.internships || []
       setPartnerInternships(partnerList)
-
-      const externalJobs: Job[] = (jobsRes.jobs || []).map((j: any) => ({
-        position: j.position,
-        company: j.company,
-        location: j.location,
-        date: j.date,
-        jobUrl: j.jobUrl,
-        salary: j.salary,
-        companyUrl: j.companyUrl,
-        isPartner: false
-      }))
-
-      setJobs(externalJobs)
     } catch (err) {
       console.error('Failed to fetch opportunities:', err)
     } finally {
@@ -148,9 +154,12 @@ export default function BrowseJobsPage() {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search roles, companies, skills..."
+                  placeholder="Search jobs, internships or skills (e.g. Python, Frontend, SDE)..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    if (blockedNotice) setBlockedNotice(null)
+                  }}
                   className={styles.searchInput}
                 />
               </div>
@@ -171,6 +180,20 @@ export default function BrowseJobsPage() {
                 <span>Search</span>
               </button>
             </form>
+
+            {blockedNotice && (
+              <div style={{ marginTop: '1rem', padding: '14px 18px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '1.4rem' }}>💼</span>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fca5a5' }}>
+                    Career Search Notice
+                  </div>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    {blockedNotice}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className={styles.filters}>
               <button

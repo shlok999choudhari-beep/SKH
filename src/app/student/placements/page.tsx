@@ -8,13 +8,16 @@ import {
   GraduationCap,
   Rocket,
   Building2,
-  Loader2
+  Loader2,
+  Search
 } from 'lucide-react'
 
 export default function StudentPlacementsPage() {
   const [drives, setDrives] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
+  const [blockedNotice, setBlockedNotice] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchDrives() {
@@ -69,6 +72,17 @@ export default function StudentPlacementsPage() {
     )
   }
 
+  const filteredDrives = drives.filter(d => {
+    if (blockedNotice) return false
+    if (!search.trim()) return true
+    const q = search.toLowerCase()
+    return (
+      d.title?.toLowerCase().includes(q) ||
+      d.company_name?.toLowerCase().includes(q) ||
+      d.eligibility_criteria?.toLowerCase().includes(q)
+    )
+  })
+
   return (
     <div className={styles.layout}>
       <StudentSidebar />
@@ -87,16 +101,65 @@ export default function StudentPlacementsPage() {
         </header>
 
         <main className={styles.main}>
+          {/* Placement Search Bar */}
+          <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <span style={{ position: 'absolute', left: '16px', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <Search size={18} strokeWidth={2} color="var(--text-muted)" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search placement drives, roles, or eligibility..."
+                value={search}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setSearch(val)
+                  const offScopePatterns = /\b(latest movies?|celebrity news|gaming|cricket score|best phone|dating|casino|betting|random entertainment)\b/i
+                  if (offScopePatterns.test(val)) {
+                    setBlockedNotice("This search is outside PlaceIQ's career and learning scope. Try searching for jobs, internships, placements, skills, or career preparation.")
+                  } else {
+                    setBlockedNotice(null)
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 46px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.92rem'
+                }}
+              />
+            </div>
+
+            {blockedNotice && (
+              <div style={{ padding: '14px 18px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '1.4rem' }}>🎓</span>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fca5a5' }}>
+                    Placement Search Notice
+                  </div>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    {blockedNotice}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className={`glass ${styles.panel}`}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <Rocket size={18} strokeWidth={2} color="#8b5cf6" />
-              <h3 className={styles.panelTitle}>Upcoming Drives</h3>
+              <h3 className={styles.panelTitle}>Upcoming Drives ({filteredDrives.length})</h3>
             </div>
-            {drives.length === 0 ? (
-              <div style={{ color: 'var(--text-secondary)' }}>No placement drives announced yet. Keep checking!</div>
+            {filteredDrives.length === 0 ? (
+              <div style={{ color: 'var(--text-secondary)' }}>
+                {blockedNotice ? 'No matching opportunities within learning scope.' : 'No placement drives found. Keep checking!'}
+              </div>
             ) : (
               <div className={styles.jobsList}>
-                {drives.map((drive) => (
+                {filteredDrives.map((drive) => (
                   <div key={drive.id} className={styles.jobCard}>
                     <div className={styles.jobLogo} style={{ background: 'linear-gradient(135deg, #10b981, #3b82f6)' }}>
                       {drive.company_name ? drive.company_name.charAt(0) : <Building2 size={20} />}

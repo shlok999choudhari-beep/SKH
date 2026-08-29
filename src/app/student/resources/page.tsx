@@ -69,6 +69,36 @@ const MAIN_CATEGORIES = [
   { id: 'communities', label: 'Communities & Groups', icon: Users }
 ]
 
+const LEARNING_DOMAINS = [
+  { id: 'all', label: 'All Learning Scope' },
+  { id: 'academic', label: 'Academic (Math, Physics, CS)' },
+  { id: 'technical', label: 'Technical Skills (Code, AI, Web)' },
+  { id: 'languages', label: 'Languages (English, Hindi, Marathi)' },
+  { id: 'career', label: 'Career Prep (Interview, Resume)' },
+  { id: 'soft_skills', label: 'Soft Skills (Communication)' },
+  { id: 'personal_dev', label: 'Personal Development (Motivation)' },
+  { id: 'research', label: 'Research & Projects' }
+]
+
+const DIFFICULTY_LEVELS = [
+  { id: 'all', label: 'All Levels' },
+  { id: 'beginner', label: 'Beginner' },
+  { id: 'intermediate', label: 'Intermediate' },
+  { id: 'advanced', label: 'Advanced' }
+]
+
+const ALLOWED_QUICK_SUGGESTIONS = [
+  { name: 'Explain recursion in C++', category: 'Technical Skills', color: '#61dafb' },
+  { name: 'Learn English grammar', category: 'Languages', color: '#34d399' },
+  { name: 'Hindi vocabulary', category: 'Languages', color: '#fbbf24' },
+  { name: 'Python programming tutorial', category: 'Technical Skills', color: '#3776ab' },
+  { name: 'How to prepare for interviews', category: 'Career', color: '#8b5cf6' },
+  { name: 'How to improve communication', category: 'Soft Skills', color: '#ec4899' },
+  { name: 'Study motivation', category: 'Personal Development', color: '#f59e0b' },
+  { name: 'Machine learning project ideas', category: 'Research', color: '#06b6d4' },
+  { name: 'Data Structures & Algorithms', category: 'Technical Skills', color: '#a855f7' }
+]
+
 const VIDEO_FORMATS = [
   { id: 'all', label: 'All Formats' },
   { id: 'playlist', label: 'Full Playlists & Courses' },
@@ -111,6 +141,12 @@ export default function LearningResources() {
   // Video Modal State
   const [activePlayingVideo, setActivePlayingVideo] = useState<{ title: string; link: string; channel?: string } | null>(null)
 
+  // Scope Guard State
+  const [scopeBlocked, setScopeBlocked] = useState(false)
+  const [scopeBlockedMessage, setScopeBlockedMessage] = useState('')
+  const [selectedDomain, setSelectedDomain] = useState<string>('all')
+  const [selectedLevel, setSelectedLevel] = useState<string>('all')
+
   const executeSearch = async (
     searchQuery: string,
     customRegion = region,
@@ -123,6 +159,8 @@ export default function LearningResources() {
     setSearching(true)
     setAiNotes(null)
     setShowAllDocs(false)
+    setScopeBlocked(false)
+    setScopeBlockedMessage('')
 
     try {
       const res = await fetch('/api/resources', {
@@ -138,7 +176,12 @@ export default function LearningResources() {
 
       const data = await res.json()
 
-      if (data.success) {
+      if (data.blocked) {
+        setScopeBlocked(true)
+        setScopeBlockedMessage(data.message || data.error || "This search is outside PlaceIQ's learning scope. Try searching for academic topics, skills, languages, career preparation, or personal development.")
+        setResources(null)
+      } else if (data.success) {
+        setScopeBlocked(false)
         setResources(data.resources)
         setActiveFilters(data.filtersApplied || { query: searchQuery, region: customRegion, language: customLang, type: customType })
         if (categoryToFocus) {
@@ -308,19 +351,22 @@ export default function LearningResources() {
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={
                       selectedCategory === 'docs'
-                        ? 'Search for documentation, AI notes, books, cheat sheets (e.g. React, Docker, Python)...'
+                        ? 'Search for documentation, notes, books, cheat sheets (e.g. Recursion in C++, Python, Math)...'
                         : selectedCategory === 'videos'
-                        ? 'Search for video tutorials, playlists, crash courses (e.g. Next.js, DSA)...'
+                        ? 'Search for video tutorials, playlists, crash courses (e.g. DSA, Web Dev, English Grammar)...'
                         : selectedCategory === 'communities'
-                        ? 'Search for Discord servers, Reddit communities, developer forums...'
-                        : 'Search for any technology, framework, language, or concept (e.g. React, Docker, Python)...'
+                        ? 'Search for study groups, developer forums, peer learning hubs...'
+                        : 'Search learning resources (e.g. Python recursion, English grammar, study motivation)...'
                     }
                     className={styles.mainInput}
                   />
                   {query && (
                     <button
                       type="button"
-                      onClick={() => setQuery('')}
+                      onClick={() => {
+                        setQuery('')
+                        setScopeBlocked(false)
+                      }}
                       style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
                     >
                       <X size={16} strokeWidth={2} />
@@ -345,9 +391,45 @@ export default function LearningResources() {
                   </button>
                 </div>
 
-                {/* Preference Controls Bar */}
+                {/* Preference & Educational Scope Controls Bar */}
                 <div className={styles.preferencesBar}>
                   <div className={styles.filterGroup}>
+                    {/* Educational Scope Domain Select */}
+                    <div className={styles.filterPill}>
+                      <GraduationCap size={14} strokeWidth={2} color="#c084fc" />
+                      <label htmlFor="domain-picker" style={{ color: '#94a3b8', fontSize: '12px' }}>Domain:</label>
+                      <select
+                        id="domain-picker"
+                        value={selectedDomain}
+                        onChange={(e) => {
+                          setSelectedDomain(e.target.value)
+                        }}
+                        className={styles.filterSelect}
+                      >
+                        {LEARNING_DOMAINS.map((d) => (
+                          <option key={d.id} value={d.id}>{d.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Difficulty Level Select */}
+                    <div className={styles.filterPill}>
+                      <Zap size={14} strokeWidth={2} color="#fbbf24" />
+                      <label htmlFor="level-picker" style={{ color: '#94a3b8', fontSize: '12px' }}>Level:</label>
+                      <select
+                        id="level-picker"
+                        value={selectedLevel}
+                        onChange={(e) => {
+                          setSelectedLevel(e.target.value)
+                        }}
+                        className={styles.filterSelect}
+                      >
+                        {DIFFICULTY_LEVELS.map((lvl) => (
+                          <option key={lvl.id} value={lvl.id}>{lvl.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
                     {/* Region Select */}
                     <div className={styles.filterPill}>
                       <Globe size={14} strokeWidth={2} color="#38bdf8" />
@@ -420,13 +502,81 @@ export default function LearningResources() {
                 </div>
               </form>
 
-              {/* Popular Topic Badges */}
-              {!resources && (
+              {/* Scope Guard Blocked Notice */}
+              {scopeBlocked && (
+                <div
+                  style={{
+                    marginTop: '1.25rem',
+                    padding: '1.25rem',
+                    borderRadius: '14px',
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.85rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      <GraduationCap size={20} color="#fca5a5" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#fca5a5', fontSize: '0.95rem' }}>
+                        Learning Scope Notice
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: 1.4 }}>
+                        {scopeBlockedMessage}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#c4b5fd', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Try searching one of these learning topics:
+                    </span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {ALLOWED_QUICK_SUGGESTIONS.slice(0, 6).map((sug) => (
+                        <button
+                          key={sug.name}
+                          type="button"
+                          onClick={() => {
+                            setQuery(sug.name)
+                            executeSearch(sug.name, region, language, contentType)
+                          }}
+                          className={styles.topicChip}
+                          style={{
+                            background: `${sug.color}15`,
+                            borderColor: `${sug.color}35`,
+                            color: sug.color
+                          }}
+                        >
+                          <Sparkles size={11} strokeWidth={2} />
+                          <span>{sug.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Popular Topic Badges when Idle */}
+              {!resources && !scopeBlocked && (
                 <div className={styles.topicChipsRow}>
                   <span style={{ fontSize: '12.5px', color: '#94a3b8', fontWeight: 500, marginRight: '4px' }}>
-                    Quick suggestions:
+                    Suggested learning topics:
                   </span>
-                  {popularTopics.map((topic) => (
+                  {ALLOWED_QUICK_SUGGESTIONS.map((topic) => (
                     <button
                       key={topic.name}
                       type="button"

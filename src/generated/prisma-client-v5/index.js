@@ -1241,7 +1241,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/nishant/Desktop/SKH/src/generated/prisma-client-v5",
+      "value": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH NEW\\SKH\\src\\generated\\prisma-client-v5",
       "fromEnvVar": null
     },
     "config": {
@@ -1250,12 +1250,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/nishant/Desktop/SKH/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH NEW\\SKH\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -1317,8 +1317,8 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "src/generated/prisma-client-v5/libquery_engine-darwin-arm64.dylib.node")
+path.join(__dirname, "query_engine-windows.dll.node");
+path.join(process.cwd(), "src/generated/prisma-client-v5/query_engine-windows.dll.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/prisma-client-v5/schema.prisma")

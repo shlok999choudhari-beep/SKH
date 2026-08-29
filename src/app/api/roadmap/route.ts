@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import axios from 'axios'
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,13 @@ export async function POST(request: NextRequest) {
     
     if (!analysis) {
       return NextResponse.json({ error: 'Analysis data required' }, { status: 400 })
+    }
+
+    if (userQuery && userQuery.trim()) {
+      const scopeCheck = await validateLearningScope(userQuery.trim())
+      if (!scopeCheck.allowed) {
+        return NextResponse.json({ error: BLOCKED_SCOPE_MESSAGE, blocked: true }, { status: 400 })
+      }
     }
 
     const roadmap = await generateRoadmap(analysis, userQuery)

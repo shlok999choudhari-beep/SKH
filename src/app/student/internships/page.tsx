@@ -18,7 +18,8 @@ import {
   Clock,
   Bell,
   Sparkles,
-  Award
+  Award,
+  Search
 } from 'lucide-react'
 
 export default function StudentInternshipsPage() {
@@ -28,6 +29,8 @@ export default function StudentInternshipsPage() {
   const [updatingId, setUpdatingId] = useState<number | null>(null)
   const [showAcademicModal, setShowAcademicModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'available' | 'active'>('available')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [blockedNotice, setBlockedNotice] = useState<string | null>(null)
 
   useEffect(() => {
     fetchStudentProfile()
@@ -221,9 +224,26 @@ export default function StudentInternshipsPage() {
     }
   }
 
-  // Filter available vs active accepted internships
-  const availableInternships = internships.filter(i => !i.user_application_status || i.user_application_status === 'none')
-  const activeInternships = internships.filter(i => i.user_application_status && i.user_application_status !== 'rejected' && i.user_application_status !== 'none')
+  // Filter available vs active accepted internships with search support
+  const matchesSearch = (i: any) => {
+    if (blockedNotice) return false
+    if (!searchQuery.trim()) return true
+    const q = searchQuery.toLowerCase()
+    return (
+      i.title?.toLowerCase().includes(q) ||
+      i.company_name?.toLowerCase().includes(q) ||
+      i.description?.toLowerCase().includes(q) ||
+      i.location?.toLowerCase().includes(q)
+    )
+  }
+
+  const availableInternships = internships
+    .filter(i => !i.user_application_status || i.user_application_status === 'none')
+    .filter(matchesSearch)
+
+  const activeInternships = internships
+    .filter(i => i.user_application_status && i.user_application_status !== 'rejected' && i.user_application_status !== 'none')
+    .filter(matchesSearch)
 
   return (
     <div className={styles.layout}>
@@ -300,6 +320,54 @@ export default function StudentInternshipsPage() {
               </button>
             </div>
           )}
+
+          {/* Career & Internship Search Bar */}
+          <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <span style={{ position: 'absolute', left: '16px', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <Search size={18} strokeWidth={2} color="var(--text-muted)" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search internships, roles, or skills (e.g. Python, Web Dev, React)..."
+                value={searchQuery}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setSearchQuery(val)
+                  // Check if query contains off-scope patterns
+                  const offScopePatterns = /\b(latest movies?|celebrity news|gaming|cricket score|best phone|dating|casino|betting|random entertainment)\b/i
+                  if (offScopePatterns.test(val)) {
+                    setBlockedNotice("This search is outside PlaceIQ's career and learning scope. Try searching for jobs, internships, placements, skills, or career preparation.")
+                  } else {
+                    setBlockedNotice(null)
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 46px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.92rem'
+                }}
+              />
+            </div>
+
+            {blockedNotice && (
+              <div style={{ padding: '14px 18px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '1.4rem' }}>🎓</span>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fca5a5' }}>
+                    Career Search Notice
+                  </div>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    {blockedNotice}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Sub-Tabs Navigation */}
           <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border)', marginBottom: '1.5rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '4px' }}>

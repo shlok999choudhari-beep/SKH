@@ -43,9 +43,11 @@ export default function SkillRadarChart() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [results, setResults] = useState<SkillScore[]>([]);
   const [companyAnalysis, setCompanyAnalysis] = useState('');
+  const [scopeError, setScopeError] = useState('');
 
   const analyzeCompany = async () => {
     setLoading(true);
+    setScopeError('');
     try {
       const prompt = `Analyze ${company} company and identify 7 key technical skills required for software engineering roles. Return ONLY a JSON object with this exact structure:
 {
@@ -61,13 +63,18 @@ export default function SkillRadarChart() {
         body: JSON.stringify({ prompt }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze company');
+      const data = await response.json();
+
+      if (!response.ok || data.blocked) {
+        setScopeError(data.error || "This request is outside PlaceIQ's learning scope. Ask me about your studies, skills, languages, career preparation, or personal development.");
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
-      const content = data.choices[0].message.content;
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error('Invalid response format');
+      }
       const parsed = JSON.parse(content);
       
       setCompanyAnalysis(parsed.analysis);
@@ -75,7 +82,7 @@ export default function SkillRadarChart() {
       setStep(2);
     } catch (error: any) {
       console.error('Analysis error:', error);
-      alert(`Error: ${error.message || 'Failed to analyze company. Please try again.'}`);
+      setScopeError(error.message || 'Failed to analyze company. Please enter a valid company name.');
     }
     setLoading(false);
   };
@@ -131,12 +138,29 @@ export default function SkillRadarChart() {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g., Google, Amazon, Microsoft, Netflix"
+                    placeholder="Enter target company (e.g. Google, Microsoft, Amazon, TCS)..."
                     value={company}
-                    onChange={(e) => setCompany(e.target.value)}
+                    onChange={(e) => {
+                      setCompany(e.target.value)
+                      if (scopeError) setScopeError('')
+                    }}
                     className={styles.input}
                   />
                 </div>
+
+                {scopeError && (
+                  <div style={{ padding: '12px 14px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🎓</span>
+                    <div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#fca5a5' }}>
+                        Learning Scope Notice
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        {scopeError}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <button 
                   onClick={analyzeCompany} 

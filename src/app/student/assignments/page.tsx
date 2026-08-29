@@ -250,7 +250,7 @@ export default function StudentAssignmentsPage() {
               <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
               <input
                 type="text"
-                placeholder="Search assignments..."
+                placeholder="Search learning resources, assignments, or courses..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className={styles.searchInput}

@@ -20,6 +20,7 @@ import {
   User,
   ShieldCheck,
   Settings,
+  Sparkles,
   LucideIcon
 } from 'lucide-react'
 
@@ -35,6 +36,7 @@ const COMPANY_NAV: { group: string; items: CompanyNavItem[] }[] = [
     group: 'Overview',
     items: [
       { href: '/company/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+      { href: '/company/candidates', icon: Sparkles, label: 'Candidate Intelligence', badge: 'SMART' },
       { href: '/company/internships', icon: BriefcaseBusiness, label: 'Internships', badge: 'NEW' },
       { href: '/company/profile', icon: Building2, label: 'Company Profile' },
       { href: '/company/coding-judge', icon: Code2, label: 'Coding Judge' },

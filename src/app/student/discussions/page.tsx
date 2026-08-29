@@ -150,7 +150,7 @@ export default function StudentDiscussionsPage() {
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Search topics, questions, or keywords..."
+                placeholder="Search learning topics, questions, or keywords..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

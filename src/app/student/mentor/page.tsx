@@ -179,7 +179,7 @@ export default function AIMentorChat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask about jobs, learning paths, projects, or career advice..."
+                  placeholder="Ask about your studies, skills, languages, career preparation, or personal development..."
                   rows={1}
                   disabled={loading}
                 />

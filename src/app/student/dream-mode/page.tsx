@@ -38,6 +38,7 @@ export default function DreamMode() {
   const [selected, setSelected] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<any>(null)
+  const [blockedNotice, setBlockedNotice] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCompanies()
@@ -57,9 +58,9 @@ export default function DreamMode() {
     }
   }
 
-  const filtered = companies.filter(c => 
-    c.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = blockedNotice
+    ? []
+    : companies.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
 
   const fetchDreamCompany = async (company: any) => {
     setSelected(company)
@@ -144,12 +145,35 @@ export default function DreamMode() {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search your dream company..."
+                  placeholder="Search target companies (e.g. Google, Microsoft, TCS, Amazon)..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setSearch(val)
+                    const offScopePatterns = /\b(latest movies?|celebrity news|gaming|cricket score|best phone|dating|casino|betting|random entertainment)\b/i
+                    if (offScopePatterns.test(val)) {
+                      setBlockedNotice("This search is outside PlaceIQ's career and learning scope. Try searching for jobs, internships, placements, skills, or career preparation.")
+                    } else {
+                      setBlockedNotice(null)
+                    }
+                  }}
                   className={styles.searchInput}
                 />
               </div>
+
+              {blockedNotice && (
+                <div style={{ marginBottom: '1.5rem', padding: '14px 18px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '1.4rem' }}>🎓</span>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fca5a5' }}>
+                      Career Search Notice
+                    </div>
+                    <div style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      {blockedNotice}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {loadingCompanies ? (
                 <div className={styles.loading} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '3.5rem' }}>

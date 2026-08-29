@@ -1,8 +1,21 @@
 import { NextResponse } from 'next/server';
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard';
 
 export async function POST(request: Request) {
   try {
     const { prompt } = await request.json();
+
+    if (!prompt || !prompt.trim()) {
+      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
+    }
+
+    const scopeCheck = await validateLearningScope(prompt.trim());
+    if (!scopeCheck.allowed) {
+      return NextResponse.json(
+        { error: BLOCKED_SCOPE_MESSAGE, blocked: true },
+        { status: 400 }
+      );
+    }
 
     if (!process.env.GROQ_API_KEY) {
       throw new Error('GROQ_API_KEY not configured');

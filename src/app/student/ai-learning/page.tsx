@@ -287,10 +287,13 @@ export default function StudentAILearningPage() {
     }
   }
 
+  const [practiceScopeError, setPracticeScopeError] = useState('')
+
   const handleGeneratePractice = async (e: React.FormEvent) => {
     e.preventDefault()
     setGeneratingPractice(true)
     setRevealedSolutions({})
+    setPracticeScopeError('')
     try {
       const res = await fetch('/api/ai/practice', {
         method: 'POST',
@@ -303,7 +306,11 @@ export default function StudentAILearningPage() {
         })
       })
       const data = await res.json()
-      if (data.success && data.questions) {
+      if (data.blocked) {
+        setPracticeScopeError(data.message || data.error || "This search is outside PlaceIQ's learning scope. Try searching for academic topics, skills, languages, career preparation, or personal development.")
+        setPracticeQuestions([])
+      } else if (data.success && data.questions) {
+        setPracticeScopeError('')
         setPracticeQuestions(data.questions)
       }
     } catch (err) {
@@ -493,7 +500,7 @@ export default function StudentAILearningPage() {
                 <input
                   type="text"
                   className={styles.chatInput}
-                  placeholder="Ask any question about this course's syllabus, algorithms, code, or practical assignments..."
+                  placeholder="Ask any educational question about syllabus, algorithms, code, languages, or concepts..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
@@ -717,7 +724,11 @@ export default function StudentAILearningPage() {
                         type="text"
                         required
                         value={practiceTopic}
-                        onChange={e => setPracticeTopic(e.target.value)}
+                        onChange={e => {
+                          setPracticeTopic(e.target.value)
+                          if (practiceScopeError) setPracticeScopeError('')
+                        }}
+                        placeholder="Enter educational topic (e.g. Recursion, Data Structures, English Grammar, Calculus)..."
                         className="form-input"
                         style={{ width: '100%' }}
                       />
@@ -748,6 +759,20 @@ export default function StudentAILearningPage() {
                       </select>
                     </div>
                   </div>
+
+                  {practiceScopeError && (
+                    <div style={{ marginBottom: '1.25rem', padding: '12px 16px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '1.2rem' }}>🎓</span>
+                      <div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#fca5a5' }}>
+                          Learning Scope Notice
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                          {practiceScopeError}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     type="submit"

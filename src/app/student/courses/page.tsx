@@ -322,7 +322,7 @@ export default function MyCoursesPage() {
                 <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type="text"
-                  placeholder="Search my courses..."
+                  placeholder="Search learning resources or courses..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className={styles.searchInput}

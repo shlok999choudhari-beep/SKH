@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import Groq from 'groq-sdk'
+import { validateLearningScope, BLOCKED_SCOPE_MESSAGE } from '@/lib/learningScopeGuard'
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,6 +15,11 @@ export async function POST(req: NextRequest) {
 
     if (!topic || !topic.trim()) {
       return NextResponse.json({ error: 'Topic is required for AI quiz generation' }, { status: 400 })
+    }
+
+    const scopeCheck = await validateLearningScope(topic.trim())
+    if (!scopeCheck.allowed) {
+      return NextResponse.json({ error: BLOCKED_SCOPE_MESSAGE, blocked: true }, { status: 400 })
     }
 
     const count = Math.min(Math.max(parseInt(questionCount, 10) || 5, 3), 15)
