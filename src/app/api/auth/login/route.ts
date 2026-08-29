@@ -312,7 +312,7 @@ export async function POST(request: NextRequest) {
     // 6. Trusted / Low Risk Direct Login
     resetFailedLoginAttempts(user.email, ip)
 
-    await createSession({
+    const sessionToken = await createSession({
       userId: user.id,
       role: authRole,
       email: user.email,
@@ -357,6 +357,14 @@ export async function POST(request: NextRequest) {
       status: 'SUCCESS',
       message: 'Login verified successfully.',
       redirectUrl
+    })
+
+    response.cookies.set('demo_session', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: 'lax',
+      path: '/'
     })
 
     if (effectiveDeviceId) {

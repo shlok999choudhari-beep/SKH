@@ -1,5 +1,8 @@
 import axios from 'axios'
 import FormData from 'form-data'
+import { PDFDocument, PDFName, PDFRawStream } from 'pdf-lib'
+import * as zlib from 'zlib'
+import sharp from 'sharp'
 import { normalizeFileType } from './resumeExtractor'
 
 const DOCLING_SERVICE_URL = process.env.DOCLING_SERVICE_URL || 'http://127.0.0.1:8000'
@@ -30,9 +33,51 @@ export interface OCRServiceResult {
 }
 
 /**
+ * Helper: Extract embedded image pages from PDF buffer
+ */
+export async function extractImagesFromPdfBuffer(buffer: Buffer): Promise<Buffer[]> {
+  const images: Buffer[] = []
+  try {
+    const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true })
+    const enumeratedObjects = pdfDoc.context.enumerateIndirectObjects()
+
+    for (const [ref, obj] of enumeratedObjects) {
+      if (obj instanceof PDFRawStream) {
+        const subtype = obj.dict.get(PDFName.of('Subtype'))
+        if (subtype?.toString() === '/Image') {
+          let rawBytes = obj.getContents()
+          const filterStr = obj.dict.get(PDFName.of('Filter'))?.toString() || ''
+
+          if (filterStr.includes('FlateDecode')) {
+            try {
+              rawBytes = zlib.inflateSync(Buffer.from(rawBytes))
+            } catch (e) {}
+          }
+
+          // Direct JPEG (0xFF 0xD8)
+          if (rawBytes[0] === 0xff && rawBytes[1] === 0xd8) {
+            images.push(Buffer.from(rawBytes))
+          } else if (rawBytes[0] === 0x89 && rawBytes[1] === 0x50 && rawBytes[2] === 0x4e && rawBytes[3] === 0x47) {
+            images.push(Buffer.from(rawBytes))
+          } else {
+            try {
+              const decoded = await sharp(Buffer.from(rawBytes)).toBuffer()
+              images.push(decoded)
+            } catch (e) {}
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[PDF Image Extractor] Warning:', err)
+  }
+  return images
+}
+
+/**
  * Smart OCR Service
  * Primary: PaddleOCR via microservice with OpenCV deskewing/preprocessing
- * Fallback: Sharp + Tesseract.js isolated worker
+ * Fallback: Sharp + Tesseract.js isolated worker (with multi-page PDF image extraction)
  */
 export async function performSmartOCR(
   buffer: Buffer,
@@ -40,6 +85,7 @@ export async function performSmartOCR(
   fileType: string
 ): Promise<OCRServiceResult> {
   const normalizedType = normalizeFileType(fileName, fileType)
+  const isPdf = normalizedType === 'application/pdf' || fileName.toLowerCase().endsWith('.pdf') || buffer.slice(0, 5).toString() === '%PDF-'
 
   // 1. Try PaddleOCR through Python Microservice
   try {
@@ -78,47 +124,128 @@ export async function performSmartOCR(
   // 2. Fallback: Sharp + Tesseract.js
   let worker: any = null
   try {
-    const { preprocessImageBuffer } = await import('./resumeExtractor')
-    const enhancedBuffer = await preprocessImageBuffer(buffer)
     const { createWorker } = await import('tesseract.js')
+
+    let imageBuffers: Buffer[] = []
+
+    if (isPdf) {
+      imageBuffers = await extractImagesFromPdfBuffer(buffer)
+    }
+
+    if (imageBuffers.length === 0) {
+      // Direct image file
+      const { preprocessImageBuffer } = await import('./resumeExtractor')
+      const enhanced = await preprocessImageBuffer(buffer)
+      imageBuffers.push(enhanced)
+    }
 
     worker = await createWorker('eng', 1, {
       errorHandler: (e: any) => console.warn('[Tesseract Worker Error]', e)
     })
+    await worker.setParameters({
+      tessedit_pageseg_mode: '6'
+    })
 
-    const ocrPromise = worker.recognize(enhancedBuffer)
-    const timeoutPromise = new Promise<any>((_, reject) =>
-      setTimeout(() => reject(new Error('Tesseract fallback timeout after 15s')), 15000)
-    )
+    let combinedText = ''
+    const allBlocks: OCRBlock[] = []
+    const seenLineTexts = new Set<string>()
+    let totalConfidence = 0
 
-    const ret = await Promise.race([ocrPromise, timeoutPromise])
-    const rawText = ret?.data?.text || ''
-    const confidence = (ret?.data?.confidence || 75) / 100
+    for (let p = 0; p < imageBuffers.length; p++) {
+      const rawBuffer = imageBuffers[p]
+      let meta: any = {}
+      try {
+        meta = await sharp(rawBuffer).metadata()
+      } catch {}
 
-    // Construct structured lines and blocks
-    const lines = rawText.split('\n').map((l: string) => l.trim()).filter(Boolean)
-    const blocks: OCRBlock[] = lines.map((line: string, idx: number) => ({
-      blockId: idx + 1,
-      text: line,
-      confidence: Math.min(1.0, Math.max(0.4, confidence)),
-      page: 1,
-      boundingBox: [[0, idx * 30], [500, idx * 30], [500, (idx + 1) * 30], [0, (idx + 1) * 30]]
-    }))
+      // Pass 1: Standard Grayscale normalized
+      let pass1Buffer = rawBuffer
+      try {
+        pass1Buffer = await sharp(rawBuffer).grayscale().normalize().sharpen({ sigma: 1.5 }).toBuffer()
+      } catch {}
 
-    const boundingBoxes: OCRBoundingBox[] = blocks.map(b => ({
+      // Pass 2: Red-channel extraction (strips blue/cyan guilloche background watermark patterns)
+      let pass2Buffer: Buffer | null = null
+      try {
+        pass2Buffer = await sharp(rawBuffer).extractChannel('red').linear(1.8, -40).sharpen({ sigma: 1.2 }).toBuffer()
+      } catch {}
+
+      // Pass 3: Table Region Crop with high contrast
+      let pass3Buffer: Buffer | null = null
+      if (meta.height && meta.width) {
+        try {
+          const tableTop = Math.round(meta.height * 0.30)
+          const tableHeight = Math.round(meta.height * 0.45)
+          pass3Buffer = await sharp(rawBuffer)
+            .extract({ left: 0, top: tableTop, width: meta.width, height: tableHeight })
+            .extractChannel('red')
+            .linear(2.0, -50)
+            .sharpen()
+            .toBuffer()
+        } catch {}
+      }
+
+      const passes: { name: string; buffer: Buffer; psm: string }[] = [
+        { name: 'Grayscale', buffer: pass1Buffer, psm: '6' }
+      ]
+      if (pass2Buffer) passes.push({ name: 'RedChannel', buffer: pass2Buffer, psm: '6' })
+      if (pass3Buffer) {
+        passes.push({ name: 'TableCropPSM6', buffer: pass3Buffer, psm: '6' })
+        passes.push({ name: 'TableCropPSM11', buffer: pass3Buffer, psm: '11' })
+      }
+
+      let pageConfidenceSum = 0
+      let passCount = 0
+
+      for (const pass of passes) {
+        try {
+          await worker.setParameters({ tessedit_pageseg_mode: pass.psm })
+          const ocrPromise = worker.recognize(pass.buffer)
+          const timeoutPromise = new Promise<any>((_, reject) =>
+            setTimeout(() => reject(new Error('Tesseract recognition timeout')), 15000)
+          )
+          const ret = await Promise.race([ocrPromise, timeoutPromise])
+          const pageText = ret?.data?.text || ''
+          const conf = (ret?.data?.confidence || 75) / 100
+          pageConfidenceSum += conf
+          passCount++
+
+          const lines = pageText.split('\n').map((l: string) => l.trim()).filter(Boolean)
+          lines.forEach((line: string) => {
+            if (!seenLineTexts.has(line)) {
+              seenLineTexts.add(line)
+              combinedText += (combinedText ? '\n' : '') + line
+              allBlocks.push({
+                blockId: allBlocks.length + 1,
+                text: line,
+                confidence: Math.min(1.0, Math.max(0.4, conf)),
+                page: p + 1,
+                boundingBox: [[0, (allBlocks.length) * 30], [500, (allBlocks.length) * 30], [500, (allBlocks.length + 1) * 30], [0, (allBlocks.length + 1) * 30]]
+              })
+            }
+          })
+        } catch (passErr: any) {
+          console.warn(`[SmartOCR] Pass ${pass.name} error:`, passErr.message)
+        }
+      }
+
+      totalConfidence += passCount > 0 ? (pageConfidenceSum / passCount) : 0.75
+    }
+
+    const boundingBoxes: OCRBoundingBox[] = allBlocks.map(b => ({
       box: b.boundingBox || [[0, 0], [0, 0], [0, 0], [0, 0]],
       text: b.text,
       confidence: b.confidence,
-      page: 1
+      page: b.page
     }))
 
     return {
-      fullText: rawText.trim(),
-      blocks,
+      fullText: combinedText.trim(),
+      blocks: allBlocks,
       boundingBoxes,
-      meanConfidence: confidence,
+      meanConfidence: imageBuffers.length > 0 ? totalConfidence / imageBuffers.length : 0.75,
       language: 'en',
-      pageCount: 1,
+      pageCount: imageBuffers.length || 1,
       engine: 'tesseract'
     }
   } catch (tessErr: any) {

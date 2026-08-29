@@ -41,9 +41,11 @@ import {
   ShieldAlert,
   Check,
   AlertTriangle,
+  AlertCircle,
   Flame,
   KeyRound,
-  Shield
+  Shield,
+  GraduationCap
 } from 'lucide-react'
 
 interface OCRBlockData {
@@ -227,6 +229,28 @@ export default function StudentDocumentVaultPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
 
+  // Academic Marksheets State
+  const [marksheets, setMarksheets] = useState<any[]>([])
+  const [isMarksheetModalOpen, setIsMarksheetModalOpen] = useState(false)
+  const [marksheetLevel, setMarksheetLevel] = useState<'TENTH' | 'TWELFTH'>('TENTH')
+  const [marksheetFile, setMarksheetFile] = useState<File | null>(null)
+  const [marksheetBoard, setMarksheetBoard] = useState('')
+  const [marksheetYear, setMarksheetYear] = useState('')
+  const [marksheetRoll, setMarksheetRoll] = useState('')
+  const [marksheetUploading, setMarksheetUploading] = useState(false)
+  const [marksheetError, setMarksheetError] = useState('')
+  const [marksheetSuccess, setMarksheetSuccess] = useState('')
+  const [selectedMarksheetForView, setSelectedMarksheetForView] = useState<any | null>(null)
+  const [isExtractingMarksheet, setIsExtractingMarksheet] = useState(false)
+  const [extractingSteps, setExtractingSteps] = useState({
+    name: false,
+    roll: false,
+    board: false,
+    year: false,
+    marks: false,
+    percentage: false
+  })
+
   // Details Modal State (8 Tabs)
   const [detailsDoc, setDetailsDoc] = useState<DocumentItem | null>(null)
   const [modalTab, setModalTab] = useState<'overview' | 'fields' | 'ocr' | 'quality' | 'qr' | 'duplicates' | 'verification' | 'history'>('overview')
@@ -238,12 +262,20 @@ export default function StudentDocumentVaultPage() {
   const fetchData = async (showLoading = false) => {
     if (showLoading) setLoading(true)
     try {
-      const [docsRes, reqsRes] = await Promise.all([
+      const [docsRes, reqsRes, marksheetsRes] = await Promise.all([
         fetch('/api/documents'),
-        fetch('/api/documents/requests')
+        fetch('/api/documents/requests'),
+        fetch('/api/student/marksheets')
       ])
+
+      if (docsRes.status === 401 || marksheetsRes.status === 401) {
+        window.location.href = '/auth/login?role=student'
+        return
+      }
+
       const docsData = docsRes.ok ? await docsRes.json().catch(() => ({})) : {}
       const reqsData = reqsRes.ok ? await reqsRes.json().catch(() => ({})) : {}
+      const marksheetsData = marksheetsRes.ok ? await marksheetsRes.json().catch(() => ({})) : {}
 
       if (docsData && docsData.documents) {
         setDocuments(docsData.documents)
@@ -254,6 +286,7 @@ export default function StudentDocumentVaultPage() {
         })
       }
       if (reqsData && reqsData.requests) setRequests(reqsData.requests)
+      if (marksheetsData && marksheetsData.marksheets) setMarksheets(marksheetsData.marksheets)
 
     } catch (err) {
       console.error('Error fetching vault data:', err)
@@ -262,20 +295,110 @@ export default function StudentDocumentVaultPage() {
     }
   }
 
+  const handleOpenMarksheetUpload = (level: 'TENTH' | 'TWELFTH') => {
+    setMarksheetLevel(level)
+    setMarksheetFile(null)
+    setMarksheetBoard('')
+    setMarksheetYear('')
+    setMarksheetRoll('')
+    setMarksheetError('')
+    setMarksheetSuccess('')
+    setIsMarksheetModalOpen(true)
+  }
+
+  const handleMarksheetUpload = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!marksheetFile) {
+      setMarksheetError('Please select a marksheet file (PDF, PNG, JPG, JPEG, or WEBP).')
+      return
+    }
+    setMarksheetUploading(true)
+    setMarksheetError('')
+    setMarksheetSuccess('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', marksheetFile)
+      formData.append('educationLevel', marksheetLevel)
+      if (marksheetBoard.trim()) formData.append('board', marksheetBoard.trim())
+      if (marksheetYear.trim()) formData.append('passingYear', marksheetYear.trim())
+      if (marksheetRoll.trim()) formData.append('rollNumber', marksheetRoll.trim())
+
+      const res = await fetch('/api/student/marksheets', {
+        method: 'POST',
+        body: formData
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setMarksheetSuccess(data.message || 'Marksheet uploaded successfully!')
+        setTimeout(() => {
+          setIsMarksheetModalOpen(false)
+          setMarksheetFile(null)
+          setMarksheetError('')
+          setMarksheetSuccess('')
+          fetchData(false)
+        }, 1500)
+      } else {
+        setMarksheetError(data.error || 'Failed to upload marksheet')
+      }
+    } catch (err: any) {
+      setMarksheetError('Network error while uploading marksheet. Please try again.')
+    } finally {
+      setMarksheetUploading(false)
+    }
+  }
+
+  const handleProcessMarksheet = async (marksheetId: number) => {
+    setIsExtractingMarksheet(true)
+    setExtractingSteps({ name: false, roll: false, board: false, year: false, marks: false, percentage: false })
+
+    const t1 = setTimeout(() => setExtractingSteps(s => ({ ...s, name: true })), 250)
+    const t2 = setTimeout(() => setExtractingSteps(s => ({ ...s, roll: true })), 500)
+    const t3 = setTimeout(() => setExtractingSteps(s => ({ ...s, board: true })), 750)
+    const t4 = setTimeout(() => setExtractingSteps(s => ({ ...s, year: true })), 1000)
+    const t5 = setTimeout(() => setExtractingSteps(s => ({ ...s, marks: true })), 1250)
+    const t6 = setTimeout(() => setExtractingSteps(s => ({ ...s, percentage: true })), 1500)
+
+    try {
+      const res = await fetch(`/api/student/marksheets/${marksheetId}/process`, { method: 'POST' })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setSelectedMarksheetForView(data.marksheet)
+        fetchData(false)
+      } else {
+        alert(data.error || 'Failed to process marksheet')
+      }
+    } catch (err) {
+      alert('Error during marksheet structured processing')
+    } finally {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+      clearTimeout(t4)
+      clearTimeout(t5)
+      clearTimeout(t6)
+      setExtractingSteps({ name: true, roll: true, board: true, year: true, marks: true, percentage: true })
+      setIsExtractingMarksheet(false)
+    }
+  }
+
   useEffect(() => {
     fetchData(true)
   }, [])
 
-  // Auto-polling when documents are in PROCESSING state
+  // Auto-polling when documents or marksheets are in PROCESSING state
   useEffect(() => {
     const hasProcessing = documents.some(
       d => d.verificationStatus === 'PROCESSING' || d.verificationStatus === 'PENDING' || d.processingStatus === 'PROCESSING' || d.processingStatus === 'OCR_PROCESSING'
+    ) || marksheets.some(
+      m => (m.verificationStatus === 'PROCESSING' || m.verificationStatus === 'PENDING') && !m.studentName
     )
     if (hasProcessing) {
       if (!pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchData(false)
-        }, 3500)
+        }, 3000)
       }
     } else {
       if (pollingRef.current) {
@@ -290,7 +413,7 @@ export default function StudentDocumentVaultPage() {
         pollingRef.current = null
       }
     }
-  }, [documents])
+  }, [documents, marksheets])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -639,6 +762,436 @@ export default function StudentDocumentVaultPage() {
               <span style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
                 {documents.filter(d => d.verificationStatus === 'SUSPICIOUS' || (d.tamperScore && d.tamperScore > 40)).length}
               </span>
+            </div>
+          </div>
+
+          {/* Academic Marksheets Verification Hub */}
+          <div style={{
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            padding: '1.25rem',
+            marginBottom: '1.5rem',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <GraduationCap size={20} color="#a78bfa" />
+                  <span>Academic Marksheets & Placement Eligibility Credentials</span>
+                </h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+                  Upload verified 10th & 12th secondary marksheet documents for automated placement drive eligibility.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px' }}>
+              {/* 10th Marksheet Card */}
+              {(() => {
+                const tenth = marksheets.find(m => m.educationLevel === 'TENTH')
+                const isUploaded = Boolean(tenth?.documentId || tenth?.document)
+                const status = tenth?.verificationStatus || (isUploaded ? 'PENDING' : 'NOT_UPLOADED')
+                const isExtractionComplete = Boolean(
+                  tenth?.studentName &&
+                  (tenth?.seatNumber || tenth?.rollNumber) &&
+                  tenth?.passingYear
+                )
+                const missingFields: string[] = []
+                if (isUploaded && !isExtractionComplete) {
+                  if (!tenth?.studentName) missingFields.push('Candidate Name')
+                  if (!tenth?.seatNumber && !tenth?.rollNumber) missingFields.push('Seat / Roll Number')
+                  if (!tenth?.passingYear) missingFields.push('Passing Year')
+                }
+
+                return (
+                  <div style={{
+                    background: 'var(--bg-primary)',
+                    border: '1px solid ' + (status === 'VERIFIED' ? 'rgba(16,185,129,0.3)' : status === 'MISMATCH' ? 'rgba(239,68,68,0.3)' : 'var(--border)'),
+                    borderRadius: '12px',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '12px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a78bfa' }}>
+                          <FileText size={20} />
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Class 10th Marksheet</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Secondary School Examination</div>
+                        </div>
+                      </div>
+
+                      <div>
+                        {status === 'VERIFIED' ? (
+                          <span className="badge badge-green" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <CheckCircle2 size={12} /> Verified (DigiLocker)
+                          </span>
+                        ) : status === 'MISMATCH' ? (
+                          <span className="badge badge-red" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertTriangle size={12} /> Mismatch
+                          </span>
+                        ) : status === 'MANUAL_REVIEW' ? (
+                          <span className="badge badge-orange" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertCircle size={12} /> Manual Review
+                          </span>
+                        ) : isUploaded ? (
+                          isExtractionComplete ? (
+                            <span className="badge badge-blue" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+                              <FileCheck size={12} /> Extraction Complete
+                            </span>
+                          ) : (
+                            <span className="badge badge-orange" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                              <AlertTriangle size={12} /> Extraction Incomplete
+                            </span>
+                          )
+                        ) : (
+                          <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', padding: '2px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                            Not Uploaded
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {isUploaded && (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'rgba(255,255,252,0.02)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px', borderBottom: '1px dashed var(--border)' }}>
+                          <span>Academic Extraction:</span>
+                          <span style={{ color: isExtractionComplete ? '#34d399' : '#f59e0b', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            {isExtractionComplete ? '✓ Complete' : 'Incomplete'}
+                          </span>
+                        </div>
+                        {!isExtractionComplete && missingFields.length > 0 && (
+                          <div style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '6px 8px', borderRadius: '6px', fontSize: '0.72rem', color: '#fbbf24', margin: '2px 0' }}>
+                            <strong>Missing:</strong> {missingFields.join(', ')}
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Candidate Name:</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{tenth.studentName || 'Pending extraction'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Seat / Roll No:</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{tenth.seatNumber || tenth.rollNumber || 'Pending'}</span>
+                        </div>
+                        {(tenth.certificateNumber || tenth.registrationNumber) && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Security / Reg Ref:</span>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontFamily: 'monospace' }}>{tenth.certificateNumber || tenth.registrationNumber}</span>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Board:</span>
+                          <span style={{ color: 'var(--text-primary)' }}>{tenth.board || 'CBSE / State Board'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Passing Year:</span>
+                          <span style={{ color: 'var(--text-primary)' }}>{tenth.passingYear || 'N/A'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px dashed var(--border)' }}>
+                          <span>Official Verification:</span>
+                          <span style={{
+                            fontWeight: 600,
+                            color: status === 'VERIFIED' ? '#34d399' : status === 'MISMATCH' ? '#f87171' : '#fbbf24'
+                          }}>
+                            {status === 'VERIFIED' ? '✓ Verified (DigiLocker)' : status === 'MISMATCH' ? 'Mismatch' : 'Pending DigiLocker Verification'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', flexWrap: 'wrap' }}>
+                      {isUploaded && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedMarksheetForView(tenth)
+                              if (!tenth.studentName || !tenth.rollNumber) {
+                                handleProcessMarksheet(tenth.id)
+                              }
+                            }}
+                            className="btn btn-sm"
+                            style={{
+                              flex: 1,
+                              padding: '7px 10px',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              background: 'rgba(139, 92, 246, 0.15)',
+                              color: '#c084fc',
+                              border: '1px solid rgba(139, 92, 246, 0.3)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Scan size={12} />
+                            <span>View Academic Info</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleProcessMarksheet(tenth.id)}
+                            disabled={isExtractingMarksheet}
+                            className="btn btn-sm"
+                            title="Retry extraction with Smart OCR"
+                            style={{
+                              padding: '7px 10px',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-secondary)',
+                              border: '1px solid var(--border)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <RefreshCw size={12} className={isExtractingMarksheet ? 'spin' : ''} />
+                            <span>Retry</span>
+                          </button>
+                        </>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenMarksheetUpload('TENTH')}
+                        className="btn btn-sm btn-primary"
+                        style={{
+                          flex: isUploaded ? 1 : 2,
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: isUploaded ? 'var(--bg-secondary)' : 'var(--accent-violet)',
+                          color: isUploaded ? 'var(--text-primary)' : '#fff',
+                          border: isUploaded ? '1px solid var(--border)' : 'none',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Upload size={12} />
+                        <span>{isUploaded ? 'Replace Document' : 'Upload 10th Marksheet'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* 12th Marksheet Card */}
+              {(() => {
+                const twelfth = marksheets.find(m => m.educationLevel === 'TWELFTH')
+                const isUploaded = Boolean(twelfth?.documentId || twelfth?.document)
+                const status = twelfth?.verificationStatus || (isUploaded ? 'PENDING' : 'NOT_UPLOADED')
+                const isExtractionComplete = Boolean(
+                  twelfth?.studentName &&
+                  (twelfth?.seatNumber || twelfth?.rollNumber) &&
+                  twelfth?.passingYear
+                )
+                const missingFields: string[] = []
+                if (isUploaded && !isExtractionComplete) {
+                  if (!twelfth?.studentName) missingFields.push('Candidate Name')
+                  if (!twelfth?.seatNumber && !twelfth?.rollNumber) missingFields.push('Seat / Roll Number')
+                  if (!twelfth?.passingYear) missingFields.push('Passing Year')
+                }
+
+                return (
+                  <div style={{
+                    background: 'var(--bg-primary)',
+                    border: '1px solid ' + (status === 'VERIFIED' ? 'rgba(16,185,129,0.3)' : status === 'MISMATCH' ? 'rgba(239,68,68,0.3)' : 'var(--border)'),
+                    borderRadius: '12px',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '12px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60a5fa' }}>
+                          <GraduationCap size={20} />
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Class 12th / Diploma Marksheet</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Higher Secondary Examination</div>
+                        </div>
+                      </div>
+
+                      <div>
+                        {status === 'VERIFIED' ? (
+                          <span className="badge badge-green" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <CheckCircle2 size={12} /> Verified (DigiLocker)
+                          </span>
+                        ) : status === 'MISMATCH' ? (
+                          <span className="badge badge-red" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertTriangle size={12} /> Mismatch
+                          </span>
+                        ) : status === 'MANUAL_REVIEW' ? (
+                          <span className="badge badge-orange" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertCircle size={12} /> Manual Review
+                          </span>
+                        ) : isUploaded ? (
+                          isExtractionComplete ? (
+                            <span className="badge badge-blue" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+                              <FileCheck size={12} /> Extraction Complete
+                            </span>
+                          ) : (
+                            <span className="badge badge-orange" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                              <AlertTriangle size={12} /> Extraction Incomplete
+                            </span>
+                          )
+                        ) : (
+                          <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', padding: '2px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                            Not Uploaded
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {isUploaded && (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px', borderBottom: '1px dashed var(--border)' }}>
+                          <span>Academic Extraction:</span>
+                          <span style={{ color: isExtractionComplete ? '#34d399' : '#f59e0b', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            {isExtractionComplete ? '✓ Complete' : 'Incomplete'}
+                          </span>
+                        </div>
+                        {!isExtractionComplete && missingFields.length > 0 && (
+                          <div style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '6px 8px', borderRadius: '6px', fontSize: '0.72rem', color: '#fbbf24', margin: '2px 0' }}>
+                            <strong>Missing:</strong> {missingFields.join(', ')}
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Candidate Name:</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{twelfth.studentName || 'Pending extraction'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Seat / Roll No:</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{twelfth.seatNumber || twelfth.rollNumber || 'Pending'}</span>
+                        </div>
+                        {(twelfth.certificateNumber || twelfth.registrationNumber) && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Security / Reg Ref:</span>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontFamily: 'monospace' }}>{twelfth.certificateNumber || twelfth.registrationNumber}</span>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Board:</span>
+                          <span style={{ color: 'var(--text-primary)' }}>{twelfth.board || 'CBSE / State Board'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Passing Year:</span>
+                          <span style={{ color: 'var(--text-primary)' }}>{twelfth.passingYear || 'N/A'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px dashed var(--border)' }}>
+                          <span>Official Verification:</span>
+                          <span style={{
+                            fontWeight: 600,
+                            color: status === 'VERIFIED' ? '#34d399' : status === 'MISMATCH' ? '#f87171' : '#fbbf24'
+                          }}>
+                            {status === 'VERIFIED' ? '✓ Verified (DigiLocker)' : status === 'MISMATCH' ? 'Mismatch' : 'Pending DigiLocker Verification'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', flexWrap: 'wrap' }}>
+                      {isUploaded && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedMarksheetForView(twelfth)
+                              if (!twelfth.studentName || !twelfth.rollNumber) {
+                                handleProcessMarksheet(twelfth.id)
+                              }
+                            }}
+                            className="btn btn-sm"
+                            style={{
+                              flex: 1,
+                              padding: '7px 10px',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              background: 'rgba(59, 130, 246, 0.15)',
+                              color: '#60a5fa',
+                              border: '1px solid rgba(59, 130, 246, 0.3)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Scan size={12} />
+                            <span>View Academic Info</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleProcessMarksheet(twelfth.id)}
+                            disabled={isExtractingMarksheet}
+                            className="btn btn-sm"
+                            title="Retry extraction with Smart OCR"
+                            style={{
+                              padding: '7px 10px',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-secondary)',
+                              border: '1px solid var(--border)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <RefreshCw size={12} className={isExtractingMarksheet ? 'spin' : ''} />
+                            <span>Retry</span>
+                          </button>
+                        </>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenMarksheetUpload('TWELFTH')}
+                        className="btn btn-sm btn-primary"
+                        style={{
+                          flex: isUploaded ? 1 : 2,
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: isUploaded ? 'var(--bg-secondary)' : '#3b82f6',
+                          color: isUploaded ? 'var(--text-primary)' : '#fff',
+                          border: isUploaded ? '1px solid var(--border)' : 'none',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Upload size={12} />
+                        <span>{isUploaded ? 'Replace Document' : 'Upload 12th Marksheet'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
           </div>
 
@@ -1022,7 +1575,9 @@ export default function StudentDocumentVaultPage() {
                       onChange={e => setDocType(e.target.value)}
                       style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
                     >
-                      <option value="Marksheet">Marksheet</option>
+                      <option value="10th Marksheet">10th Marksheet (Class X)</option>
+                      <option value="12th Marksheet">12th Marksheet (Class XII / Diploma)</option>
+                      <option value="Marksheet">Marksheet (Semester / Other)</option>
                       <option value="Certificate">Certificate</option>
                       <option value="Degree Certificate">Degree Certificate</option>
                       <option value="ID Document">ID Document</option>
@@ -1670,6 +2225,468 @@ export default function StudentDocumentVaultPage() {
           }
         }}
       />
+
+      {/* DEDICATED 10TH / 12TH MARKSHEET UPLOAD MODAL */}
+      {isMarksheetModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '18px', maxWidth: '540px', width: '100%', padding: '1.75rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: marksheetLevel === 'TENTH' ? 'rgba(139, 92, 246, 0.15)' : 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: marksheetLevel === 'TENTH' ? '#c084fc' : '#60a5fa' }}>
+                  <GraduationCap size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Upload {marksheetLevel === 'TENTH' ? 'Class 10th' : 'Class 12th'} Marksheet
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                    Official Secondary Academic Verification Vault
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => { if (!marksheetUploading) setIsMarksheetModalOpen(false) }}
+                disabled={marksheetUploading}
+                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <X size={18} strokeWidth={2} />
+              </button>
+            </div>
+
+            {marksheetError && (
+              <div style={{ padding: '10px 14px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={15} />
+                <span>{marksheetError}</span>
+              </div>
+            )}
+
+            {marksheetSuccess && (
+              <div style={{ padding: '10px 14px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', color: '#34d399', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CheckCircle2 size={15} />
+                <span>{marksheetSuccess}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleMarksheetUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {/* Level Selector Pills */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                  Education Level *
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMarksheetLevel('TENTH')}
+                    disabled={marksheetUploading}
+                    style={{
+                      padding: '10px',
+                      borderRadius: '8px',
+                      border: marksheetLevel === 'TENTH' ? '2px solid #8b5cf6' : '1px solid var(--border)',
+                      background: marksheetLevel === 'TENTH' ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-secondary)',
+                      color: marksheetLevel === 'TENTH' ? '#fff' : 'var(--text-secondary)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <FileText size={15} color={marksheetLevel === 'TENTH' ? '#c084fc' : undefined} />
+                    <span>Class 10th (Secondary)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMarksheetLevel('TWELFTH')}
+                    disabled={marksheetUploading}
+                    style={{
+                      padding: '10px',
+                      borderRadius: '8px',
+                      border: marksheetLevel === 'TWELFTH' ? '2px solid #3b82f6' : '1px solid var(--border)',
+                      background: marksheetLevel === 'TWELFTH' ? 'rgba(59, 130, 246, 0.15)' : 'var(--bg-secondary)',
+                      color: marksheetLevel === 'TWELFTH' ? '#fff' : 'var(--text-secondary)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <GraduationCap size={15} color={marksheetLevel === 'TWELFTH' ? '#60a5fa' : undefined} />
+                    <span>Class 12th / Diploma</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* File Input */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                  Marksheet Document File (PDF / Image) *
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg,.webp"
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      setMarksheetFile(e.target.files[0])
+                      setMarksheetError('')
+                    }
+                  }}
+                  disabled={marksheetUploading}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    fontSize: '13px'
+                  }}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '4px', display: 'block' }}>
+                  Accepted formats: PDF, PNG, JPG, JPEG, WEBP. Max 20MB. AES-256 encrypted private vault storage.
+                </span>
+              </div>
+
+              {/* Optional Metadata Fields */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    Education Board
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. CBSE, ICSE, State Board"
+                    value={marksheetBoard}
+                    onChange={e => setMarksheetBoard(e.target.value)}
+                    disabled={marksheetUploading}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      fontSize: '13px'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    Passing Year
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 2020"
+                    value={marksheetYear}
+                    onChange={e => setMarksheetYear(e.target.value)}
+                    disabled={marksheetUploading}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      fontSize: '13px'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                  Roll Number / Registration Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 12345678"
+                  value={marksheetRoll}
+                  onChange={e => setMarksheetRoll(e.target.value)}
+                  disabled={marksheetUploading}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    fontSize: '13px'
+                  }}
+                />
+              </div>
+
+              {/* Submit Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsMarksheetModalOpen(false)}
+                  disabled={marksheetUploading}
+                  className="btn"
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={marksheetUploading}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    background: marksheetLevel === 'TENTH' ? 'linear-gradient(135deg, var(--accent-violet) 0%, #6366f1 100%)' : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                    color: 'white',
+                    border: 'none',
+                    cursor: marksheetUploading ? 'default' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {marksheetUploading ? (
+                    <>
+                      <Loader2 size={15} className="spin" />
+                      <span>Encrypting & Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={15} />
+                      <span>Upload & Verify</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EXTRACTED ACADEMIC INFORMATION & MARKSHEET DETAILS MODAL */}
+      {selectedMarksheetForView && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '18px', maxWidth: '680px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: selectedMarksheetForView.educationLevel === 'TENTH' ? 'rgba(139, 92, 246, 0.15)' : 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: selectedMarksheetForView.educationLevel === 'TENTH' ? '#c084fc' : '#60a5fa' }}>
+                  <GraduationCap size={22} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Extracted Academic Information
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                    Class {selectedMarksheetForView.educationLevel === 'TENTH' ? '10th' : '12th'} Secondary Examination Record
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedMarksheetForView(null)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <X size={18} strokeWidth={2} />
+              </button>
+            </div>
+
+            {/* Live Extraction Steps Status Banner */}
+            {isExtractingMarksheet ? (
+              <div style={{ padding: '1.25rem', background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '12px', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#c084fc', fontWeight: 700, fontSize: '0.9rem' }}>
+                  <Loader2 size={16} className="spin" />
+                  <span>Extracting Structured Academic Data with Smart OCR...</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', fontSize: '0.8rem' }}>
+                  <div style={{ color: extractingSteps.name ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.name ? <Check size={14} /> : <Circle size={8} />} <span>Name</span>
+                  </div>
+                  <div style={{ color: extractingSteps.roll ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.roll ? <Check size={14} /> : <Circle size={8} />} <span>Roll Number</span>
+                  </div>
+                  <div style={{ color: extractingSteps.board ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.board ? <Check size={14} /> : <Circle size={8} />} <span>Board</span>
+                  </div>
+                  <div style={{ color: extractingSteps.year ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.year ? <Check size={14} /> : <Circle size={8} />} <span>Passing Year</span>
+                  </div>
+                  <div style={{ color: extractingSteps.marks ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.marks ? <Check size={14} /> : <Circle size={8} />} <span>Marks</span>
+                  </div>
+                  <div style={{ color: extractingSteps.percentage ? '#34d399' : 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {extractingSteps.percentage ? <Check size={14} /> : <Circle size={8} />} <span>Percentage</span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Verification Lifecycle Status Banner */}
+            <div style={{
+              padding: '12px 14px',
+              borderRadius: '10px',
+              marginBottom: '1.25rem',
+              border: selectedMarksheetForView.verificationStatus === 'VERIFIED'
+                ? '1px solid rgba(16, 185, 129, 0.3)'
+                : selectedMarksheetForView.verificationStatus === 'MISMATCH'
+                ? '1px solid rgba(239, 68, 68, 0.3)'
+                : '1px solid rgba(245, 158, 11, 0.3)',
+              background: selectedMarksheetForView.verificationStatus === 'VERIFIED'
+                ? 'rgba(16, 185, 129, 0.08)'
+                : selectedMarksheetForView.verificationStatus === 'MISMATCH'
+                ? 'rgba(239, 68, 68, 0.08)'
+                : 'rgba(245, 158, 11, 0.08)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.85rem', color: selectedMarksheetForView.verificationStatus === 'VERIFIED' ? '#34d399' : selectedMarksheetForView.verificationStatus === 'MISMATCH' ? '#f87171' : '#fbbf24' }}>
+                  {selectedMarksheetForView.verificationStatus === 'VERIFIED' ? <CheckCircle2 size={15} /> : <Clock size={15} />}
+                  <span>
+                    {selectedMarksheetForView.verificationStatus === 'VERIFIED'
+                      ? 'Verified Official Record (DigiLocker)'
+                      : selectedMarksheetForView.verificationStatus === 'MISMATCH'
+                      ? 'DigiLocker Comparison Mismatch'
+                      : 'Academic Extraction Complete — Pending DigiLocker Verification'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  Extraction Confidence: {Math.round((selectedMarksheetForView.ocrConfidence || 0.8) * 100)}%
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                {selectedMarksheetForView.verificationStatus === 'VERIFIED'
+                  ? 'This marksheet has been officially verified and matched against government educational repository records.'
+                  : 'Document text and structured fields have been extracted via Smart OCR. Official verification will occur when authenticated against DigiLocker.'}
+              </p>
+            </div>
+
+            {/* Extracted Academic Information Summary Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Candidate Name</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {selectedMarksheetForView.studentName || 'Not extracted'}
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Roll Number</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {selectedMarksheetForView.rollNumber || 'Not extracted'}
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Education Board</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {selectedMarksheetForView.board || 'CBSE / State Board'}
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Passing Year</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {selectedMarksheetForView.passingYear || 'N/A'}
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Total / Obtained Marks</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {selectedMarksheetForView.obtainedMarks && selectedMarksheetForView.totalMarks
+                    ? `${selectedMarksheetForView.obtainedMarks} / ${selectedMarksheetForView.totalMarks}`
+                    : 'N/A'}
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Percentage / Score</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#34d399', marginTop: '2px' }}>
+                  {typeof selectedMarksheetForView.percentage === 'number' ? `${selectedMarksheetForView.percentage}%` : 'N/A'}
+                  {selectedMarksheetForView.cgpa ? ` (CGPA: ${selectedMarksheetForView.cgpa})` : ''}
+                </div>
+              </div>
+            </div>
+
+            {/* Subjects Table */}
+            {(() => {
+              let subjectsList: any[] = []
+              if (Array.isArray(selectedMarksheetForView.subjects)) {
+                subjectsList = selectedMarksheetForView.subjects
+              } else if (typeof selectedMarksheetForView.subjects === 'string') {
+                try {
+                  subjectsList = JSON.parse(selectedMarksheetForView.subjects)
+                } catch {}
+              }
+
+              if (subjectsList.length === 0) return null
+
+              return (
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Table size={14} color="#a78bfa" />
+                    <span>Subject-wise Breakdown</span>
+                  </h4>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                      <thead>
+                        <tr style={{ background: 'var(--bg-secondary)', textAlign: 'left', color: 'var(--text-secondary)' }}>
+                          <th style={{ padding: '8px 12px' }}>Code</th>
+                          <th style={{ padding: '8px 12px' }}>Subject</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'center' }}>Max Marks</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'center' }}>Obtained</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'center' }}>Grade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subjectsList.map((sub, idx) => (
+                          <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                            <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>{sub.code || `0${idx + 1}`}</td>
+                            <td style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-primary)' }}>{sub.name}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text-secondary)' }}>{sub.maxMarks ?? 100}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700, color: sub.obtainedMarks >= 40 ? '#34d399' : '#f87171' }}>{sub.obtainedMarks ?? '-'}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 600, color: '#a78bfa' }}>{sub.grade || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Modal Footer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+              <button
+                type="button"
+                onClick={() => handleProcessMarksheet(selectedMarksheetForView.id)}
+                disabled={isExtractingMarksheet}
+                className="btn btn-sm"
+                style={{ padding: '8px 16px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#c084fc', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600 }}
+              >
+                <RefreshCw size={14} className={isExtractingMarksheet ? 'spin' : ''} />
+                <span>{isExtractingMarksheet ? 'Extracting...' : 'Re-extract with Smart OCR'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedMarksheetForView(null)}
+                className="btn btn-primary"
+                style={{ padding: '8px 20px', borderRadius: '8px', background: 'var(--accent-violet)', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

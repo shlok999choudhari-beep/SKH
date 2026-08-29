@@ -20,27 +20,39 @@ model Student {
   graduationYear Int?     @map("graduation_year")
   phone          String?
   cgpa           Float?
-  tenthMarks     Float?   @map("tenth_marks")
-  twelfthMarks   Float?   @map("twelfth_marks")
-  githubUrl      String?  @map("github_url")
-  linkedinUrl    String?  @map("linkedin_url")
-  portfolioUrl   String?  @map("portfolio_url")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
+  tenthMarks                 Float?    @map("tenth_marks")
+  twelfthMarks               Float?    @map("twelfth_marks")
+  tenthBoard                 String?   @map("tenth_board")
+  tenthPassingYear           Int?      @map("tenth_passing_year")
+  tenthDocumentId            Int?      @map("tenth_document_id")
+  tenthPercentageSource      String?   @map("tenth_percentage_source")
+  twelfthBoard               String?   @map("twelfth_board")
+  twelfthPassingYear         Int?      @map("twelfth_passing_year")
+  twelfthDocumentId          Int?      @map("twelfth_document_id")
+  twelfthPercentageSource    String?   @map("twelfth_percentage_source")
+  academicVerificationStatus String?   @default("PENDING") @map("academic_verification_status")
+  academicVerifiedAt         DateTime? @map("academic_verified_at")
+  academicVerificationData   String?   @map("academic_verification_data")
+  isAcademicLocked           Boolean?  @default(false) @map("is_academic_locked")
+  githubUrl                  String?   @map("github_url")
+  linkedinUrl                String?   @map("linkedin_url")
+  portfolioUrl               String?   @map("portfolio_url")
+  createdAt                  DateTime  @default(now()) @map("created_at")
+  updatedAt                  DateTime  @default(now()) @map("updated_at")
 
-  institution      Institution?            @relation(fields: [institutionId], references: [id])
-  resumes          Resume[]
-  applications     Application[]
-  skillAssessments SkillAssessment[]
-  skillGapAnalyses SkillGapAnalysis[]
-  codingSessions   CodingSession[]
-  trainerSessions  TrainerSession[]
-  internshipApps   InternshipApplication[]
-  certifications   Certification[]
-  placementApps    PlacementApplication[]
-  resourceBookings ResourceBooking[]
-  documents        Document[]
-  documentRequests DocumentRequest[]
+  institution           Institution?            @relation(fields: [institutionId], references: [id])
+  resumes               Resume[]
+  applications          Application[]
+  skillAssessments      SkillAssessment[]
+  skillGapAnalyses      SkillGapAnalysis[]
+  codingSessions        CodingSession[]
+  trainerSessions       TrainerSession[]
+  internshipApps        InternshipApplication[]
+  certifications        Certification[]
+  placementApps         PlacementApplication[]
+  resourceBookings      ResourceBooking[]
+  documents             Document[]
+  documentRequests      DocumentRequest[]
   faceVerifications     FaceVerification[]
   courseEnrollments     CourseEnrollment[]
   assignmentSubmissions AssignmentSubmission[]
@@ -56,6 +68,9 @@ model Student {
   skillEvidences        SkillEvidence[]
   placementReadiness    PlacementReadiness?
   riskAssessment        StudentRiskAssessment?
+  academicMarksheets          AcademicMarksheet[]
+  digilockerConnection        DigiLockerConnection?
+  academicVerificationRecords AcademicVerificationRecord[]
 
   @@map("students")
 }
@@ -220,14 +235,14 @@ model User {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @default(now()) @map("updated_at")
 
-  institution      Institution?         @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  trainers         Trainer[]
-  resourceBookings ResourceBooking[]
-  announcements    CourseAnnouncement[]
-  discussions      CourseDiscussion[]
+  institution       Institution?         @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  trainers          Trainer[]
+  resourceBookings  ResourceBooking[]
+  announcements     CourseAnnouncement[]
+  discussions       CourseDiscussion[]
   discussionReplies DiscussionReply[]
-  aiConversations  AIConversation[]
-  aiUsages         AIUsage[]
+  aiConversations   AIConversation[]
+  aiUsages          AIUsage[]
 
   @@map("users")
 }
@@ -242,8 +257,8 @@ model Trainer {
   rating        Float    @default(0)
   createdAt     DateTime @default(now()) @map("created_at")
 
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  institution Institution      @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution      Institution          @relation(fields: [institutionId], references: [id], onDelete: Cascade)
   sessions         TrainerSession[]
   courses          Course[]
   assignments      Assignment[]
@@ -482,12 +497,15 @@ model PlacementRound {
 }
 
 model PlacementApplication {
-  id             Int      @id @default(autoincrement())
-  driveId        Int      @map("drive_id")
-  studentId      Int      @map("student_id")
-  currentRoundId Int?     @map("current_round_id")
-  status         String   @default("applied")
-  appliedAt      DateTime @default(now()) @map("applied_at")
+  id                   Int       @id @default(autoincrement())
+  driveId              Int       @map("drive_id")
+  studentId            Int       @map("student_id")
+  currentRoundId       Int?      @map("current_round_id")
+  status               String    @default("applied")
+  appliedAt            DateTime  @default(now()) @map("applied_at")
+  eligibilityStatus    String?   @default("PENDING_VERIFICATION") @map("eligibility_status") // ELIGIBLE, INELIGIBLE, CONDITIONAL, PENDING_VERIFICATION
+  eligibilityReason    String?   @map("eligibility_reason")
+  eligibilityCheckedAt DateTime? @map("eligibility_checked_at")
 
   drive        PlacementDrive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   student      Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -534,46 +552,47 @@ model Document {
   aiRiskLevel          String?   @map("ai_risk_level")
 
   // Production-Ready Document Security Layer Fields
-  securityLevel        String    @default("STANDARD") @map("security_level") // STANDARD, PROTECTED, HIGHLY_PROTECTED
-  isEncrypted          Boolean   @default(false) @map("is_encrypted")
-  encryptionIv         String?   @map("encryption_iv")
-  encryptionTag        String?   @map("encryption_tag")
-  passwordHash         String?   @map("password_hash")
-  isPasswordProtected  Boolean   @default(false) @map("is_password_protected")
-  failedPasswordAttempts Int     @default(0) @map("failed_password_attempts")
-  isLocked             Boolean   @default(false) @map("is_locked")
-  lockedUntil          DateTime? @map("locked_until")
-  isViewOnly           Boolean   @default(false) @map("is_view_only")
-  downloadPolicy       String    @default("UNLIMITED") @map("download_policy") // UNLIMITED, LIMITED, DISABLED
-  maxDownloads         Int?      @map("max_downloads")
-  downloadCount        Int       @default(0) @map("download_count")
-  accessExpiry         String    @default("NEVER") @map("access_expiry") // NEVER, 1_HOUR, 24_HOURS, 7_DAYS, CUSTOM
-  watermarkEnabled     Boolean   @default(false) @map("watermark_enabled")
-  watermarkText        String?   @map("watermark_text")
-  versionNotes         String?   @map("version_notes")
-  publicVerificationId String?   @unique @map("public_verification_id")
+  securityLevel          String    @default("STANDARD") @map("security_level") // STANDARD, PROTECTED, HIGHLY_PROTECTED
+  isEncrypted            Boolean   @default(false) @map("is_encrypted")
+  encryptionIv           String?   @map("encryption_iv")
+  encryptionTag          String?   @map("encryption_tag")
+  passwordHash           String?   @map("password_hash")
+  isPasswordProtected    Boolean   @default(false) @map("is_password_protected")
+  failedPasswordAttempts Int       @default(0) @map("failed_password_attempts")
+  isLocked               Boolean   @default(false) @map("is_locked")
+  lockedUntil            DateTime? @map("locked_until")
+  isViewOnly             Boolean   @default(false) @map("is_view_only")
+  downloadPolicy         String    @default("UNLIMITED") @map("download_policy") // UNLIMITED, LIMITED, DISABLED
+  maxDownloads           Int?      @map("max_downloads")
+  downloadCount          Int       @default(0) @map("download_count")
+  accessExpiry           String    @default("NEVER") @map("access_expiry") // NEVER, 1_HOUR, 24_HOURS, 7_DAYS, CUSTOM
+  watermarkEnabled       Boolean   @default(false) @map("watermark_enabled")
+  watermarkText          String?   @map("watermark_text")
+  versionNotes           String?   @map("version_notes")
+  publicVerificationId   String?   @unique @map("public_verification_id")
 
-  student              Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institution          Institution?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
-  parentDocument       Document?              @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
-  childVersions        Document[]             @relation("DocumentVersions")
-  requests             DocumentRequest[]
-  processings          DocumentProcessing[]
-  ocrResult            OCRResult?
-  extractedFields      ExtractedField[]
-  verification         DocumentVerification?
-  qrCodeResults        QRCodeResult[]
-  sourceDuplicates     DuplicateMatch[]       @relation("SourceDuplicates")
-  targetDuplicates     DuplicateMatch[]       @relation("TargetDuplicates")
-  history              VerificationHistory[]
-  yoloDetections       YOLODetection[]
-  faceVerifications    FaceVerification[]
-  tamperAnalysis       TamperAnalysis?
-  aiAnalysis           AIAnalysis?
-  verificationStages   VerificationStage[]
-  activities           DocumentActivity[]
-  shares               DocumentShare[]
-  certificate          Certificate?
+  student            Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institution        Institution?          @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  parentDocument     Document?             @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
+  childVersions      Document[]            @relation("DocumentVersions")
+  requests           DocumentRequest[]
+  processings        DocumentProcessing[]
+  ocrResult          OCRResult?
+  extractedFields    ExtractedField[]
+  verification       DocumentVerification?
+  qrCodeResults      QRCodeResult[]
+  sourceDuplicates   DuplicateMatch[]      @relation("SourceDuplicates")
+  targetDuplicates   DuplicateMatch[]      @relation("TargetDuplicates")
+  history            VerificationHistory[]
+  yoloDetections     YOLODetection[]
+  faceVerifications  FaceVerification[]
+  tamperAnalysis     TamperAnalysis?
+  aiAnalysis         AIAnalysis?
+  verificationStages VerificationStage[]
+  activities         DocumentActivity[]
+  shares             DocumentShare[]
+  certificate        Certificate?
+  academicMarksheet  AcademicMarksheet?
 
   @@index([studentId])
   @@index([institutionId])
@@ -626,16 +645,16 @@ model DocumentProcessing {
 }
 
 model OCRResult {
-  id           Int      @id @default(autoincrement())
-  documentId   Int      @unique @map("document_id")
-  fullText     String   @map("full_text")
-  textBlocks   String?  @map("text_blocks")
-  boundingBoxes String? @map("bounding_boxes")
-  confidence   Float?
-  engine       String   @default("paddleocr")
-  language     String?
-  pageCount    Int      @default(1) @map("page_count")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id            Int      @id @default(autoincrement())
+  documentId    Int      @unique @map("document_id")
+  fullText      String   @map("full_text")
+  textBlocks    String?  @map("text_blocks")
+  boundingBoxes String?  @map("bounding_boxes")
+  confidence    Float?
+  engine        String   @default("paddleocr")
+  language      String?
+  pageCount     Int      @default(1) @map("page_count")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
@@ -686,15 +705,15 @@ model DocumentVerification {
 }
 
 model QRCodeResult {
-  id             Int      @id @default(autoincrement())
-  documentId     Int      @map("document_id")
-  codeType       String   @default("QR") @map("code_type")
-  rawData        String?  @map("raw_data")
-  certificateId  String?  @map("certificate_id")
-  verificationUrl String? @map("verification_url")
-  matchStatus    String   @default("NOT_PRESENT") @map("match_status")
-  matchedWithOcr Boolean  @default(false) @map("matched_with_ocr")
-  createdAt      DateTime @default(now()) @map("created_at")
+  id              Int      @id @default(autoincrement())
+  documentId      Int      @map("document_id")
+  codeType        String   @default("QR") @map("code_type")
+  rawData         String?  @map("raw_data")
+  certificateId   String?  @map("certificate_id")
+  verificationUrl String?  @map("verification_url")
+  matchStatus     String   @default("NOT_PRESENT") @map("match_status")
+  matchedWithOcr  Boolean  @default(false) @map("matched_with_ocr")
+  createdAt       DateTime @default(now()) @map("created_at")
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
@@ -756,15 +775,15 @@ model YOLODetection {
 }
 
 model FaceVerification {
-  id                  Int      @id @default(autoincrement())
-  documentId          Int      @map("document_id")
-  studentId           Int      @map("student_id")
-  status              String   @default("NOT_REQUESTED") // MATCH, NO_MATCH, NO_FACE, MULTIPLE_FACES, LOW_QUALITY, NOT_REQUESTED
-  similarityScore     Float?   @map("similarity_score")
-  profilePhotoFound   Boolean  @default(false) @map("profile_photo_found")
-  documentPhotoFound  Boolean  @default(false) @map("document_photo_found")
-  details             String?
-  createdAt           DateTime @default(now()) @map("created_at")
+  id                 Int      @id @default(autoincrement())
+  documentId         Int      @map("document_id")
+  studentId          Int      @map("student_id")
+  status             String   @default("NOT_REQUESTED") // MATCH, NO_MATCH, NO_FACE, MULTIPLE_FACES, LOW_QUALITY, NOT_REQUESTED
+  similarityScore    Float?   @map("similarity_score")
+  profilePhotoFound  Boolean  @default(false) @map("profile_photo_found")
+  documentPhotoFound Boolean  @default(false) @map("document_photo_found")
+  details            String?
+  createdAt          DateTime @default(now()) @map("created_at")
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -776,19 +795,19 @@ model FaceVerification {
 }
 
 model TamperAnalysis {
-  id                      Int      @id @default(autoincrement())
-  documentId              Int      @unique @map("document_id")
-  overallRiskLevel        String   @default("LOW") @map("overall_risk_level") // LOW, MEDIUM, HIGH
-  tamperScore             Float    @default(0) @map("tamper_score") // 0 (Clean) - 100 (Tampered)
-  elaScore                Float?   @map("ela_score")
-  noiseScore              Float?   @map("noise_score")
-  edgeInconsistencyScore  Float?   @map("edge_inconsistency_score")
-  compressionScore        Float?   @map("compression_score")
-  fontInconsistencyScore  Float?   @map("font_inconsistency_score")
-  pdfMetadataRiskScore    Float?   @map("pdf_metadata_risk_score")
-  pdfMetadata             String?  @map("pdf_metadata")
-  summary                 String?
-  createdAt               DateTime @default(now()) @map("created_at")
+  id                     Int      @id @default(autoincrement())
+  documentId             Int      @unique @map("document_id")
+  overallRiskLevel       String   @default("LOW") @map("overall_risk_level") // LOW, MEDIUM, HIGH
+  tamperScore            Float    @default(0) @map("tamper_score") // 0 (Clean) - 100 (Tampered)
+  elaScore               Float?   @map("ela_score")
+  noiseScore             Float?   @map("noise_score")
+  edgeInconsistencyScore Float?   @map("edge_inconsistency_score")
+  compressionScore       Float?   @map("compression_score")
+  fontInconsistencyScore Float?   @map("font_inconsistency_score")
+  pdfMetadataRiskScore   Float?   @map("pdf_metadata_risk_score")
+  pdfMetadata            String?  @map("pdf_metadata")
+  summary                String?
+  createdAt              DateTime @default(now()) @map("created_at")
 
   document Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
   signals  TamperSignal[]
@@ -801,7 +820,7 @@ model TamperSignal {
   tamperAnalysisId Int      @map("tamper_analysis_id")
   signalType       String   @map("signal_type") // ELA_ANOMALY, FONT_INCONSISTENCY, METADATA_MISMATCH, NOISE_DISCREPANCY, COPY_PASTE_SUSPECT, COMPRESSION_ARTIFACT
   severity         String   @default("LOW") // LOW, MEDIUM, HIGH
-  location         String?  // Bounding box coordinates or page region description
+  location         String? // Bounding box coordinates or page region description
   description      String
   confidence       Float?
   createdAt        DateTime @default(now()) @map("created_at")
@@ -815,18 +834,18 @@ model TamperSignal {
 }
 
 model AIAnalysis {
-  id                         Int      @id @default(autoincrement())
-  documentId                 Int      @unique @map("document_id")
-  provider                   String   @default("groq") // qwen, llama, mistral, groq, rule_engine
-  modelName                  String   @map("model_name")
-  riskLevel                  String   @default("LOW") @map("risk_level") // LOW, MEDIUM, HIGH
-  confidence                 Float    @default(0.9)
-  recommendation             String   @default("APPROVE") // APPROVE, MANUAL_REVIEW, REJECT, REQUEST_REUPLOAD
-  fieldConsistencyScore      Float?   @map("field_consistency_score")
-  semanticConsistencyScore   Float?   @map("semantic_consistency_score")
-  documentTypeConfidence     Float?   @map("document_type_confidence")
-  reasoningSummary           String?  @map("reasoning_summary")
-  createdAt                  DateTime @default(now()) @map("created_at")
+  id                       Int      @id @default(autoincrement())
+  documentId               Int      @unique @map("document_id")
+  provider                 String   @default("groq") // qwen, llama, mistral, groq, rule_engine
+  modelName                String   @map("model_name")
+  riskLevel                String   @default("LOW") @map("risk_level") // LOW, MEDIUM, HIGH
+  confidence               Float    @default(0.9)
+  recommendation           String   @default("APPROVE") // APPROVE, MANUAL_REVIEW, REJECT, REQUEST_REUPLOAD
+  fieldConsistencyScore    Float?   @map("field_consistency_score")
+  semanticConsistencyScore Float?   @map("semantic_consistency_score")
+  documentTypeConfidence   Float?   @map("document_type_confidence")
+  reasoningSummary         String?  @map("reasoning_summary")
+  createdAt                DateTime @default(now()) @map("created_at")
 
   document  Document             @relation(fields: [documentId], references: [id], onDelete: Cascade)
   evidences AIAnalysisEvidence[]
@@ -872,7 +891,7 @@ model DocumentActivity {
   actorId    Int?     @map("actor_id")
   actorName  String?  @map("actor_name")
   actorRole  String?  @map("actor_role")
-  action     String   // DOCUMENT_UPLOADED, DOCUMENT_VIEWED, DOCUMENT_DOWNLOADED, DOCUMENT_SHARED, DOCUMENT_PASSWORD_SUCCESS, DOCUMENT_PASSWORD_FAILED, DOCUMENT_LOCKED, DOCUMENT_UNLOCKED, DOCUMENT_EXPIRED, DOCUMENT_DELETED, DOCUMENT_RESTORED, DOCUMENT_VERSION_CREATED, DOCUMENT_INTEGRITY_FAILURE, DOCUMENT_INTEGRITY_VERIFIED, DOCUMENT_SECURITY_UPDATED
+  action     String // DOCUMENT_UPLOADED, DOCUMENT_VIEWED, DOCUMENT_DOWNLOADED, DOCUMENT_SHARED, DOCUMENT_PASSWORD_SUCCESS, DOCUMENT_PASSWORD_FAILED, DOCUMENT_LOCKED, DOCUMENT_UNLOCKED, DOCUMENT_EXPIRED, DOCUMENT_DELETED, DOCUMENT_RESTORED, DOCUMENT_VERSION_CREATED, DOCUMENT_INTEGRITY_FAILURE, DOCUMENT_INTEGRITY_VERIFIED, DOCUMENT_SECURITY_UPDATED
   details    String?
   ip         String?
   location   String?
@@ -916,19 +935,19 @@ model DocumentShare {
 // -------------------------------------------------------------
 
 model TrustedDevice {
-  id          Int       @id @default(autoincrement())
-  userId      Int       @map("user_id")
-  userRole    String    @map("user_role") // student, company, institution-admin
-  deviceId    String    @map("device_id")
-  browser     String?
-  os          String?
-  deviceType  String?   @default("desktop") @map("device_type")
-  ip          String?
-  location    String?
-  isTrusted   Boolean   @default(true) @map("is_trusted")
-  trustedAt   DateTime  @default(now()) @map("trusted_at")
-  lastUsedAt  DateTime  @default(now()) @map("last_used_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  userRole   String   @map("user_role") // student, company, institution-admin
+  deviceId   String   @map("device_id")
+  browser    String?
+  os         String?
+  deviceType String?  @default("desktop") @map("device_type")
+  ip         String?
+  location   String?
+  isTrusted  Boolean  @default(true) @map("is_trusted")
+  trustedAt  DateTime @default(now()) @map("trusted_at")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@unique([userId, userRole, deviceId])
   @@index([userId, userRole])
@@ -971,7 +990,7 @@ model LoginAudit {
   userId     Int?     @map("user_id")
   userRole   String?  @map("user_role")
   email      String
-  action     String   // LOGIN_SUCCESS, LOGIN_FAILED, NEW_DEVICE, NEW_LOCATION, IMPOSSIBLE_TRAVEL, OTP_GENERATED, OTP_SENT, OTP_VERIFIED, OTP_FAILED, OTP_EXPIRED, OTP_LOCKED, DEVICE_TRUSTED, DEVICE_REVOKED, SESSION_CREATED, SESSION_REVOKED, LOGIN_RESTRICTED, SUSPICIOUS_LOGIN
+  action     String // LOGIN_SUCCESS, LOGIN_FAILED, NEW_DEVICE, NEW_LOCATION, IMPOSSIBLE_TRAVEL, OTP_GENERATED, OTP_SENT, OTP_VERIFIED, OTP_FAILED, OTP_EXPIRED, OTP_LOCKED, DEVICE_TRUSTED, DEVICE_REVOKED, SESSION_CREATED, SESSION_REVOKED, LOGIN_RESTRICTED, SUSPICIOUS_LOGIN
   status     String   @default("SUCCESS") // SUCCESS, FAILED, CHALLENGE_REQUIRED, RESTRICTED, BLOCKED
   riskLevel  String   @default("LOW") @map("risk_level") // LOW, MEDIUM, HIGH, CRITICAL
   riskScore  Int      @default(0) @map("risk_score")
@@ -1005,56 +1024,55 @@ model CourseCategory {
   icon        String?
   createdAt   DateTime @default(now()) @map("created_at")
 
-  courses     Course[]
+  courses Course[]
 
   @@map("course_categories")
 }
 
 model Course {
-  id                 Int             @id @default(autoincrement())
-  title              String
-  slug               String?         @unique
-  description        String?
-  thumbnail          String?
-  categoryId         Int?            @map("category_id")
-  trainerId          Int?            @map("trainer_id")
-  institutionId      Int?            @map("institution_id")
-  difficulty         String          @default("Beginner") // Beginner, Intermediate, Advanced, All Levels
-  estimatedDuration  String?         @map("estimated_duration")
-  learningObjectives String?         @map("learning_objectives")
-  prerequisites      String?
-  shortName          String?         @map("short_name")
-  academicYear       String?         @default("AY 2026-27") @map("academic_year")
-  semester           String?         @default("Semester I") @map("semester")
-  department         String?         @map("department")
-  status             String          @default("draft") // draft, published, archived
-  joinCode           String?         @unique @map("join_code")
-  joinCodeEnabled    Boolean         @default(true) @map("join_code_enabled")
-  thumbnailUrl       String?         @map("thumbnail_url")
-  certificateEnabled Boolean         @default(true) @map("certificate_enabled")
-  requireAllLessons  Boolean         @default(true) @map("require_all_lessons")
-  requireAllAssignments Boolean      @default(true) @map("require_all_assignments")
-  requireAllQuizzes  Boolean         @default(true) @map("require_all_quizzes")
-  minPassingGrade    Float           @default(60.0) @map("min_passing_grade")
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @default(now()) @updatedAt @map("updated_at")
+  id                    Int      @id @default(autoincrement())
+  title                 String
+  slug                  String?  @unique
+  description           String?
+  thumbnail             String?
+  categoryId            Int?     @map("category_id")
+  trainerId             Int?     @map("trainer_id")
+  institutionId         Int?     @map("institution_id")
+  difficulty            String   @default("Beginner") // Beginner, Intermediate, Advanced, All Levels
+  estimatedDuration     String?  @map("estimated_duration")
+  learningObjectives    String?  @map("learning_objectives")
+  prerequisites         String?
+  shortName             String?  @map("short_name")
+  academicYear          String?  @default("AY 2026-27") @map("academic_year")
+  semester              String?  @default("Semester I") @map("semester")
+  department            String?  @map("department")
+  status                String   @default("draft") // draft, published, archived
+  joinCode              String?  @unique @map("join_code")
+  joinCodeEnabled       Boolean  @default(true) @map("join_code_enabled")
+  thumbnailUrl          String?  @map("thumbnail_url")
+  certificateEnabled    Boolean  @default(true) @map("certificate_enabled")
+  requireAllLessons     Boolean  @default(true) @map("require_all_lessons")
+  requireAllAssignments Boolean  @default(true) @map("require_all_assignments")
+  requireAllQuizzes     Boolean  @default(true) @map("require_all_quizzes")
+  minPassingGrade       Float    @default(60.0) @map("min_passing_grade")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
 
-
-  category           CourseCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  trainer            Trainer?        @relation(fields: [trainerId], references: [id], onDelete: SetNull)
-  institution        Institution?    @relation(fields: [institutionId], references: [id], onDelete: SetNull)
-  modules            CourseModule[]
-  enrollments        CourseEnrollment[]
-  assignments        Assignment[]
-  quizzes            Quiz[]
-  announcements      CourseAnnouncement[]
-  discussions        CourseDiscussion[]
-  completions        CourseCompletion[]
-  certificates       Certificate[]
-  knowledgeChunks    CourseKnowledgeChunk[]
-  aiConversations    AIConversation[]
-  studyPlans         StudyPlan[]
-  learningInsights   LearningInsight[]
+  category         CourseCategory?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  trainer          Trainer?               @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  institution      Institution?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  modules          CourseModule[]
+  enrollments      CourseEnrollment[]
+  assignments      Assignment[]
+  quizzes          Quiz[]
+  announcements    CourseAnnouncement[]
+  discussions      CourseDiscussion[]
+  completions      CourseCompletion[]
+  certificates     Certificate[]
+  knowledgeChunks  CourseKnowledgeChunk[]
+  aiConversations  AIConversation[]
+  studyPlans       StudyPlan[]
+  learningInsights LearningInsight[]
 
   @@index([categoryId])
   @@index([trainerId])
@@ -1064,21 +1082,21 @@ model Course {
 }
 
 model CourseModule {
-  id          Int              @id @default(autoincrement())
-  courseId    Int              @map("course_id")
+  id          Int      @id @default(autoincrement())
+  courseId    Int      @map("course_id")
   title       String
   description String?
-  orderIndex  Int              @default(0) @map("order_index")
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at")
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
-  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons     CourseLesson[]
-  resources   CourseResource[]
-  assignments Assignment[]
-  quizzes     Quiz[]
-  announcements CourseAnnouncement[]
-  discussions   CourseDiscussion[]
+  course          Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons         CourseLesson[]
+  resources       CourseResource[]
+  assignments     Assignment[]
+  quizzes         Quiz[]
+  announcements   CourseAnnouncement[]
+  discussions     CourseDiscussion[]
   knowledgeChunks CourseKnowledgeChunk[]
   aiConversations AIConversation[]
 
@@ -1088,20 +1106,20 @@ model CourseModule {
 }
 
 model CourseLesson {
-  id          Int                @id @default(autoincrement())
-  moduleId    Int                @map("module_id")
+  id          Int      @id @default(autoincrement())
+  moduleId    Int      @map("module_id")
   title       String
   description String?
   duration    String?
-  orderIndex  Int                @default(0) @map("order_index")
+  orderIndex  Int      @default(0) @map("order_index")
   content     String?
-  videoUrl    String?            @map("video_url")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @default(now()) @updatedAt @map("updated_at")
+  videoUrl    String?  @map("video_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
-  module      CourseModule       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  resources   CourseResource[]
-  progress    LearningProgress[]
+  module          CourseModule           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  resources       CourseResource[]
+  progress        LearningProgress[]
   knowledgeChunks CourseKnowledgeChunk[]
   aiConversations AIConversation[]
 
@@ -1111,20 +1129,20 @@ model CourseLesson {
 }
 
 model CourseResource {
-  id         Int                @id @default(autoincrement())
-  moduleId   Int?               @map("module_id")
-  lessonId   Int?               @map("lesson_id")
+  id         Int      @id @default(autoincrement())
+  moduleId   Int?     @map("module_id")
+  lessonId   Int?     @map("lesson_id")
   title      String
-  type       String             // PDF, VIDEO, DOCUMENT, EXTERNAL
+  type       String // PDF, VIDEO, DOCUMENT, EXTERNAL
   url        String
-  fileSize   Int?               @map("file_size")
-  orderIndex Int                @default(0) @map("order_index")
-  createdAt  DateTime           @default(now()) @map("created_at")
-  updatedAt  DateTime           @default(now()) @updatedAt @map("updated_at")
+  fileSize   Int?     @map("file_size")
+  orderIndex Int      @default(0) @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
 
-  module     CourseModule?      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  lesson     CourseLesson?      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  progress   LearningProgress[]
+  module   CourseModule?      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson   CourseLesson?      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  progress LearningProgress[]
 
   @@index([moduleId])
   @@index([lessonId])
@@ -1132,21 +1150,21 @@ model CourseResource {
 }
 
 model CourseEnrollment {
-  id              Int                @id @default(autoincrement())
-  courseId        Int                @map("course_id")
-  studentId       Int                @map("student_id")
-  status          String             @default("active") // active, completed, dropped
-  progressPercent Float              @default(0) @map("progress_percent")
-  enrolledAt      DateTime           @default(now()) @map("enrolled_at")
-  completedAt     DateTime?          @map("completed_at")
-  lastAccessedAt  DateTime?          @map("last_accessed_at")
-  lastLessonId    Int?               @map("last_lesson_id")
+  id              Int       @id @default(autoincrement())
+  courseId        Int       @map("course_id")
+  studentId       Int       @map("student_id")
+  status          String    @default("active") // active, completed, dropped
+  progressPercent Float     @default(0) @map("progress_percent")
+  enrolledAt      DateTime  @default(now()) @map("enrolled_at")
+  completedAt     DateTime? @map("completed_at")
+  lastAccessedAt  DateTime? @map("last_accessed_at")
+  lastLessonId    Int?      @map("last_lesson_id")
 
-  course          Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  student         Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  progress        LearningProgress[]
-  completion      CourseCompletion?
-  certificate     Certificate?
+  course      Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student     Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  progress    LearningProgress[]
+  completion  CourseCompletion?
+  certificate Certificate?
 
   @@unique([courseId, studentId])
   @@index([courseId])
@@ -1156,22 +1174,22 @@ model CourseEnrollment {
 }
 
 model LearningProgress {
-  id           Int              @id @default(autoincrement())
-  enrollmentId Int              @map("enrollment_id")
-  studentId    Int              @map("student_id")
-  lessonId     Int?             @map("lesson_id")
-  resourceId   Int?             @map("resource_id")
-  assignmentId Int?             @map("assignment_id")
-  quizId       Int?             @map("quiz_id")
-  isCompleted  Boolean          @default(false) @map("is_completed")
-  completedAt  DateTime?        @map("completed_at")
-  updatedAt    DateTime         @default(now()) @updatedAt @map("updated_at")
+  id           Int       @id @default(autoincrement())
+  enrollmentId Int       @map("enrollment_id")
+  studentId    Int       @map("student_id")
+  lessonId     Int?      @map("lesson_id")
+  resourceId   Int?      @map("resource_id")
+  assignmentId Int?      @map("assignment_id")
+  quizId       Int?      @map("quiz_id")
+  isCompleted  Boolean   @default(false) @map("is_completed")
+  completedAt  DateTime? @map("completed_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  enrollment   CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  lesson       CourseLesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  resource     CourseResource?  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  assignment   Assignment?      @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  quiz         Quiz?            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  enrollment CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson     CourseLesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  resource   CourseResource?  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  assignment Assignment?      @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  quiz       Quiz?            @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
   @@unique([enrollmentId, lessonId, resourceId, assignmentId, quizId])
   @@index([studentId])
@@ -1184,28 +1202,28 @@ model LearningProgress {
 // -------------------------------------------------------------
 
 model Assignment {
-  id               Int                    @id @default(autoincrement())
-  courseId         Int                    @map("course_id")
-  moduleId         Int?                   @map("module_id")
-  trainerId        Int?                   @map("trainer_id")
+  id               Int       @id @default(autoincrement())
+  courseId         Int       @map("course_id")
+  moduleId         Int?      @map("module_id")
+  trainerId        Int?      @map("trainer_id")
   title            String
-  description      String?                // Markdown / instructions
-  openedAt         DateTime?              @map("opened_at")
-  dueDate          DateTime?              @map("due_date")
-  maxMarks         Float                  @default(100) @map("max_marks")
-  allowedFileTypes String?                @default("pdf,zip,docx,png") @map("allowed_file_types")
-  maxFileSizeMb    Int                    @default(10) @map("max_file_size_mb")
-  submissionType   String                 @default("file_upload") @map("submission_type") // file_upload, text_submission, both
-  status           String                 @default("draft") // draft, published
-  orderIndex       Int                    @default(0) @map("order_index")
-  createdAt        DateTime               @default(now()) @map("created_at")
-  updatedAt        DateTime               @default(now()) @updatedAt @map("updated_at")
+  description      String? // Markdown / instructions
+  openedAt         DateTime? @map("opened_at")
+  dueDate          DateTime? @map("due_date")
+  maxMarks         Float     @default(100) @map("max_marks")
+  allowedFileTypes String?   @default("pdf,zip,docx,png") @map("allowed_file_types")
+  maxFileSizeMb    Int       @default(10) @map("max_file_size_mb")
+  submissionType   String    @default("file_upload") @map("submission_type") // file_upload, text_submission, both
+  status           String    @default("draft") // draft, published
+  orderIndex       Int       @default(0) @map("order_index")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  course           Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module           CourseModule?          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  trainer          Trainer?               @relation(fields: [trainerId], references: [id], onDelete: SetNull)
-  submissions      AssignmentSubmission[]
-  progress         LearningProgress[]
+  course      Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module      CourseModule?          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  trainer     Trainer?               @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  submissions AssignmentSubmission[]
+  progress    LearningProgress[]
 
   @@index([courseId])
   @@index([moduleId])
@@ -1215,20 +1233,20 @@ model Assignment {
 }
 
 model AssignmentSubmission {
-  id           Int              @id @default(autoincrement())
-  assignmentId Int              @map("assignment_id")
-  studentId    Int              @map("student_id")
-  status       String           @default("submitted") // submitted, late, graded, returned
-  textAnswer   String?          @map("text_answer")
-  fileUrl      String?          @map("file_url")
-  fileName     String?          @map("file_name")
-  fileSize     Int?             @map("file_size")
-  submittedAt  DateTime         @default(now()) @map("submitted_at")
-  updatedAt    DateTime         @default(now()) @updatedAt @map("updated_at")
+  id           Int      @id @default(autoincrement())
+  assignmentId Int      @map("assignment_id")
+  studentId    Int      @map("student_id")
+  status       String   @default("submitted") // submitted, late, graded, returned
+  textAnswer   String?  @map("text_answer")
+  fileUrl      String?  @map("file_url")
+  fileName     String?  @map("file_name")
+  fileSize     Int?     @map("file_size")
+  submittedAt  DateTime @default(now()) @map("submitted_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  grade        AssignmentGrade?
+  assignment Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  grade      AssignmentGrade?
 
   @@unique([assignmentId, studentId])
   @@index([assignmentId])
@@ -1238,45 +1256,45 @@ model AssignmentSubmission {
 }
 
 model AssignmentGrade {
-  id           Int                  @id @default(autoincrement())
-  submissionId Int                  @unique @map("submission_id")
-  trainerId    Int?                 @map("trainer_id")
+  id           Int      @id @default(autoincrement())
+  submissionId Int      @unique @map("submission_id")
+  trainerId    Int?     @map("trainer_id")
   marks        Float
   feedback     String?
-  status       String               @default("accepted") // accepted, returned_for_revision
-  gradedAt     DateTime             @default(now()) @map("graded_at")
-  updatedAt    DateTime             @default(now()) @updatedAt @map("updated_at")
+  status       String   @default("accepted") // accepted, returned_for_revision
+  gradedAt     DateTime @default(now()) @map("graded_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  submission   AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  trainer      Trainer?             @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  submission AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  trainer    Trainer?             @relation(fields: [trainerId], references: [id], onDelete: SetNull)
 
   @@index([trainerId])
   @@map("assignment_grades")
 }
 
 model Quiz {
-  id                 Int            @id @default(autoincrement())
-  courseId           Int            @map("course_id")
-  moduleId           Int?           @map("module_id")
-  trainerId          Int?           @map("trainer_id")
+  id                 Int      @id @default(autoincrement())
+  courseId           Int      @map("course_id")
+  moduleId           Int?     @map("module_id")
+  trainerId          Int?     @map("trainer_id")
   title              String
   description        String?
-  timeLimit          Int            @default(30) @map("time_limit") // In minutes (0 for no limit)
-  maxAttempts        Int            @default(3) @map("max_attempts")
-  passingScore       Float          @default(60) @map("passing_score") // Percentage e.g. 60%
-  randomizeQuestions Boolean        @default(false) @map("randomize_questions")
-  showResultsAfter   Boolean        @default(true) @map("show_results_after")
-  status             String         @default("draft") // draft, published
-  orderIndex         Int            @default(0) @map("order_index")
-  createdAt          DateTime       @default(now()) @map("created_at")
-  updatedAt          DateTime       @default(now()) @updatedAt @map("updated_at")
+  timeLimit          Int      @default(30) @map("time_limit") // In minutes (0 for no limit)
+  maxAttempts        Int      @default(3) @map("max_attempts")
+  passingScore       Float    @default(60) @map("passing_score") // Percentage e.g. 60%
+  randomizeQuestions Boolean  @default(false) @map("randomize_questions")
+  showResultsAfter   Boolean  @default(true) @map("show_results_after")
+  status             String   @default("draft") // draft, published
+  orderIndex         Int      @default(0) @map("order_index")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  course             Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module             CourseModule?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  trainer            Trainer?       @relation(fields: [trainerId], references: [id], onDelete: SetNull)
-  questions          QuizQuestion[]
-  attempts           QuizAttempt[]
-  progress           LearningProgress[]
+  course    Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module    CourseModule?      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  trainer   Trainer?           @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+  progress  LearningProgress[]
 
   @@index([courseId])
   @@index([moduleId])
@@ -1286,19 +1304,19 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id          Int          @id @default(autoincrement())
-  quizId      Int          @map("quiz_id")
-  type        String       @default("mcq") // mcq, multiple_select, true_false
+  id          Int      @id @default(autoincrement())
+  quizId      Int      @map("quiz_id")
+  type        String   @default("mcq") // mcq, multiple_select, true_false
   question    String
-  marks       Float        @default(1)
+  marks       Float    @default(1)
   explanation String?
-  orderIndex  Int          @default(0) @map("order_index")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
-  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  options     QuizOption[]
-  answers     QuizAnswer[]
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options QuizOption[]
+  answers QuizAnswer[]
 
   @@index([quizId])
   @@index([orderIndex])
@@ -1306,13 +1324,13 @@ model QuizQuestion {
 }
 
 model QuizOption {
-  id         Int          @id @default(autoincrement())
-  questionId Int          @map("question_id")
-  optionText String       @map("option_text")
-  isCorrect  Boolean      @default(false) @map("is_correct")
-  orderIndex Int          @default(0) @map("order_index")
+  id         Int     @id @default(autoincrement())
+  questionId Int     @map("question_id")
+  optionText String  @map("option_text")
+  isCorrect  Boolean @default(false) @map("is_correct")
+  orderIndex Int     @default(0) @map("order_index")
 
-  question   QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@index([questionId])
   @@index([orderIndex])
@@ -1320,22 +1338,22 @@ model QuizOption {
 }
 
 model QuizAttempt {
-  id               Int          @id @default(autoincrement())
-  quizId           Int          @map("quiz_id")
-  studentId        Int          @map("student_id")
-  attemptNumber    Int          @default(1) @map("attempt_number")
-  startedAt        DateTime     @default(now()) @map("started_at")
-  submittedAt      DateTime?    @map("submitted_at")
-  timeTakenSeconds Int?         @map("time_taken_seconds")
-  totalMarks       Float        @default(0) @map("total_marks")
-  obtainedMarks    Float        @default(0) @map("obtained_marks")
-  percentage       Float        @default(0)
-  passed           Boolean      @default(false)
-  status           String       @default("in_progress") // in_progress, completed, expired
+  id               Int       @id @default(autoincrement())
+  quizId           Int       @map("quiz_id")
+  studentId        Int       @map("student_id")
+  attemptNumber    Int       @default(1) @map("attempt_number")
+  startedAt        DateTime  @default(now()) @map("started_at")
+  submittedAt      DateTime? @map("submitted_at")
+  timeTakenSeconds Int?      @map("time_taken_seconds")
+  totalMarks       Float     @default(0) @map("total_marks")
+  obtainedMarks    Float     @default(0) @map("obtained_marks")
+  percentage       Float     @default(0)
+  passed           Boolean   @default(false)
+  status           String    @default("in_progress") // in_progress, completed, expired
 
-  quiz             Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  student          Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  answers          QuizAnswer[]
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
 
   @@index([quizId])
   @@index([studentId])
@@ -1344,15 +1362,15 @@ model QuizAttempt {
 }
 
 model QuizAnswer {
-  id                Int          @id @default(autoincrement())
-  attemptId         Int          @map("attempt_id")
-  questionId        Int          @map("question_id")
-  selectedOptionIds String       @map("selected_option_ids") // JSON array of numbers e.g. "[1, 2]" or boolean string
-  isCorrect         Boolean      @default(false) @map("is_correct")
-  awardedMarks      Float        @default(0) @map("awarded_marks")
+  id                Int     @id @default(autoincrement())
+  attemptId         Int     @map("attempt_id")
+  questionId        Int     @map("question_id")
+  selectedOptionIds String  @map("selected_option_ids") // JSON array of numbers e.g. "[1, 2]" or boolean string
+  isCorrect         Boolean @default(false) @map("is_correct")
+  awardedMarks      Float   @default(0) @map("awarded_marks")
 
-  attempt           QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  question          QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@index([attemptId])
   @@index([questionId])
@@ -1364,22 +1382,22 @@ model QuizAnswer {
 // -------------------------------------------------------------
 
 model CourseAnnouncement {
-  id         Int           @id @default(autoincrement())
-  courseId   Int           @map("course_id")
-  moduleId   Int?          @map("module_id")
-  authorId   Int           @map("author_id") // User ID
-  trainerId  Int?          @map("trainer_id") // Optional trainer record ID
-  title      String
-  content    String        @db.Text
-  isPinned   Boolean       @default(false) @map("is_pinned")
-  status     String        @default("published") // draft, published, archived
-  createdAt  DateTime      @default(now()) @map("created_at")
-  updatedAt  DateTime      @default(now()) @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  courseId  Int      @map("course_id")
+  moduleId  Int?     @map("module_id")
+  authorId  Int      @map("author_id") // User ID
+  trainerId Int?     @map("trainer_id") // Optional trainer record ID
+  title     String
+  content   String   @db.Text
+  isPinned  Boolean  @default(false) @map("is_pinned")
+  status    String   @default("published") // draft, published, archived
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  course     Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module     CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  trainer    Trainer?      @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  course  Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module  CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  author  User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  trainer Trainer?      @relation(fields: [trainerId], references: [id], onDelete: SetNull)
 
   @@index([courseId])
   @@index([authorId])
@@ -1389,24 +1407,24 @@ model CourseAnnouncement {
 }
 
 model CourseDiscussion {
-  id           Int               @id @default(autoincrement())
-  courseId     Int               @map("course_id")
-  moduleId     Int?              @map("module_id")
-  authorId     Int               @map("author_id") // User ID
-  studentId    Int?              @map("student_id") // Student ID if author is student
+  id           Int      @id @default(autoincrement())
+  courseId     Int      @map("course_id")
+  moduleId     Int?     @map("module_id")
+  authorId     Int      @map("author_id") // User ID
+  studentId    Int?     @map("student_id") // Student ID if author is student
   title        String
-  content      String            @db.Text
-  isPinned     Boolean           @default(false) @map("is_pinned")
-  isLocked     Boolean           @default(false) @map("is_locked")
-  helpfulCount Int               @default(0) @map("helpful_count")
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @default(now()) @updatedAt @map("updated_at")
+  content      String   @db.Text
+  isPinned     Boolean  @default(false) @map("is_pinned")
+  isLocked     Boolean  @default(false) @map("is_locked")
+  helpfulCount Int      @default(0) @map("helpful_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module       CourseModule?     @relation(fields: [moduleId], references: [id], onDelete: SetNull)
-  author       User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  student      Student?          @relation(fields: [studentId], references: [id], onDelete: SetNull)
-  replies      DiscussionReply[]
+  course  Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module  CourseModule?     @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  author  User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  student Student?          @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  replies DiscussionReply[]
 
   @@index([courseId])
   @@index([moduleId])
@@ -1416,18 +1434,18 @@ model CourseDiscussion {
 }
 
 model DiscussionReply {
-  id           Int              @id @default(autoincrement())
-  discussionId Int              @map("discussion_id")
-  authorId     Int              @map("author_id") // User ID
-  studentId    Int?             @map("student_id") // Student ID if author is student
-  content      String           @db.Text
-  isHelpful    Boolean          @default(false) @map("is_helpful")
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @default(now()) @updatedAt @map("updated_at")
+  id           Int      @id @default(autoincrement())
+  discussionId Int      @map("discussion_id")
+  authorId     Int      @map("author_id") // User ID
+  studentId    Int?     @map("student_id") // Student ID if author is student
+  content      String   @db.Text
+  isHelpful    Boolean  @default(false) @map("is_helpful")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  discussion   CourseDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
-  author       User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  student      Student?         @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  discussion CourseDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  author     User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  student    Student?         @relation(fields: [studentId], references: [id], onDelete: SetNull)
 
   @@index([discussionId])
   @@index([authorId])
@@ -1435,21 +1453,21 @@ model DiscussionReply {
 }
 
 model CourseCompletion {
-  id                   Int              @id @default(autoincrement())
-  enrollmentId         Int              @unique @map("enrollment_id")
-  courseId             Int              @map("course_id")
-  studentId            Int              @map("student_id")
-  completionPercentage Float            @default(100.0) @map("completion_percentage")
-  finalScore           Float?           @map("final_score")
-  lessonsCompleted     Int              @default(0) @map("lessons_completed")
-  assignmentsCompleted Int              @default(0) @map("assignments_completed")
-  quizzesPassed        Int              @default(0) @map("quizzes_passed")
-  completedAt          DateTime         @default(now()) @map("completed_at")
-  createdAt            DateTime         @default(now()) @map("created_at")
+  id                   Int      @id @default(autoincrement())
+  enrollmentId         Int      @unique @map("enrollment_id")
+  courseId             Int      @map("course_id")
+  studentId            Int      @map("student_id")
+  completionPercentage Float    @default(100.0) @map("completion_percentage")
+  finalScore           Float?   @map("final_score")
+  lessonsCompleted     Int      @default(0) @map("lessons_completed")
+  assignmentsCompleted Int      @default(0) @map("assignments_completed")
+  quizzesPassed        Int      @default(0) @map("quizzes_passed")
+  completedAt          DateTime @default(now()) @map("completed_at")
+  createdAt            DateTime @default(now()) @map("created_at")
 
-  enrollment           CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  course               Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  student              Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrollment CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([studentId])
@@ -1457,32 +1475,32 @@ model CourseCompletion {
 }
 
 model Certificate {
-  id                Int              @id @default(autoincrement())
-  certificateId     String           @unique @map("certificate_id") // PIQ-CERT-XXXXXXXX
-  verificationToken String           @unique @map("verification_token")
-  enrollmentId      Int              @unique @map("enrollment_id")
-  courseId          Int              @map("course_id")
-  studentId         Int              @map("student_id")
-  trainerId         Int?             @map("trainer_id")
-  documentId        Int?             @unique @map("document_id") // Document Vault entry
-  studentName       String           @map("student_name")
-  courseTitle       String           @map("course_title")
-  instructorName    String?          @map("instructor_name")
-  institutionName   String?          @map("institution_name")
-  issueDate         DateTime         @default(now()) @map("issue_date")
-  status            String           @default("valid") // valid, revoked
-  revokedAt         DateTime?        @map("revoked_at")
-  revokedReason     String?          @map("revoked_reason")
-  qrCodeDataUrl     String?          @db.Text @map("qr_code_data_url")
-  pdfUrl            String?          @map("pdf_url")
-  createdAt         DateTime         @default(now()) @map("created_at")
-  updatedAt         DateTime         @default(now()) @updatedAt @map("updated_at")
+  id                Int       @id @default(autoincrement())
+  certificateId     String    @unique @map("certificate_id") // PIQ-CERT-XXXXXXXX
+  verificationToken String    @unique @map("verification_token")
+  enrollmentId      Int       @unique @map("enrollment_id")
+  courseId          Int       @map("course_id")
+  studentId         Int       @map("student_id")
+  trainerId         Int?      @map("trainer_id")
+  documentId        Int?      @unique @map("document_id") // Document Vault entry
+  studentName       String    @map("student_name")
+  courseTitle       String    @map("course_title")
+  instructorName    String?   @map("instructor_name")
+  institutionName   String?   @map("institution_name")
+  issueDate         DateTime  @default(now()) @map("issue_date")
+  status            String    @default("valid") // valid, revoked
+  revokedAt         DateTime? @map("revoked_at")
+  revokedReason     String?   @map("revoked_reason")
+  qrCodeDataUrl     String?   @map("qr_code_data_url") @db.Text
+  pdfUrl            String?   @map("pdf_url")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  enrollment        CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  course            Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  student           Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  trainer           Trainer?         @relation(fields: [trainerId], references: [id], onDelete: SetNull)
-  document          Document?        @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  enrollment CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  trainer    Trainer?         @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  document   Document?        @relation(fields: [documentId], references: [id], onDelete: SetNull)
 
   @@index([certificateId])
   @@index([verificationToken])
@@ -1498,22 +1516,22 @@ model Certificate {
 // -------------------------------------------------------------
 
 model CourseKnowledgeChunk {
-  id          Int           @id @default(autoincrement())
-  courseId    Int           @map("course_id")
-  moduleId    Int?          @map("module_id")
-  lessonId    Int?          @map("lesson_id")
-  chunkIndex  Int           @default(0) @map("chunk_index")
-  title       String
-  content     String        @db.Text
-  sourceType  String        @default("LESSON") @map("source_type") // LESSON, RESOURCE, SYLLABUS, TRAINER_NOTES
-  sourceName  String        @map("source_name")
-  tokenCount  Int           @default(0) @map("token_count")
-  keywords    String?       @map("keywords")
-  createdAt   DateTime      @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  courseId   Int      @map("course_id")
+  moduleId   Int?     @map("module_id")
+  lessonId   Int?     @map("lesson_id")
+  chunkIndex Int      @default(0) @map("chunk_index")
+  title      String
+  content    String   @db.Text
+  sourceType String   @default("LESSON") @map("source_type") // LESSON, RESOURCE, SYLLABUS, TRAINER_NOTES
+  sourceName String   @map("source_name")
+  tokenCount Int      @default(0) @map("token_count")
+  keywords   String?  @map("keywords")
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module      CourseModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  lesson      CourseLesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  course Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module CourseModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson CourseLesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([moduleId])
@@ -1523,23 +1541,23 @@ model CourseKnowledgeChunk {
 }
 
 model AIConversation {
-  id          Int           @id @default(autoincrement())
-  userId      Int?          @map("user_id")
-  studentId   Int?          @map("student_id")
-  courseId    Int           @map("course_id")
-  moduleId    Int?          @map("module_id")
-  lessonId    Int?          @map("lesson_id")
-  title       String        @default("Course Discussion")
-  summary     String?
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  studentId Int?     @map("student_id")
+  courseId  Int      @map("course_id")
+  moduleId  Int?     @map("module_id")
+  lessonId  Int?     @map("lesson_id")
+  title     String   @default("Course Discussion")
+  summary   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  student     Student?      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module      CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
-  lesson      CourseLesson? @relation(fields: [lessonId], references: [id], onDelete: SetNull)
-  messages    AIMessage[]
+  user     User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  student  Student?      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course   Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module   CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  lesson   CourseLesson? @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  messages AIMessage[]
 
   @@index([userId])
   @@index([studentId])
@@ -1548,35 +1566,35 @@ model AIConversation {
 }
 
 model AIMessage {
-  id             Int            @id @default(autoincrement())
-  conversationId Int            @map("conversation_id")
-  sender         String         // "user" | "assistant" | "system"
-  content        String         @db.Text
-  sources        String?        @db.Text // JSON string of [{ title, sourceType, sourceName }]
-  tokensUsed     Int?           @map("tokens_used")
-  createdAt      DateTime       @default(now()) @map("created_at")
+  id             Int      @id @default(autoincrement())
+  conversationId Int      @map("conversation_id")
+  sender         String // "user" | "assistant" | "system"
+  content        String   @db.Text
+  sources        String?  @db.Text // JSON string of [{ title, sourceType, sourceName }]
+  tokensUsed     Int?     @map("tokens_used")
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@map("ai_messages")
 }
 
 model StudyPlan {
-  id              Int       @id @default(autoincrement())
-  studentId       Int       @map("student_id")
-  courseId        Int?      @map("course_id")
-  title           String
-  targetExamDate  DateTime? @map("target_exam_date")
-  dailyHours      Float     @default(1.5) @map("daily_hours")
-  weeklySchedule  String    @db.Text @map("weekly_schedule") // JSON array of day plans
-  status          String    @default("active") // active, completed, archived
-  generatedByAi   Boolean   @default(true) @map("generated_by_ai")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+  id             Int       @id @default(autoincrement())
+  studentId      Int       @map("student_id")
+  courseId       Int?      @map("course_id")
+  title          String
+  targetExamDate DateTime? @map("target_exam_date")
+  dailyHours     Float     @default(1.5) @map("daily_hours")
+  weeklySchedule String    @map("weekly_schedule") @db.Text // JSON array of day plans
+  status         String    @default("active") // active, completed, archived
+  generatedByAi  Boolean   @default(true) @map("generated_by_ai")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course          Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([courseId])
@@ -1585,18 +1603,18 @@ model StudyPlan {
 }
 
 model LearningInsight {
-  id                 Int       @id @default(autoincrement())
-  studentId          Int       @map("student_id")
-  courseId           Int?      @map("course_id")
-  strongTopics       String    @db.Text @map("strong_topics") // JSON array of strings
-  weakTopics         String    @db.Text @map("weak_topics") // JSON array of { topic, status: "Needs Practice"|"Developing", reason }
-  recommendedActions String    @db.Text @map("recommended_actions") // JSON array of action cards
-  lastCalculatedAt   DateTime  @default(now()) @map("last_calculated_at")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @default(now()) @updatedAt @map("updated_at")
+  id                 Int      @id @default(autoincrement())
+  studentId          Int      @map("student_id")
+  courseId           Int?     @map("course_id")
+  strongTopics       String   @map("strong_topics") @db.Text // JSON array of strings
+  weakTopics         String   @map("weak_topics") @db.Text // JSON array of { topic, status: "Needs Practice"|"Developing", reason }
+  recommendedActions String   @map("recommended_actions") @db.Text // JSON array of action cards
+  lastCalculatedAt   DateTime @default(now()) @map("last_calculated_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course             Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([courseId])
@@ -1607,11 +1625,11 @@ model AIUsage {
   id         Int      @id @default(autoincrement())
   userId     Int?     @map("user_id")
   studentId  Int?     @map("student_id")
-  feature    String   // assistant, quiz_gen, planner, feedback, summary, practice
+  feature    String // assistant, quiz_gen, planner, feedback, summary, practice
   tokensUsed Int      @default(0) @map("tokens_used")
   createdAt  DateTime @default(now()) @map("created_at")
 
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([feature])
@@ -1619,19 +1637,19 @@ model AIUsage {
 }
 
 model SkillProfile {
-  id                 Int             @id @default(autoincrement())
-  studentId          Int             @map("student_id")
-  skillName          String          @map("skill_name")
-  category           String?         // Frontend, Backend, Data & AI, Cloud & DevOps, System Architecture, Core CS
-  proficiencyPercent Float           @default(0) @map("proficiency_percent") // 0-100%
-  level              String          @default("Beginner") // Beginner, Intermediate, Advanced, Expert
-  verifiedStatus     String          @default("SYSTEM_DERIVED") @map("verified_status") // SYSTEM_DERIVED, AI_INFERRED, TRAINER_VERIFIED
-  lastEvaluatedAt    DateTime        @default(now()) @map("last_evaluated_at")
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @default(now()) @updatedAt @map("updated_at")
+  id                 Int      @id @default(autoincrement())
+  studentId          Int      @map("student_id")
+  skillName          String   @map("skill_name")
+  category           String? // Frontend, Backend, Data & AI, Cloud & DevOps, System Architecture, Core CS
+  proficiencyPercent Float    @default(0) @map("proficiency_percent") // 0-100%
+  level              String   @default("Beginner") // Beginner, Intermediate, Advanced, Expert
+  verifiedStatus     String   @default("SYSTEM_DERIVED") @map("verified_status") // SYSTEM_DERIVED, AI_INFERRED, TRAINER_VERIFIED
+  lastEvaluatedAt    DateTime @default(now()) @map("last_evaluated_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  student            Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  evidences          SkillEvidence[]
+  student   Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  evidences SkillEvidence[]
 
   @@unique([studentId, skillName])
   @@index([studentId])
@@ -1641,19 +1659,19 @@ model SkillProfile {
 }
 
 model SkillEvidence {
-  id               Int          @id @default(autoincrement())
-  skillProfileId   Int          @map("skill_profile_id")
-  studentId        Int          @map("student_id")
-  sourceType       String       @map("source_type") // CERTIFICATE, QUIZ_SCORE, ASSIGNMENT_GRADE, COURSE_COMPLETION, TRAINER_ENDORSEMENT
-  sourceId         Int?         @map("source_id")
-  evidenceText     String       @map("evidence_text")
-  confidenceScore  Float        @default(1.0) @map("confidence_score")
-  verificationType String       @default("SYSTEM_DERIVED") @map("verification_type") // SYSTEM_DERIVED, AI_INFERRED, TRAINER_VERIFIED
-  trainerId        Int?         @map("trainer_id")
-  createdAt        DateTime     @default(now()) @map("created_at")
+  id               Int      @id @default(autoincrement())
+  skillProfileId   Int      @map("skill_profile_id")
+  studentId        Int      @map("student_id")
+  sourceType       String   @map("source_type") // CERTIFICATE, QUIZ_SCORE, ASSIGNMENT_GRADE, COURSE_COMPLETION, TRAINER_ENDORSEMENT
+  sourceId         Int?     @map("source_id")
+  evidenceText     String   @map("evidence_text")
+  confidenceScore  Float    @default(1.0) @map("confidence_score")
+  verificationType String   @default("SYSTEM_DERIVED") @map("verification_type") // SYSTEM_DERIVED, AI_INFERRED, TRAINER_VERIFIED
+  trainerId        Int?     @map("trainer_id")
+  createdAt        DateTime @default(now()) @map("created_at")
 
-  skillProfile     SkillProfile @relation(fields: [skillProfileId], references: [id], onDelete: Cascade)
-  student          Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  skillProfile SkillProfile @relation(fields: [skillProfileId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([skillProfileId])
   @@index([studentId])
@@ -1671,13 +1689,13 @@ model PlacementReadiness {
   experienceScore        Float    @default(0) @map("experience_score") // max 15
   profileScore           Float    @default(0) @map("profile_score") // max 15
   readinessTier          String   @default("Developing") @map("readiness_tier") // High, Moderate, Developing, Needs Attention
-  skillGaps              String   @default("[]") @db.Text @map("skill_gaps") // JSON array of gaps & bridges
-  recommendedActionItems String   @default("[]") @db.Text @map("recommended_action_items") // JSON array of 3-5 next steps
+  skillGaps              String   @default("[]") @map("skill_gaps") @db.Text // JSON array of gaps & bridges
+  recommendedActionItems String   @default("[]") @map("recommended_action_items") @db.Text // JSON array of 3-5 next steps
   lastCalculatedAt       DateTime @default(now()) @map("last_calculated_at")
   createdAt              DateTime @default(now()) @map("created_at")
   updatedAt              DateTime @default(now()) @updatedAt @map("updated_at")
 
-  student                Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([overallScore])
@@ -1689,8 +1707,8 @@ model StudentRiskAssessment {
   id                     Int       @id @default(autoincrement())
   studentId              Int       @unique @map("student_id")
   riskLevel              String    @default("On Track") @map("risk_level") // Needs Attention, Moderate, Low, On Track
-  signals                String    @default("[]") @db.Text @map("signals") // JSON array of strings
-  suggestedActions       String    @default("[]") @db.Text @map("suggested_actions") // JSON array of strings
+  signals                String    @default("[]") @map("signals") @db.Text // JSON array of strings
+  suggestedActions       String    @default("[]") @map("suggested_actions") @db.Text // JSON array of strings
   lastActiveDate         DateTime? @map("last_active_date")
   missedAssignmentsCount Int       @default(0) @map("missed_assignments_count")
   failedQuizzesCount     Int       @default(0) @map("failed_quizzes_count")
@@ -1699,15 +1717,112 @@ model StudentRiskAssessment {
   createdAt              DateTime  @default(now()) @map("created_at")
   updatedAt              DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  student                Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([riskLevel])
   @@map("student_risk_assessments")
 }
 
+// -------------------------------------------------------------
+// Academic Marksheet Verification & DigiLocker Integration
+// -------------------------------------------------------------
 
+model AcademicMarksheet {
+  id                 Int     @id @default(autoincrement())
+  studentId          Int     @map("student_id")
+  documentId         Int?    @unique @map("document_id")
+  educationLevel     String  @map("education_level") // TENTH, TWELFTH
+  board              String?
+  studentName        String? @map("student_name")
+  rollNumber         String? @map("roll_number")
+  seatNumber         String? @map("seat_number")
+  registrationNumber String? @map("registration_number")
+  certificateNumber  String? @map("certificate_number")
+  passingYear        Int?    @map("passing_year")
+  totalMarks         Float?  @map("total_marks")
+  obtainedMarks      Float?  @map("obtained_marks")
+  percentage         Float?
+  cgpa               Float?
+  subjects           String? @db.Text // JSON string of subject breakdown [{ code, name, maxMarks, marksObtained, grade }]
+  ocrConfidence      Float?  @map("ocr_confidence")
 
+  // Verification & Comparison Fields
+  verificationStatus String    @default("PENDING") @map("verification_status") // PENDING, VERIFIED, MISMATCH, MANUAL_REVIEW, REJECTED
+  verifiedAt         DateTime? @map("verified_at")
+  mismatchReason     String?   @map("mismatch_reason")
+  comparisonResults  String?   @map("comparison_results") @db.Text // JSON string of field-by-field match details
 
+  // Field-level comparison indicators
+  nameMatch       Boolean? @map("name_match")
+  rollNumberMatch Boolean? @map("roll_number_match")
+  seatNumberMatch Boolean? @map("seat_number_match")
+  boardMatch      Boolean? @map("board_match")
+  yearMatch       Boolean? @map("year_match")
+  marksMatch      Boolean? @map("marks_match")
 
+  // DigiLocker Reference Metadata
+  digilockerDocUri    String?   @map("digilocker_doc_uri")
+  digilockerTxnId     String?   @map("digilocker_txn_id")
+  digilockerVerified  Boolean   @default(false) @map("digilocker_verified")
+  digilockerFetchedAt DateTime? @map("digilocker_fetched_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([documentId])
+  @@index([educationLevel])
+  @@index([verificationStatus])
+  @@map("academic_marksheets")
+}
+
+model DigiLockerConnection {
+  id                    Int       @id @default(autoincrement())
+  studentId             Int       @unique @map("student_id")
+  digilockerId          String?   @map("digilocker_id")
+  name                  String?
+  mobileNumber          String?   @map("mobile_number")
+  status                String    @default("CONNECTED") // CONNECTED, DISCONNECTED, REVOKED, EXPIRED
+  accessTokenEncrypted  String?   @map("access_token_encrypted") @db.Text
+  refreshTokenEncrypted String?   @map("refresh_token_encrypted") @db.Text
+  tokenExpiry           DateTime? @map("token_expiry")
+  connectedAt           DateTime  @default(now()) @map("connected_at")
+  lastSyncedAt          DateTime? @map("last_synced_at")
+  metadata              String?   @db.Text // Consented scopes, issuer info, etc.
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([status])
+  @@map("digilocker_connections")
+}
+
+model AcademicVerificationRecord {
+  id                  Int       @id @default(autoincrement())
+  studentId           Int       @map("student_id")
+  verificationStatus  String?   @default("PENDING") @map("verification_status")
+  tenthBoard          String?   @map("tenth_board")
+  tenthYear           Int?      @map("tenth_year")
+  tenthScore          Float?    @map("tenth_score")
+  tenthScoreSource    String?   @map("tenth_score_source")
+  twelfthBoard        String?   @map("twelfth_board")
+  twelfthYear         Int?      @map("twelfth_year")
+  twelfthScore        Float?    @map("twelfth_score")
+  twelfthScoreSource  String?   @map("twelfth_score_source")
+  documentIntegrity   String?   @map("document_integrity")
+  identityConsistency String?   @map("identity_consistency")
+  reviewReason        String?   @map("review_reason")
+  dossierJson         String?   @db.Text @map("dossier_json")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  student             Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("academic_verification_records")
+}
 

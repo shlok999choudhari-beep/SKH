@@ -33,7 +33,7 @@ export async function decrypt(token: string | undefined): Promise<SessionPayload
   }
 }
 
-export async function createSession(payload: SessionPayload): Promise<void> {
+export async function createSession(payload: SessionPayload): Promise<string> {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const sessionId =
     payload.sessionId ||
@@ -61,14 +61,19 @@ export async function createSession(payload: SessionPayload): Promise<void> {
   }
 
   const token = await encrypt({ ...payload, sessionId, expiresAt })
-  const cookieStore = await cookies()
-  cookieStore.set('demo_session', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    expires: expiresAt,
-    sameSite: 'lax',
-    path: '/',
-  })
+  try {
+    const cookieStore = await cookies()
+    cookieStore.set('demo_session', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      expires: expiresAt,
+      sameSite: 'lax',
+      path: '/',
+    })
+  } catch (err) {
+    console.warn('[Session] Failed to set cookie on cookieStore:', err)
+  }
+  return token
 }
 
 export async function getSession(): Promise<SessionPayload | null> {

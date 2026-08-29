@@ -6,7 +6,8 @@ import { z } from 'zod'
 
 const verifyOtpSchema = z.object({
   challengeToken: z.string().min(1, 'Challenge token required'),
-  otp: z.string().min(6, '6-digit OTP code required').max(6, '6-digit OTP code required'),
+  otp: z.string().optional(),
+  otpCode: z.string().optional(),
   trustDevice: z.boolean().default(false)
 })
 
@@ -14,10 +15,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const validated = verifyOtpSchema.parse(body)
+    const submittedOtp = (validated.otp || validated.otpCode || '').trim()
+
+    if (!submittedOtp || submittedOtp.length !== 6) {
+      return NextResponse.json({ error: '6-digit OTP code required' }, { status: 400 })
+    }
 
     const verificationResult = await verifySubmittedOtp({
       challengeToken: validated.challengeToken,
-      submittedOtp: validated.otp,
+      submittedOtp,
       trustDevice: validated.trustDevice
     })
 
@@ -42,7 +48,7 @@ export async function POST(request: NextRequest) {
     resetFailedLoginAttempts(user.email, ip)
 
     // Create Authenticated Session
-    await createSession({
+    const sessionToken = await createSession({
       userId: user.id,
       role: user.role,
       email: user.email,
@@ -63,6 +69,14 @@ export async function POST(request: NextRequest) {
       redirectUrl
     })
 
+    response.cookies.set('demo_session', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: 'lax',
+      path: '/'
+    })
+
     if (validated.trustDevice && verificationResult.deviceId) {
       response.cookies.set('placeiq_trusted_device', verificationResult.deviceId, {
         httpOnly: true,
@@ -76,7 +90,8 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: (error as any).errors[0]?.message || 'Validation error' }, { status: 400 })
+      const msg = error.issues?.[0]?.message || (error as any).errors?.[0]?.message || 'Validation error'
+      return NextResponse.json({ error: msg }, { status: 400 })
     }
     console.error('Verify OTP error:', error)
     return NextResponse.json({ error: 'Failed to verify verification code.' }, { status: 500 })

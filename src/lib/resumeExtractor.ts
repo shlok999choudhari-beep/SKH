@@ -126,31 +126,41 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
     const pdfParse = typeof pdfParseModule === 'function' ? pdfParseModule : (pdfParseModule.default || pdfParseModule)
     if (typeof pdfParse === 'function') {
       const data = await pdfParse(buffer)
-      if (data && data.text && data.text.trim().length > 0) {
+      if (data && data.text && data.text.trim().length > 30) {
         return data.text
       }
     }
   } catch (error) {
-    console.error('PDF extraction error with pdf-parse:', error)
+    console.warn('PDF extraction with pdf-parse:', error)
   }
 
-  // Fallback 1: Extract text streams from raw PDF buffer
+  // Fallback 1: OCR on embedded images in PDF
+  try {
+    const { extractImagesFromPdfBuffer } = await import('./ocrService')
+    const images = await extractImagesFromPdfBuffer(buffer)
+    if (images.length > 0) {
+      let combined = ''
+      for (const img of images) {
+        const text = await extractTextFromImage(img)
+        if (text && text.trim().length > 0) {
+          combined += (combined ? '\n' : '') + text
+        }
+      }
+      if (combined.trim().length > 20) {
+        return combined.trim()
+      }
+    }
+  } catch (ocrError) {
+    console.warn('PDF OCR image fallback warning:', ocrError)
+  }
+
+  // Fallback 2: Extract text streams from raw PDF buffer
   const rawText = extractRawTextFromPdfBuffer(buffer)
   if (rawText.trim().length > 20) {
     return rawText
   }
 
-  // Fallback 2: OCR
-  try {
-    const ocrText = await extractTextFromImage(buffer)
-    if (ocrText && ocrText.trim().length > 20) {
-      return ocrText
-    }
-  } catch (ocrError) {
-    console.error('OCR fallback error:', ocrError)
-  }
-
-  return 'PDF Document content uploaded successfully. Contains candidate resume details and professional background.'
+  return 'PDF Document content uploaded successfully.'
 }
 
 export async function extractTextFromImage(buffer: Buffer): Promise<string> {

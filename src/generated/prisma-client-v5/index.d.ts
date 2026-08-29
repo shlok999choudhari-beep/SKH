@@ -393,6 +393,21 @@ export type PlacementReadiness = $Result.DefaultSelection<Prisma.$PlacementReadi
  * 
  */
 export type StudentRiskAssessment = $Result.DefaultSelection<Prisma.$StudentRiskAssessmentPayload>
+/**
+ * Model AcademicMarksheet
+ * 
+ */
+export type AcademicMarksheet = $Result.DefaultSelection<Prisma.$AcademicMarksheetPayload>
+/**
+ * Model DigiLockerConnection
+ * 
+ */
+export type DigiLockerConnection = $Result.DefaultSelection<Prisma.$DigiLockerConnectionPayload>
+/**
+ * Model AcademicVerificationRecord
+ * 
+ */
+export type AcademicVerificationRecord = $Result.DefaultSelection<Prisma.$AcademicVerificationRecordPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1276,6 +1291,36 @@ export class PrismaClient<
     * ```
     */
   get studentRiskAssessment(): Prisma.StudentRiskAssessmentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.academicMarksheet`: Exposes CRUD operations for the **AcademicMarksheet** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AcademicMarksheets
+    * const academicMarksheets = await prisma.academicMarksheet.findMany()
+    * ```
+    */
+  get academicMarksheet(): Prisma.AcademicMarksheetDelegate<ExtArgs>;
+
+  /**
+   * `prisma.digiLockerConnection`: Exposes CRUD operations for the **DigiLockerConnection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DigiLockerConnections
+    * const digiLockerConnections = await prisma.digiLockerConnection.findMany()
+    * ```
+    */
+  get digiLockerConnection(): Prisma.DigiLockerConnectionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.academicVerificationRecord`: Exposes CRUD operations for the **AcademicVerificationRecord** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AcademicVerificationRecords
+    * const academicVerificationRecords = await prisma.academicVerificationRecord.findMany()
+    * ```
+    */
+  get academicVerificationRecord(): Prisma.AcademicVerificationRecordDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1792,7 +1837,10 @@ export namespace Prisma {
     SkillProfile: 'SkillProfile',
     SkillEvidence: 'SkillEvidence',
     PlacementReadiness: 'PlacementReadiness',
-    StudentRiskAssessment: 'StudentRiskAssessment'
+    StudentRiskAssessment: 'StudentRiskAssessment',
+    AcademicMarksheet: 'AcademicMarksheet',
+    DigiLockerConnection: 'DigiLockerConnection',
+    AcademicVerificationRecord: 'AcademicVerificationRecord'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1808,7 +1856,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "student" | "company" | "resume" | "jobPosting" | "application" | "skillAssessment" | "skillGapAnalysis" | "codingSession" | "institution" | "user" | "trainer" | "cohort" | "auditLog" | "resource" | "resourceBooking" | "resourceRequest" | "sharingAgreement" | "resourceSharingNotification" | "trainerSession" | "internship" | "internshipApplication" | "certification" | "placementDrive" | "placementRound" | "placementApplication" | "document" | "documentRequest" | "documentProcessing" | "oCRResult" | "extractedField" | "documentVerification" | "qRCodeResult" | "duplicateMatch" | "verificationHistory" | "yOLODetection" | "faceVerification" | "tamperAnalysis" | "tamperSignal" | "aIAnalysis" | "aIAnalysisEvidence" | "verificationStage" | "documentActivity" | "documentShare" | "trustedDevice" | "loginOtp" | "loginAudit" | "courseCategory" | "course" | "courseModule" | "courseLesson" | "courseResource" | "courseEnrollment" | "learningProgress" | "assignment" | "assignmentSubmission" | "assignmentGrade" | "quiz" | "quizQuestion" | "quizOption" | "quizAttempt" | "quizAnswer" | "courseAnnouncement" | "courseDiscussion" | "discussionReply" | "courseCompletion" | "certificate" | "courseKnowledgeChunk" | "aIConversation" | "aIMessage" | "studyPlan" | "learningInsight" | "aIUsage" | "skillProfile" | "skillEvidence" | "placementReadiness" | "studentRiskAssessment"
+      modelProps: "student" | "company" | "resume" | "jobPosting" | "application" | "skillAssessment" | "skillGapAnalysis" | "codingSession" | "institution" | "user" | "trainer" | "cohort" | "auditLog" | "resource" | "resourceBooking" | "resourceRequest" | "sharingAgreement" | "resourceSharingNotification" | "trainerSession" | "internship" | "internshipApplication" | "certification" | "placementDrive" | "placementRound" | "placementApplication" | "document" | "documentRequest" | "documentProcessing" | "oCRResult" | "extractedField" | "documentVerification" | "qRCodeResult" | "duplicateMatch" | "verificationHistory" | "yOLODetection" | "faceVerification" | "tamperAnalysis" | "tamperSignal" | "aIAnalysis" | "aIAnalysisEvidence" | "verificationStage" | "documentActivity" | "documentShare" | "trustedDevice" | "loginOtp" | "loginAudit" | "courseCategory" | "course" | "courseModule" | "courseLesson" | "courseResource" | "courseEnrollment" | "learningProgress" | "assignment" | "assignmentSubmission" | "assignmentGrade" | "quiz" | "quizQuestion" | "quizOption" | "quizAttempt" | "quizAnswer" | "courseAnnouncement" | "courseDiscussion" | "discussionReply" | "courseCompletion" | "certificate" | "courseKnowledgeChunk" | "aIConversation" | "aIMessage" | "studyPlan" | "learningInsight" | "aIUsage" | "skillProfile" | "skillEvidence" | "placementReadiness" | "studentRiskAssessment" | "academicMarksheet" | "digiLockerConnection" | "academicVerificationRecord"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -7132,6 +7180,216 @@ export namespace Prisma {
           }
         }
       }
+      AcademicMarksheet: {
+        payload: Prisma.$AcademicMarksheetPayload<ExtArgs>
+        fields: Prisma.AcademicMarksheetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AcademicMarksheetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AcademicMarksheetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          findFirst: {
+            args: Prisma.AcademicMarksheetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AcademicMarksheetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          findMany: {
+            args: Prisma.AcademicMarksheetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>[]
+          }
+          create: {
+            args: Prisma.AcademicMarksheetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          createMany: {
+            args: Prisma.AcademicMarksheetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AcademicMarksheetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>[]
+          }
+          delete: {
+            args: Prisma.AcademicMarksheetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          update: {
+            args: Prisma.AcademicMarksheetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          deleteMany: {
+            args: Prisma.AcademicMarksheetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AcademicMarksheetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AcademicMarksheetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicMarksheetPayload>
+          }
+          aggregate: {
+            args: Prisma.AcademicMarksheetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAcademicMarksheet>
+          }
+          groupBy: {
+            args: Prisma.AcademicMarksheetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AcademicMarksheetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AcademicMarksheetCountArgs<ExtArgs>
+            result: $Utils.Optional<AcademicMarksheetCountAggregateOutputType> | number
+          }
+        }
+      }
+      DigiLockerConnection: {
+        payload: Prisma.$DigiLockerConnectionPayload<ExtArgs>
+        fields: Prisma.DigiLockerConnectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DigiLockerConnectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DigiLockerConnectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          findFirst: {
+            args: Prisma.DigiLockerConnectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DigiLockerConnectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          findMany: {
+            args: Prisma.DigiLockerConnectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>[]
+          }
+          create: {
+            args: Prisma.DigiLockerConnectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          createMany: {
+            args: Prisma.DigiLockerConnectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DigiLockerConnectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>[]
+          }
+          delete: {
+            args: Prisma.DigiLockerConnectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          update: {
+            args: Prisma.DigiLockerConnectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DigiLockerConnectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DigiLockerConnectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DigiLockerConnectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigiLockerConnectionPayload>
+          }
+          aggregate: {
+            args: Prisma.DigiLockerConnectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDigiLockerConnection>
+          }
+          groupBy: {
+            args: Prisma.DigiLockerConnectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DigiLockerConnectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DigiLockerConnectionCountArgs<ExtArgs>
+            result: $Utils.Optional<DigiLockerConnectionCountAggregateOutputType> | number
+          }
+        }
+      }
+      AcademicVerificationRecord: {
+        payload: Prisma.$AcademicVerificationRecordPayload<ExtArgs>
+        fields: Prisma.AcademicVerificationRecordFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AcademicVerificationRecordFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AcademicVerificationRecordFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          findFirst: {
+            args: Prisma.AcademicVerificationRecordFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AcademicVerificationRecordFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          findMany: {
+            args: Prisma.AcademicVerificationRecordFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>[]
+          }
+          create: {
+            args: Prisma.AcademicVerificationRecordCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          createMany: {
+            args: Prisma.AcademicVerificationRecordCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AcademicVerificationRecordCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>[]
+          }
+          delete: {
+            args: Prisma.AcademicVerificationRecordDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          update: {
+            args: Prisma.AcademicVerificationRecordUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          deleteMany: {
+            args: Prisma.AcademicVerificationRecordDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AcademicVerificationRecordUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AcademicVerificationRecordUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AcademicVerificationRecordPayload>
+          }
+          aggregate: {
+            args: Prisma.AcademicVerificationRecordAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAcademicVerificationRecord>
+          }
+          groupBy: {
+            args: Prisma.AcademicVerificationRecordGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AcademicVerificationRecordGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AcademicVerificationRecordCountArgs<ExtArgs>
+            result: $Utils.Optional<AcademicVerificationRecordCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -7318,6 +7576,8 @@ export namespace Prisma {
     learningInsights: number
     skillProfiles: number
     skillEvidences: number
+    academicMarksheets: number
+    academicVerificationRecords: number
   }
 
   export type StudentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7346,6 +7606,8 @@ export namespace Prisma {
     learningInsights?: boolean | StudentCountOutputTypeCountLearningInsightsArgs
     skillProfiles?: boolean | StudentCountOutputTypeCountSkillProfilesArgs
     skillEvidences?: boolean | StudentCountOutputTypeCountSkillEvidencesArgs
+    academicMarksheets?: boolean | StudentCountOutputTypeCountAcademicMarksheetsArgs
+    academicVerificationRecords?: boolean | StudentCountOutputTypeCountAcademicVerificationRecordsArgs
   }
 
   // Custom InputTypes
@@ -7532,6 +7794,20 @@ export namespace Prisma {
    */
   export type StudentCountOutputTypeCountSkillEvidencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SkillEvidenceWhereInput
+  }
+
+  /**
+   * StudentCountOutputType without action
+   */
+  export type StudentCountOutputTypeCountAcademicMarksheetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AcademicMarksheetWhereInput
+  }
+
+  /**
+   * StudentCountOutputType without action
+   */
+  export type StudentCountOutputTypeCountAcademicVerificationRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AcademicVerificationRecordWhereInput
   }
 
 
@@ -9003,6 +9279,10 @@ export namespace Prisma {
     cgpa: number | null
     tenthMarks: number | null
     twelfthMarks: number | null
+    tenthPassingYear: number | null
+    tenthDocumentId: number | null
+    twelfthPassingYear: number | null
+    twelfthDocumentId: number | null
   }
 
   export type StudentSumAggregateOutputType = {
@@ -9012,6 +9292,10 @@ export namespace Prisma {
     cgpa: number | null
     tenthMarks: number | null
     twelfthMarks: number | null
+    tenthPassingYear: number | null
+    tenthDocumentId: number | null
+    twelfthPassingYear: number | null
+    twelfthDocumentId: number | null
   }
 
   export type StudentMinAggregateOutputType = {
@@ -9027,6 +9311,18 @@ export namespace Prisma {
     cgpa: number | null
     tenthMarks: number | null
     twelfthMarks: number | null
+    tenthBoard: string | null
+    tenthPassingYear: number | null
+    tenthDocumentId: number | null
+    tenthPercentageSource: string | null
+    twelfthBoard: string | null
+    twelfthPassingYear: number | null
+    twelfthDocumentId: number | null
+    twelfthPercentageSource: string | null
+    academicVerificationStatus: string | null
+    academicVerifiedAt: Date | null
+    academicVerificationData: string | null
+    isAcademicLocked: boolean | null
     githubUrl: string | null
     linkedinUrl: string | null
     portfolioUrl: string | null
@@ -9047,6 +9343,18 @@ export namespace Prisma {
     cgpa: number | null
     tenthMarks: number | null
     twelfthMarks: number | null
+    tenthBoard: string | null
+    tenthPassingYear: number | null
+    tenthDocumentId: number | null
+    tenthPercentageSource: string | null
+    twelfthBoard: string | null
+    twelfthPassingYear: number | null
+    twelfthDocumentId: number | null
+    twelfthPercentageSource: string | null
+    academicVerificationStatus: string | null
+    academicVerifiedAt: Date | null
+    academicVerificationData: string | null
+    isAcademicLocked: boolean | null
     githubUrl: string | null
     linkedinUrl: string | null
     portfolioUrl: string | null
@@ -9067,6 +9375,18 @@ export namespace Prisma {
     cgpa: number
     tenthMarks: number
     twelfthMarks: number
+    tenthBoard: number
+    tenthPassingYear: number
+    tenthDocumentId: number
+    tenthPercentageSource: number
+    twelfthBoard: number
+    twelfthPassingYear: number
+    twelfthDocumentId: number
+    twelfthPercentageSource: number
+    academicVerificationStatus: number
+    academicVerifiedAt: number
+    academicVerificationData: number
+    isAcademicLocked: number
     githubUrl: number
     linkedinUrl: number
     portfolioUrl: number
@@ -9083,6 +9403,10 @@ export namespace Prisma {
     cgpa?: true
     tenthMarks?: true
     twelfthMarks?: true
+    tenthPassingYear?: true
+    tenthDocumentId?: true
+    twelfthPassingYear?: true
+    twelfthDocumentId?: true
   }
 
   export type StudentSumAggregateInputType = {
@@ -9092,6 +9416,10 @@ export namespace Prisma {
     cgpa?: true
     tenthMarks?: true
     twelfthMarks?: true
+    tenthPassingYear?: true
+    tenthDocumentId?: true
+    twelfthPassingYear?: true
+    twelfthDocumentId?: true
   }
 
   export type StudentMinAggregateInputType = {
@@ -9107,6 +9435,18 @@ export namespace Prisma {
     cgpa?: true
     tenthMarks?: true
     twelfthMarks?: true
+    tenthBoard?: true
+    tenthPassingYear?: true
+    tenthDocumentId?: true
+    tenthPercentageSource?: true
+    twelfthBoard?: true
+    twelfthPassingYear?: true
+    twelfthDocumentId?: true
+    twelfthPercentageSource?: true
+    academicVerificationStatus?: true
+    academicVerifiedAt?: true
+    academicVerificationData?: true
+    isAcademicLocked?: true
     githubUrl?: true
     linkedinUrl?: true
     portfolioUrl?: true
@@ -9127,6 +9467,18 @@ export namespace Prisma {
     cgpa?: true
     tenthMarks?: true
     twelfthMarks?: true
+    tenthBoard?: true
+    tenthPassingYear?: true
+    tenthDocumentId?: true
+    tenthPercentageSource?: true
+    twelfthBoard?: true
+    twelfthPassingYear?: true
+    twelfthDocumentId?: true
+    twelfthPercentageSource?: true
+    academicVerificationStatus?: true
+    academicVerifiedAt?: true
+    academicVerificationData?: true
+    isAcademicLocked?: true
     githubUrl?: true
     linkedinUrl?: true
     portfolioUrl?: true
@@ -9147,6 +9499,18 @@ export namespace Prisma {
     cgpa?: true
     tenthMarks?: true
     twelfthMarks?: true
+    tenthBoard?: true
+    tenthPassingYear?: true
+    tenthDocumentId?: true
+    tenthPercentageSource?: true
+    twelfthBoard?: true
+    twelfthPassingYear?: true
+    twelfthDocumentId?: true
+    twelfthPercentageSource?: true
+    academicVerificationStatus?: true
+    academicVerifiedAt?: true
+    academicVerificationData?: true
+    isAcademicLocked?: true
     githubUrl?: true
     linkedinUrl?: true
     portfolioUrl?: true
@@ -9254,6 +9618,18 @@ export namespace Prisma {
     cgpa: number | null
     tenthMarks: number | null
     twelfthMarks: number | null
+    tenthBoard: string | null
+    tenthPassingYear: number | null
+    tenthDocumentId: number | null
+    tenthPercentageSource: string | null
+    twelfthBoard: string | null
+    twelfthPassingYear: number | null
+    twelfthDocumentId: number | null
+    twelfthPercentageSource: string | null
+    academicVerificationStatus: string | null
+    academicVerifiedAt: Date | null
+    academicVerificationData: string | null
+    isAcademicLocked: boolean | null
     githubUrl: string | null
     linkedinUrl: string | null
     portfolioUrl: string | null
@@ -9293,6 +9669,18 @@ export namespace Prisma {
     cgpa?: boolean
     tenthMarks?: boolean
     twelfthMarks?: boolean
+    tenthBoard?: boolean
+    tenthPassingYear?: boolean
+    tenthDocumentId?: boolean
+    tenthPercentageSource?: boolean
+    twelfthBoard?: boolean
+    twelfthPassingYear?: boolean
+    twelfthDocumentId?: boolean
+    twelfthPercentageSource?: boolean
+    academicVerificationStatus?: boolean
+    academicVerifiedAt?: boolean
+    academicVerificationData?: boolean
+    isAcademicLocked?: boolean
     githubUrl?: boolean
     linkedinUrl?: boolean
     portfolioUrl?: boolean
@@ -9326,6 +9714,9 @@ export namespace Prisma {
     skillEvidences?: boolean | Student$skillEvidencesArgs<ExtArgs>
     placementReadiness?: boolean | Student$placementReadinessArgs<ExtArgs>
     riskAssessment?: boolean | Student$riskAssessmentArgs<ExtArgs>
+    academicMarksheets?: boolean | Student$academicMarksheetsArgs<ExtArgs>
+    digilockerConnection?: boolean | Student$digilockerConnectionArgs<ExtArgs>
+    academicVerificationRecords?: boolean | Student$academicVerificationRecordsArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["student"]>
 
@@ -9342,6 +9733,18 @@ export namespace Prisma {
     cgpa?: boolean
     tenthMarks?: boolean
     twelfthMarks?: boolean
+    tenthBoard?: boolean
+    tenthPassingYear?: boolean
+    tenthDocumentId?: boolean
+    tenthPercentageSource?: boolean
+    twelfthBoard?: boolean
+    twelfthPassingYear?: boolean
+    twelfthDocumentId?: boolean
+    twelfthPercentageSource?: boolean
+    academicVerificationStatus?: boolean
+    academicVerifiedAt?: boolean
+    academicVerificationData?: boolean
+    isAcademicLocked?: boolean
     githubUrl?: boolean
     linkedinUrl?: boolean
     portfolioUrl?: boolean
@@ -9363,6 +9766,18 @@ export namespace Prisma {
     cgpa?: boolean
     tenthMarks?: boolean
     twelfthMarks?: boolean
+    tenthBoard?: boolean
+    tenthPassingYear?: boolean
+    tenthDocumentId?: boolean
+    tenthPercentageSource?: boolean
+    twelfthBoard?: boolean
+    twelfthPassingYear?: boolean
+    twelfthDocumentId?: boolean
+    twelfthPercentageSource?: boolean
+    academicVerificationStatus?: boolean
+    academicVerifiedAt?: boolean
+    academicVerificationData?: boolean
+    isAcademicLocked?: boolean
     githubUrl?: boolean
     linkedinUrl?: boolean
     portfolioUrl?: boolean
@@ -9399,6 +9814,9 @@ export namespace Prisma {
     skillEvidences?: boolean | Student$skillEvidencesArgs<ExtArgs>
     placementReadiness?: boolean | Student$placementReadinessArgs<ExtArgs>
     riskAssessment?: boolean | Student$riskAssessmentArgs<ExtArgs>
+    academicMarksheets?: boolean | Student$academicMarksheetsArgs<ExtArgs>
+    digilockerConnection?: boolean | Student$digilockerConnectionArgs<ExtArgs>
+    academicVerificationRecords?: boolean | Student$academicVerificationRecordsArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StudentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9436,6 +9854,9 @@ export namespace Prisma {
       skillEvidences: Prisma.$SkillEvidencePayload<ExtArgs>[]
       placementReadiness: Prisma.$PlacementReadinessPayload<ExtArgs> | null
       riskAssessment: Prisma.$StudentRiskAssessmentPayload<ExtArgs> | null
+      academicMarksheets: Prisma.$AcademicMarksheetPayload<ExtArgs>[]
+      digilockerConnection: Prisma.$DigiLockerConnectionPayload<ExtArgs> | null
+      academicVerificationRecords: Prisma.$AcademicVerificationRecordPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -9450,6 +9871,18 @@ export namespace Prisma {
       cgpa: number | null
       tenthMarks: number | null
       twelfthMarks: number | null
+      tenthBoard: string | null
+      tenthPassingYear: number | null
+      tenthDocumentId: number | null
+      tenthPercentageSource: string | null
+      twelfthBoard: string | null
+      twelfthPassingYear: number | null
+      twelfthDocumentId: number | null
+      twelfthPercentageSource: string | null
+      academicVerificationStatus: string | null
+      academicVerifiedAt: Date | null
+      academicVerificationData: string | null
+      isAcademicLocked: boolean | null
       githubUrl: string | null
       linkedinUrl: string | null
       portfolioUrl: string | null
@@ -9847,6 +10280,9 @@ export namespace Prisma {
     skillEvidences<T extends Student$skillEvidencesArgs<ExtArgs> = {}>(args?: Subset<T, Student$skillEvidencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SkillEvidencePayload<ExtArgs>, T, "findMany"> | Null>
     placementReadiness<T extends Student$placementReadinessArgs<ExtArgs> = {}>(args?: Subset<T, Student$placementReadinessArgs<ExtArgs>>): Prisma__PlacementReadinessClient<$Result.GetResult<Prisma.$PlacementReadinessPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     riskAssessment<T extends Student$riskAssessmentArgs<ExtArgs> = {}>(args?: Subset<T, Student$riskAssessmentArgs<ExtArgs>>): Prisma__StudentRiskAssessmentClient<$Result.GetResult<Prisma.$StudentRiskAssessmentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    academicMarksheets<T extends Student$academicMarksheetsArgs<ExtArgs> = {}>(args?: Subset<T, Student$academicMarksheetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findMany"> | Null>
+    digilockerConnection<T extends Student$digilockerConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Student$digilockerConnectionArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    academicVerificationRecords<T extends Student$academicVerificationRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Student$academicVerificationRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9888,6 +10324,18 @@ export namespace Prisma {
     readonly cgpa: FieldRef<"Student", 'Float'>
     readonly tenthMarks: FieldRef<"Student", 'Float'>
     readonly twelfthMarks: FieldRef<"Student", 'Float'>
+    readonly tenthBoard: FieldRef<"Student", 'String'>
+    readonly tenthPassingYear: FieldRef<"Student", 'Int'>
+    readonly tenthDocumentId: FieldRef<"Student", 'Int'>
+    readonly tenthPercentageSource: FieldRef<"Student", 'String'>
+    readonly twelfthBoard: FieldRef<"Student", 'String'>
+    readonly twelfthPassingYear: FieldRef<"Student", 'Int'>
+    readonly twelfthDocumentId: FieldRef<"Student", 'Int'>
+    readonly twelfthPercentageSource: FieldRef<"Student", 'String'>
+    readonly academicVerificationStatus: FieldRef<"Student", 'String'>
+    readonly academicVerifiedAt: FieldRef<"Student", 'DateTime'>
+    readonly academicVerificationData: FieldRef<"Student", 'String'>
+    readonly isAcademicLocked: FieldRef<"Student", 'Boolean'>
     readonly githubUrl: FieldRef<"Student", 'String'>
     readonly linkedinUrl: FieldRef<"Student", 'String'>
     readonly portfolioUrl: FieldRef<"Student", 'String'>
@@ -10753,6 +11201,61 @@ export namespace Prisma {
      */
     include?: StudentRiskAssessmentInclude<ExtArgs> | null
     where?: StudentRiskAssessmentWhereInput
+  }
+
+  /**
+   * Student.academicMarksheets
+   */
+  export type Student$academicMarksheetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    where?: AcademicMarksheetWhereInput
+    orderBy?: AcademicMarksheetOrderByWithRelationInput | AcademicMarksheetOrderByWithRelationInput[]
+    cursor?: AcademicMarksheetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AcademicMarksheetScalarFieldEnum | AcademicMarksheetScalarFieldEnum[]
+  }
+
+  /**
+   * Student.digilockerConnection
+   */
+  export type Student$digilockerConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    where?: DigiLockerConnectionWhereInput
+  }
+
+  /**
+   * Student.academicVerificationRecords
+   */
+  export type Student$academicVerificationRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    where?: AcademicVerificationRecordWhereInput
+    orderBy?: AcademicVerificationRecordOrderByWithRelationInput | AcademicVerificationRecordOrderByWithRelationInput[]
+    cursor?: AcademicVerificationRecordWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AcademicVerificationRecordScalarFieldEnum | AcademicVerificationRecordScalarFieldEnum[]
   }
 
   /**
@@ -35553,6 +36056,9 @@ export namespace Prisma {
     currentRoundId: number | null
     status: string | null
     appliedAt: Date | null
+    eligibilityStatus: string | null
+    eligibilityReason: string | null
+    eligibilityCheckedAt: Date | null
   }
 
   export type PlacementApplicationMaxAggregateOutputType = {
@@ -35562,6 +36068,9 @@ export namespace Prisma {
     currentRoundId: number | null
     status: string | null
     appliedAt: Date | null
+    eligibilityStatus: string | null
+    eligibilityReason: string | null
+    eligibilityCheckedAt: Date | null
   }
 
   export type PlacementApplicationCountAggregateOutputType = {
@@ -35571,6 +36080,9 @@ export namespace Prisma {
     currentRoundId: number
     status: number
     appliedAt: number
+    eligibilityStatus: number
+    eligibilityReason: number
+    eligibilityCheckedAt: number
     _all: number
   }
 
@@ -35596,6 +36108,9 @@ export namespace Prisma {
     currentRoundId?: true
     status?: true
     appliedAt?: true
+    eligibilityStatus?: true
+    eligibilityReason?: true
+    eligibilityCheckedAt?: true
   }
 
   export type PlacementApplicationMaxAggregateInputType = {
@@ -35605,6 +36120,9 @@ export namespace Prisma {
     currentRoundId?: true
     status?: true
     appliedAt?: true
+    eligibilityStatus?: true
+    eligibilityReason?: true
+    eligibilityCheckedAt?: true
   }
 
   export type PlacementApplicationCountAggregateInputType = {
@@ -35614,6 +36132,9 @@ export namespace Prisma {
     currentRoundId?: true
     status?: true
     appliedAt?: true
+    eligibilityStatus?: true
+    eligibilityReason?: true
+    eligibilityCheckedAt?: true
     _all?: true
   }
 
@@ -35710,6 +36231,9 @@ export namespace Prisma {
     currentRoundId: number | null
     status: string
     appliedAt: Date
+    eligibilityStatus: string | null
+    eligibilityReason: string | null
+    eligibilityCheckedAt: Date | null
     _count: PlacementApplicationCountAggregateOutputType | null
     _avg: PlacementApplicationAvgAggregateOutputType | null
     _sum: PlacementApplicationSumAggregateOutputType | null
@@ -35738,6 +36262,9 @@ export namespace Prisma {
     currentRoundId?: boolean
     status?: boolean
     appliedAt?: boolean
+    eligibilityStatus?: boolean
+    eligibilityReason?: boolean
+    eligibilityCheckedAt?: boolean
     drive?: boolean | PlacementDriveDefaultArgs<ExtArgs>
     student?: boolean | StudentDefaultArgs<ExtArgs>
     currentRound?: boolean | PlacementApplication$currentRoundArgs<ExtArgs>
@@ -35750,6 +36277,9 @@ export namespace Prisma {
     currentRoundId?: boolean
     status?: boolean
     appliedAt?: boolean
+    eligibilityStatus?: boolean
+    eligibilityReason?: boolean
+    eligibilityCheckedAt?: boolean
     drive?: boolean | PlacementDriveDefaultArgs<ExtArgs>
     student?: boolean | StudentDefaultArgs<ExtArgs>
     currentRound?: boolean | PlacementApplication$currentRoundArgs<ExtArgs>
@@ -35762,6 +36292,9 @@ export namespace Prisma {
     currentRoundId?: boolean
     status?: boolean
     appliedAt?: boolean
+    eligibilityStatus?: boolean
+    eligibilityReason?: boolean
+    eligibilityCheckedAt?: boolean
   }
 
   export type PlacementApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -35789,6 +36322,9 @@ export namespace Prisma {
       currentRoundId: number | null
       status: string
       appliedAt: Date
+      eligibilityStatus: string | null
+      eligibilityReason: string | null
+      eligibilityCheckedAt: Date | null
     }, ExtArgs["result"]["placementApplication"]>
     composites: {}
   }
@@ -36191,6 +36727,9 @@ export namespace Prisma {
     readonly currentRoundId: FieldRef<"PlacementApplication", 'Int'>
     readonly status: FieldRef<"PlacementApplication", 'String'>
     readonly appliedAt: FieldRef<"PlacementApplication", 'DateTime'>
+    readonly eligibilityStatus: FieldRef<"PlacementApplication", 'String'>
+    readonly eligibilityReason: FieldRef<"PlacementApplication", 'String'>
+    readonly eligibilityCheckedAt: FieldRef<"PlacementApplication", 'DateTime'>
   }
     
 
@@ -37193,6 +37732,7 @@ export namespace Prisma {
     activities?: boolean | Document$activitiesArgs<ExtArgs>
     shares?: boolean | Document$sharesArgs<ExtArgs>
     certificate?: boolean | Document$certificateArgs<ExtArgs>
+    academicMarksheet?: boolean | Document$academicMarksheetArgs<ExtArgs>
     _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["document"]>
 
@@ -37331,6 +37871,7 @@ export namespace Prisma {
     activities?: boolean | Document$activitiesArgs<ExtArgs>
     shares?: boolean | Document$sharesArgs<ExtArgs>
     certificate?: boolean | Document$certificateArgs<ExtArgs>
+    academicMarksheet?: boolean | Document$academicMarksheetArgs<ExtArgs>
     _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -37363,6 +37904,7 @@ export namespace Prisma {
       activities: Prisma.$DocumentActivityPayload<ExtArgs>[]
       shares: Prisma.$DocumentSharePayload<ExtArgs>[]
       certificate: Prisma.$CertificatePayload<ExtArgs> | null
+      academicMarksheet: Prisma.$AcademicMarksheetPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -37802,6 +38344,7 @@ export namespace Prisma {
     activities<T extends Document$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Document$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentActivityPayload<ExtArgs>, T, "findMany"> | Null>
     shares<T extends Document$sharesArgs<ExtArgs> = {}>(args?: Subset<T, Document$sharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentSharePayload<ExtArgs>, T, "findMany"> | Null>
     certificate<T extends Document$certificateArgs<ExtArgs> = {}>(args?: Subset<T, Document$certificateArgs<ExtArgs>>): Prisma__CertificateClient<$Result.GetResult<Prisma.$CertificatePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    academicMarksheet<T extends Document$academicMarksheetArgs<ExtArgs> = {}>(args?: Subset<T, Document$academicMarksheetArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -38563,6 +39106,21 @@ export namespace Prisma {
      */
     include?: CertificateInclude<ExtArgs> | null
     where?: CertificateWhereInput
+  }
+
+  /**
+   * Document.academicMarksheet
+   */
+  export type Document$academicMarksheetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    where?: AcademicMarksheetWhereInput
   }
 
   /**
@@ -92749,6 +93307,3548 @@ export namespace Prisma {
 
 
   /**
+   * Model AcademicMarksheet
+   */
+
+  export type AggregateAcademicMarksheet = {
+    _count: AcademicMarksheetCountAggregateOutputType | null
+    _avg: AcademicMarksheetAvgAggregateOutputType | null
+    _sum: AcademicMarksheetSumAggregateOutputType | null
+    _min: AcademicMarksheetMinAggregateOutputType | null
+    _max: AcademicMarksheetMaxAggregateOutputType | null
+  }
+
+  export type AcademicMarksheetAvgAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    documentId: number | null
+    passingYear: number | null
+    totalMarks: number | null
+    obtainedMarks: number | null
+    percentage: number | null
+    cgpa: number | null
+    ocrConfidence: number | null
+  }
+
+  export type AcademicMarksheetSumAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    documentId: number | null
+    passingYear: number | null
+    totalMarks: number | null
+    obtainedMarks: number | null
+    percentage: number | null
+    cgpa: number | null
+    ocrConfidence: number | null
+  }
+
+  export type AcademicMarksheetMinAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    documentId: number | null
+    educationLevel: string | null
+    board: string | null
+    studentName: string | null
+    rollNumber: string | null
+    seatNumber: string | null
+    registrationNumber: string | null
+    certificateNumber: string | null
+    passingYear: number | null
+    totalMarks: number | null
+    obtainedMarks: number | null
+    percentage: number | null
+    cgpa: number | null
+    subjects: string | null
+    ocrConfidence: number | null
+    verificationStatus: string | null
+    verifiedAt: Date | null
+    mismatchReason: string | null
+    comparisonResults: string | null
+    nameMatch: boolean | null
+    rollNumberMatch: boolean | null
+    seatNumberMatch: boolean | null
+    boardMatch: boolean | null
+    yearMatch: boolean | null
+    marksMatch: boolean | null
+    digilockerDocUri: string | null
+    digilockerTxnId: string | null
+    digilockerVerified: boolean | null
+    digilockerFetchedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AcademicMarksheetMaxAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    documentId: number | null
+    educationLevel: string | null
+    board: string | null
+    studentName: string | null
+    rollNumber: string | null
+    seatNumber: string | null
+    registrationNumber: string | null
+    certificateNumber: string | null
+    passingYear: number | null
+    totalMarks: number | null
+    obtainedMarks: number | null
+    percentage: number | null
+    cgpa: number | null
+    subjects: string | null
+    ocrConfidence: number | null
+    verificationStatus: string | null
+    verifiedAt: Date | null
+    mismatchReason: string | null
+    comparisonResults: string | null
+    nameMatch: boolean | null
+    rollNumberMatch: boolean | null
+    seatNumberMatch: boolean | null
+    boardMatch: boolean | null
+    yearMatch: boolean | null
+    marksMatch: boolean | null
+    digilockerDocUri: string | null
+    digilockerTxnId: string | null
+    digilockerVerified: boolean | null
+    digilockerFetchedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AcademicMarksheetCountAggregateOutputType = {
+    id: number
+    studentId: number
+    documentId: number
+    educationLevel: number
+    board: number
+    studentName: number
+    rollNumber: number
+    seatNumber: number
+    registrationNumber: number
+    certificateNumber: number
+    passingYear: number
+    totalMarks: number
+    obtainedMarks: number
+    percentage: number
+    cgpa: number
+    subjects: number
+    ocrConfidence: number
+    verificationStatus: number
+    verifiedAt: number
+    mismatchReason: number
+    comparisonResults: number
+    nameMatch: number
+    rollNumberMatch: number
+    seatNumberMatch: number
+    boardMatch: number
+    yearMatch: number
+    marksMatch: number
+    digilockerDocUri: number
+    digilockerTxnId: number
+    digilockerVerified: number
+    digilockerFetchedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AcademicMarksheetAvgAggregateInputType = {
+    id?: true
+    studentId?: true
+    documentId?: true
+    passingYear?: true
+    totalMarks?: true
+    obtainedMarks?: true
+    percentage?: true
+    cgpa?: true
+    ocrConfidence?: true
+  }
+
+  export type AcademicMarksheetSumAggregateInputType = {
+    id?: true
+    studentId?: true
+    documentId?: true
+    passingYear?: true
+    totalMarks?: true
+    obtainedMarks?: true
+    percentage?: true
+    cgpa?: true
+    ocrConfidence?: true
+  }
+
+  export type AcademicMarksheetMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    documentId?: true
+    educationLevel?: true
+    board?: true
+    studentName?: true
+    rollNumber?: true
+    seatNumber?: true
+    registrationNumber?: true
+    certificateNumber?: true
+    passingYear?: true
+    totalMarks?: true
+    obtainedMarks?: true
+    percentage?: true
+    cgpa?: true
+    subjects?: true
+    ocrConfidence?: true
+    verificationStatus?: true
+    verifiedAt?: true
+    mismatchReason?: true
+    comparisonResults?: true
+    nameMatch?: true
+    rollNumberMatch?: true
+    seatNumberMatch?: true
+    boardMatch?: true
+    yearMatch?: true
+    marksMatch?: true
+    digilockerDocUri?: true
+    digilockerTxnId?: true
+    digilockerVerified?: true
+    digilockerFetchedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AcademicMarksheetMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    documentId?: true
+    educationLevel?: true
+    board?: true
+    studentName?: true
+    rollNumber?: true
+    seatNumber?: true
+    registrationNumber?: true
+    certificateNumber?: true
+    passingYear?: true
+    totalMarks?: true
+    obtainedMarks?: true
+    percentage?: true
+    cgpa?: true
+    subjects?: true
+    ocrConfidence?: true
+    verificationStatus?: true
+    verifiedAt?: true
+    mismatchReason?: true
+    comparisonResults?: true
+    nameMatch?: true
+    rollNumberMatch?: true
+    seatNumberMatch?: true
+    boardMatch?: true
+    yearMatch?: true
+    marksMatch?: true
+    digilockerDocUri?: true
+    digilockerTxnId?: true
+    digilockerVerified?: true
+    digilockerFetchedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AcademicMarksheetCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    documentId?: true
+    educationLevel?: true
+    board?: true
+    studentName?: true
+    rollNumber?: true
+    seatNumber?: true
+    registrationNumber?: true
+    certificateNumber?: true
+    passingYear?: true
+    totalMarks?: true
+    obtainedMarks?: true
+    percentage?: true
+    cgpa?: true
+    subjects?: true
+    ocrConfidence?: true
+    verificationStatus?: true
+    verifiedAt?: true
+    mismatchReason?: true
+    comparisonResults?: true
+    nameMatch?: true
+    rollNumberMatch?: true
+    seatNumberMatch?: true
+    boardMatch?: true
+    yearMatch?: true
+    marksMatch?: true
+    digilockerDocUri?: true
+    digilockerTxnId?: true
+    digilockerVerified?: true
+    digilockerFetchedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AcademicMarksheetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AcademicMarksheet to aggregate.
+     */
+    where?: AcademicMarksheetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicMarksheets to fetch.
+     */
+    orderBy?: AcademicMarksheetOrderByWithRelationInput | AcademicMarksheetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AcademicMarksheetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicMarksheets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicMarksheets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AcademicMarksheets
+    **/
+    _count?: true | AcademicMarksheetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AcademicMarksheetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AcademicMarksheetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AcademicMarksheetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AcademicMarksheetMaxAggregateInputType
+  }
+
+  export type GetAcademicMarksheetAggregateType<T extends AcademicMarksheetAggregateArgs> = {
+        [P in keyof T & keyof AggregateAcademicMarksheet]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAcademicMarksheet[P]>
+      : GetScalarType<T[P], AggregateAcademicMarksheet[P]>
+  }
+
+
+
+
+  export type AcademicMarksheetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AcademicMarksheetWhereInput
+    orderBy?: AcademicMarksheetOrderByWithAggregationInput | AcademicMarksheetOrderByWithAggregationInput[]
+    by: AcademicMarksheetScalarFieldEnum[] | AcademicMarksheetScalarFieldEnum
+    having?: AcademicMarksheetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AcademicMarksheetCountAggregateInputType | true
+    _avg?: AcademicMarksheetAvgAggregateInputType
+    _sum?: AcademicMarksheetSumAggregateInputType
+    _min?: AcademicMarksheetMinAggregateInputType
+    _max?: AcademicMarksheetMaxAggregateInputType
+  }
+
+  export type AcademicMarksheetGroupByOutputType = {
+    id: number
+    studentId: number
+    documentId: number | null
+    educationLevel: string
+    board: string | null
+    studentName: string | null
+    rollNumber: string | null
+    seatNumber: string | null
+    registrationNumber: string | null
+    certificateNumber: string | null
+    passingYear: number | null
+    totalMarks: number | null
+    obtainedMarks: number | null
+    percentage: number | null
+    cgpa: number | null
+    subjects: string | null
+    ocrConfidence: number | null
+    verificationStatus: string
+    verifiedAt: Date | null
+    mismatchReason: string | null
+    comparisonResults: string | null
+    nameMatch: boolean | null
+    rollNumberMatch: boolean | null
+    seatNumberMatch: boolean | null
+    boardMatch: boolean | null
+    yearMatch: boolean | null
+    marksMatch: boolean | null
+    digilockerDocUri: string | null
+    digilockerTxnId: string | null
+    digilockerVerified: boolean
+    digilockerFetchedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AcademicMarksheetCountAggregateOutputType | null
+    _avg: AcademicMarksheetAvgAggregateOutputType | null
+    _sum: AcademicMarksheetSumAggregateOutputType | null
+    _min: AcademicMarksheetMinAggregateOutputType | null
+    _max: AcademicMarksheetMaxAggregateOutputType | null
+  }
+
+  type GetAcademicMarksheetGroupByPayload<T extends AcademicMarksheetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AcademicMarksheetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AcademicMarksheetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AcademicMarksheetGroupByOutputType[P]>
+            : GetScalarType<T[P], AcademicMarksheetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AcademicMarksheetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    documentId?: boolean
+    educationLevel?: boolean
+    board?: boolean
+    studentName?: boolean
+    rollNumber?: boolean
+    seatNumber?: boolean
+    registrationNumber?: boolean
+    certificateNumber?: boolean
+    passingYear?: boolean
+    totalMarks?: boolean
+    obtainedMarks?: boolean
+    percentage?: boolean
+    cgpa?: boolean
+    subjects?: boolean
+    ocrConfidence?: boolean
+    verificationStatus?: boolean
+    verifiedAt?: boolean
+    mismatchReason?: boolean
+    comparisonResults?: boolean
+    nameMatch?: boolean
+    rollNumberMatch?: boolean
+    seatNumberMatch?: boolean
+    boardMatch?: boolean
+    yearMatch?: boolean
+    marksMatch?: boolean
+    digilockerDocUri?: boolean
+    digilockerTxnId?: boolean
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    document?: boolean | AcademicMarksheet$documentArgs<ExtArgs>
+  }, ExtArgs["result"]["academicMarksheet"]>
+
+  export type AcademicMarksheetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    documentId?: boolean
+    educationLevel?: boolean
+    board?: boolean
+    studentName?: boolean
+    rollNumber?: boolean
+    seatNumber?: boolean
+    registrationNumber?: boolean
+    certificateNumber?: boolean
+    passingYear?: boolean
+    totalMarks?: boolean
+    obtainedMarks?: boolean
+    percentage?: boolean
+    cgpa?: boolean
+    subjects?: boolean
+    ocrConfidence?: boolean
+    verificationStatus?: boolean
+    verifiedAt?: boolean
+    mismatchReason?: boolean
+    comparisonResults?: boolean
+    nameMatch?: boolean
+    rollNumberMatch?: boolean
+    seatNumberMatch?: boolean
+    boardMatch?: boolean
+    yearMatch?: boolean
+    marksMatch?: boolean
+    digilockerDocUri?: boolean
+    digilockerTxnId?: boolean
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    document?: boolean | AcademicMarksheet$documentArgs<ExtArgs>
+  }, ExtArgs["result"]["academicMarksheet"]>
+
+  export type AcademicMarksheetSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    documentId?: boolean
+    educationLevel?: boolean
+    board?: boolean
+    studentName?: boolean
+    rollNumber?: boolean
+    seatNumber?: boolean
+    registrationNumber?: boolean
+    certificateNumber?: boolean
+    passingYear?: boolean
+    totalMarks?: boolean
+    obtainedMarks?: boolean
+    percentage?: boolean
+    cgpa?: boolean
+    subjects?: boolean
+    ocrConfidence?: boolean
+    verificationStatus?: boolean
+    verifiedAt?: boolean
+    mismatchReason?: boolean
+    comparisonResults?: boolean
+    nameMatch?: boolean
+    rollNumberMatch?: boolean
+    seatNumberMatch?: boolean
+    boardMatch?: boolean
+    yearMatch?: boolean
+    marksMatch?: boolean
+    digilockerDocUri?: boolean
+    digilockerTxnId?: boolean
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AcademicMarksheetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    document?: boolean | AcademicMarksheet$documentArgs<ExtArgs>
+  }
+  export type AcademicMarksheetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    document?: boolean | AcademicMarksheet$documentArgs<ExtArgs>
+  }
+
+  export type $AcademicMarksheetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AcademicMarksheet"
+    objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+      document: Prisma.$DocumentPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      studentId: number
+      documentId: number | null
+      educationLevel: string
+      board: string | null
+      studentName: string | null
+      rollNumber: string | null
+      seatNumber: string | null
+      registrationNumber: string | null
+      certificateNumber: string | null
+      passingYear: number | null
+      totalMarks: number | null
+      obtainedMarks: number | null
+      percentage: number | null
+      cgpa: number | null
+      subjects: string | null
+      ocrConfidence: number | null
+      verificationStatus: string
+      verifiedAt: Date | null
+      mismatchReason: string | null
+      comparisonResults: string | null
+      nameMatch: boolean | null
+      rollNumberMatch: boolean | null
+      seatNumberMatch: boolean | null
+      boardMatch: boolean | null
+      yearMatch: boolean | null
+      marksMatch: boolean | null
+      digilockerDocUri: string | null
+      digilockerTxnId: string | null
+      digilockerVerified: boolean
+      digilockerFetchedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["academicMarksheet"]>
+    composites: {}
+  }
+
+  type AcademicMarksheetGetPayload<S extends boolean | null | undefined | AcademicMarksheetDefaultArgs> = $Result.GetResult<Prisma.$AcademicMarksheetPayload, S>
+
+  type AcademicMarksheetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AcademicMarksheetFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AcademicMarksheetCountAggregateInputType | true
+    }
+
+  export interface AcademicMarksheetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AcademicMarksheet'], meta: { name: 'AcademicMarksheet' } }
+    /**
+     * Find zero or one AcademicMarksheet that matches the filter.
+     * @param {AcademicMarksheetFindUniqueArgs} args - Arguments to find a AcademicMarksheet
+     * @example
+     * // Get one AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AcademicMarksheetFindUniqueArgs>(args: SelectSubset<T, AcademicMarksheetFindUniqueArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AcademicMarksheet that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AcademicMarksheetFindUniqueOrThrowArgs} args - Arguments to find a AcademicMarksheet
+     * @example
+     * // Get one AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AcademicMarksheetFindUniqueOrThrowArgs>(args: SelectSubset<T, AcademicMarksheetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AcademicMarksheet that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetFindFirstArgs} args - Arguments to find a AcademicMarksheet
+     * @example
+     * // Get one AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AcademicMarksheetFindFirstArgs>(args?: SelectSubset<T, AcademicMarksheetFindFirstArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AcademicMarksheet that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetFindFirstOrThrowArgs} args - Arguments to find a AcademicMarksheet
+     * @example
+     * // Get one AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AcademicMarksheetFindFirstOrThrowArgs>(args?: SelectSubset<T, AcademicMarksheetFindFirstOrThrowArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AcademicMarksheets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AcademicMarksheets
+     * const academicMarksheets = await prisma.academicMarksheet.findMany()
+     * 
+     * // Get first 10 AcademicMarksheets
+     * const academicMarksheets = await prisma.academicMarksheet.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const academicMarksheetWithIdOnly = await prisma.academicMarksheet.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AcademicMarksheetFindManyArgs>(args?: SelectSubset<T, AcademicMarksheetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AcademicMarksheet.
+     * @param {AcademicMarksheetCreateArgs} args - Arguments to create a AcademicMarksheet.
+     * @example
+     * // Create one AcademicMarksheet
+     * const AcademicMarksheet = await prisma.academicMarksheet.create({
+     *   data: {
+     *     // ... data to create a AcademicMarksheet
+     *   }
+     * })
+     * 
+     */
+    create<T extends AcademicMarksheetCreateArgs>(args: SelectSubset<T, AcademicMarksheetCreateArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AcademicMarksheets.
+     * @param {AcademicMarksheetCreateManyArgs} args - Arguments to create many AcademicMarksheets.
+     * @example
+     * // Create many AcademicMarksheets
+     * const academicMarksheet = await prisma.academicMarksheet.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AcademicMarksheetCreateManyArgs>(args?: SelectSubset<T, AcademicMarksheetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AcademicMarksheets and returns the data saved in the database.
+     * @param {AcademicMarksheetCreateManyAndReturnArgs} args - Arguments to create many AcademicMarksheets.
+     * @example
+     * // Create many AcademicMarksheets
+     * const academicMarksheet = await prisma.academicMarksheet.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AcademicMarksheets and only return the `id`
+     * const academicMarksheetWithIdOnly = await prisma.academicMarksheet.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AcademicMarksheetCreateManyAndReturnArgs>(args?: SelectSubset<T, AcademicMarksheetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AcademicMarksheet.
+     * @param {AcademicMarksheetDeleteArgs} args - Arguments to delete one AcademicMarksheet.
+     * @example
+     * // Delete one AcademicMarksheet
+     * const AcademicMarksheet = await prisma.academicMarksheet.delete({
+     *   where: {
+     *     // ... filter to delete one AcademicMarksheet
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AcademicMarksheetDeleteArgs>(args: SelectSubset<T, AcademicMarksheetDeleteArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AcademicMarksheet.
+     * @param {AcademicMarksheetUpdateArgs} args - Arguments to update one AcademicMarksheet.
+     * @example
+     * // Update one AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AcademicMarksheetUpdateArgs>(args: SelectSubset<T, AcademicMarksheetUpdateArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AcademicMarksheets.
+     * @param {AcademicMarksheetDeleteManyArgs} args - Arguments to filter AcademicMarksheets to delete.
+     * @example
+     * // Delete a few AcademicMarksheets
+     * const { count } = await prisma.academicMarksheet.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AcademicMarksheetDeleteManyArgs>(args?: SelectSubset<T, AcademicMarksheetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AcademicMarksheets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AcademicMarksheets
+     * const academicMarksheet = await prisma.academicMarksheet.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AcademicMarksheetUpdateManyArgs>(args: SelectSubset<T, AcademicMarksheetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AcademicMarksheet.
+     * @param {AcademicMarksheetUpsertArgs} args - Arguments to update or create a AcademicMarksheet.
+     * @example
+     * // Update or create a AcademicMarksheet
+     * const academicMarksheet = await prisma.academicMarksheet.upsert({
+     *   create: {
+     *     // ... data to create a AcademicMarksheet
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AcademicMarksheet we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AcademicMarksheetUpsertArgs>(args: SelectSubset<T, AcademicMarksheetUpsertArgs<ExtArgs>>): Prisma__AcademicMarksheetClient<$Result.GetResult<Prisma.$AcademicMarksheetPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AcademicMarksheets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetCountArgs} args - Arguments to filter AcademicMarksheets to count.
+     * @example
+     * // Count the number of AcademicMarksheets
+     * const count = await prisma.academicMarksheet.count({
+     *   where: {
+     *     // ... the filter for the AcademicMarksheets we want to count
+     *   }
+     * })
+    **/
+    count<T extends AcademicMarksheetCountArgs>(
+      args?: Subset<T, AcademicMarksheetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AcademicMarksheetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AcademicMarksheet.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AcademicMarksheetAggregateArgs>(args: Subset<T, AcademicMarksheetAggregateArgs>): Prisma.PrismaPromise<GetAcademicMarksheetAggregateType<T>>
+
+    /**
+     * Group by AcademicMarksheet.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicMarksheetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AcademicMarksheetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AcademicMarksheetGroupByArgs['orderBy'] }
+        : { orderBy?: AcademicMarksheetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AcademicMarksheetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAcademicMarksheetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AcademicMarksheet model
+   */
+  readonly fields: AcademicMarksheetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AcademicMarksheet.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AcademicMarksheetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    document<T extends AcademicMarksheet$documentArgs<ExtArgs> = {}>(args?: Subset<T, AcademicMarksheet$documentArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AcademicMarksheet model
+   */ 
+  interface AcademicMarksheetFieldRefs {
+    readonly id: FieldRef<"AcademicMarksheet", 'Int'>
+    readonly studentId: FieldRef<"AcademicMarksheet", 'Int'>
+    readonly documentId: FieldRef<"AcademicMarksheet", 'Int'>
+    readonly educationLevel: FieldRef<"AcademicMarksheet", 'String'>
+    readonly board: FieldRef<"AcademicMarksheet", 'String'>
+    readonly studentName: FieldRef<"AcademicMarksheet", 'String'>
+    readonly rollNumber: FieldRef<"AcademicMarksheet", 'String'>
+    readonly seatNumber: FieldRef<"AcademicMarksheet", 'String'>
+    readonly registrationNumber: FieldRef<"AcademicMarksheet", 'String'>
+    readonly certificateNumber: FieldRef<"AcademicMarksheet", 'String'>
+    readonly passingYear: FieldRef<"AcademicMarksheet", 'Int'>
+    readonly totalMarks: FieldRef<"AcademicMarksheet", 'Float'>
+    readonly obtainedMarks: FieldRef<"AcademicMarksheet", 'Float'>
+    readonly percentage: FieldRef<"AcademicMarksheet", 'Float'>
+    readonly cgpa: FieldRef<"AcademicMarksheet", 'Float'>
+    readonly subjects: FieldRef<"AcademicMarksheet", 'String'>
+    readonly ocrConfidence: FieldRef<"AcademicMarksheet", 'Float'>
+    readonly verificationStatus: FieldRef<"AcademicMarksheet", 'String'>
+    readonly verifiedAt: FieldRef<"AcademicMarksheet", 'DateTime'>
+    readonly mismatchReason: FieldRef<"AcademicMarksheet", 'String'>
+    readonly comparisonResults: FieldRef<"AcademicMarksheet", 'String'>
+    readonly nameMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly rollNumberMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly seatNumberMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly boardMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly yearMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly marksMatch: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly digilockerDocUri: FieldRef<"AcademicMarksheet", 'String'>
+    readonly digilockerTxnId: FieldRef<"AcademicMarksheet", 'String'>
+    readonly digilockerVerified: FieldRef<"AcademicMarksheet", 'Boolean'>
+    readonly digilockerFetchedAt: FieldRef<"AcademicMarksheet", 'DateTime'>
+    readonly createdAt: FieldRef<"AcademicMarksheet", 'DateTime'>
+    readonly updatedAt: FieldRef<"AcademicMarksheet", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AcademicMarksheet findUnique
+   */
+  export type AcademicMarksheetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicMarksheet to fetch.
+     */
+    where: AcademicMarksheetWhereUniqueInput
+  }
+
+  /**
+   * AcademicMarksheet findUniqueOrThrow
+   */
+  export type AcademicMarksheetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicMarksheet to fetch.
+     */
+    where: AcademicMarksheetWhereUniqueInput
+  }
+
+  /**
+   * AcademicMarksheet findFirst
+   */
+  export type AcademicMarksheetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicMarksheet to fetch.
+     */
+    where?: AcademicMarksheetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicMarksheets to fetch.
+     */
+    orderBy?: AcademicMarksheetOrderByWithRelationInput | AcademicMarksheetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AcademicMarksheets.
+     */
+    cursor?: AcademicMarksheetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicMarksheets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicMarksheets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AcademicMarksheets.
+     */
+    distinct?: AcademicMarksheetScalarFieldEnum | AcademicMarksheetScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicMarksheet findFirstOrThrow
+   */
+  export type AcademicMarksheetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicMarksheet to fetch.
+     */
+    where?: AcademicMarksheetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicMarksheets to fetch.
+     */
+    orderBy?: AcademicMarksheetOrderByWithRelationInput | AcademicMarksheetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AcademicMarksheets.
+     */
+    cursor?: AcademicMarksheetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicMarksheets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicMarksheets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AcademicMarksheets.
+     */
+    distinct?: AcademicMarksheetScalarFieldEnum | AcademicMarksheetScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicMarksheet findMany
+   */
+  export type AcademicMarksheetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicMarksheets to fetch.
+     */
+    where?: AcademicMarksheetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicMarksheets to fetch.
+     */
+    orderBy?: AcademicMarksheetOrderByWithRelationInput | AcademicMarksheetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AcademicMarksheets.
+     */
+    cursor?: AcademicMarksheetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicMarksheets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicMarksheets.
+     */
+    skip?: number
+    distinct?: AcademicMarksheetScalarFieldEnum | AcademicMarksheetScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicMarksheet create
+   */
+  export type AcademicMarksheetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AcademicMarksheet.
+     */
+    data: XOR<AcademicMarksheetCreateInput, AcademicMarksheetUncheckedCreateInput>
+  }
+
+  /**
+   * AcademicMarksheet createMany
+   */
+  export type AcademicMarksheetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AcademicMarksheets.
+     */
+    data: AcademicMarksheetCreateManyInput | AcademicMarksheetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AcademicMarksheet createManyAndReturn
+   */
+  export type AcademicMarksheetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AcademicMarksheets.
+     */
+    data: AcademicMarksheetCreateManyInput | AcademicMarksheetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AcademicMarksheet update
+   */
+  export type AcademicMarksheetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AcademicMarksheet.
+     */
+    data: XOR<AcademicMarksheetUpdateInput, AcademicMarksheetUncheckedUpdateInput>
+    /**
+     * Choose, which AcademicMarksheet to update.
+     */
+    where: AcademicMarksheetWhereUniqueInput
+  }
+
+  /**
+   * AcademicMarksheet updateMany
+   */
+  export type AcademicMarksheetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AcademicMarksheets.
+     */
+    data: XOR<AcademicMarksheetUpdateManyMutationInput, AcademicMarksheetUncheckedUpdateManyInput>
+    /**
+     * Filter which AcademicMarksheets to update
+     */
+    where?: AcademicMarksheetWhereInput
+  }
+
+  /**
+   * AcademicMarksheet upsert
+   */
+  export type AcademicMarksheetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AcademicMarksheet to update in case it exists.
+     */
+    where: AcademicMarksheetWhereUniqueInput
+    /**
+     * In case the AcademicMarksheet found by the `where` argument doesn't exist, create a new AcademicMarksheet with this data.
+     */
+    create: XOR<AcademicMarksheetCreateInput, AcademicMarksheetUncheckedCreateInput>
+    /**
+     * In case the AcademicMarksheet was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AcademicMarksheetUpdateInput, AcademicMarksheetUncheckedUpdateInput>
+  }
+
+  /**
+   * AcademicMarksheet delete
+   */
+  export type AcademicMarksheetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+    /**
+     * Filter which AcademicMarksheet to delete.
+     */
+    where: AcademicMarksheetWhereUniqueInput
+  }
+
+  /**
+   * AcademicMarksheet deleteMany
+   */
+  export type AcademicMarksheetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AcademicMarksheets to delete
+     */
+    where?: AcademicMarksheetWhereInput
+  }
+
+  /**
+   * AcademicMarksheet.document
+   */
+  export type AcademicMarksheet$documentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    where?: DocumentWhereInput
+  }
+
+  /**
+   * AcademicMarksheet without action
+   */
+  export type AcademicMarksheetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicMarksheet
+     */
+    select?: AcademicMarksheetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicMarksheetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DigiLockerConnection
+   */
+
+  export type AggregateDigiLockerConnection = {
+    _count: DigiLockerConnectionCountAggregateOutputType | null
+    _avg: DigiLockerConnectionAvgAggregateOutputType | null
+    _sum: DigiLockerConnectionSumAggregateOutputType | null
+    _min: DigiLockerConnectionMinAggregateOutputType | null
+    _max: DigiLockerConnectionMaxAggregateOutputType | null
+  }
+
+  export type DigiLockerConnectionAvgAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+  }
+
+  export type DigiLockerConnectionSumAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+  }
+
+  export type DigiLockerConnectionMinAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    digilockerId: string | null
+    name: string | null
+    mobileNumber: string | null
+    status: string | null
+    accessTokenEncrypted: string | null
+    refreshTokenEncrypted: string | null
+    tokenExpiry: Date | null
+    connectedAt: Date | null
+    lastSyncedAt: Date | null
+    metadata: string | null
+  }
+
+  export type DigiLockerConnectionMaxAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    digilockerId: string | null
+    name: string | null
+    mobileNumber: string | null
+    status: string | null
+    accessTokenEncrypted: string | null
+    refreshTokenEncrypted: string | null
+    tokenExpiry: Date | null
+    connectedAt: Date | null
+    lastSyncedAt: Date | null
+    metadata: string | null
+  }
+
+  export type DigiLockerConnectionCountAggregateOutputType = {
+    id: number
+    studentId: number
+    digilockerId: number
+    name: number
+    mobileNumber: number
+    status: number
+    accessTokenEncrypted: number
+    refreshTokenEncrypted: number
+    tokenExpiry: number
+    connectedAt: number
+    lastSyncedAt: number
+    metadata: number
+    _all: number
+  }
+
+
+  export type DigiLockerConnectionAvgAggregateInputType = {
+    id?: true
+    studentId?: true
+  }
+
+  export type DigiLockerConnectionSumAggregateInputType = {
+    id?: true
+    studentId?: true
+  }
+
+  export type DigiLockerConnectionMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    digilockerId?: true
+    name?: true
+    mobileNumber?: true
+    status?: true
+    accessTokenEncrypted?: true
+    refreshTokenEncrypted?: true
+    tokenExpiry?: true
+    connectedAt?: true
+    lastSyncedAt?: true
+    metadata?: true
+  }
+
+  export type DigiLockerConnectionMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    digilockerId?: true
+    name?: true
+    mobileNumber?: true
+    status?: true
+    accessTokenEncrypted?: true
+    refreshTokenEncrypted?: true
+    tokenExpiry?: true
+    connectedAt?: true
+    lastSyncedAt?: true
+    metadata?: true
+  }
+
+  export type DigiLockerConnectionCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    digilockerId?: true
+    name?: true
+    mobileNumber?: true
+    status?: true
+    accessTokenEncrypted?: true
+    refreshTokenEncrypted?: true
+    tokenExpiry?: true
+    connectedAt?: true
+    lastSyncedAt?: true
+    metadata?: true
+    _all?: true
+  }
+
+  export type DigiLockerConnectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigiLockerConnection to aggregate.
+     */
+    where?: DigiLockerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigiLockerConnections to fetch.
+     */
+    orderBy?: DigiLockerConnectionOrderByWithRelationInput | DigiLockerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DigiLockerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigiLockerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigiLockerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DigiLockerConnections
+    **/
+    _count?: true | DigiLockerConnectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DigiLockerConnectionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DigiLockerConnectionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DigiLockerConnectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DigiLockerConnectionMaxAggregateInputType
+  }
+
+  export type GetDigiLockerConnectionAggregateType<T extends DigiLockerConnectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDigiLockerConnection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDigiLockerConnection[P]>
+      : GetScalarType<T[P], AggregateDigiLockerConnection[P]>
+  }
+
+
+
+
+  export type DigiLockerConnectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigiLockerConnectionWhereInput
+    orderBy?: DigiLockerConnectionOrderByWithAggregationInput | DigiLockerConnectionOrderByWithAggregationInput[]
+    by: DigiLockerConnectionScalarFieldEnum[] | DigiLockerConnectionScalarFieldEnum
+    having?: DigiLockerConnectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DigiLockerConnectionCountAggregateInputType | true
+    _avg?: DigiLockerConnectionAvgAggregateInputType
+    _sum?: DigiLockerConnectionSumAggregateInputType
+    _min?: DigiLockerConnectionMinAggregateInputType
+    _max?: DigiLockerConnectionMaxAggregateInputType
+  }
+
+  export type DigiLockerConnectionGroupByOutputType = {
+    id: number
+    studentId: number
+    digilockerId: string | null
+    name: string | null
+    mobileNumber: string | null
+    status: string
+    accessTokenEncrypted: string | null
+    refreshTokenEncrypted: string | null
+    tokenExpiry: Date | null
+    connectedAt: Date
+    lastSyncedAt: Date | null
+    metadata: string | null
+    _count: DigiLockerConnectionCountAggregateOutputType | null
+    _avg: DigiLockerConnectionAvgAggregateOutputType | null
+    _sum: DigiLockerConnectionSumAggregateOutputType | null
+    _min: DigiLockerConnectionMinAggregateOutputType | null
+    _max: DigiLockerConnectionMaxAggregateOutputType | null
+  }
+
+  type GetDigiLockerConnectionGroupByPayload<T extends DigiLockerConnectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DigiLockerConnectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DigiLockerConnectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DigiLockerConnectionGroupByOutputType[P]>
+            : GetScalarType<T[P], DigiLockerConnectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DigiLockerConnectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    digilockerId?: boolean
+    name?: boolean
+    mobileNumber?: boolean
+    status?: boolean
+    accessTokenEncrypted?: boolean
+    refreshTokenEncrypted?: boolean
+    tokenExpiry?: boolean
+    connectedAt?: boolean
+    lastSyncedAt?: boolean
+    metadata?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digiLockerConnection"]>
+
+  export type DigiLockerConnectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    digilockerId?: boolean
+    name?: boolean
+    mobileNumber?: boolean
+    status?: boolean
+    accessTokenEncrypted?: boolean
+    refreshTokenEncrypted?: boolean
+    tokenExpiry?: boolean
+    connectedAt?: boolean
+    lastSyncedAt?: boolean
+    metadata?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digiLockerConnection"]>
+
+  export type DigiLockerConnectionSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    digilockerId?: boolean
+    name?: boolean
+    mobileNumber?: boolean
+    status?: boolean
+    accessTokenEncrypted?: boolean
+    refreshTokenEncrypted?: boolean
+    tokenExpiry?: boolean
+    connectedAt?: boolean
+    lastSyncedAt?: boolean
+    metadata?: boolean
+  }
+
+  export type DigiLockerConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type DigiLockerConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+
+  export type $DigiLockerConnectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DigiLockerConnection"
+    objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      studentId: number
+      digilockerId: string | null
+      name: string | null
+      mobileNumber: string | null
+      status: string
+      accessTokenEncrypted: string | null
+      refreshTokenEncrypted: string | null
+      tokenExpiry: Date | null
+      connectedAt: Date
+      lastSyncedAt: Date | null
+      metadata: string | null
+    }, ExtArgs["result"]["digiLockerConnection"]>
+    composites: {}
+  }
+
+  type DigiLockerConnectionGetPayload<S extends boolean | null | undefined | DigiLockerConnectionDefaultArgs> = $Result.GetResult<Prisma.$DigiLockerConnectionPayload, S>
+
+  type DigiLockerConnectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DigiLockerConnectionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DigiLockerConnectionCountAggregateInputType | true
+    }
+
+  export interface DigiLockerConnectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DigiLockerConnection'], meta: { name: 'DigiLockerConnection' } }
+    /**
+     * Find zero or one DigiLockerConnection that matches the filter.
+     * @param {DigiLockerConnectionFindUniqueArgs} args - Arguments to find a DigiLockerConnection
+     * @example
+     * // Get one DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DigiLockerConnectionFindUniqueArgs>(args: SelectSubset<T, DigiLockerConnectionFindUniqueArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DigiLockerConnection that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DigiLockerConnectionFindUniqueOrThrowArgs} args - Arguments to find a DigiLockerConnection
+     * @example
+     * // Get one DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DigiLockerConnectionFindUniqueOrThrowArgs>(args: SelectSubset<T, DigiLockerConnectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DigiLockerConnection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionFindFirstArgs} args - Arguments to find a DigiLockerConnection
+     * @example
+     * // Get one DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DigiLockerConnectionFindFirstArgs>(args?: SelectSubset<T, DigiLockerConnectionFindFirstArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DigiLockerConnection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionFindFirstOrThrowArgs} args - Arguments to find a DigiLockerConnection
+     * @example
+     * // Get one DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DigiLockerConnectionFindFirstOrThrowArgs>(args?: SelectSubset<T, DigiLockerConnectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DigiLockerConnections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DigiLockerConnections
+     * const digiLockerConnections = await prisma.digiLockerConnection.findMany()
+     * 
+     * // Get first 10 DigiLockerConnections
+     * const digiLockerConnections = await prisma.digiLockerConnection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const digiLockerConnectionWithIdOnly = await prisma.digiLockerConnection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DigiLockerConnectionFindManyArgs>(args?: SelectSubset<T, DigiLockerConnectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DigiLockerConnection.
+     * @param {DigiLockerConnectionCreateArgs} args - Arguments to create a DigiLockerConnection.
+     * @example
+     * // Create one DigiLockerConnection
+     * const DigiLockerConnection = await prisma.digiLockerConnection.create({
+     *   data: {
+     *     // ... data to create a DigiLockerConnection
+     *   }
+     * })
+     * 
+     */
+    create<T extends DigiLockerConnectionCreateArgs>(args: SelectSubset<T, DigiLockerConnectionCreateArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DigiLockerConnections.
+     * @param {DigiLockerConnectionCreateManyArgs} args - Arguments to create many DigiLockerConnections.
+     * @example
+     * // Create many DigiLockerConnections
+     * const digiLockerConnection = await prisma.digiLockerConnection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DigiLockerConnectionCreateManyArgs>(args?: SelectSubset<T, DigiLockerConnectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DigiLockerConnections and returns the data saved in the database.
+     * @param {DigiLockerConnectionCreateManyAndReturnArgs} args - Arguments to create many DigiLockerConnections.
+     * @example
+     * // Create many DigiLockerConnections
+     * const digiLockerConnection = await prisma.digiLockerConnection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DigiLockerConnections and only return the `id`
+     * const digiLockerConnectionWithIdOnly = await prisma.digiLockerConnection.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DigiLockerConnectionCreateManyAndReturnArgs>(args?: SelectSubset<T, DigiLockerConnectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DigiLockerConnection.
+     * @param {DigiLockerConnectionDeleteArgs} args - Arguments to delete one DigiLockerConnection.
+     * @example
+     * // Delete one DigiLockerConnection
+     * const DigiLockerConnection = await prisma.digiLockerConnection.delete({
+     *   where: {
+     *     // ... filter to delete one DigiLockerConnection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DigiLockerConnectionDeleteArgs>(args: SelectSubset<T, DigiLockerConnectionDeleteArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DigiLockerConnection.
+     * @param {DigiLockerConnectionUpdateArgs} args - Arguments to update one DigiLockerConnection.
+     * @example
+     * // Update one DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DigiLockerConnectionUpdateArgs>(args: SelectSubset<T, DigiLockerConnectionUpdateArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DigiLockerConnections.
+     * @param {DigiLockerConnectionDeleteManyArgs} args - Arguments to filter DigiLockerConnections to delete.
+     * @example
+     * // Delete a few DigiLockerConnections
+     * const { count } = await prisma.digiLockerConnection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DigiLockerConnectionDeleteManyArgs>(args?: SelectSubset<T, DigiLockerConnectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigiLockerConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DigiLockerConnections
+     * const digiLockerConnection = await prisma.digiLockerConnection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DigiLockerConnectionUpdateManyArgs>(args: SelectSubset<T, DigiLockerConnectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DigiLockerConnection.
+     * @param {DigiLockerConnectionUpsertArgs} args - Arguments to update or create a DigiLockerConnection.
+     * @example
+     * // Update or create a DigiLockerConnection
+     * const digiLockerConnection = await prisma.digiLockerConnection.upsert({
+     *   create: {
+     *     // ... data to create a DigiLockerConnection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DigiLockerConnection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DigiLockerConnectionUpsertArgs>(args: SelectSubset<T, DigiLockerConnectionUpsertArgs<ExtArgs>>): Prisma__DigiLockerConnectionClient<$Result.GetResult<Prisma.$DigiLockerConnectionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DigiLockerConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionCountArgs} args - Arguments to filter DigiLockerConnections to count.
+     * @example
+     * // Count the number of DigiLockerConnections
+     * const count = await prisma.digiLockerConnection.count({
+     *   where: {
+     *     // ... the filter for the DigiLockerConnections we want to count
+     *   }
+     * })
+    **/
+    count<T extends DigiLockerConnectionCountArgs>(
+      args?: Subset<T, DigiLockerConnectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DigiLockerConnectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DigiLockerConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DigiLockerConnectionAggregateArgs>(args: Subset<T, DigiLockerConnectionAggregateArgs>): Prisma.PrismaPromise<GetDigiLockerConnectionAggregateType<T>>
+
+    /**
+     * Group by DigiLockerConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigiLockerConnectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DigiLockerConnectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DigiLockerConnectionGroupByArgs['orderBy'] }
+        : { orderBy?: DigiLockerConnectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DigiLockerConnectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDigiLockerConnectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DigiLockerConnection model
+   */
+  readonly fields: DigiLockerConnectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DigiLockerConnection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DigiLockerConnectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DigiLockerConnection model
+   */ 
+  interface DigiLockerConnectionFieldRefs {
+    readonly id: FieldRef<"DigiLockerConnection", 'Int'>
+    readonly studentId: FieldRef<"DigiLockerConnection", 'Int'>
+    readonly digilockerId: FieldRef<"DigiLockerConnection", 'String'>
+    readonly name: FieldRef<"DigiLockerConnection", 'String'>
+    readonly mobileNumber: FieldRef<"DigiLockerConnection", 'String'>
+    readonly status: FieldRef<"DigiLockerConnection", 'String'>
+    readonly accessTokenEncrypted: FieldRef<"DigiLockerConnection", 'String'>
+    readonly refreshTokenEncrypted: FieldRef<"DigiLockerConnection", 'String'>
+    readonly tokenExpiry: FieldRef<"DigiLockerConnection", 'DateTime'>
+    readonly connectedAt: FieldRef<"DigiLockerConnection", 'DateTime'>
+    readonly lastSyncedAt: FieldRef<"DigiLockerConnection", 'DateTime'>
+    readonly metadata: FieldRef<"DigiLockerConnection", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DigiLockerConnection findUnique
+   */
+  export type DigiLockerConnectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigiLockerConnection to fetch.
+     */
+    where: DigiLockerConnectionWhereUniqueInput
+  }
+
+  /**
+   * DigiLockerConnection findUniqueOrThrow
+   */
+  export type DigiLockerConnectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigiLockerConnection to fetch.
+     */
+    where: DigiLockerConnectionWhereUniqueInput
+  }
+
+  /**
+   * DigiLockerConnection findFirst
+   */
+  export type DigiLockerConnectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigiLockerConnection to fetch.
+     */
+    where?: DigiLockerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigiLockerConnections to fetch.
+     */
+    orderBy?: DigiLockerConnectionOrderByWithRelationInput | DigiLockerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigiLockerConnections.
+     */
+    cursor?: DigiLockerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigiLockerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigiLockerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigiLockerConnections.
+     */
+    distinct?: DigiLockerConnectionScalarFieldEnum | DigiLockerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * DigiLockerConnection findFirstOrThrow
+   */
+  export type DigiLockerConnectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigiLockerConnection to fetch.
+     */
+    where?: DigiLockerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigiLockerConnections to fetch.
+     */
+    orderBy?: DigiLockerConnectionOrderByWithRelationInput | DigiLockerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigiLockerConnections.
+     */
+    cursor?: DigiLockerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigiLockerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigiLockerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigiLockerConnections.
+     */
+    distinct?: DigiLockerConnectionScalarFieldEnum | DigiLockerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * DigiLockerConnection findMany
+   */
+  export type DigiLockerConnectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigiLockerConnections to fetch.
+     */
+    where?: DigiLockerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigiLockerConnections to fetch.
+     */
+    orderBy?: DigiLockerConnectionOrderByWithRelationInput | DigiLockerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DigiLockerConnections.
+     */
+    cursor?: DigiLockerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigiLockerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigiLockerConnections.
+     */
+    skip?: number
+    distinct?: DigiLockerConnectionScalarFieldEnum | DigiLockerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * DigiLockerConnection create
+   */
+  export type DigiLockerConnectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DigiLockerConnection.
+     */
+    data: XOR<DigiLockerConnectionCreateInput, DigiLockerConnectionUncheckedCreateInput>
+  }
+
+  /**
+   * DigiLockerConnection createMany
+   */
+  export type DigiLockerConnectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DigiLockerConnections.
+     */
+    data: DigiLockerConnectionCreateManyInput | DigiLockerConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigiLockerConnection createManyAndReturn
+   */
+  export type DigiLockerConnectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DigiLockerConnections.
+     */
+    data: DigiLockerConnectionCreateManyInput | DigiLockerConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DigiLockerConnection update
+   */
+  export type DigiLockerConnectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DigiLockerConnection.
+     */
+    data: XOR<DigiLockerConnectionUpdateInput, DigiLockerConnectionUncheckedUpdateInput>
+    /**
+     * Choose, which DigiLockerConnection to update.
+     */
+    where: DigiLockerConnectionWhereUniqueInput
+  }
+
+  /**
+   * DigiLockerConnection updateMany
+   */
+  export type DigiLockerConnectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DigiLockerConnections.
+     */
+    data: XOR<DigiLockerConnectionUpdateManyMutationInput, DigiLockerConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which DigiLockerConnections to update
+     */
+    where?: DigiLockerConnectionWhereInput
+  }
+
+  /**
+   * DigiLockerConnection upsert
+   */
+  export type DigiLockerConnectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DigiLockerConnection to update in case it exists.
+     */
+    where: DigiLockerConnectionWhereUniqueInput
+    /**
+     * In case the DigiLockerConnection found by the `where` argument doesn't exist, create a new DigiLockerConnection with this data.
+     */
+    create: XOR<DigiLockerConnectionCreateInput, DigiLockerConnectionUncheckedCreateInput>
+    /**
+     * In case the DigiLockerConnection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DigiLockerConnectionUpdateInput, DigiLockerConnectionUncheckedUpdateInput>
+  }
+
+  /**
+   * DigiLockerConnection delete
+   */
+  export type DigiLockerConnectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter which DigiLockerConnection to delete.
+     */
+    where: DigiLockerConnectionWhereUniqueInput
+  }
+
+  /**
+   * DigiLockerConnection deleteMany
+   */
+  export type DigiLockerConnectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigiLockerConnections to delete
+     */
+    where?: DigiLockerConnectionWhereInput
+  }
+
+  /**
+   * DigiLockerConnection without action
+   */
+  export type DigiLockerConnectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigiLockerConnection
+     */
+    select?: DigiLockerConnectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigiLockerConnectionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AcademicVerificationRecord
+   */
+
+  export type AggregateAcademicVerificationRecord = {
+    _count: AcademicVerificationRecordCountAggregateOutputType | null
+    _avg: AcademicVerificationRecordAvgAggregateOutputType | null
+    _sum: AcademicVerificationRecordSumAggregateOutputType | null
+    _min: AcademicVerificationRecordMinAggregateOutputType | null
+    _max: AcademicVerificationRecordMaxAggregateOutputType | null
+  }
+
+  export type AcademicVerificationRecordAvgAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    tenthYear: number | null
+    tenthScore: number | null
+    twelfthYear: number | null
+    twelfthScore: number | null
+  }
+
+  export type AcademicVerificationRecordSumAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    tenthYear: number | null
+    tenthScore: number | null
+    twelfthYear: number | null
+    twelfthScore: number | null
+  }
+
+  export type AcademicVerificationRecordMinAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    verificationStatus: string | null
+    tenthBoard: string | null
+    tenthYear: number | null
+    tenthScore: number | null
+    tenthScoreSource: string | null
+    twelfthBoard: string | null
+    twelfthYear: number | null
+    twelfthScore: number | null
+    twelfthScoreSource: string | null
+    documentIntegrity: string | null
+    identityConsistency: string | null
+    reviewReason: string | null
+    dossierJson: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AcademicVerificationRecordMaxAggregateOutputType = {
+    id: number | null
+    studentId: number | null
+    verificationStatus: string | null
+    tenthBoard: string | null
+    tenthYear: number | null
+    tenthScore: number | null
+    tenthScoreSource: string | null
+    twelfthBoard: string | null
+    twelfthYear: number | null
+    twelfthScore: number | null
+    twelfthScoreSource: string | null
+    documentIntegrity: string | null
+    identityConsistency: string | null
+    reviewReason: string | null
+    dossierJson: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AcademicVerificationRecordCountAggregateOutputType = {
+    id: number
+    studentId: number
+    verificationStatus: number
+    tenthBoard: number
+    tenthYear: number
+    tenthScore: number
+    tenthScoreSource: number
+    twelfthBoard: number
+    twelfthYear: number
+    twelfthScore: number
+    twelfthScoreSource: number
+    documentIntegrity: number
+    identityConsistency: number
+    reviewReason: number
+    dossierJson: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AcademicVerificationRecordAvgAggregateInputType = {
+    id?: true
+    studentId?: true
+    tenthYear?: true
+    tenthScore?: true
+    twelfthYear?: true
+    twelfthScore?: true
+  }
+
+  export type AcademicVerificationRecordSumAggregateInputType = {
+    id?: true
+    studentId?: true
+    tenthYear?: true
+    tenthScore?: true
+    twelfthYear?: true
+    twelfthScore?: true
+  }
+
+  export type AcademicVerificationRecordMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    verificationStatus?: true
+    tenthBoard?: true
+    tenthYear?: true
+    tenthScore?: true
+    tenthScoreSource?: true
+    twelfthBoard?: true
+    twelfthYear?: true
+    twelfthScore?: true
+    twelfthScoreSource?: true
+    documentIntegrity?: true
+    identityConsistency?: true
+    reviewReason?: true
+    dossierJson?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AcademicVerificationRecordMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    verificationStatus?: true
+    tenthBoard?: true
+    tenthYear?: true
+    tenthScore?: true
+    tenthScoreSource?: true
+    twelfthBoard?: true
+    twelfthYear?: true
+    twelfthScore?: true
+    twelfthScoreSource?: true
+    documentIntegrity?: true
+    identityConsistency?: true
+    reviewReason?: true
+    dossierJson?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AcademicVerificationRecordCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    verificationStatus?: true
+    tenthBoard?: true
+    tenthYear?: true
+    tenthScore?: true
+    tenthScoreSource?: true
+    twelfthBoard?: true
+    twelfthYear?: true
+    twelfthScore?: true
+    twelfthScoreSource?: true
+    documentIntegrity?: true
+    identityConsistency?: true
+    reviewReason?: true
+    dossierJson?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AcademicVerificationRecordAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AcademicVerificationRecord to aggregate.
+     */
+    where?: AcademicVerificationRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicVerificationRecords to fetch.
+     */
+    orderBy?: AcademicVerificationRecordOrderByWithRelationInput | AcademicVerificationRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AcademicVerificationRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicVerificationRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicVerificationRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AcademicVerificationRecords
+    **/
+    _count?: true | AcademicVerificationRecordCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AcademicVerificationRecordAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AcademicVerificationRecordSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AcademicVerificationRecordMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AcademicVerificationRecordMaxAggregateInputType
+  }
+
+  export type GetAcademicVerificationRecordAggregateType<T extends AcademicVerificationRecordAggregateArgs> = {
+        [P in keyof T & keyof AggregateAcademicVerificationRecord]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAcademicVerificationRecord[P]>
+      : GetScalarType<T[P], AggregateAcademicVerificationRecord[P]>
+  }
+
+
+
+
+  export type AcademicVerificationRecordGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AcademicVerificationRecordWhereInput
+    orderBy?: AcademicVerificationRecordOrderByWithAggregationInput | AcademicVerificationRecordOrderByWithAggregationInput[]
+    by: AcademicVerificationRecordScalarFieldEnum[] | AcademicVerificationRecordScalarFieldEnum
+    having?: AcademicVerificationRecordScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AcademicVerificationRecordCountAggregateInputType | true
+    _avg?: AcademicVerificationRecordAvgAggregateInputType
+    _sum?: AcademicVerificationRecordSumAggregateInputType
+    _min?: AcademicVerificationRecordMinAggregateInputType
+    _max?: AcademicVerificationRecordMaxAggregateInputType
+  }
+
+  export type AcademicVerificationRecordGroupByOutputType = {
+    id: number
+    studentId: number
+    verificationStatus: string | null
+    tenthBoard: string | null
+    tenthYear: number | null
+    tenthScore: number | null
+    tenthScoreSource: string | null
+    twelfthBoard: string | null
+    twelfthYear: number | null
+    twelfthScore: number | null
+    twelfthScoreSource: string | null
+    documentIntegrity: string | null
+    identityConsistency: string | null
+    reviewReason: string | null
+    dossierJson: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AcademicVerificationRecordCountAggregateOutputType | null
+    _avg: AcademicVerificationRecordAvgAggregateOutputType | null
+    _sum: AcademicVerificationRecordSumAggregateOutputType | null
+    _min: AcademicVerificationRecordMinAggregateOutputType | null
+    _max: AcademicVerificationRecordMaxAggregateOutputType | null
+  }
+
+  type GetAcademicVerificationRecordGroupByPayload<T extends AcademicVerificationRecordGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AcademicVerificationRecordGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AcademicVerificationRecordGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AcademicVerificationRecordGroupByOutputType[P]>
+            : GetScalarType<T[P], AcademicVerificationRecordGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AcademicVerificationRecordSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    verificationStatus?: boolean
+    tenthBoard?: boolean
+    tenthYear?: boolean
+    tenthScore?: boolean
+    tenthScoreSource?: boolean
+    twelfthBoard?: boolean
+    twelfthYear?: boolean
+    twelfthScore?: boolean
+    twelfthScoreSource?: boolean
+    documentIntegrity?: boolean
+    identityConsistency?: boolean
+    reviewReason?: boolean
+    dossierJson?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["academicVerificationRecord"]>
+
+  export type AcademicVerificationRecordSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    verificationStatus?: boolean
+    tenthBoard?: boolean
+    tenthYear?: boolean
+    tenthScore?: boolean
+    tenthScoreSource?: boolean
+    twelfthBoard?: boolean
+    twelfthYear?: boolean
+    twelfthScore?: boolean
+    twelfthScoreSource?: boolean
+    documentIntegrity?: boolean
+    identityConsistency?: boolean
+    reviewReason?: boolean
+    dossierJson?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["academicVerificationRecord"]>
+
+  export type AcademicVerificationRecordSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    verificationStatus?: boolean
+    tenthBoard?: boolean
+    tenthYear?: boolean
+    tenthScore?: boolean
+    tenthScoreSource?: boolean
+    twelfthBoard?: boolean
+    twelfthYear?: boolean
+    twelfthScore?: boolean
+    twelfthScoreSource?: boolean
+    documentIntegrity?: boolean
+    identityConsistency?: boolean
+    reviewReason?: boolean
+    dossierJson?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AcademicVerificationRecordInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type AcademicVerificationRecordIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+
+  export type $AcademicVerificationRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AcademicVerificationRecord"
+    objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      studentId: number
+      verificationStatus: string | null
+      tenthBoard: string | null
+      tenthYear: number | null
+      tenthScore: number | null
+      tenthScoreSource: string | null
+      twelfthBoard: string | null
+      twelfthYear: number | null
+      twelfthScore: number | null
+      twelfthScoreSource: string | null
+      documentIntegrity: string | null
+      identityConsistency: string | null
+      reviewReason: string | null
+      dossierJson: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["academicVerificationRecord"]>
+    composites: {}
+  }
+
+  type AcademicVerificationRecordGetPayload<S extends boolean | null | undefined | AcademicVerificationRecordDefaultArgs> = $Result.GetResult<Prisma.$AcademicVerificationRecordPayload, S>
+
+  type AcademicVerificationRecordCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AcademicVerificationRecordFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AcademicVerificationRecordCountAggregateInputType | true
+    }
+
+  export interface AcademicVerificationRecordDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AcademicVerificationRecord'], meta: { name: 'AcademicVerificationRecord' } }
+    /**
+     * Find zero or one AcademicVerificationRecord that matches the filter.
+     * @param {AcademicVerificationRecordFindUniqueArgs} args - Arguments to find a AcademicVerificationRecord
+     * @example
+     * // Get one AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AcademicVerificationRecordFindUniqueArgs>(args: SelectSubset<T, AcademicVerificationRecordFindUniqueArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AcademicVerificationRecord that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AcademicVerificationRecordFindUniqueOrThrowArgs} args - Arguments to find a AcademicVerificationRecord
+     * @example
+     * // Get one AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AcademicVerificationRecordFindUniqueOrThrowArgs>(args: SelectSubset<T, AcademicVerificationRecordFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AcademicVerificationRecord that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordFindFirstArgs} args - Arguments to find a AcademicVerificationRecord
+     * @example
+     * // Get one AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AcademicVerificationRecordFindFirstArgs>(args?: SelectSubset<T, AcademicVerificationRecordFindFirstArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AcademicVerificationRecord that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordFindFirstOrThrowArgs} args - Arguments to find a AcademicVerificationRecord
+     * @example
+     * // Get one AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AcademicVerificationRecordFindFirstOrThrowArgs>(args?: SelectSubset<T, AcademicVerificationRecordFindFirstOrThrowArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AcademicVerificationRecords that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AcademicVerificationRecords
+     * const academicVerificationRecords = await prisma.academicVerificationRecord.findMany()
+     * 
+     * // Get first 10 AcademicVerificationRecords
+     * const academicVerificationRecords = await prisma.academicVerificationRecord.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const academicVerificationRecordWithIdOnly = await prisma.academicVerificationRecord.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AcademicVerificationRecordFindManyArgs>(args?: SelectSubset<T, AcademicVerificationRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AcademicVerificationRecord.
+     * @param {AcademicVerificationRecordCreateArgs} args - Arguments to create a AcademicVerificationRecord.
+     * @example
+     * // Create one AcademicVerificationRecord
+     * const AcademicVerificationRecord = await prisma.academicVerificationRecord.create({
+     *   data: {
+     *     // ... data to create a AcademicVerificationRecord
+     *   }
+     * })
+     * 
+     */
+    create<T extends AcademicVerificationRecordCreateArgs>(args: SelectSubset<T, AcademicVerificationRecordCreateArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AcademicVerificationRecords.
+     * @param {AcademicVerificationRecordCreateManyArgs} args - Arguments to create many AcademicVerificationRecords.
+     * @example
+     * // Create many AcademicVerificationRecords
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AcademicVerificationRecordCreateManyArgs>(args?: SelectSubset<T, AcademicVerificationRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AcademicVerificationRecords and returns the data saved in the database.
+     * @param {AcademicVerificationRecordCreateManyAndReturnArgs} args - Arguments to create many AcademicVerificationRecords.
+     * @example
+     * // Create many AcademicVerificationRecords
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AcademicVerificationRecords and only return the `id`
+     * const academicVerificationRecordWithIdOnly = await prisma.academicVerificationRecord.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AcademicVerificationRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, AcademicVerificationRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AcademicVerificationRecord.
+     * @param {AcademicVerificationRecordDeleteArgs} args - Arguments to delete one AcademicVerificationRecord.
+     * @example
+     * // Delete one AcademicVerificationRecord
+     * const AcademicVerificationRecord = await prisma.academicVerificationRecord.delete({
+     *   where: {
+     *     // ... filter to delete one AcademicVerificationRecord
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AcademicVerificationRecordDeleteArgs>(args: SelectSubset<T, AcademicVerificationRecordDeleteArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AcademicVerificationRecord.
+     * @param {AcademicVerificationRecordUpdateArgs} args - Arguments to update one AcademicVerificationRecord.
+     * @example
+     * // Update one AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AcademicVerificationRecordUpdateArgs>(args: SelectSubset<T, AcademicVerificationRecordUpdateArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AcademicVerificationRecords.
+     * @param {AcademicVerificationRecordDeleteManyArgs} args - Arguments to filter AcademicVerificationRecords to delete.
+     * @example
+     * // Delete a few AcademicVerificationRecords
+     * const { count } = await prisma.academicVerificationRecord.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AcademicVerificationRecordDeleteManyArgs>(args?: SelectSubset<T, AcademicVerificationRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AcademicVerificationRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AcademicVerificationRecords
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AcademicVerificationRecordUpdateManyArgs>(args: SelectSubset<T, AcademicVerificationRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AcademicVerificationRecord.
+     * @param {AcademicVerificationRecordUpsertArgs} args - Arguments to update or create a AcademicVerificationRecord.
+     * @example
+     * // Update or create a AcademicVerificationRecord
+     * const academicVerificationRecord = await prisma.academicVerificationRecord.upsert({
+     *   create: {
+     *     // ... data to create a AcademicVerificationRecord
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AcademicVerificationRecord we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AcademicVerificationRecordUpsertArgs>(args: SelectSubset<T, AcademicVerificationRecordUpsertArgs<ExtArgs>>): Prisma__AcademicVerificationRecordClient<$Result.GetResult<Prisma.$AcademicVerificationRecordPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AcademicVerificationRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordCountArgs} args - Arguments to filter AcademicVerificationRecords to count.
+     * @example
+     * // Count the number of AcademicVerificationRecords
+     * const count = await prisma.academicVerificationRecord.count({
+     *   where: {
+     *     // ... the filter for the AcademicVerificationRecords we want to count
+     *   }
+     * })
+    **/
+    count<T extends AcademicVerificationRecordCountArgs>(
+      args?: Subset<T, AcademicVerificationRecordCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AcademicVerificationRecordCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AcademicVerificationRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AcademicVerificationRecordAggregateArgs>(args: Subset<T, AcademicVerificationRecordAggregateArgs>): Prisma.PrismaPromise<GetAcademicVerificationRecordAggregateType<T>>
+
+    /**
+     * Group by AcademicVerificationRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AcademicVerificationRecordGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AcademicVerificationRecordGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AcademicVerificationRecordGroupByArgs['orderBy'] }
+        : { orderBy?: AcademicVerificationRecordGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AcademicVerificationRecordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAcademicVerificationRecordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AcademicVerificationRecord model
+   */
+  readonly fields: AcademicVerificationRecordFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AcademicVerificationRecord.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AcademicVerificationRecordClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AcademicVerificationRecord model
+   */ 
+  interface AcademicVerificationRecordFieldRefs {
+    readonly id: FieldRef<"AcademicVerificationRecord", 'Int'>
+    readonly studentId: FieldRef<"AcademicVerificationRecord", 'Int'>
+    readonly verificationStatus: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly tenthBoard: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly tenthYear: FieldRef<"AcademicVerificationRecord", 'Int'>
+    readonly tenthScore: FieldRef<"AcademicVerificationRecord", 'Float'>
+    readonly tenthScoreSource: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly twelfthBoard: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly twelfthYear: FieldRef<"AcademicVerificationRecord", 'Int'>
+    readonly twelfthScore: FieldRef<"AcademicVerificationRecord", 'Float'>
+    readonly twelfthScoreSource: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly documentIntegrity: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly identityConsistency: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly reviewReason: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly dossierJson: FieldRef<"AcademicVerificationRecord", 'String'>
+    readonly createdAt: FieldRef<"AcademicVerificationRecord", 'DateTime'>
+    readonly updatedAt: FieldRef<"AcademicVerificationRecord", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AcademicVerificationRecord findUnique
+   */
+  export type AcademicVerificationRecordFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicVerificationRecord to fetch.
+     */
+    where: AcademicVerificationRecordWhereUniqueInput
+  }
+
+  /**
+   * AcademicVerificationRecord findUniqueOrThrow
+   */
+  export type AcademicVerificationRecordFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicVerificationRecord to fetch.
+     */
+    where: AcademicVerificationRecordWhereUniqueInput
+  }
+
+  /**
+   * AcademicVerificationRecord findFirst
+   */
+  export type AcademicVerificationRecordFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicVerificationRecord to fetch.
+     */
+    where?: AcademicVerificationRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicVerificationRecords to fetch.
+     */
+    orderBy?: AcademicVerificationRecordOrderByWithRelationInput | AcademicVerificationRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AcademicVerificationRecords.
+     */
+    cursor?: AcademicVerificationRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicVerificationRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicVerificationRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AcademicVerificationRecords.
+     */
+    distinct?: AcademicVerificationRecordScalarFieldEnum | AcademicVerificationRecordScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicVerificationRecord findFirstOrThrow
+   */
+  export type AcademicVerificationRecordFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicVerificationRecord to fetch.
+     */
+    where?: AcademicVerificationRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicVerificationRecords to fetch.
+     */
+    orderBy?: AcademicVerificationRecordOrderByWithRelationInput | AcademicVerificationRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AcademicVerificationRecords.
+     */
+    cursor?: AcademicVerificationRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicVerificationRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicVerificationRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AcademicVerificationRecords.
+     */
+    distinct?: AcademicVerificationRecordScalarFieldEnum | AcademicVerificationRecordScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicVerificationRecord findMany
+   */
+  export type AcademicVerificationRecordFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter, which AcademicVerificationRecords to fetch.
+     */
+    where?: AcademicVerificationRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AcademicVerificationRecords to fetch.
+     */
+    orderBy?: AcademicVerificationRecordOrderByWithRelationInput | AcademicVerificationRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AcademicVerificationRecords.
+     */
+    cursor?: AcademicVerificationRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AcademicVerificationRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AcademicVerificationRecords.
+     */
+    skip?: number
+    distinct?: AcademicVerificationRecordScalarFieldEnum | AcademicVerificationRecordScalarFieldEnum[]
+  }
+
+  /**
+   * AcademicVerificationRecord create
+   */
+  export type AcademicVerificationRecordCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AcademicVerificationRecord.
+     */
+    data: XOR<AcademicVerificationRecordCreateInput, AcademicVerificationRecordUncheckedCreateInput>
+  }
+
+  /**
+   * AcademicVerificationRecord createMany
+   */
+  export type AcademicVerificationRecordCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AcademicVerificationRecords.
+     */
+    data: AcademicVerificationRecordCreateManyInput | AcademicVerificationRecordCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AcademicVerificationRecord createManyAndReturn
+   */
+  export type AcademicVerificationRecordCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AcademicVerificationRecords.
+     */
+    data: AcademicVerificationRecordCreateManyInput | AcademicVerificationRecordCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AcademicVerificationRecord update
+   */
+  export type AcademicVerificationRecordUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AcademicVerificationRecord.
+     */
+    data: XOR<AcademicVerificationRecordUpdateInput, AcademicVerificationRecordUncheckedUpdateInput>
+    /**
+     * Choose, which AcademicVerificationRecord to update.
+     */
+    where: AcademicVerificationRecordWhereUniqueInput
+  }
+
+  /**
+   * AcademicVerificationRecord updateMany
+   */
+  export type AcademicVerificationRecordUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AcademicVerificationRecords.
+     */
+    data: XOR<AcademicVerificationRecordUpdateManyMutationInput, AcademicVerificationRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which AcademicVerificationRecords to update
+     */
+    where?: AcademicVerificationRecordWhereInput
+  }
+
+  /**
+   * AcademicVerificationRecord upsert
+   */
+  export type AcademicVerificationRecordUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AcademicVerificationRecord to update in case it exists.
+     */
+    where: AcademicVerificationRecordWhereUniqueInput
+    /**
+     * In case the AcademicVerificationRecord found by the `where` argument doesn't exist, create a new AcademicVerificationRecord with this data.
+     */
+    create: XOR<AcademicVerificationRecordCreateInput, AcademicVerificationRecordUncheckedCreateInput>
+    /**
+     * In case the AcademicVerificationRecord was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AcademicVerificationRecordUpdateInput, AcademicVerificationRecordUncheckedUpdateInput>
+  }
+
+  /**
+   * AcademicVerificationRecord delete
+   */
+  export type AcademicVerificationRecordDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+    /**
+     * Filter which AcademicVerificationRecord to delete.
+     */
+    where: AcademicVerificationRecordWhereUniqueInput
+  }
+
+  /**
+   * AcademicVerificationRecord deleteMany
+   */
+  export type AcademicVerificationRecordDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AcademicVerificationRecords to delete
+     */
+    where?: AcademicVerificationRecordWhereInput
+  }
+
+  /**
+   * AcademicVerificationRecord without action
+   */
+  export type AcademicVerificationRecordDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AcademicVerificationRecord
+     */
+    select?: AcademicVerificationRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AcademicVerificationRecordInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -92775,6 +96875,18 @@ export namespace Prisma {
     cgpa: 'cgpa',
     tenthMarks: 'tenthMarks',
     twelfthMarks: 'twelfthMarks',
+    tenthBoard: 'tenthBoard',
+    tenthPassingYear: 'tenthPassingYear',
+    tenthDocumentId: 'tenthDocumentId',
+    tenthPercentageSource: 'tenthPercentageSource',
+    twelfthBoard: 'twelfthBoard',
+    twelfthPassingYear: 'twelfthPassingYear',
+    twelfthDocumentId: 'twelfthDocumentId',
+    twelfthPercentageSource: 'twelfthPercentageSource',
+    academicVerificationStatus: 'academicVerificationStatus',
+    academicVerifiedAt: 'academicVerifiedAt',
+    academicVerificationData: 'academicVerificationData',
+    isAcademicLocked: 'isAcademicLocked',
     githubUrl: 'githubUrl',
     linkedinUrl: 'linkedinUrl',
     portfolioUrl: 'portfolioUrl',
@@ -93130,7 +97242,10 @@ export namespace Prisma {
     studentId: 'studentId',
     currentRoundId: 'currentRoundId',
     status: 'status',
-    appliedAt: 'appliedAt'
+    appliedAt: 'appliedAt',
+    eligibilityStatus: 'eligibilityStatus',
+    eligibilityReason: 'eligibilityReason',
+    eligibilityCheckedAt: 'eligibilityCheckedAt'
   };
 
   export type PlacementApplicationScalarFieldEnum = (typeof PlacementApplicationScalarFieldEnum)[keyof typeof PlacementApplicationScalarFieldEnum]
@@ -94035,6 +98150,86 @@ export namespace Prisma {
   export type StudentRiskAssessmentScalarFieldEnum = (typeof StudentRiskAssessmentScalarFieldEnum)[keyof typeof StudentRiskAssessmentScalarFieldEnum]
 
 
+  export const AcademicMarksheetScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    documentId: 'documentId',
+    educationLevel: 'educationLevel',
+    board: 'board',
+    studentName: 'studentName',
+    rollNumber: 'rollNumber',
+    seatNumber: 'seatNumber',
+    registrationNumber: 'registrationNumber',
+    certificateNumber: 'certificateNumber',
+    passingYear: 'passingYear',
+    totalMarks: 'totalMarks',
+    obtainedMarks: 'obtainedMarks',
+    percentage: 'percentage',
+    cgpa: 'cgpa',
+    subjects: 'subjects',
+    ocrConfidence: 'ocrConfidence',
+    verificationStatus: 'verificationStatus',
+    verifiedAt: 'verifiedAt',
+    mismatchReason: 'mismatchReason',
+    comparisonResults: 'comparisonResults',
+    nameMatch: 'nameMatch',
+    rollNumberMatch: 'rollNumberMatch',
+    seatNumberMatch: 'seatNumberMatch',
+    boardMatch: 'boardMatch',
+    yearMatch: 'yearMatch',
+    marksMatch: 'marksMatch',
+    digilockerDocUri: 'digilockerDocUri',
+    digilockerTxnId: 'digilockerTxnId',
+    digilockerVerified: 'digilockerVerified',
+    digilockerFetchedAt: 'digilockerFetchedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AcademicMarksheetScalarFieldEnum = (typeof AcademicMarksheetScalarFieldEnum)[keyof typeof AcademicMarksheetScalarFieldEnum]
+
+
+  export const DigiLockerConnectionScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    digilockerId: 'digilockerId',
+    name: 'name',
+    mobileNumber: 'mobileNumber',
+    status: 'status',
+    accessTokenEncrypted: 'accessTokenEncrypted',
+    refreshTokenEncrypted: 'refreshTokenEncrypted',
+    tokenExpiry: 'tokenExpiry',
+    connectedAt: 'connectedAt',
+    lastSyncedAt: 'lastSyncedAt',
+    metadata: 'metadata'
+  };
+
+  export type DigiLockerConnectionScalarFieldEnum = (typeof DigiLockerConnectionScalarFieldEnum)[keyof typeof DigiLockerConnectionScalarFieldEnum]
+
+
+  export const AcademicVerificationRecordScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    verificationStatus: 'verificationStatus',
+    tenthBoard: 'tenthBoard',
+    tenthYear: 'tenthYear',
+    tenthScore: 'tenthScore',
+    tenthScoreSource: 'tenthScoreSource',
+    twelfthBoard: 'twelfthBoard',
+    twelfthYear: 'twelfthYear',
+    twelfthScore: 'twelfthScore',
+    twelfthScoreSource: 'twelfthScoreSource',
+    documentIntegrity: 'documentIntegrity',
+    identityConsistency: 'identityConsistency',
+    reviewReason: 'reviewReason',
+    dossierJson: 'dossierJson',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AcademicVerificationRecordScalarFieldEnum = (typeof AcademicVerificationRecordScalarFieldEnum)[keyof typeof AcademicVerificationRecordScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -94146,6 +98341,18 @@ export namespace Prisma {
     cgpa?: FloatNullableFilter<"Student"> | number | null
     tenthMarks?: FloatNullableFilter<"Student"> | number | null
     twelfthMarks?: FloatNullableFilter<"Student"> | number | null
+    tenthBoard?: StringNullableFilter<"Student"> | string | null
+    tenthPassingYear?: IntNullableFilter<"Student"> | number | null
+    tenthDocumentId?: IntNullableFilter<"Student"> | number | null
+    tenthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    twelfthBoard?: StringNullableFilter<"Student"> | string | null
+    twelfthPassingYear?: IntNullableFilter<"Student"> | number | null
+    twelfthDocumentId?: IntNullableFilter<"Student"> | number | null
+    twelfthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    academicVerificationStatus?: StringNullableFilter<"Student"> | string | null
+    academicVerifiedAt?: DateTimeNullableFilter<"Student"> | Date | string | null
+    academicVerificationData?: StringNullableFilter<"Student"> | string | null
+    isAcademicLocked?: BoolNullableFilter<"Student"> | boolean | null
     githubUrl?: StringNullableFilter<"Student"> | string | null
     linkedinUrl?: StringNullableFilter<"Student"> | string | null
     portfolioUrl?: StringNullableFilter<"Student"> | string | null
@@ -94179,6 +98386,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceListRelationFilter
     placementReadiness?: XOR<PlacementReadinessNullableRelationFilter, PlacementReadinessWhereInput> | null
     riskAssessment?: XOR<StudentRiskAssessmentNullableRelationFilter, StudentRiskAssessmentWhereInput> | null
+    academicMarksheets?: AcademicMarksheetListRelationFilter
+    digilockerConnection?: XOR<DigiLockerConnectionNullableRelationFilter, DigiLockerConnectionWhereInput> | null
+    academicVerificationRecords?: AcademicVerificationRecordListRelationFilter
   }
 
   export type StudentOrderByWithRelationInput = {
@@ -94194,6 +98404,18 @@ export namespace Prisma {
     cgpa?: SortOrderInput | SortOrder
     tenthMarks?: SortOrderInput | SortOrder
     twelfthMarks?: SortOrderInput | SortOrder
+    tenthBoard?: SortOrderInput | SortOrder
+    tenthPassingYear?: SortOrderInput | SortOrder
+    tenthDocumentId?: SortOrderInput | SortOrder
+    tenthPercentageSource?: SortOrderInput | SortOrder
+    twelfthBoard?: SortOrderInput | SortOrder
+    twelfthPassingYear?: SortOrderInput | SortOrder
+    twelfthDocumentId?: SortOrderInput | SortOrder
+    twelfthPercentageSource?: SortOrderInput | SortOrder
+    academicVerificationStatus?: SortOrderInput | SortOrder
+    academicVerifiedAt?: SortOrderInput | SortOrder
+    academicVerificationData?: SortOrderInput | SortOrder
+    isAcademicLocked?: SortOrderInput | SortOrder
     githubUrl?: SortOrderInput | SortOrder
     linkedinUrl?: SortOrderInput | SortOrder
     portfolioUrl?: SortOrderInput | SortOrder
@@ -94227,6 +98449,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceOrderByRelationAggregateInput
     placementReadiness?: PlacementReadinessOrderByWithRelationInput
     riskAssessment?: StudentRiskAssessmentOrderByWithRelationInput
+    academicMarksheets?: AcademicMarksheetOrderByRelationAggregateInput
+    digilockerConnection?: DigiLockerConnectionOrderByWithRelationInput
+    academicVerificationRecords?: AcademicVerificationRecordOrderByRelationAggregateInput
   }
 
   export type StudentWhereUniqueInput = Prisma.AtLeast<{
@@ -94245,6 +98470,18 @@ export namespace Prisma {
     cgpa?: FloatNullableFilter<"Student"> | number | null
     tenthMarks?: FloatNullableFilter<"Student"> | number | null
     twelfthMarks?: FloatNullableFilter<"Student"> | number | null
+    tenthBoard?: StringNullableFilter<"Student"> | string | null
+    tenthPassingYear?: IntNullableFilter<"Student"> | number | null
+    tenthDocumentId?: IntNullableFilter<"Student"> | number | null
+    tenthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    twelfthBoard?: StringNullableFilter<"Student"> | string | null
+    twelfthPassingYear?: IntNullableFilter<"Student"> | number | null
+    twelfthDocumentId?: IntNullableFilter<"Student"> | number | null
+    twelfthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    academicVerificationStatus?: StringNullableFilter<"Student"> | string | null
+    academicVerifiedAt?: DateTimeNullableFilter<"Student"> | Date | string | null
+    academicVerificationData?: StringNullableFilter<"Student"> | string | null
+    isAcademicLocked?: BoolNullableFilter<"Student"> | boolean | null
     githubUrl?: StringNullableFilter<"Student"> | string | null
     linkedinUrl?: StringNullableFilter<"Student"> | string | null
     portfolioUrl?: StringNullableFilter<"Student"> | string | null
@@ -94278,6 +98515,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceListRelationFilter
     placementReadiness?: XOR<PlacementReadinessNullableRelationFilter, PlacementReadinessWhereInput> | null
     riskAssessment?: XOR<StudentRiskAssessmentNullableRelationFilter, StudentRiskAssessmentWhereInput> | null
+    academicMarksheets?: AcademicMarksheetListRelationFilter
+    digilockerConnection?: XOR<DigiLockerConnectionNullableRelationFilter, DigiLockerConnectionWhereInput> | null
+    academicVerificationRecords?: AcademicVerificationRecordListRelationFilter
   }, "id" | "email">
 
   export type StudentOrderByWithAggregationInput = {
@@ -94293,6 +98533,18 @@ export namespace Prisma {
     cgpa?: SortOrderInput | SortOrder
     tenthMarks?: SortOrderInput | SortOrder
     twelfthMarks?: SortOrderInput | SortOrder
+    tenthBoard?: SortOrderInput | SortOrder
+    tenthPassingYear?: SortOrderInput | SortOrder
+    tenthDocumentId?: SortOrderInput | SortOrder
+    tenthPercentageSource?: SortOrderInput | SortOrder
+    twelfthBoard?: SortOrderInput | SortOrder
+    twelfthPassingYear?: SortOrderInput | SortOrder
+    twelfthDocumentId?: SortOrderInput | SortOrder
+    twelfthPercentageSource?: SortOrderInput | SortOrder
+    academicVerificationStatus?: SortOrderInput | SortOrder
+    academicVerifiedAt?: SortOrderInput | SortOrder
+    academicVerificationData?: SortOrderInput | SortOrder
+    isAcademicLocked?: SortOrderInput | SortOrder
     githubUrl?: SortOrderInput | SortOrder
     linkedinUrl?: SortOrderInput | SortOrder
     portfolioUrl?: SortOrderInput | SortOrder
@@ -94321,6 +98573,18 @@ export namespace Prisma {
     cgpa?: FloatNullableWithAggregatesFilter<"Student"> | number | null
     tenthMarks?: FloatNullableWithAggregatesFilter<"Student"> | number | null
     twelfthMarks?: FloatNullableWithAggregatesFilter<"Student"> | number | null
+    tenthBoard?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    tenthPassingYear?: IntNullableWithAggregatesFilter<"Student"> | number | null
+    tenthDocumentId?: IntNullableWithAggregatesFilter<"Student"> | number | null
+    tenthPercentageSource?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    twelfthBoard?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    twelfthPassingYear?: IntNullableWithAggregatesFilter<"Student"> | number | null
+    twelfthDocumentId?: IntNullableWithAggregatesFilter<"Student"> | number | null
+    twelfthPercentageSource?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    academicVerificationStatus?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    academicVerifiedAt?: DateTimeNullableWithAggregatesFilter<"Student"> | Date | string | null
+    academicVerificationData?: StringNullableWithAggregatesFilter<"Student"> | string | null
+    isAcademicLocked?: BoolNullableWithAggregatesFilter<"Student"> | boolean | null
     githubUrl?: StringNullableWithAggregatesFilter<"Student"> | string | null
     linkedinUrl?: StringNullableWithAggregatesFilter<"Student"> | string | null
     portfolioUrl?: StringNullableWithAggregatesFilter<"Student"> | string | null
@@ -96252,6 +100516,9 @@ export namespace Prisma {
     currentRoundId?: IntNullableFilter<"PlacementApplication"> | number | null
     status?: StringFilter<"PlacementApplication"> | string
     appliedAt?: DateTimeFilter<"PlacementApplication"> | Date | string
+    eligibilityStatus?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityReason?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityCheckedAt?: DateTimeNullableFilter<"PlacementApplication"> | Date | string | null
     drive?: XOR<PlacementDriveRelationFilter, PlacementDriveWhereInput>
     student?: XOR<StudentRelationFilter, StudentWhereInput>
     currentRound?: XOR<PlacementRoundNullableRelationFilter, PlacementRoundWhereInput> | null
@@ -96264,6 +100531,9 @@ export namespace Prisma {
     currentRoundId?: SortOrderInput | SortOrder
     status?: SortOrder
     appliedAt?: SortOrder
+    eligibilityStatus?: SortOrderInput | SortOrder
+    eligibilityReason?: SortOrderInput | SortOrder
+    eligibilityCheckedAt?: SortOrderInput | SortOrder
     drive?: PlacementDriveOrderByWithRelationInput
     student?: StudentOrderByWithRelationInput
     currentRound?: PlacementRoundOrderByWithRelationInput
@@ -96280,6 +100550,9 @@ export namespace Prisma {
     currentRoundId?: IntNullableFilter<"PlacementApplication"> | number | null
     status?: StringFilter<"PlacementApplication"> | string
     appliedAt?: DateTimeFilter<"PlacementApplication"> | Date | string
+    eligibilityStatus?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityReason?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityCheckedAt?: DateTimeNullableFilter<"PlacementApplication"> | Date | string | null
     drive?: XOR<PlacementDriveRelationFilter, PlacementDriveWhereInput>
     student?: XOR<StudentRelationFilter, StudentWhereInput>
     currentRound?: XOR<PlacementRoundNullableRelationFilter, PlacementRoundWhereInput> | null
@@ -96292,6 +100565,9 @@ export namespace Prisma {
     currentRoundId?: SortOrderInput | SortOrder
     status?: SortOrder
     appliedAt?: SortOrder
+    eligibilityStatus?: SortOrderInput | SortOrder
+    eligibilityReason?: SortOrderInput | SortOrder
+    eligibilityCheckedAt?: SortOrderInput | SortOrder
     _count?: PlacementApplicationCountOrderByAggregateInput
     _avg?: PlacementApplicationAvgOrderByAggregateInput
     _max?: PlacementApplicationMaxOrderByAggregateInput
@@ -96309,6 +100585,9 @@ export namespace Prisma {
     currentRoundId?: IntNullableWithAggregatesFilter<"PlacementApplication"> | number | null
     status?: StringWithAggregatesFilter<"PlacementApplication"> | string
     appliedAt?: DateTimeWithAggregatesFilter<"PlacementApplication"> | Date | string
+    eligibilityStatus?: StringNullableWithAggregatesFilter<"PlacementApplication"> | string | null
+    eligibilityReason?: StringNullableWithAggregatesFilter<"PlacementApplication"> | string | null
+    eligibilityCheckedAt?: DateTimeNullableWithAggregatesFilter<"PlacementApplication"> | Date | string | null
   }
 
   export type DocumentWhereInput = {
@@ -96388,6 +100667,7 @@ export namespace Prisma {
     activities?: DocumentActivityListRelationFilter
     shares?: DocumentShareListRelationFilter
     certificate?: XOR<CertificateNullableRelationFilter, CertificateWhereInput> | null
+    academicMarksheet?: XOR<AcademicMarksheetNullableRelationFilter, AcademicMarksheetWhereInput> | null
   }
 
   export type DocumentOrderByWithRelationInput = {
@@ -96464,6 +100744,7 @@ export namespace Prisma {
     activities?: DocumentActivityOrderByRelationAggregateInput
     shares?: DocumentShareOrderByRelationAggregateInput
     certificate?: CertificateOrderByWithRelationInput
+    academicMarksheet?: AcademicMarksheetOrderByWithRelationInput
   }
 
   export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -96543,6 +100824,7 @@ export namespace Prisma {
     activities?: DocumentActivityListRelationFilter
     shares?: DocumentShareListRelationFilter
     certificate?: XOR<CertificateNullableRelationFilter, CertificateWhereInput> | null
+    academicMarksheet?: XOR<AcademicMarksheetNullableRelationFilter, AcademicMarksheetWhereInput> | null
   }, "id" | "publicVerificationId">
 
   export type DocumentOrderByWithAggregationInput = {
@@ -101219,6 +105501,415 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"StudentRiskAssessment"> | Date | string
   }
 
+  export type AcademicMarksheetWhereInput = {
+    AND?: AcademicMarksheetWhereInput | AcademicMarksheetWhereInput[]
+    OR?: AcademicMarksheetWhereInput[]
+    NOT?: AcademicMarksheetWhereInput | AcademicMarksheetWhereInput[]
+    id?: IntFilter<"AcademicMarksheet"> | number
+    studentId?: IntFilter<"AcademicMarksheet"> | number
+    documentId?: IntNullableFilter<"AcademicMarksheet"> | number | null
+    educationLevel?: StringFilter<"AcademicMarksheet"> | string
+    board?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    studentName?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    rollNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    seatNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    registrationNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    certificateNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    passingYear?: IntNullableFilter<"AcademicMarksheet"> | number | null
+    totalMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    obtainedMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    percentage?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    cgpa?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    subjects?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    ocrConfidence?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    verificationStatus?: StringFilter<"AcademicMarksheet"> | string
+    verifiedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    mismatchReason?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    comparisonResults?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    nameMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    rollNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    seatNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    boardMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    yearMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    marksMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    digilockerDocUri?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerTxnId?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerVerified?: BoolFilter<"AcademicMarksheet"> | boolean
+    digilockerFetchedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    createdAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+    document?: XOR<DocumentNullableRelationFilter, DocumentWhereInput> | null
+  }
+
+  export type AcademicMarksheetOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrderInput | SortOrder
+    educationLevel?: SortOrder
+    board?: SortOrderInput | SortOrder
+    studentName?: SortOrderInput | SortOrder
+    rollNumber?: SortOrderInput | SortOrder
+    seatNumber?: SortOrderInput | SortOrder
+    registrationNumber?: SortOrderInput | SortOrder
+    certificateNumber?: SortOrderInput | SortOrder
+    passingYear?: SortOrderInput | SortOrder
+    totalMarks?: SortOrderInput | SortOrder
+    obtainedMarks?: SortOrderInput | SortOrder
+    percentage?: SortOrderInput | SortOrder
+    cgpa?: SortOrderInput | SortOrder
+    subjects?: SortOrderInput | SortOrder
+    ocrConfidence?: SortOrderInput | SortOrder
+    verificationStatus?: SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
+    mismatchReason?: SortOrderInput | SortOrder
+    comparisonResults?: SortOrderInput | SortOrder
+    nameMatch?: SortOrderInput | SortOrder
+    rollNumberMatch?: SortOrderInput | SortOrder
+    seatNumberMatch?: SortOrderInput | SortOrder
+    boardMatch?: SortOrderInput | SortOrder
+    yearMatch?: SortOrderInput | SortOrder
+    marksMatch?: SortOrderInput | SortOrder
+    digilockerDocUri?: SortOrderInput | SortOrder
+    digilockerTxnId?: SortOrderInput | SortOrder
+    digilockerVerified?: SortOrder
+    digilockerFetchedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    student?: StudentOrderByWithRelationInput
+    document?: DocumentOrderByWithRelationInput
+  }
+
+  export type AcademicMarksheetWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    documentId?: number
+    AND?: AcademicMarksheetWhereInput | AcademicMarksheetWhereInput[]
+    OR?: AcademicMarksheetWhereInput[]
+    NOT?: AcademicMarksheetWhereInput | AcademicMarksheetWhereInput[]
+    studentId?: IntFilter<"AcademicMarksheet"> | number
+    educationLevel?: StringFilter<"AcademicMarksheet"> | string
+    board?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    studentName?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    rollNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    seatNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    registrationNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    certificateNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    passingYear?: IntNullableFilter<"AcademicMarksheet"> | number | null
+    totalMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    obtainedMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    percentage?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    cgpa?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    subjects?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    ocrConfidence?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    verificationStatus?: StringFilter<"AcademicMarksheet"> | string
+    verifiedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    mismatchReason?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    comparisonResults?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    nameMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    rollNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    seatNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    boardMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    yearMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    marksMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    digilockerDocUri?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerTxnId?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerVerified?: BoolFilter<"AcademicMarksheet"> | boolean
+    digilockerFetchedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    createdAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+    document?: XOR<DocumentNullableRelationFilter, DocumentWhereInput> | null
+  }, "id" | "documentId">
+
+  export type AcademicMarksheetOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrderInput | SortOrder
+    educationLevel?: SortOrder
+    board?: SortOrderInput | SortOrder
+    studentName?: SortOrderInput | SortOrder
+    rollNumber?: SortOrderInput | SortOrder
+    seatNumber?: SortOrderInput | SortOrder
+    registrationNumber?: SortOrderInput | SortOrder
+    certificateNumber?: SortOrderInput | SortOrder
+    passingYear?: SortOrderInput | SortOrder
+    totalMarks?: SortOrderInput | SortOrder
+    obtainedMarks?: SortOrderInput | SortOrder
+    percentage?: SortOrderInput | SortOrder
+    cgpa?: SortOrderInput | SortOrder
+    subjects?: SortOrderInput | SortOrder
+    ocrConfidence?: SortOrderInput | SortOrder
+    verificationStatus?: SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
+    mismatchReason?: SortOrderInput | SortOrder
+    comparisonResults?: SortOrderInput | SortOrder
+    nameMatch?: SortOrderInput | SortOrder
+    rollNumberMatch?: SortOrderInput | SortOrder
+    seatNumberMatch?: SortOrderInput | SortOrder
+    boardMatch?: SortOrderInput | SortOrder
+    yearMatch?: SortOrderInput | SortOrder
+    marksMatch?: SortOrderInput | SortOrder
+    digilockerDocUri?: SortOrderInput | SortOrder
+    digilockerTxnId?: SortOrderInput | SortOrder
+    digilockerVerified?: SortOrder
+    digilockerFetchedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AcademicMarksheetCountOrderByAggregateInput
+    _avg?: AcademicMarksheetAvgOrderByAggregateInput
+    _max?: AcademicMarksheetMaxOrderByAggregateInput
+    _min?: AcademicMarksheetMinOrderByAggregateInput
+    _sum?: AcademicMarksheetSumOrderByAggregateInput
+  }
+
+  export type AcademicMarksheetScalarWhereWithAggregatesInput = {
+    AND?: AcademicMarksheetScalarWhereWithAggregatesInput | AcademicMarksheetScalarWhereWithAggregatesInput[]
+    OR?: AcademicMarksheetScalarWhereWithAggregatesInput[]
+    NOT?: AcademicMarksheetScalarWhereWithAggregatesInput | AcademicMarksheetScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"AcademicMarksheet"> | number
+    studentId?: IntWithAggregatesFilter<"AcademicMarksheet"> | number
+    documentId?: IntNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    educationLevel?: StringWithAggregatesFilter<"AcademicMarksheet"> | string
+    board?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    studentName?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    rollNumber?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    seatNumber?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    registrationNumber?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    certificateNumber?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    passingYear?: IntNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    totalMarks?: FloatNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    obtainedMarks?: FloatNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    percentage?: FloatNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    cgpa?: FloatNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    subjects?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    ocrConfidence?: FloatNullableWithAggregatesFilter<"AcademicMarksheet"> | number | null
+    verificationStatus?: StringWithAggregatesFilter<"AcademicMarksheet"> | string
+    verifiedAt?: DateTimeNullableWithAggregatesFilter<"AcademicMarksheet"> | Date | string | null
+    mismatchReason?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    comparisonResults?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    nameMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    rollNumberMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    seatNumberMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    boardMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    yearMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    marksMatch?: BoolNullableWithAggregatesFilter<"AcademicMarksheet"> | boolean | null
+    digilockerDocUri?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    digilockerTxnId?: StringNullableWithAggregatesFilter<"AcademicMarksheet"> | string | null
+    digilockerVerified?: BoolWithAggregatesFilter<"AcademicMarksheet"> | boolean
+    digilockerFetchedAt?: DateTimeNullableWithAggregatesFilter<"AcademicMarksheet"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AcademicMarksheet"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AcademicMarksheet"> | Date | string
+  }
+
+  export type DigiLockerConnectionWhereInput = {
+    AND?: DigiLockerConnectionWhereInput | DigiLockerConnectionWhereInput[]
+    OR?: DigiLockerConnectionWhereInput[]
+    NOT?: DigiLockerConnectionWhereInput | DigiLockerConnectionWhereInput[]
+    id?: IntFilter<"DigiLockerConnection"> | number
+    studentId?: IntFilter<"DigiLockerConnection"> | number
+    digilockerId?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    name?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    mobileNumber?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    status?: StringFilter<"DigiLockerConnection"> | string
+    accessTokenEncrypted?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    refreshTokenEncrypted?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    tokenExpiry?: DateTimeNullableFilter<"DigiLockerConnection"> | Date | string | null
+    connectedAt?: DateTimeFilter<"DigiLockerConnection"> | Date | string
+    lastSyncedAt?: DateTimeNullableFilter<"DigiLockerConnection"> | Date | string | null
+    metadata?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+  }
+
+  export type DigiLockerConnectionOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    digilockerId?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    mobileNumber?: SortOrderInput | SortOrder
+    status?: SortOrder
+    accessTokenEncrypted?: SortOrderInput | SortOrder
+    refreshTokenEncrypted?: SortOrderInput | SortOrder
+    tokenExpiry?: SortOrderInput | SortOrder
+    connectedAt?: SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    student?: StudentOrderByWithRelationInput
+  }
+
+  export type DigiLockerConnectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    studentId?: number
+    AND?: DigiLockerConnectionWhereInput | DigiLockerConnectionWhereInput[]
+    OR?: DigiLockerConnectionWhereInput[]
+    NOT?: DigiLockerConnectionWhereInput | DigiLockerConnectionWhereInput[]
+    digilockerId?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    name?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    mobileNumber?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    status?: StringFilter<"DigiLockerConnection"> | string
+    accessTokenEncrypted?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    refreshTokenEncrypted?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    tokenExpiry?: DateTimeNullableFilter<"DigiLockerConnection"> | Date | string | null
+    connectedAt?: DateTimeFilter<"DigiLockerConnection"> | Date | string
+    lastSyncedAt?: DateTimeNullableFilter<"DigiLockerConnection"> | Date | string | null
+    metadata?: StringNullableFilter<"DigiLockerConnection"> | string | null
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+  }, "id" | "studentId">
+
+  export type DigiLockerConnectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    digilockerId?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    mobileNumber?: SortOrderInput | SortOrder
+    status?: SortOrder
+    accessTokenEncrypted?: SortOrderInput | SortOrder
+    refreshTokenEncrypted?: SortOrderInput | SortOrder
+    tokenExpiry?: SortOrderInput | SortOrder
+    connectedAt?: SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    _count?: DigiLockerConnectionCountOrderByAggregateInput
+    _avg?: DigiLockerConnectionAvgOrderByAggregateInput
+    _max?: DigiLockerConnectionMaxOrderByAggregateInput
+    _min?: DigiLockerConnectionMinOrderByAggregateInput
+    _sum?: DigiLockerConnectionSumOrderByAggregateInput
+  }
+
+  export type DigiLockerConnectionScalarWhereWithAggregatesInput = {
+    AND?: DigiLockerConnectionScalarWhereWithAggregatesInput | DigiLockerConnectionScalarWhereWithAggregatesInput[]
+    OR?: DigiLockerConnectionScalarWhereWithAggregatesInput[]
+    NOT?: DigiLockerConnectionScalarWhereWithAggregatesInput | DigiLockerConnectionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"DigiLockerConnection"> | number
+    studentId?: IntWithAggregatesFilter<"DigiLockerConnection"> | number
+    digilockerId?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+    name?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+    mobileNumber?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+    status?: StringWithAggregatesFilter<"DigiLockerConnection"> | string
+    accessTokenEncrypted?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+    refreshTokenEncrypted?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+    tokenExpiry?: DateTimeNullableWithAggregatesFilter<"DigiLockerConnection"> | Date | string | null
+    connectedAt?: DateTimeWithAggregatesFilter<"DigiLockerConnection"> | Date | string
+    lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"DigiLockerConnection"> | Date | string | null
+    metadata?: StringNullableWithAggregatesFilter<"DigiLockerConnection"> | string | null
+  }
+
+  export type AcademicVerificationRecordWhereInput = {
+    AND?: AcademicVerificationRecordWhereInput | AcademicVerificationRecordWhereInput[]
+    OR?: AcademicVerificationRecordWhereInput[]
+    NOT?: AcademicVerificationRecordWhereInput | AcademicVerificationRecordWhereInput[]
+    id?: IntFilter<"AcademicVerificationRecord"> | number
+    studentId?: IntFilter<"AcademicVerificationRecord"> | number
+    verificationStatus?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    documentIntegrity?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    identityConsistency?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    reviewReason?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    dossierJson?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    createdAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+  }
+
+  export type AcademicVerificationRecordOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    verificationStatus?: SortOrderInput | SortOrder
+    tenthBoard?: SortOrderInput | SortOrder
+    tenthYear?: SortOrderInput | SortOrder
+    tenthScore?: SortOrderInput | SortOrder
+    tenthScoreSource?: SortOrderInput | SortOrder
+    twelfthBoard?: SortOrderInput | SortOrder
+    twelfthYear?: SortOrderInput | SortOrder
+    twelfthScore?: SortOrderInput | SortOrder
+    twelfthScoreSource?: SortOrderInput | SortOrder
+    documentIntegrity?: SortOrderInput | SortOrder
+    identityConsistency?: SortOrderInput | SortOrder
+    reviewReason?: SortOrderInput | SortOrder
+    dossierJson?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    student?: StudentOrderByWithRelationInput
+  }
+
+  export type AcademicVerificationRecordWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: AcademicVerificationRecordWhereInput | AcademicVerificationRecordWhereInput[]
+    OR?: AcademicVerificationRecordWhereInput[]
+    NOT?: AcademicVerificationRecordWhereInput | AcademicVerificationRecordWhereInput[]
+    studentId?: IntFilter<"AcademicVerificationRecord"> | number
+    verificationStatus?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    documentIntegrity?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    identityConsistency?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    reviewReason?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    dossierJson?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    createdAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+  }, "id">
+
+  export type AcademicVerificationRecordOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    verificationStatus?: SortOrderInput | SortOrder
+    tenthBoard?: SortOrderInput | SortOrder
+    tenthYear?: SortOrderInput | SortOrder
+    tenthScore?: SortOrderInput | SortOrder
+    tenthScoreSource?: SortOrderInput | SortOrder
+    twelfthBoard?: SortOrderInput | SortOrder
+    twelfthYear?: SortOrderInput | SortOrder
+    twelfthScore?: SortOrderInput | SortOrder
+    twelfthScoreSource?: SortOrderInput | SortOrder
+    documentIntegrity?: SortOrderInput | SortOrder
+    identityConsistency?: SortOrderInput | SortOrder
+    reviewReason?: SortOrderInput | SortOrder
+    dossierJson?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AcademicVerificationRecordCountOrderByAggregateInput
+    _avg?: AcademicVerificationRecordAvgOrderByAggregateInput
+    _max?: AcademicVerificationRecordMaxOrderByAggregateInput
+    _min?: AcademicVerificationRecordMinOrderByAggregateInput
+    _sum?: AcademicVerificationRecordSumOrderByAggregateInput
+  }
+
+  export type AcademicVerificationRecordScalarWhereWithAggregatesInput = {
+    AND?: AcademicVerificationRecordScalarWhereWithAggregatesInput | AcademicVerificationRecordScalarWhereWithAggregatesInput[]
+    OR?: AcademicVerificationRecordScalarWhereWithAggregatesInput[]
+    NOT?: AcademicVerificationRecordScalarWhereWithAggregatesInput | AcademicVerificationRecordScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"AcademicVerificationRecord"> | number
+    studentId?: IntWithAggregatesFilter<"AcademicVerificationRecord"> | number
+    verificationStatus?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    tenthBoard?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    tenthYear?: IntNullableWithAggregatesFilter<"AcademicVerificationRecord"> | number | null
+    tenthScore?: FloatNullableWithAggregatesFilter<"AcademicVerificationRecord"> | number | null
+    tenthScoreSource?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    twelfthBoard?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    twelfthYear?: IntNullableWithAggregatesFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScore?: FloatNullableWithAggregatesFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScoreSource?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    documentIntegrity?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    identityConsistency?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    reviewReason?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    dossierJson?: StringNullableWithAggregatesFilter<"AcademicVerificationRecord"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AcademicVerificationRecord"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AcademicVerificationRecord"> | Date | string
+  }
+
   export type StudentCreateInput = {
     name: string
     email: string
@@ -101230,6 +105921,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -101263,6 +105966,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateInput = {
@@ -101278,6 +105984,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -101310,6 +106028,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUpdateInput = {
@@ -101323,6 +106044,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -101356,6 +106089,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateInput = {
@@ -101371,6 +106107,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -101403,6 +106151,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateManyInput = {
@@ -101418,6 +106169,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -101436,6 +106199,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -101456,6 +106231,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -103427,6 +108214,9 @@ export namespace Prisma {
   export type PlacementApplicationCreateInput = {
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
     drive: PlacementDriveCreateNestedOneWithoutApplicationsInput
     student: StudentCreateNestedOneWithoutPlacementAppsInput
     currentRound?: PlacementRoundCreateNestedOneWithoutApplicationsInput
@@ -103439,11 +108229,17 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationUpdateInput = {
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     drive?: PlacementDriveUpdateOneRequiredWithoutApplicationsNestedInput
     student?: StudentUpdateOneRequiredWithoutPlacementAppsNestedInput
     currentRound?: PlacementRoundUpdateOneWithoutApplicationsNestedInput
@@ -103456,6 +108252,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationCreateManyInput = {
@@ -103465,11 +108264,17 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationUpdateManyMutationInput = {
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationUncheckedUpdateManyInput = {
@@ -103479,6 +108284,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type DocumentCreateInput = {
@@ -103551,6 +108359,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateInput = {
@@ -103624,6 +108433,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUpdateInput = {
@@ -103696,6 +108506,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateInput = {
@@ -103769,6 +108580,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateManyInput = {
@@ -108702,6 +113514,490 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AcademicMarksheetCreateInput = {
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutAcademicMarksheetsInput
+    document?: DocumentCreateNestedOneWithoutAcademicMarksheetInput
+  }
+
+  export type AcademicMarksheetUncheckedCreateInput = {
+    id?: number
+    studentId: number
+    documentId?: number | null
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicMarksheetUpdateInput = {
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutAcademicMarksheetsNestedInput
+    document?: DocumentUpdateOneWithoutAcademicMarksheetNestedInput
+  }
+
+  export type AcademicMarksheetUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    documentId?: NullableIntFieldUpdateOperationsInput | number | null
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicMarksheetCreateManyInput = {
+    id?: number
+    studentId: number
+    documentId?: number | null
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicMarksheetUpdateManyMutationInput = {
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicMarksheetUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    documentId?: NullableIntFieldUpdateOperationsInput | number | null
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigiLockerConnectionCreateInput = {
+    digilockerId?: string | null
+    name?: string | null
+    mobileNumber?: string | null
+    status?: string
+    accessTokenEncrypted?: string | null
+    refreshTokenEncrypted?: string | null
+    tokenExpiry?: Date | string | null
+    connectedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    metadata?: string | null
+    student: StudentCreateNestedOneWithoutDigilockerConnectionInput
+  }
+
+  export type DigiLockerConnectionUncheckedCreateInput = {
+    id?: number
+    studentId: number
+    digilockerId?: string | null
+    name?: string | null
+    mobileNumber?: string | null
+    status?: string
+    accessTokenEncrypted?: string | null
+    refreshTokenEncrypted?: string | null
+    tokenExpiry?: Date | string | null
+    connectedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    metadata?: string | null
+  }
+
+  export type DigiLockerConnectionUpdateInput = {
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    student?: StudentUpdateOneRequiredWithoutDigilockerConnectionNestedInput
+  }
+
+  export type DigiLockerConnectionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DigiLockerConnectionCreateManyInput = {
+    id?: number
+    studentId: number
+    digilockerId?: string | null
+    name?: string | null
+    mobileNumber?: string | null
+    status?: string
+    accessTokenEncrypted?: string | null
+    refreshTokenEncrypted?: string | null
+    tokenExpiry?: Date | string | null
+    connectedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    metadata?: string | null
+  }
+
+  export type DigiLockerConnectionUpdateManyMutationInput = {
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DigiLockerConnectionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AcademicVerificationRecordCreateInput = {
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutAcademicVerificationRecordsInput
+  }
+
+  export type AcademicVerificationRecordUncheckedCreateInput = {
+    id?: number
+    studentId: number
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicVerificationRecordUpdateInput = {
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutAcademicVerificationRecordsNestedInput
+  }
+
+  export type AcademicVerificationRecordUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicVerificationRecordCreateManyInput = {
+    id?: number
+    studentId: number
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicVerificationRecordUpdateManyMutationInput = {
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicVerificationRecordUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -108763,6 +114059,22 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -108941,6 +114253,23 @@ export namespace Prisma {
     isNot?: StudentRiskAssessmentWhereInput | null
   }
 
+  export type AcademicMarksheetListRelationFilter = {
+    every?: AcademicMarksheetWhereInput
+    some?: AcademicMarksheetWhereInput
+    none?: AcademicMarksheetWhereInput
+  }
+
+  export type DigiLockerConnectionNullableRelationFilter = {
+    is?: DigiLockerConnectionWhereInput | null
+    isNot?: DigiLockerConnectionWhereInput | null
+  }
+
+  export type AcademicVerificationRecordListRelationFilter = {
+    every?: AcademicVerificationRecordWhereInput
+    some?: AcademicVerificationRecordWhereInput
+    none?: AcademicVerificationRecordWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -109046,6 +114375,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type AcademicMarksheetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AcademicVerificationRecordOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type StudentCountOrderByAggregateInput = {
     id?: SortOrder
     institutionId?: SortOrder
@@ -109059,6 +114396,18 @@ export namespace Prisma {
     cgpa?: SortOrder
     tenthMarks?: SortOrder
     twelfthMarks?: SortOrder
+    tenthBoard?: SortOrder
+    tenthPassingYear?: SortOrder
+    tenthDocumentId?: SortOrder
+    tenthPercentageSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthPassingYear?: SortOrder
+    twelfthDocumentId?: SortOrder
+    twelfthPercentageSource?: SortOrder
+    academicVerificationStatus?: SortOrder
+    academicVerifiedAt?: SortOrder
+    academicVerificationData?: SortOrder
+    isAcademicLocked?: SortOrder
     githubUrl?: SortOrder
     linkedinUrl?: SortOrder
     portfolioUrl?: SortOrder
@@ -109073,6 +114422,10 @@ export namespace Prisma {
     cgpa?: SortOrder
     tenthMarks?: SortOrder
     twelfthMarks?: SortOrder
+    tenthPassingYear?: SortOrder
+    tenthDocumentId?: SortOrder
+    twelfthPassingYear?: SortOrder
+    twelfthDocumentId?: SortOrder
   }
 
   export type StudentMaxOrderByAggregateInput = {
@@ -109088,6 +114441,18 @@ export namespace Prisma {
     cgpa?: SortOrder
     tenthMarks?: SortOrder
     twelfthMarks?: SortOrder
+    tenthBoard?: SortOrder
+    tenthPassingYear?: SortOrder
+    tenthDocumentId?: SortOrder
+    tenthPercentageSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthPassingYear?: SortOrder
+    twelfthDocumentId?: SortOrder
+    twelfthPercentageSource?: SortOrder
+    academicVerificationStatus?: SortOrder
+    academicVerifiedAt?: SortOrder
+    academicVerificationData?: SortOrder
+    isAcademicLocked?: SortOrder
     githubUrl?: SortOrder
     linkedinUrl?: SortOrder
     portfolioUrl?: SortOrder
@@ -109108,6 +114473,18 @@ export namespace Prisma {
     cgpa?: SortOrder
     tenthMarks?: SortOrder
     twelfthMarks?: SortOrder
+    tenthBoard?: SortOrder
+    tenthPassingYear?: SortOrder
+    tenthDocumentId?: SortOrder
+    tenthPercentageSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthPassingYear?: SortOrder
+    twelfthDocumentId?: SortOrder
+    twelfthPercentageSource?: SortOrder
+    academicVerificationStatus?: SortOrder
+    academicVerifiedAt?: SortOrder
+    academicVerificationData?: SortOrder
+    isAcademicLocked?: SortOrder
     githubUrl?: SortOrder
     linkedinUrl?: SortOrder
     portfolioUrl?: SortOrder
@@ -109122,6 +114499,10 @@ export namespace Prisma {
     cgpa?: SortOrder
     tenthMarks?: SortOrder
     twelfthMarks?: SortOrder
+    tenthPassingYear?: SortOrder
+    tenthDocumentId?: SortOrder
+    twelfthPassingYear?: SortOrder
+    twelfthDocumentId?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -109206,6 +114587,28 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -109558,17 +114961,6 @@ export namespace Prisma {
     studentId?: SortOrder
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type CodingSessionCountOrderByAggregateInput = {
     id?: SortOrder
     companyId?: SortOrder
@@ -109623,20 +115015,6 @@ export namespace Prisma {
     companyId?: SortOrder
     studentId?: SortOrder
     score?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UserListRelationFilter = {
@@ -110677,6 +116055,9 @@ export namespace Prisma {
     currentRoundId?: SortOrder
     status?: SortOrder
     appliedAt?: SortOrder
+    eligibilityStatus?: SortOrder
+    eligibilityReason?: SortOrder
+    eligibilityCheckedAt?: SortOrder
   }
 
   export type PlacementApplicationAvgOrderByAggregateInput = {
@@ -110693,6 +116074,9 @@ export namespace Prisma {
     currentRoundId?: SortOrder
     status?: SortOrder
     appliedAt?: SortOrder
+    eligibilityStatus?: SortOrder
+    eligibilityReason?: SortOrder
+    eligibilityCheckedAt?: SortOrder
   }
 
   export type PlacementApplicationMinOrderByAggregateInput = {
@@ -110702,6 +116086,9 @@ export namespace Prisma {
     currentRoundId?: SortOrder
     status?: SortOrder
     appliedAt?: SortOrder
+    eligibilityStatus?: SortOrder
+    eligibilityReason?: SortOrder
+    eligibilityCheckedAt?: SortOrder
   }
 
   export type PlacementApplicationSumOrderByAggregateInput = {
@@ -110793,6 +116180,11 @@ export namespace Prisma {
   export type CertificateNullableRelationFilter = {
     is?: CertificateWhereInput | null
     isNot?: CertificateWhereInput | null
+  }
+
+  export type AcademicMarksheetNullableRelationFilter = {
+    is?: AcademicMarksheetWhereInput | null
+    isNot?: AcademicMarksheetWhereInput | null
   }
 
   export type DocumentProcessingOrderByRelationAggregateInput = {
@@ -111188,11 +116580,6 @@ export namespace Prisma {
     pageCount?: SortOrder
   }
 
-  export type BoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
   export type ExtractedFieldCountOrderByAggregateInput = {
     id?: SortOrder
     documentId?: SortOrder
@@ -111236,14 +116623,6 @@ export namespace Prisma {
     id?: SortOrder
     documentId?: SortOrder
     confidence?: SortOrder
-  }
-
-  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type DocumentVerificationCountOrderByAggregateInput = {
@@ -114145,6 +119524,271 @@ export namespace Prisma {
     averageScore?: SortOrder
   }
 
+  export type AcademicMarksheetCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrder
+    educationLevel?: SortOrder
+    board?: SortOrder
+    studentName?: SortOrder
+    rollNumber?: SortOrder
+    seatNumber?: SortOrder
+    registrationNumber?: SortOrder
+    certificateNumber?: SortOrder
+    passingYear?: SortOrder
+    totalMarks?: SortOrder
+    obtainedMarks?: SortOrder
+    percentage?: SortOrder
+    cgpa?: SortOrder
+    subjects?: SortOrder
+    ocrConfidence?: SortOrder
+    verificationStatus?: SortOrder
+    verifiedAt?: SortOrder
+    mismatchReason?: SortOrder
+    comparisonResults?: SortOrder
+    nameMatch?: SortOrder
+    rollNumberMatch?: SortOrder
+    seatNumberMatch?: SortOrder
+    boardMatch?: SortOrder
+    yearMatch?: SortOrder
+    marksMatch?: SortOrder
+    digilockerDocUri?: SortOrder
+    digilockerTxnId?: SortOrder
+    digilockerVerified?: SortOrder
+    digilockerFetchedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicMarksheetAvgOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrder
+    passingYear?: SortOrder
+    totalMarks?: SortOrder
+    obtainedMarks?: SortOrder
+    percentage?: SortOrder
+    cgpa?: SortOrder
+    ocrConfidence?: SortOrder
+  }
+
+  export type AcademicMarksheetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrder
+    educationLevel?: SortOrder
+    board?: SortOrder
+    studentName?: SortOrder
+    rollNumber?: SortOrder
+    seatNumber?: SortOrder
+    registrationNumber?: SortOrder
+    certificateNumber?: SortOrder
+    passingYear?: SortOrder
+    totalMarks?: SortOrder
+    obtainedMarks?: SortOrder
+    percentage?: SortOrder
+    cgpa?: SortOrder
+    subjects?: SortOrder
+    ocrConfidence?: SortOrder
+    verificationStatus?: SortOrder
+    verifiedAt?: SortOrder
+    mismatchReason?: SortOrder
+    comparisonResults?: SortOrder
+    nameMatch?: SortOrder
+    rollNumberMatch?: SortOrder
+    seatNumberMatch?: SortOrder
+    boardMatch?: SortOrder
+    yearMatch?: SortOrder
+    marksMatch?: SortOrder
+    digilockerDocUri?: SortOrder
+    digilockerTxnId?: SortOrder
+    digilockerVerified?: SortOrder
+    digilockerFetchedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicMarksheetMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrder
+    educationLevel?: SortOrder
+    board?: SortOrder
+    studentName?: SortOrder
+    rollNumber?: SortOrder
+    seatNumber?: SortOrder
+    registrationNumber?: SortOrder
+    certificateNumber?: SortOrder
+    passingYear?: SortOrder
+    totalMarks?: SortOrder
+    obtainedMarks?: SortOrder
+    percentage?: SortOrder
+    cgpa?: SortOrder
+    subjects?: SortOrder
+    ocrConfidence?: SortOrder
+    verificationStatus?: SortOrder
+    verifiedAt?: SortOrder
+    mismatchReason?: SortOrder
+    comparisonResults?: SortOrder
+    nameMatch?: SortOrder
+    rollNumberMatch?: SortOrder
+    seatNumberMatch?: SortOrder
+    boardMatch?: SortOrder
+    yearMatch?: SortOrder
+    marksMatch?: SortOrder
+    digilockerDocUri?: SortOrder
+    digilockerTxnId?: SortOrder
+    digilockerVerified?: SortOrder
+    digilockerFetchedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicMarksheetSumOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    documentId?: SortOrder
+    passingYear?: SortOrder
+    totalMarks?: SortOrder
+    obtainedMarks?: SortOrder
+    percentage?: SortOrder
+    cgpa?: SortOrder
+    ocrConfidence?: SortOrder
+  }
+
+  export type DigiLockerConnectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    digilockerId?: SortOrder
+    name?: SortOrder
+    mobileNumber?: SortOrder
+    status?: SortOrder
+    accessTokenEncrypted?: SortOrder
+    refreshTokenEncrypted?: SortOrder
+    tokenExpiry?: SortOrder
+    connectedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type DigiLockerConnectionAvgOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+  }
+
+  export type DigiLockerConnectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    digilockerId?: SortOrder
+    name?: SortOrder
+    mobileNumber?: SortOrder
+    status?: SortOrder
+    accessTokenEncrypted?: SortOrder
+    refreshTokenEncrypted?: SortOrder
+    tokenExpiry?: SortOrder
+    connectedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type DigiLockerConnectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    digilockerId?: SortOrder
+    name?: SortOrder
+    mobileNumber?: SortOrder
+    status?: SortOrder
+    accessTokenEncrypted?: SortOrder
+    refreshTokenEncrypted?: SortOrder
+    tokenExpiry?: SortOrder
+    connectedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type DigiLockerConnectionSumOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+  }
+
+  export type AcademicVerificationRecordCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    verificationStatus?: SortOrder
+    tenthBoard?: SortOrder
+    tenthYear?: SortOrder
+    tenthScore?: SortOrder
+    tenthScoreSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthYear?: SortOrder
+    twelfthScore?: SortOrder
+    twelfthScoreSource?: SortOrder
+    documentIntegrity?: SortOrder
+    identityConsistency?: SortOrder
+    reviewReason?: SortOrder
+    dossierJson?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicVerificationRecordAvgOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    tenthYear?: SortOrder
+    tenthScore?: SortOrder
+    twelfthYear?: SortOrder
+    twelfthScore?: SortOrder
+  }
+
+  export type AcademicVerificationRecordMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    verificationStatus?: SortOrder
+    tenthBoard?: SortOrder
+    tenthYear?: SortOrder
+    tenthScore?: SortOrder
+    tenthScoreSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthYear?: SortOrder
+    twelfthScore?: SortOrder
+    twelfthScoreSource?: SortOrder
+    documentIntegrity?: SortOrder
+    identityConsistency?: SortOrder
+    reviewReason?: SortOrder
+    dossierJson?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicVerificationRecordMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    verificationStatus?: SortOrder
+    tenthBoard?: SortOrder
+    tenthYear?: SortOrder
+    tenthScore?: SortOrder
+    tenthScoreSource?: SortOrder
+    twelfthBoard?: SortOrder
+    twelfthYear?: SortOrder
+    twelfthScore?: SortOrder
+    twelfthScoreSource?: SortOrder
+    documentIntegrity?: SortOrder
+    identityConsistency?: SortOrder
+    reviewReason?: SortOrder
+    dossierJson?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AcademicVerificationRecordSumOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    tenthYear?: SortOrder
+    tenthScore?: SortOrder
+    twelfthYear?: SortOrder
+    twelfthScore?: SortOrder
+  }
+
   export type InstitutionCreateNestedOneWithoutStudentsInput = {
     create?: XOR<InstitutionCreateWithoutStudentsInput, InstitutionUncheckedCreateWithoutStudentsInput>
     connectOrCreate?: InstitutionCreateOrConnectWithoutStudentsInput
@@ -114338,6 +119982,26 @@ export namespace Prisma {
     connect?: StudentRiskAssessmentWhereUniqueInput
   }
 
+  export type AcademicMarksheetCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput> | AcademicMarksheetCreateWithoutStudentInput[] | AcademicMarksheetUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutStudentInput | AcademicMarksheetCreateOrConnectWithoutStudentInput[]
+    createMany?: AcademicMarksheetCreateManyStudentInputEnvelope
+    connect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+  }
+
+  export type DigiLockerConnectionCreateNestedOneWithoutStudentInput = {
+    create?: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+    connectOrCreate?: DigiLockerConnectionCreateOrConnectWithoutStudentInput
+    connect?: DigiLockerConnectionWhereUniqueInput
+  }
+
+  export type AcademicVerificationRecordCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput> | AcademicVerificationRecordCreateWithoutStudentInput[] | AcademicVerificationRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicVerificationRecordCreateOrConnectWithoutStudentInput | AcademicVerificationRecordCreateOrConnectWithoutStudentInput[]
+    createMany?: AcademicVerificationRecordCreateManyStudentInputEnvelope
+    connect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+  }
+
   export type ResumeUncheckedCreateNestedManyWithoutStudentInput = {
     create?: XOR<ResumeCreateWithoutStudentInput, ResumeUncheckedCreateWithoutStudentInput> | ResumeCreateWithoutStudentInput[] | ResumeUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: ResumeCreateOrConnectWithoutStudentInput | ResumeCreateOrConnectWithoutStudentInput[]
@@ -114525,6 +120189,26 @@ export namespace Prisma {
     connect?: StudentRiskAssessmentWhereUniqueInput
   }
 
+  export type AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput> | AcademicMarksheetCreateWithoutStudentInput[] | AcademicMarksheetUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutStudentInput | AcademicMarksheetCreateOrConnectWithoutStudentInput[]
+    createMany?: AcademicMarksheetCreateManyStudentInputEnvelope
+    connect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+  }
+
+  export type DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput = {
+    create?: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+    connectOrCreate?: DigiLockerConnectionCreateOrConnectWithoutStudentInput
+    connect?: DigiLockerConnectionWhereUniqueInput
+  }
+
+  export type AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput> | AcademicVerificationRecordCreateWithoutStudentInput[] | AcademicVerificationRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicVerificationRecordCreateOrConnectWithoutStudentInput | AcademicVerificationRecordCreateOrConnectWithoutStudentInput[]
+    createMany?: AcademicVerificationRecordCreateManyStudentInputEnvelope
+    connect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -114547,6 +120231,14 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -114933,6 +120625,44 @@ export namespace Prisma {
     update?: XOR<XOR<StudentRiskAssessmentUpdateToOneWithWhereWithoutStudentInput, StudentRiskAssessmentUpdateWithoutStudentInput>, StudentRiskAssessmentUncheckedUpdateWithoutStudentInput>
   }
 
+  export type AcademicMarksheetUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput> | AcademicMarksheetCreateWithoutStudentInput[] | AcademicMarksheetUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutStudentInput | AcademicMarksheetCreateOrConnectWithoutStudentInput[]
+    upsert?: AcademicMarksheetUpsertWithWhereUniqueWithoutStudentInput | AcademicMarksheetUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AcademicMarksheetCreateManyStudentInputEnvelope
+    set?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    disconnect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    delete?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    connect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    update?: AcademicMarksheetUpdateWithWhereUniqueWithoutStudentInput | AcademicMarksheetUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AcademicMarksheetUpdateManyWithWhereWithoutStudentInput | AcademicMarksheetUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AcademicMarksheetScalarWhereInput | AcademicMarksheetScalarWhereInput[]
+  }
+
+  export type DigiLockerConnectionUpdateOneWithoutStudentNestedInput = {
+    create?: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+    connectOrCreate?: DigiLockerConnectionCreateOrConnectWithoutStudentInput
+    upsert?: DigiLockerConnectionUpsertWithoutStudentInput
+    disconnect?: DigiLockerConnectionWhereInput | boolean
+    delete?: DigiLockerConnectionWhereInput | boolean
+    connect?: DigiLockerConnectionWhereUniqueInput
+    update?: XOR<XOR<DigiLockerConnectionUpdateToOneWithWhereWithoutStudentInput, DigiLockerConnectionUpdateWithoutStudentInput>, DigiLockerConnectionUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput> | AcademicVerificationRecordCreateWithoutStudentInput[] | AcademicVerificationRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicVerificationRecordCreateOrConnectWithoutStudentInput | AcademicVerificationRecordCreateOrConnectWithoutStudentInput[]
+    upsert?: AcademicVerificationRecordUpsertWithWhereUniqueWithoutStudentInput | AcademicVerificationRecordUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AcademicVerificationRecordCreateManyStudentInputEnvelope
+    set?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    disconnect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    delete?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    connect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    update?: AcademicVerificationRecordUpdateWithWhereUniqueWithoutStudentInput | AcademicVerificationRecordUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AcademicVerificationRecordUpdateManyWithWhereWithoutStudentInput | AcademicVerificationRecordUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AcademicVerificationRecordScalarWhereInput | AcademicVerificationRecordScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -115311,6 +121041,44 @@ export namespace Prisma {
     update?: XOR<XOR<StudentRiskAssessmentUpdateToOneWithWhereWithoutStudentInput, StudentRiskAssessmentUpdateWithoutStudentInput>, StudentRiskAssessmentUncheckedUpdateWithoutStudentInput>
   }
 
+  export type AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput> | AcademicMarksheetCreateWithoutStudentInput[] | AcademicMarksheetUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutStudentInput | AcademicMarksheetCreateOrConnectWithoutStudentInput[]
+    upsert?: AcademicMarksheetUpsertWithWhereUniqueWithoutStudentInput | AcademicMarksheetUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AcademicMarksheetCreateManyStudentInputEnvelope
+    set?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    disconnect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    delete?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    connect?: AcademicMarksheetWhereUniqueInput | AcademicMarksheetWhereUniqueInput[]
+    update?: AcademicMarksheetUpdateWithWhereUniqueWithoutStudentInput | AcademicMarksheetUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AcademicMarksheetUpdateManyWithWhereWithoutStudentInput | AcademicMarksheetUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AcademicMarksheetScalarWhereInput | AcademicMarksheetScalarWhereInput[]
+  }
+
+  export type DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput = {
+    create?: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+    connectOrCreate?: DigiLockerConnectionCreateOrConnectWithoutStudentInput
+    upsert?: DigiLockerConnectionUpsertWithoutStudentInput
+    disconnect?: DigiLockerConnectionWhereInput | boolean
+    delete?: DigiLockerConnectionWhereInput | boolean
+    connect?: DigiLockerConnectionWhereUniqueInput
+    update?: XOR<XOR<DigiLockerConnectionUpdateToOneWithWhereWithoutStudentInput, DigiLockerConnectionUpdateWithoutStudentInput>, DigiLockerConnectionUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput> | AcademicVerificationRecordCreateWithoutStudentInput[] | AcademicVerificationRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AcademicVerificationRecordCreateOrConnectWithoutStudentInput | AcademicVerificationRecordCreateOrConnectWithoutStudentInput[]
+    upsert?: AcademicVerificationRecordUpsertWithWhereUniqueWithoutStudentInput | AcademicVerificationRecordUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AcademicVerificationRecordCreateManyStudentInputEnvelope
+    set?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    disconnect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    delete?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    connect?: AcademicVerificationRecordWhereUniqueInput | AcademicVerificationRecordWhereUniqueInput[]
+    update?: AcademicVerificationRecordUpdateWithWhereUniqueWithoutStudentInput | AcademicVerificationRecordUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AcademicVerificationRecordUpdateManyWithWhereWithoutStudentInput | AcademicVerificationRecordUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AcademicVerificationRecordScalarWhereInput | AcademicVerificationRecordScalarWhereInput[]
+  }
+
   export type InstitutionCreateNestedOneWithoutCompaniesInput = {
     create?: XOR<InstitutionCreateWithoutCompaniesInput, InstitutionUncheckedCreateWithoutCompaniesInput>
     connectOrCreate?: InstitutionCreateOrConnectWithoutCompaniesInput
@@ -115631,10 +121399,6 @@ export namespace Prisma {
     create?: XOR<StudentCreateWithoutCodingSessionsInput, StudentUncheckedCreateWithoutCodingSessionsInput>
     connectOrCreate?: StudentCreateOrConnectWithoutCodingSessionsInput
     connect?: StudentWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type CompanyUpdateOneRequiredWithoutCodingSessionsNestedInput = {
@@ -117878,6 +123642,12 @@ export namespace Prisma {
     connect?: CertificateWhereUniqueInput
   }
 
+  export type AcademicMarksheetCreateNestedOneWithoutDocumentInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutDocumentInput
+    connect?: AcademicMarksheetWhereUniqueInput
+  }
+
   export type DocumentUncheckedCreateNestedManyWithoutParentDocumentInput = {
     create?: XOR<DocumentCreateWithoutParentDocumentInput, DocumentUncheckedCreateWithoutParentDocumentInput> | DocumentCreateWithoutParentDocumentInput[] | DocumentUncheckedCreateWithoutParentDocumentInput[]
     connectOrCreate?: DocumentCreateOrConnectWithoutParentDocumentInput | DocumentCreateOrConnectWithoutParentDocumentInput[]
@@ -117997,6 +123767,12 @@ export namespace Prisma {
     create?: XOR<CertificateCreateWithoutDocumentInput, CertificateUncheckedCreateWithoutDocumentInput>
     connectOrCreate?: CertificateCreateOrConnectWithoutDocumentInput
     connect?: CertificateWhereUniqueInput
+  }
+
+  export type AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutDocumentInput
+    connect?: AcademicMarksheetWhereUniqueInput
   }
 
   export type StudentUpdateOneRequiredWithoutDocumentsNestedInput = {
@@ -118259,6 +124035,16 @@ export namespace Prisma {
     update?: XOR<XOR<CertificateUpdateToOneWithWhereWithoutDocumentInput, CertificateUpdateWithoutDocumentInput>, CertificateUncheckedUpdateWithoutDocumentInput>
   }
 
+  export type AcademicMarksheetUpdateOneWithoutDocumentNestedInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutDocumentInput
+    upsert?: AcademicMarksheetUpsertWithoutDocumentInput
+    disconnect?: AcademicMarksheetWhereInput | boolean
+    delete?: AcademicMarksheetWhereInput | boolean
+    connect?: AcademicMarksheetWhereUniqueInput
+    update?: XOR<XOR<AcademicMarksheetUpdateToOneWithWhereWithoutDocumentInput, AcademicMarksheetUpdateWithoutDocumentInput>, AcademicMarksheetUncheckedUpdateWithoutDocumentInput>
+  }
+
   export type DocumentUncheckedUpdateManyWithoutParentDocumentNestedInput = {
     create?: XOR<DocumentCreateWithoutParentDocumentInput, DocumentUncheckedCreateWithoutParentDocumentInput> | DocumentCreateWithoutParentDocumentInput[] | DocumentUncheckedCreateWithoutParentDocumentInput[]
     connectOrCreate?: DocumentCreateOrConnectWithoutParentDocumentInput | DocumentCreateOrConnectWithoutParentDocumentInput[]
@@ -118491,6 +124277,16 @@ export namespace Prisma {
     update?: XOR<XOR<CertificateUpdateToOneWithWhereWithoutDocumentInput, CertificateUpdateWithoutDocumentInput>, CertificateUncheckedUpdateWithoutDocumentInput>
   }
 
+  export type AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput = {
+    create?: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+    connectOrCreate?: AcademicMarksheetCreateOrConnectWithoutDocumentInput
+    upsert?: AcademicMarksheetUpsertWithoutDocumentInput
+    disconnect?: AcademicMarksheetWhereInput | boolean
+    delete?: AcademicMarksheetWhereInput | boolean
+    connect?: AcademicMarksheetWhereUniqueInput
+    update?: XOR<XOR<AcademicMarksheetUpdateToOneWithWhereWithoutDocumentInput, AcademicMarksheetUpdateWithoutDocumentInput>, AcademicMarksheetUncheckedUpdateWithoutDocumentInput>
+  }
+
   export type InstitutionCreateNestedOneWithoutDocumentRequestsInput = {
     create?: XOR<InstitutionCreateWithoutDocumentRequestsInput, InstitutionUncheckedCreateWithoutDocumentRequestsInput>
     connectOrCreate?: InstitutionCreateOrConnectWithoutDocumentRequestsInput
@@ -118567,10 +124363,6 @@ export namespace Prisma {
     create?: XOR<DocumentCreateWithoutExtractedFieldsInput, DocumentUncheckedCreateWithoutExtractedFieldsInput>
     connectOrCreate?: DocumentCreateOrConnectWithoutExtractedFieldsInput
     connect?: DocumentWhereUniqueInput
-  }
-
-  export type NullableBoolFieldUpdateOperationsInput = {
-    set?: boolean | null
   }
 
   export type DocumentUpdateOneRequiredWithoutExtractedFieldsNestedInput = {
@@ -121579,6 +127371,64 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutRiskAssessmentInput, StudentUpdateWithoutRiskAssessmentInput>, StudentUncheckedUpdateWithoutRiskAssessmentInput>
   }
 
+  export type StudentCreateNestedOneWithoutAcademicMarksheetsInput = {
+    create?: XOR<StudentCreateWithoutAcademicMarksheetsInput, StudentUncheckedCreateWithoutAcademicMarksheetsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAcademicMarksheetsInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type DocumentCreateNestedOneWithoutAcademicMarksheetInput = {
+    create?: XOR<DocumentCreateWithoutAcademicMarksheetInput, DocumentUncheckedCreateWithoutAcademicMarksheetInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutAcademicMarksheetInput
+    connect?: DocumentWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutAcademicMarksheetsNestedInput = {
+    create?: XOR<StudentCreateWithoutAcademicMarksheetsInput, StudentUncheckedCreateWithoutAcademicMarksheetsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAcademicMarksheetsInput
+    upsert?: StudentUpsertWithoutAcademicMarksheetsInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutAcademicMarksheetsInput, StudentUpdateWithoutAcademicMarksheetsInput>, StudentUncheckedUpdateWithoutAcademicMarksheetsInput>
+  }
+
+  export type DocumentUpdateOneWithoutAcademicMarksheetNestedInput = {
+    create?: XOR<DocumentCreateWithoutAcademicMarksheetInput, DocumentUncheckedCreateWithoutAcademicMarksheetInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutAcademicMarksheetInput
+    upsert?: DocumentUpsertWithoutAcademicMarksheetInput
+    disconnect?: DocumentWhereInput | boolean
+    delete?: DocumentWhereInput | boolean
+    connect?: DocumentWhereUniqueInput
+    update?: XOR<XOR<DocumentUpdateToOneWithWhereWithoutAcademicMarksheetInput, DocumentUpdateWithoutAcademicMarksheetInput>, DocumentUncheckedUpdateWithoutAcademicMarksheetInput>
+  }
+
+  export type StudentCreateNestedOneWithoutDigilockerConnectionInput = {
+    create?: XOR<StudentCreateWithoutDigilockerConnectionInput, StudentUncheckedCreateWithoutDigilockerConnectionInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDigilockerConnectionInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutDigilockerConnectionNestedInput = {
+    create?: XOR<StudentCreateWithoutDigilockerConnectionInput, StudentUncheckedCreateWithoutDigilockerConnectionInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDigilockerConnectionInput
+    upsert?: StudentUpsertWithoutDigilockerConnectionInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutDigilockerConnectionInput, StudentUpdateWithoutDigilockerConnectionInput>, StudentUncheckedUpdateWithoutDigilockerConnectionInput>
+  }
+
+  export type StudentCreateNestedOneWithoutAcademicVerificationRecordsInput = {
+    create?: XOR<StudentCreateWithoutAcademicVerificationRecordsInput, StudentUncheckedCreateWithoutAcademicVerificationRecordsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAcademicVerificationRecordsInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutAcademicVerificationRecordsNestedInput = {
+    create?: XOR<StudentCreateWithoutAcademicVerificationRecordsInput, StudentUncheckedCreateWithoutAcademicVerificationRecordsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAcademicVerificationRecordsInput
+    upsert?: StudentUpsertWithoutAcademicVerificationRecordsInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutAcademicVerificationRecordsInput, StudentUpdateWithoutAcademicVerificationRecordsInput>, StudentUncheckedUpdateWithoutAcademicVerificationRecordsInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -121638,6 +127488,22 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -121744,31 +127610,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -121781,6 +127622,28 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -121810,19 +127673,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
-  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type InstitutionCreateWithoutStudentsInput = {
@@ -122106,6 +127956,9 @@ export namespace Prisma {
   export type PlacementApplicationCreateWithoutStudentInput = {
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
     drive: PlacementDriveCreateNestedOneWithoutApplicationsInput
     currentRound?: PlacementRoundCreateNestedOneWithoutApplicationsInput
   }
@@ -122116,6 +127969,9 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationCreateOrConnectWithoutStudentInput = {
@@ -122230,6 +128086,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutStudentInput = {
@@ -122302,6 +128159,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutStudentInput = {
@@ -122882,6 +128740,164 @@ export namespace Prisma {
     create: XOR<StudentRiskAssessmentCreateWithoutStudentInput, StudentRiskAssessmentUncheckedCreateWithoutStudentInput>
   }
 
+  export type AcademicMarksheetCreateWithoutStudentInput = {
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    document?: DocumentCreateNestedOneWithoutAcademicMarksheetInput
+  }
+
+  export type AcademicMarksheetUncheckedCreateWithoutStudentInput = {
+    id?: number
+    documentId?: number | null
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicMarksheetCreateOrConnectWithoutStudentInput = {
+    where: AcademicMarksheetWhereUniqueInput
+    create: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AcademicMarksheetCreateManyStudentInputEnvelope = {
+    data: AcademicMarksheetCreateManyStudentInput | AcademicMarksheetCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DigiLockerConnectionCreateWithoutStudentInput = {
+    digilockerId?: string | null
+    name?: string | null
+    mobileNumber?: string | null
+    status?: string
+    accessTokenEncrypted?: string | null
+    refreshTokenEncrypted?: string | null
+    tokenExpiry?: Date | string | null
+    connectedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    metadata?: string | null
+  }
+
+  export type DigiLockerConnectionUncheckedCreateWithoutStudentInput = {
+    id?: number
+    digilockerId?: string | null
+    name?: string | null
+    mobileNumber?: string | null
+    status?: string
+    accessTokenEncrypted?: string | null
+    refreshTokenEncrypted?: string | null
+    tokenExpiry?: Date | string | null
+    connectedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    metadata?: string | null
+  }
+
+  export type DigiLockerConnectionCreateOrConnectWithoutStudentInput = {
+    where: DigiLockerConnectionWhereUniqueInput
+    create: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordCreateWithoutStudentInput = {
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicVerificationRecordUncheckedCreateWithoutStudentInput = {
+    id?: number
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicVerificationRecordCreateOrConnectWithoutStudentInput = {
+    where: AcademicVerificationRecordWhereUniqueInput
+    create: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordCreateManyStudentInputEnvelope = {
+    data: AcademicVerificationRecordCreateManyStudentInput | AcademicVerificationRecordCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type InstitutionUpsertWithoutStudentsInput = {
     update: XOR<InstitutionUpdateWithoutStudentsInput, InstitutionUncheckedUpdateWithoutStudentsInput>
     create: XOR<InstitutionCreateWithoutStudentsInput, InstitutionUncheckedCreateWithoutStudentsInput>
@@ -123204,6 +129220,9 @@ export namespace Prisma {
     currentRoundId?: IntNullableFilter<"PlacementApplication"> | number | null
     status?: StringFilter<"PlacementApplication"> | string
     appliedAt?: DateTimeFilter<"PlacementApplication"> | Date | string
+    eligibilityStatus?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityReason?: StringNullableFilter<"PlacementApplication"> | string | null
+    eligibilityCheckedAt?: DateTimeNullableFilter<"PlacementApplication"> | Date | string | null
   }
 
   export type ResourceBookingUpsertWithWhereUniqueWithoutStudentInput = {
@@ -123851,6 +129870,138 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AcademicMarksheetUpsertWithWhereUniqueWithoutStudentInput = {
+    where: AcademicMarksheetWhereUniqueInput
+    update: XOR<AcademicMarksheetUpdateWithoutStudentInput, AcademicMarksheetUncheckedUpdateWithoutStudentInput>
+    create: XOR<AcademicMarksheetCreateWithoutStudentInput, AcademicMarksheetUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AcademicMarksheetUpdateWithWhereUniqueWithoutStudentInput = {
+    where: AcademicMarksheetWhereUniqueInput
+    data: XOR<AcademicMarksheetUpdateWithoutStudentInput, AcademicMarksheetUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AcademicMarksheetUpdateManyWithWhereWithoutStudentInput = {
+    where: AcademicMarksheetScalarWhereInput
+    data: XOR<AcademicMarksheetUpdateManyMutationInput, AcademicMarksheetUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type AcademicMarksheetScalarWhereInput = {
+    AND?: AcademicMarksheetScalarWhereInput | AcademicMarksheetScalarWhereInput[]
+    OR?: AcademicMarksheetScalarWhereInput[]
+    NOT?: AcademicMarksheetScalarWhereInput | AcademicMarksheetScalarWhereInput[]
+    id?: IntFilter<"AcademicMarksheet"> | number
+    studentId?: IntFilter<"AcademicMarksheet"> | number
+    documentId?: IntNullableFilter<"AcademicMarksheet"> | number | null
+    educationLevel?: StringFilter<"AcademicMarksheet"> | string
+    board?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    studentName?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    rollNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    seatNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    registrationNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    certificateNumber?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    passingYear?: IntNullableFilter<"AcademicMarksheet"> | number | null
+    totalMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    obtainedMarks?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    percentage?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    cgpa?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    subjects?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    ocrConfidence?: FloatNullableFilter<"AcademicMarksheet"> | number | null
+    verificationStatus?: StringFilter<"AcademicMarksheet"> | string
+    verifiedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    mismatchReason?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    comparisonResults?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    nameMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    rollNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    seatNumberMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    boardMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    yearMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    marksMatch?: BoolNullableFilter<"AcademicMarksheet"> | boolean | null
+    digilockerDocUri?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerTxnId?: StringNullableFilter<"AcademicMarksheet"> | string | null
+    digilockerVerified?: BoolFilter<"AcademicMarksheet"> | boolean
+    digilockerFetchedAt?: DateTimeNullableFilter<"AcademicMarksheet"> | Date | string | null
+    createdAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicMarksheet"> | Date | string
+  }
+
+  export type DigiLockerConnectionUpsertWithoutStudentInput = {
+    update: XOR<DigiLockerConnectionUpdateWithoutStudentInput, DigiLockerConnectionUncheckedUpdateWithoutStudentInput>
+    create: XOR<DigiLockerConnectionCreateWithoutStudentInput, DigiLockerConnectionUncheckedCreateWithoutStudentInput>
+    where?: DigiLockerConnectionWhereInput
+  }
+
+  export type DigiLockerConnectionUpdateToOneWithWhereWithoutStudentInput = {
+    where?: DigiLockerConnectionWhereInput
+    data: XOR<DigiLockerConnectionUpdateWithoutStudentInput, DigiLockerConnectionUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type DigiLockerConnectionUpdateWithoutStudentInput = {
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DigiLockerConnectionUncheckedUpdateWithoutStudentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    digilockerId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    accessTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshTokenEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AcademicVerificationRecordUpsertWithWhereUniqueWithoutStudentInput = {
+    where: AcademicVerificationRecordWhereUniqueInput
+    update: XOR<AcademicVerificationRecordUpdateWithoutStudentInput, AcademicVerificationRecordUncheckedUpdateWithoutStudentInput>
+    create: XOR<AcademicVerificationRecordCreateWithoutStudentInput, AcademicVerificationRecordUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordUpdateWithWhereUniqueWithoutStudentInput = {
+    where: AcademicVerificationRecordWhereUniqueInput
+    data: XOR<AcademicVerificationRecordUpdateWithoutStudentInput, AcademicVerificationRecordUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordUpdateManyWithWhereWithoutStudentInput = {
+    where: AcademicVerificationRecordScalarWhereInput
+    data: XOR<AcademicVerificationRecordUpdateManyMutationInput, AcademicVerificationRecordUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type AcademicVerificationRecordScalarWhereInput = {
+    AND?: AcademicVerificationRecordScalarWhereInput | AcademicVerificationRecordScalarWhereInput[]
+    OR?: AcademicVerificationRecordScalarWhereInput[]
+    NOT?: AcademicVerificationRecordScalarWhereInput | AcademicVerificationRecordScalarWhereInput[]
+    id?: IntFilter<"AcademicVerificationRecord"> | number
+    studentId?: IntFilter<"AcademicVerificationRecord"> | number
+    verificationStatus?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    tenthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    tenthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthBoard?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    twelfthYear?: IntNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScore?: FloatNullableFilter<"AcademicVerificationRecord"> | number | null
+    twelfthScoreSource?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    documentIntegrity?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    identityConsistency?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    reviewReason?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    dossierJson?: StringNullableFilter<"AcademicVerificationRecord"> | string | null
+    createdAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+    updatedAt?: DateTimeFilter<"AcademicVerificationRecord"> | Date | string
+  }
+
   export type InstitutionCreateWithoutCompaniesInput = {
     name: string
     domain?: string | null
@@ -124236,6 +130387,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124268,6 +130431,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutResumesInput = {
@@ -124283,6 +130449,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124314,6 +130492,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutResumesInput = {
@@ -124343,6 +130524,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -124375,6 +130568,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutResumesInput = {
@@ -124390,6 +130586,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -124421,6 +130629,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CompanyCreateWithoutJobPostingsInput = {
@@ -124573,6 +130784,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124605,6 +130828,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutApplicationsInput = {
@@ -124620,6 +130846,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124651,6 +130889,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutApplicationsInput = {
@@ -124710,6 +130951,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -124742,6 +130995,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutApplicationsInput = {
@@ -124757,6 +131013,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -124788,6 +131056,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type JobPostingUpsertWithoutApplicationsInput = {
@@ -124837,6 +131108,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124869,6 +131152,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSkillAssessmentsInput = {
@@ -124884,6 +131170,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -124915,6 +131213,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSkillAssessmentsInput = {
@@ -124944,6 +131245,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -124976,6 +131289,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSkillAssessmentsInput = {
@@ -124991,6 +131307,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -125022,6 +131350,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutSkillGapAnalysesInput = {
@@ -125035,6 +131366,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125067,6 +131410,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSkillGapAnalysesInput = {
@@ -125082,6 +131428,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125113,6 +131471,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSkillGapAnalysesInput = {
@@ -125142,6 +131503,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -125174,6 +131547,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSkillGapAnalysesInput = {
@@ -125189,6 +131565,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -125220,6 +131608,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CompanyCreateWithoutCodingSessionsInput = {
@@ -125279,6 +131670,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125311,6 +131714,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCodingSessionsInput = {
@@ -125326,6 +131732,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125357,6 +131775,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCodingSessionsInput = {
@@ -125438,6 +131859,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -125470,6 +131903,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCodingSessionsInput = {
@@ -125485,6 +131921,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -125516,6 +131964,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutInstitutionInput = {
@@ -125823,6 +132274,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125855,6 +132318,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutInstitutionInput = {
@@ -125869,6 +132335,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -125901,6 +132379,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutInstitutionInput = {
@@ -126163,6 +132644,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutInstitutionInput = {
@@ -126235,6 +132717,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutInstitutionInput = {
@@ -126605,6 +133088,18 @@ export namespace Prisma {
     cgpa?: FloatNullableFilter<"Student"> | number | null
     tenthMarks?: FloatNullableFilter<"Student"> | number | null
     twelfthMarks?: FloatNullableFilter<"Student"> | number | null
+    tenthBoard?: StringNullableFilter<"Student"> | string | null
+    tenthPassingYear?: IntNullableFilter<"Student"> | number | null
+    tenthDocumentId?: IntNullableFilter<"Student"> | number | null
+    tenthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    twelfthBoard?: StringNullableFilter<"Student"> | string | null
+    twelfthPassingYear?: IntNullableFilter<"Student"> | number | null
+    twelfthDocumentId?: IntNullableFilter<"Student"> | number | null
+    twelfthPercentageSource?: StringNullableFilter<"Student"> | string | null
+    academicVerificationStatus?: StringNullableFilter<"Student"> | string | null
+    academicVerifiedAt?: DateTimeNullableFilter<"Student"> | Date | string | null
+    academicVerificationData?: StringNullableFilter<"Student"> | string | null
+    isAcademicLocked?: BoolNullableFilter<"Student"> | boolean | null
     githubUrl?: StringNullableFilter<"Student"> | string | null
     linkedinUrl?: StringNullableFilter<"Student"> | string | null
     portfolioUrl?: StringNullableFilter<"Student"> | string | null
@@ -128628,6 +135123,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -128660,6 +135167,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutResourceBookingsInput = {
@@ -128675,6 +135185,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -128706,6 +135228,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutResourceBookingsInput = {
@@ -128829,6 +135354,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -128861,6 +135398,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutResourceBookingsInput = {
@@ -128876,6 +135416,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -128907,6 +135459,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ResourceCreateWithoutRequestsInput = {
@@ -129721,6 +136276,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -129753,6 +136320,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutTrainerSessionsInput = {
@@ -129768,6 +136338,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -129799,6 +136381,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutTrainerSessionsInput = {
@@ -129872,6 +136457,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -129904,6 +136501,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutTrainerSessionsInput = {
@@ -129919,6 +136519,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -129950,6 +136562,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type InstitutionCreateWithoutInternshipsInput = {
@@ -130252,6 +136867,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -130284,6 +136911,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutInternshipAppsInput = {
@@ -130299,6 +136929,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -130330,6 +136972,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutInternshipAppsInput = {
@@ -130403,6 +137048,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130435,6 +137092,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutInternshipAppsInput = {
@@ -130450,6 +137110,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130481,6 +137153,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutCertificationsInput = {
@@ -130494,6 +137169,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -130526,6 +137213,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCertificationsInput = {
@@ -130541,6 +137231,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -130572,6 +137274,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCertificationsInput = {
@@ -130655,6 +137360,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130687,6 +137404,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCertificationsInput = {
@@ -130702,6 +137422,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130733,6 +137465,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type InstitutionUpsertWithoutCertificationsInput = {
@@ -130925,6 +137660,9 @@ export namespace Prisma {
   export type PlacementApplicationCreateWithoutDriveInput = {
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
     student: StudentCreateNestedOneWithoutPlacementAppsInput
     currentRound?: PlacementRoundCreateNestedOneWithoutApplicationsInput
   }
@@ -130935,6 +137673,9 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationCreateOrConnectWithoutDriveInput = {
@@ -131134,6 +137875,9 @@ export namespace Prisma {
   export type PlacementApplicationCreateWithoutCurrentRoundInput = {
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
     drive: PlacementDriveCreateNestedOneWithoutApplicationsInput
     student: StudentCreateNestedOneWithoutPlacementAppsInput
   }
@@ -131144,6 +137888,9 @@ export namespace Prisma {
     studentId: number
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationCreateOrConnectWithoutCurrentRoundInput = {
@@ -131245,6 +137992,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -131277,6 +138036,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutPlacementAppsInput = {
@@ -131292,6 +138054,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -131323,6 +138097,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutPlacementAppsInput = {
@@ -131408,6 +138185,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131440,6 +138229,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutPlacementAppsInput = {
@@ -131455,6 +138247,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131486,6 +138290,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type PlacementRoundUpsertWithoutApplicationsInput = {
@@ -131527,6 +138334,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -131559,6 +138378,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutDocumentsInput = {
@@ -131574,6 +138396,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -131605,6 +138439,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutDocumentsInput = {
@@ -131735,6 +138572,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutChildVersionsInput = {
@@ -131807,6 +138645,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutChildVersionsInput = {
@@ -131883,6 +138722,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutParentDocumentInput = {
@@ -131955,6 +138795,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutParentDocumentInput = {
@@ -132525,6 +139366,80 @@ export namespace Prisma {
     create: XOR<CertificateCreateWithoutDocumentInput, CertificateUncheckedCreateWithoutDocumentInput>
   }
 
+  export type AcademicMarksheetCreateWithoutDocumentInput = {
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutAcademicMarksheetsInput
+  }
+
+  export type AcademicMarksheetUncheckedCreateWithoutDocumentInput = {
+    id?: number
+    studentId: number
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicMarksheetCreateOrConnectWithoutDocumentInput = {
+    where: AcademicMarksheetWhereUniqueInput
+    create: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+  }
+
   export type StudentUpsertWithoutDocumentsInput = {
     update: XOR<StudentUpdateWithoutDocumentsInput, StudentUncheckedUpdateWithoutDocumentsInput>
     create: XOR<StudentCreateWithoutDocumentsInput, StudentUncheckedCreateWithoutDocumentsInput>
@@ -132547,6 +139462,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -132579,6 +139506,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutDocumentsInput = {
@@ -132594,6 +139524,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -132625,6 +139567,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type InstitutionUpsertWithoutDocumentsInput = {
@@ -132767,6 +139712,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutChildVersionsInput = {
@@ -132839,6 +139785,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutParentDocumentInput = {
@@ -133404,6 +140351,86 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AcademicMarksheetUpsertWithoutDocumentInput = {
+    update: XOR<AcademicMarksheetUpdateWithoutDocumentInput, AcademicMarksheetUncheckedUpdateWithoutDocumentInput>
+    create: XOR<AcademicMarksheetCreateWithoutDocumentInput, AcademicMarksheetUncheckedCreateWithoutDocumentInput>
+    where?: AcademicMarksheetWhereInput
+  }
+
+  export type AcademicMarksheetUpdateToOneWithWhereWithoutDocumentInput = {
+    where?: AcademicMarksheetWhereInput
+    data: XOR<AcademicMarksheetUpdateWithoutDocumentInput, AcademicMarksheetUncheckedUpdateWithoutDocumentInput>
+  }
+
+  export type AcademicMarksheetUpdateWithoutDocumentInput = {
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutAcademicMarksheetsNestedInput
+  }
+
+  export type AcademicMarksheetUncheckedUpdateWithoutDocumentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type InstitutionCreateWithoutDocumentRequestsInput = {
     name: string
     domain?: string | null
@@ -133469,6 +140496,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -133501,6 +140540,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutDocumentRequestsInput = {
@@ -133516,6 +140558,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -133547,6 +140601,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutDocumentRequestsInput = {
@@ -133623,6 +140680,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutRequestsInput = {
@@ -133695,6 +140753,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutRequestsInput = {
@@ -133784,6 +140843,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -133816,6 +140887,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutDocumentRequestsInput = {
@@ -133831,6 +140905,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -133862,6 +140948,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type DocumentUpsertWithoutRequestsInput = {
@@ -133944,6 +141033,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutRequestsInput = {
@@ -134016,6 +141106,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutProcessingsInput = {
@@ -134087,6 +141178,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutProcessingsInput = {
@@ -134159,6 +141251,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutProcessingsInput = {
@@ -134246,6 +141339,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutProcessingsInput = {
@@ -134318,6 +141412,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutOcrResultInput = {
@@ -134389,6 +141484,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutOcrResultInput = {
@@ -134461,6 +141557,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutOcrResultInput = {
@@ -134548,6 +141645,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutOcrResultInput = {
@@ -134620,6 +141718,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutExtractedFieldsInput = {
@@ -134691,6 +141790,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutExtractedFieldsInput = {
@@ -134763,6 +141863,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutExtractedFieldsInput = {
@@ -134850,6 +141951,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutExtractedFieldsInput = {
@@ -134922,6 +142024,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutVerificationInput = {
@@ -134993,6 +142096,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutVerificationInput = {
@@ -135065,6 +142169,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutVerificationInput = {
@@ -135152,6 +142257,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutVerificationInput = {
@@ -135224,6 +142330,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutQrCodeResultsInput = {
@@ -135295,6 +142402,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutQrCodeResultsInput = {
@@ -135367,6 +142475,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutQrCodeResultsInput = {
@@ -135454,6 +142563,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutQrCodeResultsInput = {
@@ -135526,6 +142636,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutSourceDuplicatesInput = {
@@ -135597,6 +142708,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutSourceDuplicatesInput = {
@@ -135669,6 +142781,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutSourceDuplicatesInput = {
@@ -135745,6 +142858,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutTargetDuplicatesInput = {
@@ -135817,6 +142931,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutTargetDuplicatesInput = {
@@ -135904,6 +143019,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutSourceDuplicatesInput = {
@@ -135976,6 +143092,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUpsertWithoutTargetDuplicatesInput = {
@@ -136058,6 +143175,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutTargetDuplicatesInput = {
@@ -136130,6 +143248,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutHistoryInput = {
@@ -136201,6 +143320,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutHistoryInput = {
@@ -136273,6 +143393,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutHistoryInput = {
@@ -136360,6 +143481,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutHistoryInput = {
@@ -136432,6 +143554,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutYoloDetectionsInput = {
@@ -136503,6 +143626,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutYoloDetectionsInput = {
@@ -136575,6 +143699,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutYoloDetectionsInput = {
@@ -136662,6 +143787,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutYoloDetectionsInput = {
@@ -136734,6 +143860,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutFaceVerificationsInput = {
@@ -136805,6 +143932,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutFaceVerificationsInput = {
@@ -136877,6 +144005,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutFaceVerificationsInput = {
@@ -136895,6 +144024,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -136927,6 +144068,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutFaceVerificationsInput = {
@@ -136942,6 +144086,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -136973,6 +144129,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutFaceVerificationsInput = {
@@ -137060,6 +144219,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutFaceVerificationsInput = {
@@ -137132,6 +144292,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type StudentUpsertWithoutFaceVerificationsInput = {
@@ -137156,6 +144317,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -137188,6 +144361,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutFaceVerificationsInput = {
@@ -137203,6 +144379,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -137234,6 +144422,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type DocumentCreateWithoutTamperAnalysisInput = {
@@ -137305,6 +144496,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutTamperAnalysisInput = {
@@ -137377,6 +144569,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutTamperAnalysisInput = {
@@ -137493,6 +144686,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutTamperAnalysisInput = {
@@ -137565,6 +144759,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type TamperSignalUpsertWithWhereUniqueWithoutTamperAnalysisInput = {
@@ -137744,6 +144939,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutAiAnalysisInput = {
@@ -137816,6 +145012,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutAiAnalysisInput = {
@@ -137930,6 +145127,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutAiAnalysisInput = {
@@ -138002,6 +145200,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type AIAnalysisEvidenceUpsertWithWhereUniqueWithoutAiAnalysisInput = {
@@ -138176,6 +145375,7 @@ export namespace Prisma {
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutVerificationStagesInput = {
@@ -138248,6 +145448,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutVerificationStagesInput = {
@@ -138335,6 +145536,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutVerificationStagesInput = {
@@ -138407,6 +145609,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutActivitiesInput = {
@@ -138478,6 +145681,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutActivitiesInput = {
@@ -138550,6 +145754,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutActivitiesInput = {
@@ -138637,6 +145842,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutActivitiesInput = {
@@ -138709,6 +145915,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutSharesInput = {
@@ -138780,6 +145987,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageCreateNestedManyWithoutDocumentInput
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     certificate?: CertificateCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutSharesInput = {
@@ -138852,6 +146060,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedCreateNestedManyWithoutDocumentInput
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutSharesInput = {
@@ -138939,6 +146148,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUpdateManyWithoutDocumentNestedInput
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutSharesInput = {
@@ -139011,6 +146221,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedUpdateManyWithoutDocumentNestedInput
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type CourseCreateWithoutCategoryInput = {
@@ -141333,6 +148544,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -141365,6 +148588,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCourseEnrollmentsInput = {
@@ -141380,6 +148606,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -141411,6 +148649,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCourseEnrollmentsInput = {
@@ -141643,6 +148884,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -141675,6 +148928,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCourseEnrollmentsInput = {
@@ -141690,6 +148946,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -141721,6 +148989,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type LearningProgressUpsertWithWhereUniqueWithoutEnrollmentInput = {
@@ -142728,6 +149999,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -142760,6 +150043,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutAssignmentSubmissionsInput = {
@@ -142775,6 +150061,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -142806,6 +150104,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutAssignmentSubmissionsInput = {
@@ -142909,6 +150210,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142941,6 +150254,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutAssignmentSubmissionsInput = {
@@ -142956,6 +150272,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142987,6 +150315,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type AssignmentGradeUpsertWithoutSubmissionInput = {
@@ -143997,6 +151328,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -144029,6 +151372,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutQuizAttemptsInput = {
@@ -144044,6 +151390,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -144075,6 +151433,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutQuizAttemptsInput = {
@@ -144179,6 +151540,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -144211,6 +151584,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -144226,6 +151602,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -144257,6 +151645,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuizAnswerUpsertWithWhereUniqueWithoutAttemptInput = {
@@ -145018,6 +152409,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145050,6 +152453,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutDiscussionsInput = {
@@ -145065,6 +152471,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145096,6 +152514,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutDiscussionsInput = {
@@ -145336,6 +152757,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -145368,6 +152801,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutDiscussionsInput = {
@@ -145383,6 +152819,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -145414,6 +152862,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type DiscussionReplyUpsertWithWhereUniqueWithoutDiscussionInput = {
@@ -145517,6 +152968,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145549,6 +153012,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutDiscussionRepliesInput = {
@@ -145564,6 +153030,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145595,6 +153073,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutDiscussionRepliesInput = {
@@ -145710,6 +153191,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -145742,6 +153235,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutDiscussionRepliesInput = {
@@ -145757,6 +153253,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -145788,6 +153296,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CourseEnrollmentCreateWithoutCompletionInput = {
@@ -145919,6 +153430,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145951,6 +153474,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCourseCompletionsInput = {
@@ -145966,6 +153492,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -145997,6 +153535,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCourseCompletionsInput = {
@@ -146156,6 +153697,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -146188,6 +153741,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCourseCompletionsInput = {
@@ -146203,6 +153759,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -146234,6 +153802,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CourseEnrollmentCreateWithoutCertificateInput = {
@@ -146365,6 +153936,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -146397,6 +153980,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCertificatesInput = {
@@ -146412,6 +153998,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -146443,6 +154041,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCertificatesInput = {
@@ -146557,6 +154158,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageCreateNestedManyWithoutDocumentInput
     activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareCreateNestedManyWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutCertificateInput = {
@@ -146629,6 +154231,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedCreateNestedManyWithoutDocumentInput
     activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
     shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
+    academicMarksheet?: AcademicMarksheetUncheckedCreateNestedOneWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutCertificateInput = {
@@ -146788,6 +154391,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -146820,6 +154435,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCertificatesInput = {
@@ -146835,6 +154453,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -146866,6 +154496,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type TrainerUpsertWithoutCertificatesInput = {
@@ -146992,6 +154625,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUpdateManyWithoutDocumentNestedInput
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutCertificateInput = {
@@ -147064,6 +154698,7 @@ export namespace Prisma {
     verificationStages?: VerificationStageUncheckedUpdateManyWithoutDocumentNestedInput
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type CourseCreateWithoutKnowledgeChunksInput = {
@@ -147455,6 +155090,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -147487,6 +155134,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutAiConversationsInput = {
@@ -147502,6 +155152,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -147533,6 +155195,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutAiConversationsInput = {
@@ -147795,6 +155460,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -147827,6 +155504,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutAiConversationsInput = {
@@ -147842,6 +155522,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -147873,6 +155565,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CourseUpsertWithoutAiConversationsInput = {
@@ -148159,6 +155854,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -148191,6 +155898,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutStudyPlansInput = {
@@ -148206,6 +155916,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -148237,6 +155959,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutStudyPlansInput = {
@@ -148352,6 +156077,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -148384,6 +156121,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutStudyPlansInput = {
@@ -148399,6 +156139,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -148430,6 +156182,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CourseUpsertWithoutStudyPlansInput = {
@@ -148535,6 +156290,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -148567,6 +156334,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutLearningInsightsInput = {
@@ -148582,6 +156352,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -148613,6 +156395,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutLearningInsightsInput = {
@@ -148728,6 +156513,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -148760,6 +156557,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutLearningInsightsInput = {
@@ -148775,6 +156575,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -148806,6 +156618,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type CourseUpsertWithoutLearningInsightsInput = {
@@ -148997,6 +156812,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149029,6 +156856,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSkillProfilesInput = {
@@ -149044,6 +156874,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149075,6 +156917,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSkillProfilesInput = {
@@ -149137,6 +156982,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149169,6 +157026,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSkillProfilesInput = {
@@ -149184,6 +157044,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149215,6 +157087,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SkillEvidenceUpsertWithWhereUniqueWithoutSkillProfileInput = {
@@ -149274,6 +157149,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149306,6 +157193,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSkillEvidencesInput = {
@@ -149321,6 +157211,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149352,6 +157254,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSkillEvidencesInput = {
@@ -149417,6 +157322,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149449,6 +157366,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSkillEvidencesInput = {
@@ -149464,6 +157384,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149495,6 +157427,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutPlacementReadinessInput = {
@@ -149508,6 +157443,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149540,6 +157487,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutPlacementReadinessInput = {
@@ -149555,6 +157505,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149586,6 +157548,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutPlacementReadinessInput = {
@@ -149615,6 +157580,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149647,6 +157624,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutPlacementReadinessInput = {
@@ -149662,6 +157642,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149693,6 +157685,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutRiskAssessmentInput = {
@@ -149706,6 +157701,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149738,6 +157745,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
     skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutRiskAssessmentInput = {
@@ -149753,6 +157763,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -149784,6 +157806,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
     skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
     placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutRiskAssessmentInput = {
@@ -149813,6 +157838,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149845,6 +157882,9 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutRiskAssessmentInput = {
@@ -149860,6 +157900,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -149891,6 +157943,1089 @@ export namespace Prisma {
     skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentCreateWithoutAcademicMarksheetsInput = {
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    institution?: InstitutionCreateNestedOneWithoutStudentsInput
+    resumes?: ResumeCreateNestedManyWithoutStudentInput
+    applications?: ApplicationCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationCreateNestedManyWithoutStudentInput
+    certifications?: CertificationCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingCreateNestedManyWithoutStudentInput
+    documents?: DocumentCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionCreateNestedManyWithoutStudentInput
+    certificates?: CertificateCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutAcademicMarksheetsInput = {
+    id?: number
+    institutionId?: number | null
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resumes?: ResumeUncheckedCreateNestedManyWithoutStudentInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentUncheckedCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionUncheckedCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionUncheckedCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationUncheckedCreateNestedManyWithoutStudentInput
+    certifications?: CertificationUncheckedCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationUncheckedCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingUncheckedCreateNestedManyWithoutStudentInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestUncheckedCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationUncheckedCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionUncheckedCreateNestedManyWithoutStudentInput
+    certificates?: CertificateUncheckedCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionUncheckedCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightUncheckedCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutAcademicMarksheetsInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutAcademicMarksheetsInput, StudentUncheckedCreateWithoutAcademicMarksheetsInput>
+  }
+
+  export type DocumentCreateWithoutAcademicMarksheetInput = {
+    fileName: string
+    filePath: string
+    fileType: string
+    fileSize: number
+    documentType: string
+    category: string
+    description?: string | null
+    accessLevel?: string
+    verificationStatus?: string
+    processingStatus?: string
+    qualityScore?: number | null
+    qualityResult?: string | null
+    extractedInformation?: string | null
+    sha256Hash?: string | null
+    perceptualHash?: string | null
+    ocrConfidence?: number | null
+    verificationScore?: number | null
+    riskScore?: number | null
+    qrStatus?: string | null
+    expiryDate?: Date | string | null
+    version?: number
+    rejectionReason?: string | null
+    uploadedAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    verifiedBy?: number | null
+    tamperScore?: number | null
+    faceMatchScore?: number | null
+    faceMatchStatus?: string | null
+    aiRiskLevel?: string | null
+    securityLevel?: string
+    isEncrypted?: boolean
+    encryptionIv?: string | null
+    encryptionTag?: string | null
+    passwordHash?: string | null
+    isPasswordProtected?: boolean
+    failedPasswordAttempts?: number
+    isLocked?: boolean
+    lockedUntil?: Date | string | null
+    isViewOnly?: boolean
+    downloadPolicy?: string
+    maxDownloads?: number | null
+    downloadCount?: number
+    accessExpiry?: string
+    watermarkEnabled?: boolean
+    watermarkText?: string | null
+    versionNotes?: string | null
+    publicVerificationId?: string | null
+    student: StudentCreateNestedOneWithoutDocumentsInput
+    institution?: InstitutionCreateNestedOneWithoutDocumentsInput
+    parentDocument?: DocumentCreateNestedOneWithoutChildVersionsInput
+    childVersions?: DocumentCreateNestedManyWithoutParentDocumentInput
+    requests?: DocumentRequestCreateNestedManyWithoutDocumentInput
+    processings?: DocumentProcessingCreateNestedManyWithoutDocumentInput
+    ocrResult?: OCRResultCreateNestedOneWithoutDocumentInput
+    extractedFields?: ExtractedFieldCreateNestedManyWithoutDocumentInput
+    verification?: DocumentVerificationCreateNestedOneWithoutDocumentInput
+    qrCodeResults?: QRCodeResultCreateNestedManyWithoutDocumentInput
+    sourceDuplicates?: DuplicateMatchCreateNestedManyWithoutDocumentInput
+    targetDuplicates?: DuplicateMatchCreateNestedManyWithoutMatchedDocumentInput
+    history?: VerificationHistoryCreateNestedManyWithoutDocumentInput
+    yoloDetections?: YOLODetectionCreateNestedManyWithoutDocumentInput
+    faceVerifications?: FaceVerificationCreateNestedManyWithoutDocumentInput
+    tamperAnalysis?: TamperAnalysisCreateNestedOneWithoutDocumentInput
+    aiAnalysis?: AIAnalysisCreateNestedOneWithoutDocumentInput
+    verificationStages?: VerificationStageCreateNestedManyWithoutDocumentInput
+    activities?: DocumentActivityCreateNestedManyWithoutDocumentInput
+    shares?: DocumentShareCreateNestedManyWithoutDocumentInput
+    certificate?: CertificateCreateNestedOneWithoutDocumentInput
+  }
+
+  export type DocumentUncheckedCreateWithoutAcademicMarksheetInput = {
+    id?: number
+    studentId: number
+    institutionId?: number | null
+    fileName: string
+    filePath: string
+    fileType: string
+    fileSize: number
+    documentType: string
+    category: string
+    description?: string | null
+    accessLevel?: string
+    verificationStatus?: string
+    processingStatus?: string
+    qualityScore?: number | null
+    qualityResult?: string | null
+    extractedInformation?: string | null
+    sha256Hash?: string | null
+    perceptualHash?: string | null
+    ocrConfidence?: number | null
+    verificationScore?: number | null
+    riskScore?: number | null
+    qrStatus?: string | null
+    expiryDate?: Date | string | null
+    version?: number
+    parentDocumentId?: number | null
+    rejectionReason?: string | null
+    uploadedAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    verifiedBy?: number | null
+    tamperScore?: number | null
+    faceMatchScore?: number | null
+    faceMatchStatus?: string | null
+    aiRiskLevel?: string | null
+    securityLevel?: string
+    isEncrypted?: boolean
+    encryptionIv?: string | null
+    encryptionTag?: string | null
+    passwordHash?: string | null
+    isPasswordProtected?: boolean
+    failedPasswordAttempts?: number
+    isLocked?: boolean
+    lockedUntil?: Date | string | null
+    isViewOnly?: boolean
+    downloadPolicy?: string
+    maxDownloads?: number | null
+    downloadCount?: number
+    accessExpiry?: string
+    watermarkEnabled?: boolean
+    watermarkText?: string | null
+    versionNotes?: string | null
+    publicVerificationId?: string | null
+    childVersions?: DocumentUncheckedCreateNestedManyWithoutParentDocumentInput
+    requests?: DocumentRequestUncheckedCreateNestedManyWithoutDocumentInput
+    processings?: DocumentProcessingUncheckedCreateNestedManyWithoutDocumentInput
+    ocrResult?: OCRResultUncheckedCreateNestedOneWithoutDocumentInput
+    extractedFields?: ExtractedFieldUncheckedCreateNestedManyWithoutDocumentInput
+    verification?: DocumentVerificationUncheckedCreateNestedOneWithoutDocumentInput
+    qrCodeResults?: QRCodeResultUncheckedCreateNestedManyWithoutDocumentInput
+    sourceDuplicates?: DuplicateMatchUncheckedCreateNestedManyWithoutDocumentInput
+    targetDuplicates?: DuplicateMatchUncheckedCreateNestedManyWithoutMatchedDocumentInput
+    history?: VerificationHistoryUncheckedCreateNestedManyWithoutDocumentInput
+    yoloDetections?: YOLODetectionUncheckedCreateNestedManyWithoutDocumentInput
+    faceVerifications?: FaceVerificationUncheckedCreateNestedManyWithoutDocumentInput
+    tamperAnalysis?: TamperAnalysisUncheckedCreateNestedOneWithoutDocumentInput
+    aiAnalysis?: AIAnalysisUncheckedCreateNestedOneWithoutDocumentInput
+    verificationStages?: VerificationStageUncheckedCreateNestedManyWithoutDocumentInput
+    activities?: DocumentActivityUncheckedCreateNestedManyWithoutDocumentInput
+    shares?: DocumentShareUncheckedCreateNestedManyWithoutDocumentInput
+    certificate?: CertificateUncheckedCreateNestedOneWithoutDocumentInput
+  }
+
+  export type DocumentCreateOrConnectWithoutAcademicMarksheetInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutAcademicMarksheetInput, DocumentUncheckedCreateWithoutAcademicMarksheetInput>
+  }
+
+  export type StudentUpsertWithoutAcademicMarksheetsInput = {
+    update: XOR<StudentUpdateWithoutAcademicMarksheetsInput, StudentUncheckedUpdateWithoutAcademicMarksheetsInput>
+    create: XOR<StudentCreateWithoutAcademicMarksheetsInput, StudentUncheckedCreateWithoutAcademicMarksheetsInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutAcademicMarksheetsInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutAcademicMarksheetsInput, StudentUncheckedUpdateWithoutAcademicMarksheetsInput>
+  }
+
+  export type StudentUpdateWithoutAcademicMarksheetsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    institution?: InstitutionUpdateOneWithoutStudentsNestedInput
+    resumes?: ResumeUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutAcademicMarksheetsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    institutionId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resumes?: ResumeUncheckedUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUncheckedUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUncheckedUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUncheckedUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUncheckedUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUncheckedUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUncheckedUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUncheckedUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUncheckedUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUncheckedUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUncheckedUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUncheckedUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type DocumentUpsertWithoutAcademicMarksheetInput = {
+    update: XOR<DocumentUpdateWithoutAcademicMarksheetInput, DocumentUncheckedUpdateWithoutAcademicMarksheetInput>
+    create: XOR<DocumentCreateWithoutAcademicMarksheetInput, DocumentUncheckedCreateWithoutAcademicMarksheetInput>
+    where?: DocumentWhereInput
+  }
+
+  export type DocumentUpdateToOneWithWhereWithoutAcademicMarksheetInput = {
+    where?: DocumentWhereInput
+    data: XOR<DocumentUpdateWithoutAcademicMarksheetInput, DocumentUncheckedUpdateWithoutAcademicMarksheetInput>
+  }
+
+  export type DocumentUpdateWithoutAcademicMarksheetInput = {
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    documentType?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    processingStatus?: StringFieldUpdateOperationsInput | string
+    qualityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    qualityResult?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    sha256Hash?: NullableStringFieldUpdateOperationsInput | string | null
+    perceptualHash?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    riskScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    qrStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    tamperScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    faceMatchScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    faceMatchStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    aiRiskLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    securityLevel?: StringFieldUpdateOperationsInput | string
+    isEncrypted?: BoolFieldUpdateOperationsInput | boolean
+    encryptionIv?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptionTag?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    isPasswordProtected?: BoolFieldUpdateOperationsInput | boolean
+    failedPasswordAttempts?: IntFieldUpdateOperationsInput | number
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isViewOnly?: BoolFieldUpdateOperationsInput | boolean
+    downloadPolicy?: StringFieldUpdateOperationsInput | string
+    maxDownloads?: NullableIntFieldUpdateOperationsInput | number | null
+    downloadCount?: IntFieldUpdateOperationsInput | number
+    accessExpiry?: StringFieldUpdateOperationsInput | string
+    watermarkEnabled?: BoolFieldUpdateOperationsInput | boolean
+    watermarkText?: NullableStringFieldUpdateOperationsInput | string | null
+    versionNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    publicVerificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    student?: StudentUpdateOneRequiredWithoutDocumentsNestedInput
+    institution?: InstitutionUpdateOneWithoutDocumentsNestedInput
+    parentDocument?: DocumentUpdateOneWithoutChildVersionsNestedInput
+    childVersions?: DocumentUpdateManyWithoutParentDocumentNestedInput
+    requests?: DocumentRequestUpdateManyWithoutDocumentNestedInput
+    processings?: DocumentProcessingUpdateManyWithoutDocumentNestedInput
+    ocrResult?: OCRResultUpdateOneWithoutDocumentNestedInput
+    extractedFields?: ExtractedFieldUpdateManyWithoutDocumentNestedInput
+    verification?: DocumentVerificationUpdateOneWithoutDocumentNestedInput
+    qrCodeResults?: QRCodeResultUpdateManyWithoutDocumentNestedInput
+    sourceDuplicates?: DuplicateMatchUpdateManyWithoutDocumentNestedInput
+    targetDuplicates?: DuplicateMatchUpdateManyWithoutMatchedDocumentNestedInput
+    history?: VerificationHistoryUpdateManyWithoutDocumentNestedInput
+    yoloDetections?: YOLODetectionUpdateManyWithoutDocumentNestedInput
+    faceVerifications?: FaceVerificationUpdateManyWithoutDocumentNestedInput
+    tamperAnalysis?: TamperAnalysisUpdateOneWithoutDocumentNestedInput
+    aiAnalysis?: AIAnalysisUpdateOneWithoutDocumentNestedInput
+    verificationStages?: VerificationStageUpdateManyWithoutDocumentNestedInput
+    activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
+    shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
+    certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutAcademicMarksheetInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    studentId?: IntFieldUpdateOperationsInput | number
+    institutionId?: NullableIntFieldUpdateOperationsInput | number | null
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    documentType?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    processingStatus?: StringFieldUpdateOperationsInput | string
+    qualityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    qualityResult?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    sha256Hash?: NullableStringFieldUpdateOperationsInput | string | null
+    perceptualHash?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    riskScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    qrStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    parentDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    tamperScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    faceMatchScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    faceMatchStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    aiRiskLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    securityLevel?: StringFieldUpdateOperationsInput | string
+    isEncrypted?: BoolFieldUpdateOperationsInput | boolean
+    encryptionIv?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptionTag?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    isPasswordProtected?: BoolFieldUpdateOperationsInput | boolean
+    failedPasswordAttempts?: IntFieldUpdateOperationsInput | number
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isViewOnly?: BoolFieldUpdateOperationsInput | boolean
+    downloadPolicy?: StringFieldUpdateOperationsInput | string
+    maxDownloads?: NullableIntFieldUpdateOperationsInput | number | null
+    downloadCount?: IntFieldUpdateOperationsInput | number
+    accessExpiry?: StringFieldUpdateOperationsInput | string
+    watermarkEnabled?: BoolFieldUpdateOperationsInput | boolean
+    watermarkText?: NullableStringFieldUpdateOperationsInput | string | null
+    versionNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    publicVerificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childVersions?: DocumentUncheckedUpdateManyWithoutParentDocumentNestedInput
+    requests?: DocumentRequestUncheckedUpdateManyWithoutDocumentNestedInput
+    processings?: DocumentProcessingUncheckedUpdateManyWithoutDocumentNestedInput
+    ocrResult?: OCRResultUncheckedUpdateOneWithoutDocumentNestedInput
+    extractedFields?: ExtractedFieldUncheckedUpdateManyWithoutDocumentNestedInput
+    verification?: DocumentVerificationUncheckedUpdateOneWithoutDocumentNestedInput
+    qrCodeResults?: QRCodeResultUncheckedUpdateManyWithoutDocumentNestedInput
+    sourceDuplicates?: DuplicateMatchUncheckedUpdateManyWithoutDocumentNestedInput
+    targetDuplicates?: DuplicateMatchUncheckedUpdateManyWithoutMatchedDocumentNestedInput
+    history?: VerificationHistoryUncheckedUpdateManyWithoutDocumentNestedInput
+    yoloDetections?: YOLODetectionUncheckedUpdateManyWithoutDocumentNestedInput
+    faceVerifications?: FaceVerificationUncheckedUpdateManyWithoutDocumentNestedInput
+    tamperAnalysis?: TamperAnalysisUncheckedUpdateOneWithoutDocumentNestedInput
+    aiAnalysis?: AIAnalysisUncheckedUpdateOneWithoutDocumentNestedInput
+    verificationStages?: VerificationStageUncheckedUpdateManyWithoutDocumentNestedInput
+    activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
+    shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
+    certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+  }
+
+  export type StudentCreateWithoutDigilockerConnectionInput = {
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    institution?: InstitutionCreateNestedOneWithoutStudentsInput
+    resumes?: ResumeCreateNestedManyWithoutStudentInput
+    applications?: ApplicationCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationCreateNestedManyWithoutStudentInput
+    certifications?: CertificationCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingCreateNestedManyWithoutStudentInput
+    documents?: DocumentCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionCreateNestedManyWithoutStudentInput
+    certificates?: CertificateCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutDigilockerConnectionInput = {
+    id?: number
+    institutionId?: number | null
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resumes?: ResumeUncheckedCreateNestedManyWithoutStudentInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentUncheckedCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionUncheckedCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionUncheckedCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationUncheckedCreateNestedManyWithoutStudentInput
+    certifications?: CertificationUncheckedCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationUncheckedCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingUncheckedCreateNestedManyWithoutStudentInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestUncheckedCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationUncheckedCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionUncheckedCreateNestedManyWithoutStudentInput
+    certificates?: CertificateUncheckedCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionUncheckedCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightUncheckedCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutDigilockerConnectionInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutDigilockerConnectionInput, StudentUncheckedCreateWithoutDigilockerConnectionInput>
+  }
+
+  export type StudentUpsertWithoutDigilockerConnectionInput = {
+    update: XOR<StudentUpdateWithoutDigilockerConnectionInput, StudentUncheckedUpdateWithoutDigilockerConnectionInput>
+    create: XOR<StudentCreateWithoutDigilockerConnectionInput, StudentUncheckedCreateWithoutDigilockerConnectionInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutDigilockerConnectionInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutDigilockerConnectionInput, StudentUncheckedUpdateWithoutDigilockerConnectionInput>
+  }
+
+  export type StudentUpdateWithoutDigilockerConnectionInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    institution?: InstitutionUpdateOneWithoutStudentsNestedInput
+    resumes?: ResumeUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutDigilockerConnectionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    institutionId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resumes?: ResumeUncheckedUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUncheckedUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUncheckedUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUncheckedUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUncheckedUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUncheckedUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUncheckedUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUncheckedUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUncheckedUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUncheckedUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUncheckedUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUncheckedUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentCreateWithoutAcademicVerificationRecordsInput = {
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    institution?: InstitutionCreateNestedOneWithoutStudentsInput
+    resumes?: ResumeCreateNestedManyWithoutStudentInput
+    applications?: ApplicationCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationCreateNestedManyWithoutStudentInput
+    certifications?: CertificationCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingCreateNestedManyWithoutStudentInput
+    documents?: DocumentCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionCreateNestedManyWithoutStudentInput
+    certificates?: CertificateCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionCreateNestedOneWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutAcademicVerificationRecordsInput = {
+    id?: number
+    institutionId?: number | null
+    name: string
+    email: string
+    password: string
+    college?: string | null
+    degree?: string | null
+    graduationYear?: number | null
+    phone?: string | null
+    cgpa?: number | null
+    tenthMarks?: number | null
+    twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+    portfolioUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resumes?: ResumeUncheckedCreateNestedManyWithoutStudentInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutStudentInput
+    skillAssessments?: SkillAssessmentUncheckedCreateNestedManyWithoutStudentInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedCreateNestedManyWithoutStudentInput
+    codingSessions?: CodingSessionUncheckedCreateNestedManyWithoutStudentInput
+    trainerSessions?: TrainerSessionUncheckedCreateNestedManyWithoutStudentInput
+    internshipApps?: InternshipApplicationUncheckedCreateNestedManyWithoutStudentInput
+    certifications?: CertificationUncheckedCreateNestedManyWithoutStudentInput
+    placementApps?: PlacementApplicationUncheckedCreateNestedManyWithoutStudentInput
+    resourceBookings?: ResourceBookingUncheckedCreateNestedManyWithoutStudentInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutStudentInput
+    documentRequests?: DocumentRequestUncheckedCreateNestedManyWithoutStudentInput
+    faceVerifications?: FaceVerificationUncheckedCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    courseCompletions?: CourseCompletionUncheckedCreateNestedManyWithoutStudentInput
+    certificates?: CertificateUncheckedCreateNestedManyWithoutStudentInput
+    discussions?: CourseDiscussionUncheckedCreateNestedManyWithoutStudentInput
+    discussionReplies?: DiscussionReplyUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutStudentInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutStudentInput
+    learningInsights?: LearningInsightUncheckedCreateNestedManyWithoutStudentInput
+    skillProfiles?: SkillProfileUncheckedCreateNestedManyWithoutStudentInput
+    skillEvidences?: SkillEvidenceUncheckedCreateNestedManyWithoutStudentInput
+    placementReadiness?: PlacementReadinessUncheckedCreateNestedOneWithoutStudentInput
+    riskAssessment?: StudentRiskAssessmentUncheckedCreateNestedOneWithoutStudentInput
+    academicMarksheets?: AcademicMarksheetUncheckedCreateNestedManyWithoutStudentInput
+    digilockerConnection?: DigiLockerConnectionUncheckedCreateNestedOneWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutAcademicVerificationRecordsInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutAcademicVerificationRecordsInput, StudentUncheckedCreateWithoutAcademicVerificationRecordsInput>
+  }
+
+  export type StudentUpsertWithoutAcademicVerificationRecordsInput = {
+    update: XOR<StudentUpdateWithoutAcademicVerificationRecordsInput, StudentUncheckedUpdateWithoutAcademicVerificationRecordsInput>
+    create: XOR<StudentCreateWithoutAcademicVerificationRecordsInput, StudentUncheckedCreateWithoutAcademicVerificationRecordsInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutAcademicVerificationRecordsInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutAcademicVerificationRecordsInput, StudentUncheckedUpdateWithoutAcademicVerificationRecordsInput>
+  }
+
+  export type StudentUpdateWithoutAcademicVerificationRecordsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    institution?: InstitutionUpdateOneWithoutStudentsNestedInput
+    resumes?: ResumeUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutAcademicVerificationRecordsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    institutionId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    college?: NullableStringFieldUpdateOperationsInput | string | null
+    degree?: NullableStringFieldUpdateOperationsInput | string | null
+    graduationYear?: NullableIntFieldUpdateOperationsInput | number | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resumes?: ResumeUncheckedUpdateManyWithoutStudentNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    skillAssessments?: SkillAssessmentUncheckedUpdateManyWithoutStudentNestedInput
+    skillGapAnalyses?: SkillGapAnalysisUncheckedUpdateManyWithoutStudentNestedInput
+    codingSessions?: CodingSessionUncheckedUpdateManyWithoutStudentNestedInput
+    trainerSessions?: TrainerSessionUncheckedUpdateManyWithoutStudentNestedInput
+    internshipApps?: InternshipApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    certifications?: CertificationUncheckedUpdateManyWithoutStudentNestedInput
+    placementApps?: PlacementApplicationUncheckedUpdateManyWithoutStudentNestedInput
+    resourceBookings?: ResourceBookingUncheckedUpdateManyWithoutStudentNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutStudentNestedInput
+    documentRequests?: DocumentRequestUncheckedUpdateManyWithoutStudentNestedInput
+    faceVerifications?: FaceVerificationUncheckedUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    courseCompletions?: CourseCompletionUncheckedUpdateManyWithoutStudentNestedInput
+    certificates?: CertificateUncheckedUpdateManyWithoutStudentNestedInput
+    discussions?: CourseDiscussionUncheckedUpdateManyWithoutStudentNestedInput
+    discussionReplies?: DiscussionReplyUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutStudentNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutStudentNestedInput
+    learningInsights?: LearningInsightUncheckedUpdateManyWithoutStudentNestedInput
+    skillProfiles?: SkillProfileUncheckedUpdateManyWithoutStudentNestedInput
+    skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
+    placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
+    riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
   }
 
   export type ResumeCreateManyStudentInput = {
@@ -149975,6 +159110,9 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type ResourceBookingCreateManyStudentInput = {
@@ -150222,6 +159360,60 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AcademicMarksheetCreateManyStudentInput = {
+    id?: number
+    documentId?: number | null
+    educationLevel: string
+    board?: string | null
+    studentName?: string | null
+    rollNumber?: string | null
+    seatNumber?: string | null
+    registrationNumber?: string | null
+    certificateNumber?: string | null
+    passingYear?: number | null
+    totalMarks?: number | null
+    obtainedMarks?: number | null
+    percentage?: number | null
+    cgpa?: number | null
+    subjects?: string | null
+    ocrConfidence?: number | null
+    verificationStatus?: string
+    verifiedAt?: Date | string | null
+    mismatchReason?: string | null
+    comparisonResults?: string | null
+    nameMatch?: boolean | null
+    rollNumberMatch?: boolean | null
+    seatNumberMatch?: boolean | null
+    boardMatch?: boolean | null
+    yearMatch?: boolean | null
+    marksMatch?: boolean | null
+    digilockerDocUri?: string | null
+    digilockerTxnId?: string | null
+    digilockerVerified?: boolean
+    digilockerFetchedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AcademicVerificationRecordCreateManyStudentInput = {
+    id?: number
+    verificationStatus?: string | null
+    tenthBoard?: string | null
+    tenthYear?: number | null
+    tenthScore?: number | null
+    tenthScoreSource?: string | null
+    twelfthBoard?: string | null
+    twelfthYear?: number | null
+    twelfthScore?: number | null
+    twelfthScoreSource?: string | null
+    documentIntegrity?: string | null
+    identityConsistency?: string | null
+    reviewReason?: string | null
+    dossierJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ResumeUpdateWithoutStudentInput = {
     filename?: StringFieldUpdateOperationsInput | string
     filePath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -150445,6 +159637,9 @@ export namespace Prisma {
   export type PlacementApplicationUpdateWithoutStudentInput = {
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     drive?: PlacementDriveUpdateOneRequiredWithoutApplicationsNestedInput
     currentRound?: PlacementRoundUpdateOneWithoutApplicationsNestedInput
   }
@@ -150455,6 +159650,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationUncheckedUpdateManyWithoutStudentInput = {
@@ -150463,6 +159661,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ResourceBookingUpdateWithoutStudentInput = {
@@ -150569,6 +159770,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutStudentInput = {
@@ -150641,6 +159843,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutStudentInput = {
@@ -151236,6 +160439,166 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AcademicMarksheetUpdateWithoutStudentInput = {
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    document?: DocumentUpdateOneWithoutAcademicMarksheetNestedInput
+  }
+
+  export type AcademicMarksheetUncheckedUpdateWithoutStudentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    documentId?: NullableIntFieldUpdateOperationsInput | number | null
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicMarksheetUncheckedUpdateManyWithoutStudentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    documentId?: NullableIntFieldUpdateOperationsInput | number | null
+    educationLevel?: StringFieldUpdateOperationsInput | string
+    board?: NullableStringFieldUpdateOperationsInput | string | null
+    studentName?: NullableStringFieldUpdateOperationsInput | string | null
+    rollNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    seatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    certificateNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    passingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    totalMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    obtainedMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    subjects?: NullableStringFieldUpdateOperationsInput | string | null
+    ocrConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mismatchReason?: NullableStringFieldUpdateOperationsInput | string | null
+    comparisonResults?: NullableStringFieldUpdateOperationsInput | string | null
+    nameMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    rollNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    seatNumberMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    boardMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    yearMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    marksMatch?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    digilockerDocUri?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerTxnId?: NullableStringFieldUpdateOperationsInput | string | null
+    digilockerVerified?: BoolFieldUpdateOperationsInput | boolean
+    digilockerFetchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicVerificationRecordUpdateWithoutStudentInput = {
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicVerificationRecordUncheckedUpdateWithoutStudentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AcademicVerificationRecordUncheckedUpdateManyWithoutStudentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    verificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    twelfthScoreSource?: NullableStringFieldUpdateOperationsInput | string | null
+    documentIntegrity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityConsistency?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type JobPostingCreateManyCompanyInput = {
     id?: number
     title: string
@@ -151578,6 +160941,18 @@ export namespace Prisma {
     cgpa?: number | null
     tenthMarks?: number | null
     twelfthMarks?: number | null
+    tenthBoard?: string | null
+    tenthPassingYear?: number | null
+    tenthDocumentId?: number | null
+    tenthPercentageSource?: string | null
+    twelfthBoard?: string | null
+    twelfthPassingYear?: number | null
+    twelfthDocumentId?: number | null
+    twelfthPercentageSource?: string | null
+    academicVerificationStatus?: string | null
+    academicVerifiedAt?: Date | string | null
+    academicVerificationData?: string | null
+    isAcademicLocked?: boolean | null
     githubUrl?: string | null
     linkedinUrl?: string | null
     portfolioUrl?: string | null
@@ -152059,6 +161434,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -152091,6 +161478,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutInstitutionInput = {
@@ -152105,6 +161495,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -152137,6 +161539,9 @@ export namespace Prisma {
     skillEvidences?: SkillEvidenceUncheckedUpdateManyWithoutStudentNestedInput
     placementReadiness?: PlacementReadinessUncheckedUpdateOneWithoutStudentNestedInput
     riskAssessment?: StudentRiskAssessmentUncheckedUpdateOneWithoutStudentNestedInput
+    academicMarksheets?: AcademicMarksheetUncheckedUpdateManyWithoutStudentNestedInput
+    digilockerConnection?: DigiLockerConnectionUncheckedUpdateOneWithoutStudentNestedInput
+    academicVerificationRecords?: AcademicVerificationRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutInstitutionInput = {
@@ -152151,6 +161556,18 @@ export namespace Prisma {
     cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
     tenthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
     twelfthMarks?: NullableFloatFieldUpdateOperationsInput | number | null
+    tenthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    tenthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    tenthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    twelfthPassingYear?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthDocumentId?: NullableIntFieldUpdateOperationsInput | number | null
+    twelfthPercentageSource?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerificationStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    academicVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    academicVerificationData?: NullableStringFieldUpdateOperationsInput | string | null
+    isAcademicLocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     linkedinUrl?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -152421,6 +161838,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutInstitutionInput = {
@@ -152493,6 +161911,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutInstitutionInput = {
@@ -153767,6 +163186,9 @@ export namespace Prisma {
     currentRoundId?: number | null
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementRoundUpdateWithoutDriveInput = {
@@ -153797,6 +163219,9 @@ export namespace Prisma {
   export type PlacementApplicationUpdateWithoutDriveInput = {
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     student?: StudentUpdateOneRequiredWithoutPlacementAppsNestedInput
     currentRound?: PlacementRoundUpdateOneWithoutApplicationsNestedInput
   }
@@ -153807,6 +163232,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationUncheckedUpdateManyWithoutDriveInput = {
@@ -153815,6 +163243,9 @@ export namespace Prisma {
     currentRoundId?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationCreateManyCurrentRoundInput = {
@@ -153823,11 +163254,17 @@ export namespace Prisma {
     studentId: number
     status?: string
     appliedAt?: Date | string
+    eligibilityStatus?: string | null
+    eligibilityReason?: string | null
+    eligibilityCheckedAt?: Date | string | null
   }
 
   export type PlacementApplicationUpdateWithoutCurrentRoundInput = {
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     drive?: PlacementDriveUpdateOneRequiredWithoutApplicationsNestedInput
     student?: StudentUpdateOneRequiredWithoutPlacementAppsNestedInput
   }
@@ -153838,6 +163275,9 @@ export namespace Prisma {
     studentId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PlacementApplicationUncheckedUpdateManyWithoutCurrentRoundInput = {
@@ -153846,6 +163286,9 @@ export namespace Prisma {
     studentId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eligibilityStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityReason?: NullableStringFieldUpdateOperationsInput | string | null
+    eligibilityCheckedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type DocumentCreateManyParentDocumentInput = {
@@ -154100,6 +163543,7 @@ export namespace Prisma {
     activities?: DocumentActivityUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutParentDocumentInput = {
@@ -154172,6 +163616,7 @@ export namespace Prisma {
     activities?: DocumentActivityUncheckedUpdateManyWithoutDocumentNestedInput
     shares?: DocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
     certificate?: CertificateUncheckedUpdateOneWithoutDocumentNestedInput
+    academicMarksheet?: AcademicMarksheetUncheckedUpdateOneWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutParentDocumentInput = {
@@ -157140,6 +166585,18 @@ export namespace Prisma {
      * @deprecated Use StudentRiskAssessmentDefaultArgs instead
      */
     export type StudentRiskAssessmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StudentRiskAssessmentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AcademicMarksheetDefaultArgs instead
+     */
+    export type AcademicMarksheetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AcademicMarksheetDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DigiLockerConnectionDefaultArgs instead
+     */
+    export type DigiLockerConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DigiLockerConnectionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AcademicVerificationRecordDefaultArgs instead
+     */
+    export type AcademicVerificationRecordArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AcademicVerificationRecordDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

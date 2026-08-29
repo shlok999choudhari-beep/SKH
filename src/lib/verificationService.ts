@@ -120,15 +120,63 @@ export async function executeDocumentVerificationPipeline(
   // Stage 3: Smart OCR
   const s3Start = Date.now()
   const ocrResult = await performSmartOCR(buffer, fileName, fileType)
-  const combinedText = (docStructure.text && docStructure.text.length > ocrResult.fullText.length)
-    ? docStructure.text
-    : (ocrResult.fullText || docStructure.text || '')
+  const combinedText = (ocrResult.fullText && ocrResult.fullText.length > 20)
+    ? ocrResult.fullText
+    : (docStructure.text || ocrResult.fullText || '')
   await recordStage(documentId, 'OCR_COMPLETED', 'COMPLETED', Date.now() - s3Start, `Recognized ${ocrResult.blocks.length} text blocks (${Math.round((ocrResult.meanConfidence || 0.85)*100)}% confidence)`)
 
   // Stage 4: Structured Field Extraction
   const s4Start = Date.now()
   const fieldExtraction = await extractDocumentFields(combinedText, effectiveDocType)
   const fields = fieldExtraction.fields
+
+  // Dedicated Academic Marksheet Extraction for 10th / 12th
+  if (category === 'Academic' || effectiveDocType.includes('Marksheet')) {
+    try {
+      const { extractAcademicMarksheet } = await import('./marksheetExtractionService')
+      const levelHint = effectiveDocType === '12th Marksheet' ? 'TWELFTH' : 'TENTH'
+      const academicData = await extractAcademicMarksheet(combinedText, ocrResult.blocks, levelHint)
+
+      const existingMarksheet = await prisma.academicMarksheet.findFirst({
+        where: { studentId, educationLevel: academicData.educationLevel }
+      })
+
+      const marksheetPayload = {
+        documentId,
+        board: academicData.board || null,
+        studentName: academicData.studentName || null,
+        rollNumber: academicData.rollNumber || null,
+        registrationNumber: academicData.registrationNo || null,
+        passingYear: academicData.passingYear || null,
+        totalMarks: academicData.totalMarks || null,
+        obtainedMarks: academicData.obtainedMarks || null,
+        percentage: academicData.percentage || null,
+        cgpa: academicData.cgpa || null,
+        subjects: academicData.subjects.length > 0 ? JSON.stringify(academicData.subjects) : null,
+        ocrConfidence: academicData.confidence,
+        // OCR extraction parses candidate credentials; official verification occurs via DigiLocker in Phase 5 & 6
+        verificationStatus: existingMarksheet?.verificationStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING'
+      }
+
+      if (existingMarksheet) {
+        await prisma.academicMarksheet.update({
+          where: { id: existingMarksheet.id },
+          data: marksheetPayload
+        })
+      } else {
+        await prisma.academicMarksheet.create({
+          data: {
+            studentId,
+            educationLevel: academicData.educationLevel,
+            ...marksheetPayload
+          }
+        })
+      }
+    } catch (acadErr) {
+      console.warn('[Verification] Academic marksheet auto-extraction warning:', acadErr)
+    }
+  }
+
   await recordStage(documentId, 'FIELDS_EXTRACTED', 'COMPLETED', Date.now() - s4Start, `Extracted ${fieldExtraction.fieldList.length} structured fields for ${effectiveDocType}`)
 
   // Stage 5: QR & Barcode Intelligence

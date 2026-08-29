@@ -10,52 +10,67 @@ datasource db {
 }
 
 model Student {
-  id             Int      @id @default(autoincrement())
-  institutionId  Int?     @map("institution_id")
-  name           String
-  email          String   @unique
-  password       String
-  college        String?
-  degree         String?
-  graduationYear Int?     @map("graduation_year")
-  phone          String?
-  cgpa           Float?
-  tenthMarks     Float?   @map("tenth_marks")
-  twelfthMarks   Float?   @map("twelfth_marks")
-  githubUrl      String?  @map("github_url")
-  linkedinUrl    String?  @map("linkedin_url")
-  portfolioUrl   String?  @map("portfolio_url")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
+  id                         Int       @id @default(autoincrement())
+  institutionId              Int?      @map("institution_id")
+  name                       String
+  email                      String    @unique
+  password                   String
+  college                    String?
+  degree                     String?
+  graduationYear             Int?      @map("graduation_year")
+  phone                      String?
+  cgpa                       Float?
+  tenthMarks                 Float?    @map("tenth_marks")
+  twelfthMarks               Float?    @map("twelfth_marks")
+  tenthBoard                 String?   @map("tenth_board")
+  tenthPassingYear           Int?      @map("tenth_passing_year")
+  tenthDocumentId            Int?      @map("tenth_document_id")
+  tenthPercentageSource      String?   @map("tenth_percentage_source")
+  twelfthBoard               String?   @map("twelfth_board")
+  twelfthPassingYear         Int?      @map("twelfth_passing_year")
+  twelfthDocumentId          Int?      @map("twelfth_document_id")
+  twelfthPercentageSource    String?   @map("twelfth_percentage_source")
+  academicVerificationStatus String?   @default("PENDING") @map("academic_verification_status")
+  academicVerifiedAt         DateTime? @map("academic_verified_at")
+  academicVerificationData   String?   @map("academic_verification_data")
+  isAcademicLocked           Boolean?  @default(false) @map("is_academic_locked")
+  githubUrl                  String?   @map("github_url")
+  linkedinUrl                String?   @map("linkedin_url")
+  portfolioUrl               String?   @map("portfolio_url")
+  createdAt                  DateTime  @default(now()) @map("created_at")
+  updatedAt                  DateTime  @default(now()) @map("updated_at")
 
-  institution           Institution?            @relation(fields: [institutionId], references: [id])
-  resumes               Resume[]
-  applications          Application[]
-  skillAssessments      SkillAssessment[]
-  skillGapAnalyses      SkillGapAnalysis[]
-  codingSessions        CodingSession[]
-  trainerSessions       TrainerSession[]
-  internshipApps        InternshipApplication[]
-  certifications        Certification[]
-  placementApps         PlacementApplication[]
-  resourceBookings      ResourceBooking[]
-  documents             Document[]
-  documentRequests      DocumentRequest[]
-  faceVerifications     FaceVerification[]
-  courseEnrollments     CourseEnrollment[]
-  assignmentSubmissions AssignmentSubmission[]
-  quizAttempts          QuizAttempt[]
-  courseCompletions     CourseCompletion[]
-  certificates          Certificate[]
-  discussions           CourseDiscussion[]
-  discussionReplies     DiscussionReply[]
-  aiConversations       AIConversation[]
-  studyPlans            StudyPlan[]
-  learningInsights      LearningInsight[]
-  skillProfiles         SkillProfile[]
-  skillEvidences        SkillEvidence[]
-  placementReadiness    PlacementReadiness?
-  riskAssessment        StudentRiskAssessment?
+  institution                 Institution?                 @relation(fields: [institutionId], references: [id])
+  resumes                     Resume[]
+  applications                Application[]
+  skillAssessments            SkillAssessment[]
+  skillGapAnalyses            SkillGapAnalysis[]
+  codingSessions              CodingSession[]
+  trainerSessions             TrainerSession[]
+  internshipApps              InternshipApplication[]
+  certifications              Certification[]
+  placementApps               PlacementApplication[]
+  resourceBookings            ResourceBooking[]
+  documents                   Document[]
+  documentRequests            DocumentRequest[]
+  faceVerifications           FaceVerification[]
+  courseEnrollments           CourseEnrollment[]
+  assignmentSubmissions       AssignmentSubmission[]
+  quizAttempts                QuizAttempt[]
+  courseCompletions           CourseCompletion[]
+  certificates                Certificate[]
+  discussions                 CourseDiscussion[]
+  discussionReplies           DiscussionReply[]
+  aiConversations             AIConversation[]
+  studyPlans                  StudyPlan[]
+  learningInsights            LearningInsight[]
+  skillProfiles               SkillProfile[]
+  skillEvidences              SkillEvidence[]
+  placementReadiness          PlacementReadiness?
+  riskAssessment              StudentRiskAssessment?
+  academicMarksheets          AcademicMarksheet[]
+  digilockerConnection        DigiLockerConnection?
+  academicVerificationRecords AcademicVerificationRecord[]
 
   @@map("students")
 }
@@ -482,12 +497,15 @@ model PlacementRound {
 }
 
 model PlacementApplication {
-  id             Int      @id @default(autoincrement())
-  driveId        Int      @map("drive_id")
-  studentId      Int      @map("student_id")
-  currentRoundId Int?     @map("current_round_id")
-  status         String   @default("applied")
-  appliedAt      DateTime @default(now()) @map("applied_at")
+  id                   Int       @id @default(autoincrement())
+  driveId              Int       @map("drive_id")
+  studentId            Int       @map("student_id")
+  currentRoundId       Int?      @map("current_round_id")
+  status               String    @default("applied")
+  appliedAt            DateTime  @default(now()) @map("applied_at")
+  eligibilityStatus    String?   @default("PENDING_VERIFICATION") @map("eligibility_status") // ELIGIBLE, INELIGIBLE, CONDITIONAL, PENDING_VERIFICATION
+  eligibilityReason    String?   @map("eligibility_reason")
+  eligibilityCheckedAt DateTime? @map("eligibility_checked_at")
 
   drive        PlacementDrive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   student      Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -574,6 +592,7 @@ model Document {
   activities         DocumentActivity[]
   shares             DocumentShare[]
   certificate        Certificate?
+  academicMarksheet  AcademicMarksheet?
 
   @@index([studentId])
   @@index([institutionId])
@@ -1703,4 +1722,103 @@ model StudentRiskAssessment {
   @@index([studentId])
   @@index([riskLevel])
   @@map("student_risk_assessments")
+}
+
+// -------------------------------------------------------------
+// Academic Marksheet Verification & DigiLocker Integration
+// -------------------------------------------------------------
+
+model AcademicMarksheet {
+  id                 Int     @id @default(autoincrement())
+  studentId          Int     @map("student_id")
+  documentId         Int?    @unique @map("document_id")
+  educationLevel     String  @map("education_level") // TENTH, TWELFTH
+  board              String?
+  studentName        String? @map("student_name")
+  rollNumber         String? @map("roll_number")
+  registrationNumber String? @map("registration_number")
+  passingYear        Int?    @map("passing_year")
+  totalMarks         Float?  @map("total_marks")
+  obtainedMarks      Float?  @map("obtained_marks")
+  percentage         Float?
+  cgpa               Float?
+  subjects           String? @db.Text // JSON string of subject breakdown [{ code, name, maxMarks, marksObtained, grade }]
+  ocrConfidence      Float?  @map("ocr_confidence")
+
+  // Verification & Comparison Fields
+  verificationStatus String    @default("PENDING") @map("verification_status") // PENDING, VERIFIED, MISMATCH, MANUAL_REVIEW, REJECTED
+  verifiedAt         DateTime? @map("verified_at")
+  mismatchReason     String?   @map("mismatch_reason")
+  comparisonResults  String?   @map("comparison_results") @db.Text // JSON string of field-by-field match details
+
+  // Field-level comparison indicators
+  nameMatch       Boolean? @map("name_match")
+  rollNumberMatch Boolean? @map("roll_number_match")
+  boardMatch      Boolean? @map("board_match")
+  yearMatch       Boolean? @map("year_match")
+  marksMatch      Boolean? @map("marks_match")
+
+  // DigiLocker Reference Metadata
+  digilockerDocUri    String?   @map("digilocker_doc_uri")
+  digilockerTxnId     String?   @map("digilocker_txn_id")
+  digilockerVerified  Boolean   @default(false) @map("digilocker_verified")
+  digilockerFetchedAt DateTime? @map("digilocker_fetched_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([documentId])
+  @@index([educationLevel])
+  @@index([verificationStatus])
+  @@map("academic_marksheets")
+}
+
+model DigiLockerConnection {
+  id                    Int       @id @default(autoincrement())
+  studentId             Int       @unique @map("student_id")
+  digilockerId          String?   @map("digilocker_id")
+  name                  String?
+  mobileNumber          String?   @map("mobile_number")
+  status                String    @default("CONNECTED") // CONNECTED, DISCONNECTED, REVOKED, EXPIRED
+  accessTokenEncrypted  String?   @map("access_token_encrypted") @db.Text
+  refreshTokenEncrypted String?   @map("refresh_token_encrypted") @db.Text
+  tokenExpiry           DateTime? @map("token_expiry")
+  connectedAt           DateTime  @default(now()) @map("connected_at")
+  lastSyncedAt          DateTime? @map("last_synced_at")
+  metadata              String?   @db.Text // Consented scopes, issuer info, etc.
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([status])
+  @@map("digilocker_connections")
+}
+
+model AcademicVerificationRecord {
+  id                  Int      @id @default(autoincrement())
+  studentId           Int      @map("student_id")
+  verificationStatus  String?  @default("PENDING") @map("verification_status")
+  tenthBoard          String?  @map("tenth_board")
+  tenthYear           Int?     @map("tenth_year")
+  tenthScore          Float?   @map("tenth_score")
+  tenthScoreSource    String?  @map("tenth_score_source")
+  twelfthBoard        String?  @map("twelfth_board")
+  twelfthYear         Int?     @map("twelfth_year")
+  twelfthScore        Float?   @map("twelfth_score")
+  twelfthScoreSource  String?  @map("twelfth_score_source")
+  documentIntegrity   String?  @map("document_integrity")
+  identityConsistency String?  @map("identity_consistency")
+  reviewReason        String?  @map("review_reason")
+  dossierJson         String?  @map("dossier_json") @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("academic_verification_records")
 }

@@ -70,6 +70,10 @@ export default function StudentDashboard() {
   const fetchStudentProfile = async () => {
     try {
       const res = await fetch('/api/student/profile', { cache: 'no-store' })
+      if (res.status === 401) {
+        window.location.href = '/auth/login?role=student'
+        return
+      }
       const data = await res.json()
       if (data && !data.error) {
         setStudentProfile(data)
@@ -88,6 +92,10 @@ export default function StudentDashboard() {
   const fetchDashboardData = async () => {
     try {
       const statsRes = await fetch('/api/student/dashboard')
+      if (statsRes.status === 401) {
+        window.location.href = '/auth/login?role=student'
+        return
+      }
       const statsData = await statsRes.json()
       setStats(statsData)
     } catch (error) {

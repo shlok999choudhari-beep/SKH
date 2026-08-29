@@ -135,6 +135,18 @@ exports.Prisma.StudentScalarFieldEnum = {
   cgpa: 'cgpa',
   tenthMarks: 'tenthMarks',
   twelfthMarks: 'twelfthMarks',
+  tenthBoard: 'tenthBoard',
+  tenthPassingYear: 'tenthPassingYear',
+  tenthDocumentId: 'tenthDocumentId',
+  tenthPercentageSource: 'tenthPercentageSource',
+  twelfthBoard: 'twelfthBoard',
+  twelfthPassingYear: 'twelfthPassingYear',
+  twelfthDocumentId: 'twelfthDocumentId',
+  twelfthPercentageSource: 'twelfthPercentageSource',
+  academicVerificationStatus: 'academicVerificationStatus',
+  academicVerifiedAt: 'academicVerifiedAt',
+  academicVerificationData: 'academicVerificationData',
+  isAcademicLocked: 'isAcademicLocked',
   githubUrl: 'githubUrl',
   linkedinUrl: 'linkedinUrl',
   portfolioUrl: 'portfolioUrl',
@@ -418,7 +430,10 @@ exports.Prisma.PlacementApplicationScalarFieldEnum = {
   studentId: 'studentId',
   currentRoundId: 'currentRoundId',
   status: 'status',
-  appliedAt: 'appliedAt'
+  appliedAt: 'appliedAt',
+  eligibilityStatus: 'eligibilityStatus',
+  eligibilityReason: 'eligibilityReason',
+  eligibilityCheckedAt: 'eligibilityCheckedAt'
 };
 
 exports.Prisma.DocumentScalarFieldEnum = {
@@ -1167,6 +1182,77 @@ exports.Prisma.StudentRiskAssessmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AcademicMarksheetScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  documentId: 'documentId',
+  educationLevel: 'educationLevel',
+  board: 'board',
+  studentName: 'studentName',
+  rollNumber: 'rollNumber',
+  seatNumber: 'seatNumber',
+  registrationNumber: 'registrationNumber',
+  certificateNumber: 'certificateNumber',
+  passingYear: 'passingYear',
+  totalMarks: 'totalMarks',
+  obtainedMarks: 'obtainedMarks',
+  percentage: 'percentage',
+  cgpa: 'cgpa',
+  subjects: 'subjects',
+  ocrConfidence: 'ocrConfidence',
+  verificationStatus: 'verificationStatus',
+  verifiedAt: 'verifiedAt',
+  mismatchReason: 'mismatchReason',
+  comparisonResults: 'comparisonResults',
+  nameMatch: 'nameMatch',
+  rollNumberMatch: 'rollNumberMatch',
+  seatNumberMatch: 'seatNumberMatch',
+  boardMatch: 'boardMatch',
+  yearMatch: 'yearMatch',
+  marksMatch: 'marksMatch',
+  digilockerDocUri: 'digilockerDocUri',
+  digilockerTxnId: 'digilockerTxnId',
+  digilockerVerified: 'digilockerVerified',
+  digilockerFetchedAt: 'digilockerFetchedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DigiLockerConnectionScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  digilockerId: 'digilockerId',
+  name: 'name',
+  mobileNumber: 'mobileNumber',
+  status: 'status',
+  accessTokenEncrypted: 'accessTokenEncrypted',
+  refreshTokenEncrypted: 'refreshTokenEncrypted',
+  tokenExpiry: 'tokenExpiry',
+  connectedAt: 'connectedAt',
+  lastSyncedAt: 'lastSyncedAt',
+  metadata: 'metadata'
+};
+
+exports.Prisma.AcademicVerificationRecordScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  verificationStatus: 'verificationStatus',
+  tenthBoard: 'tenthBoard',
+  tenthYear: 'tenthYear',
+  tenthScore: 'tenthScore',
+  tenthScoreSource: 'tenthScoreSource',
+  twelfthBoard: 'twelfthBoard',
+  twelfthYear: 'twelfthYear',
+  twelfthScore: 'twelfthScore',
+  twelfthScoreSource: 'twelfthScoreSource',
+  documentIntegrity: 'documentIntegrity',
+  identityConsistency: 'identityConsistency',
+  reviewReason: 'reviewReason',
+  dossierJson: 'dossierJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1259,7 +1345,10 @@ exports.Prisma.ModelName = {
   SkillProfile: 'SkillProfile',
   SkillEvidence: 'SkillEvidence',
   PlacementReadiness: 'PlacementReadiness',
-  StudentRiskAssessment: 'StudentRiskAssessment'
+  StudentRiskAssessment: 'StudentRiskAssessment',
+  AcademicMarksheet: 'AcademicMarksheet',
+  DigiLockerConnection: 'DigiLockerConnection',
+  AcademicVerificationRecord: 'AcademicVerificationRecord'
 };
 
 /**

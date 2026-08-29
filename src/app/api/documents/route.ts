@@ -332,6 +332,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Auto-link AcademicMarksheet if 10th or 12th marksheet
+    if (validated.documentType === '10th Marksheet' || validated.documentType === '12th Marksheet') {
+      const educationLevel = validated.documentType === '10th Marksheet' ? 'TENTH' : 'TWELFTH'
+      const existingMarksheet = await prisma.academicMarksheet.findFirst({
+        where: { studentId: session.userId, educationLevel }
+      })
+      if (existingMarksheet) {
+        await prisma.academicMarksheet.update({
+          where: { id: existingMarksheet.id },
+          data: {
+            documentId: newDoc.id,
+            studentName: student?.name || null,
+            verificationStatus: 'PENDING',
+            verifiedAt: null,
+            mismatchReason: null,
+            comparisonResults: null
+          }
+        })
+      } else {
+        await prisma.academicMarksheet.create({
+          data: {
+            studentId: session.userId,
+            documentId: newDoc.id,
+            educationLevel,
+            studentName: student?.name || null,
+            verificationStatus: 'PENDING'
+          }
+        })
+      }
+    }
+
     // Asynchronous background processing with Phase 1 AI Document Intelligence Pipeline
     (async () => {
       try {

@@ -14,7 +14,9 @@ function getRawPrisma() {
     typeof globalForPrisma.prisma.skillProfile === 'undefined' ||
     typeof globalForPrisma.prisma.skillEvidence === 'undefined' ||
     typeof globalForPrisma.prisma.placementReadiness === 'undefined' ||
-    typeof globalForPrisma.prisma.studentRiskAssessment === 'undefined'
+    typeof globalForPrisma.prisma.studentRiskAssessment === 'undefined' ||
+    typeof globalForPrisma.prisma.academicMarksheet === 'undefined' ||
+    typeof globalForPrisma.prisma.digiLockerConnection === 'undefined'
   ) {
     globalForPrisma.prisma = new PrismaClient()
   }
@@ -132,6 +134,16 @@ const MODEL_MAPPING: Record<string, string> = {
   documentShares: 'documentShare',
   document_share: 'documentShare',
   document_shares: 'documentShare',
+  academicMarksheet: 'academicMarksheet',
+  academicMarksheets: 'academicMarksheet',
+  academic_marksheet: 'academicMarksheet',
+  academic_marksheets: 'academicMarksheet',
+  digiLockerConnection: 'digiLockerConnection',
+  digiLockerConnections: 'digiLockerConnection',
+  digilockerConnection: 'digiLockerConnection',
+  digilockerConnections: 'digiLockerConnection',
+  digilocker_connection: 'digiLockerConnection',
+  digilocker_connections: 'digiLockerConnection',
   auditLog: 'auditLog',
   auditLogs: 'auditLog',
   audit_log: 'auditLog',
