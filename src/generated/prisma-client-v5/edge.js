@@ -1240,7 +1240,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH 11\\SKH\\src\\generated\\prisma-client-v5",
+      "value": "C:\\Users\\A1\\Desktop\\SKH\\SKH\\src\\generated\\prisma-client-v5",
       "fromEnvVar": null
     },
     "config": {
@@ -1254,7 +1254,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\lenovo\\OneDrive\\Desktop\\SKH 11\\SKH\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\A1\\Desktop\\SKH\\SKH\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -1268,6 +1268,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
