@@ -110,6 +110,7 @@ export async function GET(
       security: {
         documentId: doc.id,
         fileName: doc.fileName,
+        fileType: doc.fileType,
         securityLevel: doc.securityLevel || 'STANDARD',
         isEncrypted: doc.isEncrypted,
         isPasswordProtected: doc.isPasswordProtected,

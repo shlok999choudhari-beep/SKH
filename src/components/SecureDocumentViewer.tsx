@@ -12,7 +12,8 @@ import {
   FileCheck,
   KeyRound,
   ShieldAlert,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react'
 import styles from './SecureDocumentViewer.module.css'
 
@@ -159,6 +160,11 @@ export default function SecureDocumentViewer({
   const isViewOnly = securityData?.isViewOnly || securityData?.downloadPolicy === 'DISABLED'
   const isLimited = securityData?.downloadPolicy === 'LIMITED'
   const downloadExhausted = isLimited && securityData?.downloadCount >= (securityData?.maxDownloads || 3)
+  const currentFileName = documentName || securityData?.fileName || `Document #${documentId}`
+  const isImage = Boolean(
+    securityData?.fileType?.startsWith('image/') ||
+    /\.(png|jpe?g|webp|bmp|gif|tiff|svg)$/i.test(currentFileName)
+  )
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -168,7 +174,7 @@ export default function SecureDocumentViewer({
           <div className={styles.topInfo}>
             <ShieldCheck size={18} color="#8b5cf6" />
             <h3 className={styles.title}>
-              <span>{documentName || securityData?.fileName || `Document #${documentId}`}</span>
+              <span>{currentFileName}</span>
               <span className={`${styles.badge} ${styles.badgeProtected}`}>
                 {securityData?.securityLevel || 'PROTECTED'}
               </span>
@@ -192,6 +198,20 @@ export default function SecureDocumentViewer({
                 <Lock size={13} color="#c084fc" />
                 <span>Security Panel</span>
               </button>
+            )}
+
+            {!needsPassword && streamUrl && (
+              <a
+                href={streamUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.btnSecondary}
+                title="Open document in a new tab"
+                style={{ textDecoration: 'none' }}
+              >
+                <ExternalLink size={13} />
+                <span>Pop out</span>
+              </a>
             )}
 
             {!needsPassword && !isViewOnly && !downloadExhausted && (
@@ -299,12 +319,21 @@ export default function SecureDocumentViewer({
                 </div>
               )}
 
-              <iframe
-                src={streamUrl}
-                className={styles.documentFrame}
-                title="Secure Document Stream"
-                sandbox="allow-scripts allow-same-origin"
-              />
+              {isImage ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto', padding: '16px' }}>
+                  <img
+                    src={streamUrl}
+                    alt={currentFileName}
+                    className={styles.imagePreview}
+                  />
+                </div>
+              ) : (
+                <iframe
+                  src={streamUrl}
+                  className={styles.documentFrame}
+                  title={currentFileName}
+                />
+              )}
             </>
           ) : (
             <div style={{ color: '#ef4444' }}>Failed to stream document.</div>

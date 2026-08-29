@@ -207,12 +207,21 @@ export default function PublicSharePage({
 
             {/* Document Iframe with Watermark */}
             <div style={{ flex: 1, position: 'relative', background: '#050508' }}>
-              <iframe
-                src={streamUrl}
-                style={{ width: '100%', height: '100%', border: 'none' }}
-                title="Secure Document Stream"
-                sandbox="allow-scripts allow-same-origin"
-              />
+              {(shareData.document?.fileType?.startsWith('image/') || /\.(png|jpe?g|webp|bmp|gif|tiff|svg)$/i.test(shareData.document?.fileName || '')) ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto', padding: '16px' }}>
+                  <img
+                    src={streamUrl}
+                    alt={shareData.document?.fileName || 'Document Preview'}
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px' }}
+                  />
+                </div>
+              ) : (
+                <iframe
+                  src={streamUrl}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  title={shareData.document?.fileName || 'Secure Document Stream'}
+                />
+              )}
             </div>
           </div>
         )}
