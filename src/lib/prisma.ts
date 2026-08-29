@@ -433,14 +433,20 @@ function wrapModelDelegate(delegate: any) {
 
 function createPrismaProxy(client: any): any {
   return new Proxy(client, {
-    get(target, prop: string) {
-      if (prop === '$transaction') {
-        return async (arg: any, ...rest: any[]) => {
-          if (typeof arg === 'function') {
-            return target.$transaction((tx: any) => arg(createPrismaProxy(tx)), ...rest)
+    get(target, prop: string | symbol) {
+      if (typeof prop === 'symbol') {
+        return target[prop]
+      }
+      if (typeof prop === 'string' && (prop.startsWith('$') || prop.startsWith('_'))) {
+        if (prop === '$transaction') {
+          return async (arg: any, ...rest: any[]) => {
+            if (typeof arg === 'function') {
+              return target.$transaction((tx: any) => arg(createPrismaProxy(tx)), ...rest)
+            }
+            return target.$transaction(arg, ...rest)
           }
-          return target.$transaction(arg, ...rest)
         }
+        return target[prop]
       }
       let delegate = undefined
       if (prop in target) {

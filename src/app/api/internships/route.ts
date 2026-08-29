@@ -14,9 +14,9 @@ const internshipSchema = z.object({
   location: z.string().optional().nullable(),
   stipend: z.string().optional().nullable(),
   duration: z.string().optional().nullable(),
-  min_cgpa: z.coerce.number().optional().nullable(),
-  min_tenth_marks: z.coerce.number().optional().nullable(),
-  min_twelfth_marks: z.coerce.number().optional().nullable(),
+  min_cgpa: z.preprocess((val) => (val === '' || val === null || val === undefined || isNaN(Number(val)) ? null : Number(val)), z.number().nullable().optional()),
+  min_tenth_marks: z.preprocess((val) => (val === '' || val === null || val === undefined || isNaN(Number(val)) ? null : Number(val)), z.number().nullable().optional()),
+  min_twelfth_marks: z.preprocess((val) => (val === '' || val === null || val === undefined || isNaN(Number(val)) ? null : Number(val)), z.number().nullable().optional()),
   deadline: z.string().optional().nullable(),
   status: z.string().optional().nullable(),
 })
@@ -45,18 +45,18 @@ export async function GET(request: Request) {
       prisma.$queryRaw<any[]>`
         SELECT id, name, email, degree, graduation_year as "graduationYear", cgpa, tenth_marks as "tenthMarks", twelfth_marks as "twelfthMarks", institution_id as "institutionId"
         FROM "students"
-      `,
+      `.catch(() => []),
       prisma.$queryRaw<any[]>`
         SELECT i.*, c.company_name, c.industry
         FROM "internships" i
         LEFT JOIN "companies" c ON i.company_id = c.id
         ORDER BY i.created_at DESC
-      `,
+      `.catch(() => []),
       prisma.$queryRaw<any[]>`
         SELECT a.*, s.name as student_name, s.email as student_email
         FROM "internship_applications" a
         LEFT JOIN "students" s ON a.student_id = s.id
-      `
+      `.catch(() => [])
     ])
 
     let allStudents = allStudentsRaw || []
@@ -148,20 +148,20 @@ export async function POST(request: Request) {
     }
 
     if (compId) {
-      const compRows: any[] = await prisma.$queryRaw`SELECT id FROM "companies" WHERE id = ${compId}`
+      const compRows: any[] = await prisma.$queryRaw`SELECT id FROM "companies" WHERE id = ${compId}`.catch(() => [])
       if (compRows.length === 0) {
-        const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`
+        const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
         compId = firstComp[0]?.id || null
       }
     } else {
-      const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`
+      const firstComp: any[] = await prisma.$queryRaw`SELECT id FROM "companies" LIMIT 1`.catch(() => [])
       compId = firstComp[0]?.id || null
     }
 
     let instId = validatedData.institution_id || 1
-    const instRows: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" WHERE id = ${instId}`
+    const instRows: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" WHERE id = ${instId}`.catch(() => [])
     if (instRows.length === 0) {
-      const firstInst: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" LIMIT 1`
+      const firstInst: any[] = await prisma.$queryRaw`SELECT id FROM "institutions" LIMIT 1`.catch(() => [])
       if (firstInst.length > 0) {
         instId = firstInst[0].id
       }
@@ -170,22 +170,51 @@ export async function POST(request: Request) {
     const minCgpaVal = validatedData.min_cgpa !== undefined && validatedData.min_cgpa !== null ? validatedData.min_cgpa : null
     const minTenthVal = validatedData.min_tenth_marks !== undefined && validatedData.min_tenth_marks !== null ? validatedData.min_tenth_marks : null
     const minTwelfthVal = validatedData.min_twelfth_marks !== undefined && validatedData.min_twelfth_marks !== null ? validatedData.min_twelfth_marks : null
-    const deadlineVal = validatedData.deadline ? new Date(validatedData.deadline) : null
+    
+    let deadlineVal: Date | null = null
+    if (validatedData.deadline) {
+      const parsed = new Date(validatedData.deadline)
+      if (!isNaN(parsed.getTime())) {
+        deadlineVal = parsed
+      }
+    }
 
-    const insertRes: any[] = await prisma.$queryRaw`
-      INSERT INTO "internships" (
-        "institution_id", "company_id", "title", "description", 
-        "location", "stipend", "duration", "min_cgpa", 
-        "min_tenth_marks", "min_twelfth_marks", "deadline", "status"
-      ) VALUES (
-        ${instId}, ${compId}, ${validatedData.title}, ${validatedData.description},
-        ${validatedData.location || 'Remote'}, ${validatedData.stipend || '₹25,000 / month'}, ${validatedData.duration || '3 Months'}, ${minCgpaVal},
-        ${minTenthVal}, ${minTwelfthVal}, ${deadlineVal}, ${validatedData.status || 'open'}
-      )
-      RETURNING "id"
-    `
+    let newId: number | null = null
 
-    const newId = insertRes[0]?.id
+    try {
+      const created = await prisma.internship.create({
+        data: {
+          institutionId: instId,
+          companyId: compId,
+          title: validatedData.title,
+          description: validatedData.description,
+          location: validatedData.location || 'Remote',
+          stipend: validatedData.stipend || '₹25,000 / month',
+          duration: validatedData.duration || '3 Months',
+          minCgpa: minCgpaVal,
+          minTenthMarks: minTenthVal,
+          minTwelfthMarks: minTwelfthVal,
+          deadline: deadlineVal,
+          status: validatedData.status || 'open'
+        }
+      })
+      newId = created.id
+    } catch (prismaErr) {
+      console.warn('Prisma create fallback to raw SQL insert:', prismaErr)
+      const insertRes: any[] = await prisma.$queryRaw`
+        INSERT INTO "internships" (
+          "institution_id", "company_id", "title", "description", 
+          "location", "stipend", "duration", "min_cgpa", 
+          "min_tenth_marks", "min_twelfth_marks", "deadline", "status"
+        ) VALUES (
+          ${instId}, ${compId}, ${validatedData.title}, ${validatedData.description},
+          ${validatedData.location || 'Remote'}, ${validatedData.stipend || '₹25,000 / month'}, ${validatedData.duration || '3 Months'}, ${minCgpaVal},
+          ${minTenthVal}, ${minTwelfthVal}, ${deadlineVal}, ${validatedData.status || 'open'}
+        )
+        RETURNING "id"
+      `
+      newId = insertRes[0]?.id
+    }
 
     return NextResponse.json({ 
       success: true, 
