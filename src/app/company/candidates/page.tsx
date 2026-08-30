@@ -28,22 +28,36 @@ import {
   Layers,
   Database,
   Check,
-  X
+  X,
+  Trophy,
+  Zap,
+  HelpCircle,
+  BarChart3,
+  Flame,
+  CheckCheck,
+  Info
 } from 'lucide-react'
+import {
+  CandidateCardData,
+  ROLE_PRESET_SKILLS,
+  DimensionalScoreBreakdown,
+  ScoringWeights,
+  DEFAULT_SCORING_WEIGHTS
+} from '@/lib/candidateIntelligenceService'
 
 const PRESET_ROLES = [
   'Software Developer',
-  'Software Engineer',
+  'Software Developer Intern',
+  'Frontend Developer',
   'Python Backend Developer',
   'Full Stack Developer',
-  'Frontend Developer',
   'Data Scientist / AI Engineer',
   'DevOps & Cloud Engineer',
   'Cybersecurity Specialist'
 ]
 
 const BRANCH_OPTIONS = [
-  { value: 'all', label: 'All Branches' },
+  { value: 'all', label: 'All Disciplines / Branches' },
   { value: 'computer', label: 'Computer Engineering / CSE' },
   { value: 'information', label: 'Information Technology' },
   { value: 'electronics', label: 'Electronics & Telecommunication' },
@@ -59,46 +73,93 @@ const DEGREE_OPTIONS = [
   { value: 'bca', label: 'BCA' }
 ]
 
-export default function CompanyCandidatesDiscoveryPage() {
-  const [candidates, setCandidates] = useState<any[]>([])
+import { dispatchPortalNotification } from '@/components/NotificationBell'
+
+export default function CompanyCandidateIntelligencePage() {
+  const [candidates, setCandidates] = useState<CandidateCardData[]>([])
+  const [ineligibleCandidates, setIneligibleCandidates] = useState<CandidateCardData[]>([])
   const [loading, setLoading] = useState(true)
   const [totalEligible, setTotalEligible] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
+  const [hasHighMatches, setHasHighMatches] = useState(true)
+  const [scoringWeights, setScoringWeights] = useState<ScoringWeights>(DEFAULT_SCORING_WEIGHTS)
+  const [activeTab, setActiveTab] = useState<'eligible' | 'ineligible'>('eligible')
 
-  // Filter States
+  // Requirement States
   const [selectedRole, setSelectedRole] = useState('Software Developer')
   const [isCustomRole, setIsCustomRole] = useState(false)
   const [customRoleInput, setCustomRoleInput] = useState('')
+  const [customSkillsInput, setCustomSkillsInput] = useState('')
+  const [skillsList, setSkillsList] = useState<string[]>(ROLE_PRESET_SKILLS['Software Developer'] || ['JavaScript', 'React', 'Node.js', 'SQL'])
+  const [newSkillTag, setNewSkillTag] = useState('')
+
+  // Top Talent Limit Scope (Top 5, Top 10 [Default], Top 25, All)
+  const [topLimit, setTopLimit] = useState<'5' | '10' | '25' | 'all'>('10')
+
+  // Hard Eligibility & Filters
   const [selectedBranch, setSelectedBranch] = useState('all')
   const [selectedDegree, setSelectedDegree] = useState('all')
   const [minCgpa, setMinCgpa] = useState<number>(0)
+  const [minTenth, setMinTenth] = useState<number>(0)
+  const [minTwelfth, setMinTwelfth] = useState<number>(0)
   const [minInternships, setMinInternships] = useState<number>(0)
   const [hasProjects, setHasProjects] = useState(false)
   const [hasAssessments, setHasAssessments] = useState(false)
   const [graduationYear, setGraduationYear] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'match' | 'cgpa' | 'sources' | 'experience'>('match')
   const [searchQuery, setSearchQuery] = useState('')
-  const [showFilters, setShowFilters] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
+  const [showWeightsModal, setShowWeightsModal] = useState(false)
 
-  // Quick Action States
+  // Interactive Detailed Breakdown Modal
+  const [activeBreakdownCandidate, setActiveBreakdownCandidate] = useState<CandidateCardData | null>(null)
+
+  // Action States
   const [requestingId, setRequestingId] = useState<number | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
-  const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null)
 
   const activeRole = isCustomRole ? (customRoleInput.trim() || 'Custom Role') : selectedRole
+
+  // Handle Preset Role Selection
+  const handleSelectPresetRole = (role: string) => {
+    setIsCustomRole(false)
+    setSelectedRole(role)
+    const preset = ROLE_PRESET_SKILLS[role] || ['JavaScript', 'React', 'Node.js', 'SQL']
+    setSkillsList(preset)
+  }
+
+  // Handle Adding Skill Tag
+  const handleAddSkillTag = (e: React.KeyboardEvent | React.MouseEvent) => {
+    if ('key' in e && e.key !== 'Enter') return
+    e.preventDefault()
+    const trimmed = newSkillTag.trim()
+    if (trimmed && !skillsList.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+      setSkillsList([...skillsList, trimmed])
+      setNewSkillTag('')
+    }
+  }
+
+  // Handle Removing Skill Tag
+  const handleRemoveSkillTag = (skillToRemove: string) => {
+    setSkillsList(skillsList.filter(s => s !== skillToRemove))
+  }
 
   useEffect(() => {
     fetchCandidates()
   }, [
     selectedRole,
     isCustomRole,
+    skillsList,
     selectedBranch,
     selectedDegree,
     minCgpa,
+    minTenth,
+    minTwelfth,
     minInternships,
     hasProjects,
     hasAssessments,
     graduationYear,
+    topLimit,
     sortBy
   ])
 
@@ -107,13 +168,19 @@ export default function CompanyCandidatesDiscoveryPage() {
     try {
       const params = new URLSearchParams()
       params.set('role', activeRole)
+      if (skillsList.length > 0) {
+        params.set('requiredSkills', skillsList.join(','))
+      }
       if (selectedBranch !== 'all') params.set('branch', selectedBranch)
       if (selectedDegree !== 'all') params.set('degree', selectedDegree)
       if (minCgpa > 0) params.set('minCgpa', minCgpa.toString())
+      if (minTenth > 0) params.set('minTenth', minTenth.toString())
+      if (minTwelfth > 0) params.set('minTwelfth', minTwelfth.toString())
       if (minInternships > 0) params.set('minInternships', minInternships.toString())
       if (hasProjects) params.set('hasProjects', 'true')
       if (hasAssessments) params.set('hasAssessments', 'true')
       if (graduationYear !== 'all') params.set('graduationYear', graduationYear)
+      params.set('topLimit', topLimit)
       params.set('sortBy', sortBy)
       if (searchQuery.trim()) params.set('search', searchQuery.trim())
 
@@ -122,11 +189,16 @@ export default function CompanyCandidatesDiscoveryPage() {
 
       if (data.candidates) {
         setCandidates(data.candidates)
+        setIneligibleCandidates(data.ineligibleCandidates || [])
         setTotalEligible(data.totalEligible || data.candidates.length)
         setTotalCount(data.totalCandidates || data.candidates.length)
+        setHasHighMatches(data.hasHighMatches ?? true)
+        if (data.scoringWeights) {
+          setScoringWeights(data.scoringWeights)
+        }
       }
     } catch (err) {
-      console.error('Failed to fetch candidates:', err)
+      console.error('Failed to fetch AI candidates:', err)
     } finally {
       setLoading(false)
     }
@@ -137,7 +209,7 @@ export default function CompanyCandidatesDiscoveryPage() {
     fetchCandidates()
   }
 
-  const handleRequestCandidate = async (candidate: any) => {
+  const handleRequestCandidate = async (candidate: CandidateCardData) => {
     setRequestingId(candidate.id)
     try {
       const res = await fetch(`/api/company/candidates/${candidate.id}/request`, {
@@ -145,14 +217,49 @@ export default function CompanyCandidatesDiscoveryPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobTitle: activeRole,
-          notes: `Candidate requested for ${activeRole} directly from candidate discovery list.`
+          notes: `Candidate shortlisted directly from Candidate Intelligence recommendation for ${activeRole}.`
         })
       })
 
       const data = await res.json()
       if (res.ok) {
-        setToastMessage(`✓ Request sent for ${candidate.name}! The institution placement cell has been notified.`)
-        // Update local status
+        // 1. Dispatch real-time notification to Company Portal inbox (Bell)
+        dispatchPortalNotification({
+          role: 'company',
+          title: `✓ Shortlisted: ${candidate.name}`,
+          message: `Candidate ${candidate.name} (${candidate.branch}) was shortlisted for ${activeRole}. Dossier added to your candidate pipeline.`,
+          category: 'Candidate Shortlist',
+          actionUrl: `/company/candidates/${candidate.id}?role=${encodeURIComponent(activeRole)}`,
+          actionLabel: 'View Dossier',
+          icon: 'target',
+          color: '#10b981'
+        })
+
+        // 2. Dispatch real-time notification to Student Portal inbox
+        dispatchPortalNotification({
+          role: 'student',
+          title: `⭐ Profile Shortlisted for ${activeRole}!`,
+          message: `Congratulations! A technology partner company shortlisted your profile for the ${activeRole} position based on your verified skills & projects.`,
+          category: 'Shortlist Alert',
+          actionUrl: '/student/internships',
+          actionLabel: 'View Shortlist',
+          icon: 'placement',
+          color: '#8b5cf6'
+        })
+
+        // 3. Dispatch real-time notification to Institution Placement Cell
+        dispatchPortalNotification({
+          role: 'institution',
+          title: `🏢 Recruiter Shortlisted Student`,
+          message: `Recruiter shortlisted student ${candidate.name} (${candidate.branch}) for the ${activeRole} recruitment drive.`,
+          category: 'Placement Drive',
+          actionUrl: '/institution/students',
+          actionLabel: 'Student Directory',
+          icon: 'resource',
+          color: '#a855f7'
+        })
+
+        setToastMessage(`🔔 Notification Dispatched on Portal! "${candidate.name}" added to shortlist. Real-time alert delivered to your Notification Bell 🔔, Student & Placement Cell.`)
         setCandidates(prev => prev.map(c => c.id === candidate.id ? { ...c, status: 'Requested' } : c))
       } else {
         alert(data.error || 'Failed to submit candidate request')
@@ -162,12 +269,26 @@ export default function CompanyCandidatesDiscoveryPage() {
       alert('An error occurred while submitting request.')
     } finally {
       setRequestingId(null)
-      setTimeout(() => setToastMessage(null), 6000)
+      setTimeout(() => setToastMessage(null), 8000)
     }
   }
 
   const getInitials = (name: string) => {
     return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'ST'
+  }
+
+  const getRankBadgeStyle = (rank?: number) => {
+    if (rank === 1) return { bg: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: '1px solid #fbbf24', shadow: '0 0 12px rgba(245, 158, 11, 0.4)' }
+    if (rank === 2) return { bg: 'linear-gradient(135deg, #94a3b8, #64748b)', color: '#fff', border: '1px solid #cbd5e1', shadow: '0 0 10px rgba(148, 163, 184, 0.3)' }
+    if (rank === 3) return { bg: 'linear-gradient(135deg, #b45309, #78350f)', color: '#fff', border: '1px solid #d97706', shadow: '0 0 10px rgba(180, 83, 9, 0.3)' }
+    return { bg: 'rgba(16, 185, 129, 0.12)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', shadow: 'none' }
+  }
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return '#10b981'
+    if (score >= 75) return '#3b82f6'
+    if (score >= 60) return '#f59e0b'
+    return '#ef4444'
   }
 
   return (
@@ -177,26 +298,35 @@ export default function CompanyCandidatesDiscoveryPage() {
         {/* Top Header */}
         <header className={styles.header}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={22} strokeWidth={2} color="#10b981" />
-              <h1 className={styles.pageTitle}>Candidate Discovery & Screening</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <Sparkles size={24} strokeWidth={2.2} color="#10b981" />
+              <h1 className={styles.pageTitle}>Top Recommended Candidates</h1>
               <span className="badge badge-purple" style={{ fontSize: '0.72rem', letterSpacing: '0.5px' }}>
-                SOURCE-BACKED INTELLIGENCE
+                AI-RANKED DISCOVERY
               </span>
             </div>
             <p className={styles.pageSubtitle}>
-              Discover eligible candidates organized by verified academic records and traceable source evidence.
+              AI-ranked candidates based on your job requirements. PlaceIQ analyzes all eligible students and surfaces the strongest candidates first.
             </p>
           </div>
 
           <div className={styles.headerActions}>
             <button
+              onClick={() => setShowWeightsModal(true)}
+              className="btn btn-ghost btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}
+            >
+              <Info size={14} />
+              <span>Scoring Weights</span>
+            </button>
+
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className="btn btn-ghost btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}
             >
               <SlidersHorizontal size={14} strokeWidth={2} />
-              <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+              <span>{showFilters ? 'Hide Filters' : 'Refine Cutoffs'}</span>
             </button>
           </div>
         </header>
@@ -229,33 +359,31 @@ export default function CompanyCandidatesDiscoveryPage() {
             </div>
           )}
 
-          {/* Section 1: Role Requirement Selector */}
+          {/* Section 1: Target Requirement Definition & Real-Time Skills Matcher */}
           <div className={`glass ${styles.panel}`} style={{ borderLeft: '4px solid #10b981' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Briefcase size={18} strokeWidth={2} color="#10b981" />
                   <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-                    Target Hiring Requirement
+                    Active Job Requirement & Skills
                   </h2>
                 </div>
                 <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '4px', margin: 0 }}>
-                  PlaceIQ matches and highlights candidate skill sources specifically for this role requirement.
+                  Select a target role or customize required competencies. PlaceIQ re-evaluates all student evidence automatically.
                 </p>
               </div>
 
+              {/* Role Preset Pills */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 {PRESET_ROLES.map(role => (
                   <button
                     key={role}
-                    onClick={() => {
-                      setIsCustomRole(false)
-                      setSelectedRole(role)
-                    }}
+                    onClick={() => handleSelectPresetRole(role)}
                     style={{
                       padding: '6px 12px',
                       borderRadius: '8px',
-                      fontSize: '0.82rem',
+                      fontSize: '0.8rem',
                       fontWeight: 600,
                       cursor: 'pointer',
                       border: (!isCustomRole && selectedRole === role) ? '1px solid #10b981' : '1px solid var(--border)',
@@ -272,7 +400,7 @@ export default function CompanyCandidatesDiscoveryPage() {
                   style={{
                     padding: '6px 12px',
                     borderRadius: '8px',
-                    fontSize: '0.82rem',
+                    fontSize: '0.8rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     border: isCustomRole ? '1px solid #8b5cf6' : '1px solid var(--border)',
@@ -280,16 +408,17 @@ export default function CompanyCandidatesDiscoveryPage() {
                     color: isCustomRole ? '#a78bfa' : 'var(--text-secondary)'
                   }}
                 >
-                  + Custom Role
+                  + Custom Requirement
                 </button>
               </div>
             </div>
 
+            {/* Custom Role Input Box */}
             {isCustomRole && (
               <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
                 <input
                   type="text"
-                  placeholder="Enter custom role (e.g. Embedded Firmware Engineer, Cloud Security Architect)..."
+                  placeholder="Enter custom role title (e.g. Embedded Firmware Engineer, Cloud Security Architect)..."
                   value={customRoleInput}
                   onChange={(e) => setCustomRoleInput(e.target.value)}
                   style={{
@@ -302,25 +431,152 @@ export default function CompanyCandidatesDiscoveryPage() {
                     fontSize: '0.9rem'
                   }}
                 />
-                <button
-                  onClick={fetchCandidates}
-                  className="btn btn-primary btn-sm"
-                  style={{ padding: '0 18px' }}
-                >
-                  Apply Role
-                </button>
+              </div>
+            )}
+
+            {/* Required Skills Tag Editor */}
+            <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)' }}>Required Skills:</span>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                {skillsList.map(skill => (
+                  <span
+                    key={skill}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '4px 10px',
+                      borderRadius: '8px',
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      color: '#34d399',
+                      fontSize: '0.8rem',
+                      fontWeight: 600
+                    }}
+                  >
+                    <span>{skill}</span>
+                    <button
+                      onClick={() => handleRemoveSkillTag(skill)}
+                      style={{ background: 'none', border: 'none', color: '#34d399', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="text"
+                    placeholder="+ Add Skill..."
+                    value={newSkillTag}
+                    onChange={(e) => setNewSkillTag(e.target.value)}
+                    onKeyDown={handleAddSkillTag}
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px dashed var(--border)',
+                      background: 'transparent',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.78rem',
+                      width: '110px'
+                    }}
+                  />
+                  {newSkillTag.trim() && (
+                    <button
+                      onClick={handleAddSkillTag}
+                      className="btn btn-ghost btn-sm"
+                      style={{ padding: '2px 6px', fontSize: '0.72rem' }}
+                    >
+                      Add
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Top Talent Scope Selector & Secondary Cutoffs */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+            {/* Tab Controls: Top Eligible vs Ineligible */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button
+                onClick={() => setActiveTab('eligible')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontSize: '0.86rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: activeTab === 'eligible' ? '1px solid #10b981' : '1px solid var(--border)',
+                  background: activeTab === 'eligible' ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
+                  color: activeTab === 'eligible' ? '#34d399' : 'var(--text-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Trophy size={15} color={activeTab === 'eligible' ? '#10b981' : 'var(--text-muted)'} />
+                <span>Top Recommended ({totalEligible})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('ineligible')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontSize: '0.86rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: activeTab === 'ineligible' ? '1px solid #ef4444' : '1px solid var(--border)',
+                  background: activeTab === 'ineligible' ? 'rgba(239, 68, 68, 0.12)' : 'var(--bg-card)',
+                  color: activeTab === 'ineligible' ? '#fca5a5' : 'var(--text-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <AlertCircle size={15} color={activeTab === 'ineligible' ? '#ef4444' : 'var(--text-muted)'} />
+                <span>Ineligible ({ineligibleCandidates.length})</span>
+              </button>
+            </div>
+
+            {/* Top Talent Scope Filter Buttons */}
+            {activeTab === 'eligible' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Surface Talent:</span>
+                <div style={{ display: 'inline-flex', padding: '3px', borderRadius: '10px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                  {(['5', '10', '25', 'all'] as const).map(limit => (
+                    <button
+                      key={limit}
+                      onClick={() => setTopLimit(limit)}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '7px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: topLimit === limit ? '#10b981' : 'transparent',
+                        color: topLimit === limit ? '#ffffff' : 'var(--text-secondary)',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {limit === 'all' ? 'All Eligible' : `Top ${limit}`}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Section 2: Multi-Dimensional Filter Bar */}
+          {/* Collapsible Secondary Filters & Academic Cutoffs */}
           {showFilters && (
             <div className={`glass ${styles.panel}`} style={{ padding: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                {/* Branch Filter */}
+                {/* Branch Cutoff */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                    Branch / Discipline
+                    Branch Cutoff
                   </label>
                   <select
                     value={selectedBranch}
@@ -343,7 +599,7 @@ export default function CompanyCandidatesDiscoveryPage() {
                   </select>
                 </div>
 
-                {/* Min CGPA Filter */}
+                {/* Min CGPA Cutoff */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
                     Min CGPA: <strong style={{ color: '#10b981' }}>{minCgpa > 0 ? `${minCgpa.toFixed(1)} CGPA` : 'Any'}</strong>
@@ -363,7 +619,7 @@ export default function CompanyCandidatesDiscoveryPage() {
                       colorScheme: 'dark'
                     }}
                   >
-                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>No CGPA Cutoff</option>
+                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>No Cutoff (All CGPAs)</option>
                     <option value="6.0" style={{ background: '#0e131f', color: '#f8fafc' }}>6.0+ CGPA</option>
                     <option value="7.0" style={{ background: '#0e131f', color: '#f8fafc' }}>7.0+ CGPA</option>
                     <option value="7.5" style={{ background: '#0e131f', color: '#f8fafc' }}>7.5+ CGPA</option>
@@ -372,14 +628,14 @@ export default function CompanyCandidatesDiscoveryPage() {
                   </select>
                 </div>
 
-                {/* Min Internships */}
+                {/* Min 10th % Cutoff */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                    Internships Completed
+                    Min 10th Marks: <strong style={{ color: '#10b981' }}>{minTenth > 0 ? `${minTenth}%` : 'Any'}</strong>
                   </label>
                   <select
-                    value={minInternships.toString()}
-                    onChange={(e) => setMinInternships(parseInt(e.target.value))}
+                    value={minTenth.toString()}
+                    onChange={(e) => setMinTenth(parseFloat(e.target.value))}
                     className="form-select"
                     style={{
                       width: '100%',
@@ -392,20 +648,21 @@ export default function CompanyCandidatesDiscoveryPage() {
                       colorScheme: 'dark'
                     }}
                   >
-                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>Any Experience</option>
-                    <option value="1" style={{ background: '#0e131f', color: '#f8fafc' }}>1+ Technical Internship</option>
-                    <option value="2" style={{ background: '#0e131f', color: '#f8fafc' }}>2+ Technical Internships</option>
+                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>No Cutoff</option>
+                    <option value="60" style={{ background: '#0e131f', color: '#f8fafc' }}>60%+ in 10th</option>
+                    <option value="70" style={{ background: '#0e131f', color: '#f8fafc' }}>70%+ in 10th</option>
+                    <option value="80" style={{ background: '#0e131f', color: '#f8fafc' }}>80%+ in 10th</option>
                   </select>
                 </div>
 
-                {/* Graduation Year */}
+                {/* Min 12th % Cutoff */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                    Graduation Batch
+                    Min 12th Marks: <strong style={{ color: '#10b981' }}>{minTwelfth > 0 ? `${minTwelfth}%` : 'Any'}</strong>
                   </label>
                   <select
-                    value={graduationYear}
-                    onChange={(e) => setGraduationYear(e.target.value)}
+                    value={minTwelfth.toString()}
+                    onChange={(e) => setMinTwelfth(parseFloat(e.target.value))}
                     className="form-select"
                     style={{
                       width: '100%',
@@ -418,16 +675,15 @@ export default function CompanyCandidatesDiscoveryPage() {
                       colorScheme: 'dark'
                     }}
                   >
-                    <option value="all" style={{ background: '#0e131f', color: '#f8fafc' }}>All Batches</option>
-                    <option value="2024" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2024</option>
-                    <option value="2025" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2025</option>
-                    <option value="2026" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2026</option>
-                    <option value="2027" style={{ background: '#0e131f', color: '#f8fafc' }}>Batch 2027</option>
+                    <option value="0" style={{ background: '#0e131f', color: '#f8fafc' }}>No Cutoff</option>
+                    <option value="60" style={{ background: '#0e131f', color: '#f8fafc' }}>60%+ in 12th</option>
+                    <option value="70" style={{ background: '#0e131f', color: '#f8fafc' }}>70%+ in 12th</option>
+                    <option value="80" style={{ background: '#0e131f', color: '#f8fafc' }}>80%+ in 12th</option>
                   </select>
                 </div>
               </div>
 
-              {/* Toggles & Sort By */}
+              {/* Toggles & Sort Options */}
               <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
                 <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem', color: 'var(--text-primary)', cursor: 'pointer' }}>
@@ -447,7 +703,7 @@ export default function CompanyCandidatesDiscoveryPage() {
                       onChange={(e) => setHasAssessments(e.target.checked)}
                       style={{ accentColor: '#10b981', width: '16px', height: '16px' }}
                     />
-                    <span>Verified Assessment Activity Only</span>
+                    <span>Verified Assessment Activity</span>
                   </label>
                 </div>
 
@@ -467,9 +723,9 @@ export default function CompanyCandidatesDiscoveryPage() {
                       colorScheme: 'dark'
                     }}
                   >
-                    <option value="match" style={{ background: '#0e131f', color: '#f8fafc' }}>Job Match (Evidence First)</option>
+                    <option value="match" style={{ background: '#0e131f', color: '#f8fafc' }}>AI Match Score (Highest First)</option>
                     <option value="cgpa" style={{ background: '#0e131f', color: '#f8fafc' }}>Highest Academic CGPA</option>
-                    <option value="sources" style={{ background: '#0e131f', color: '#f8fafc' }}>Most Skill Evidence Sources</option>
+                    <option value="sources" style={{ background: '#0e131f', color: '#f8fafc' }}>Most Verified Skill Evidence</option>
                     <option value="experience" style={{ background: '#0e131f', color: '#f8fafc' }}>Internship Experience</option>
                   </select>
                 </div>
@@ -477,7 +733,7 @@ export default function CompanyCandidatesDiscoveryPage() {
             </div>
           )}
 
-          {/* Section 3: Live Search & Summary Stats */}
+          {/* Section 3: Live Search Bar & Active Stats */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
             <form onSubmit={handleSearchSubmit} style={{ flex: 1, minWidth: '280px', maxWidth: '460px', position: 'relative' }}>
               <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -499,44 +755,80 @@ export default function CompanyCandidatesDiscoveryPage() {
             </form>
 
             <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-              Showing <strong style={{ color: '#10b981' }}>{candidates.length}</strong> eligible candidates for <strong>{activeRole}</strong>
+              Showing <strong style={{ color: '#10b981' }}>{activeTab === 'eligible' ? candidates.length : ineligibleCandidates.length}</strong> {activeTab === 'eligible' ? 'top recommended candidates' : 'ineligible candidates'} for <strong>{activeRole}</strong>
             </div>
           </div>
 
-          {/* Section 4: Smart Candidate Grid */}
+          {/* Low Match Alert State */}
+          {activeTab === 'eligible' && !loading && candidates.length > 0 && !hasHighMatches && (
+            <div style={{
+              padding: '16px 20px',
+              borderRadius: '12px',
+              background: 'rgba(245, 158, 11, 0.1)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              color: '#fbbf24',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '12px'
+            }}>
+              <AlertCircle size={20} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong style={{ fontSize: '0.95rem', display: 'block', color: '#f59e0b' }}>
+                  No highly matched candidates found (&gt;70%)
+                </strong>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  Displaying closest matches below along with identified skill gaps. You can adjust the required skill set or relax academic cutoffs to expand the candidate pool.
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Section 4: AI Ranked Candidate Grid */}
           {loading ? (
             <div style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
               <MorphingInfinity className="size-16" style={{ width: '64px', height: '64px', color: '#10b981' }} />
               <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                Organizing student profiles and verifying source evidence...
+                Evaluating student profiles and multi-dimensional intelligence evidence...
               </p>
             </div>
-          ) : candidates.length === 0 ? (
+          ) : activeTab === 'eligible' && candidates.length === 0 ? (
             <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '50px 20px' }}>
               <AlertCircle size={36} strokeWidth={1.5} color="#f59e0b" style={{ margin: '0 auto 12px' }} />
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>No Candidates Match Selected Criteria</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>No Candidates Match Active Eligibility Requirements</h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', maxWidth: '480px', margin: '8px auto 16px' }}>
-                Try relaxing the CGPA threshold, expanding branch selections, or searching for broader technical skill requirements.
+                Try relaxing the CGPA threshold, expanding branch selections, or modifying required skills.
               </p>
               <button
                 onClick={() => {
                   setSelectedBranch('all')
                   setMinCgpa(0)
+                  setMinTenth(0)
+                  setMinTwelfth(0)
                   setMinInternships(0)
                   setHasAssessments(false)
                   setHasProjects(false)
                   setSearchQuery('')
+                  setTopLimit('10')
                 }}
                 className="btn btn-primary btn-sm"
               >
-                Reset All Filters
+                Reset All Cutoffs
               </button>
+            </div>
+          ) : activeTab === 'ineligible' && ineligibleCandidates.length === 0 ? (
+            <div className={`glass ${styles.panel}`} style={{ textAlign: 'center', padding: '50px 20px' }}>
+              <CheckCircle2 size={36} strokeWidth={1.5} color="#10b981" style={{ margin: '0 auto 12px' }} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>All Candidates Meet Eligibility Cutoffs</h3>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', maxWidth: '480px', margin: '8px auto 0' }}>
+                Every student in the database currently meets all specified academic and discipline requirements.
+              </p>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '20px' }}>
-              {candidates.map((candidate) => {
-                const isExpanded = expandedMatchId === candidate.id
+              {(activeTab === 'eligible' ? candidates : ineligibleCandidates).map((candidate) => {
                 const isRequested = candidate.status === 'Requested'
+                const rankStyle = getRankBadgeStyle(candidate.rank)
+                const scoreColor = getScoreColor(candidate.jobMatchScore)
 
                 return (
                   <div
@@ -548,29 +840,38 @@ export default function CompanyCandidatesDiscoveryPage() {
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '16px',
-                      border: '1px solid var(--border)',
+                      border: candidate.rank === 1 ? '1px solid rgba(245, 158, 11, 0.5)' : '1px solid var(--border)',
+                      background: candidate.rank === 1 ? 'linear-gradient(180deg, rgba(245, 158, 11, 0.05), rgba(255, 255, 255, 0.02))' : undefined,
                       transition: 'transform 0.2s ease, border-color 0.2s ease',
                       position: 'relative'
                     }}
                   >
-                    {/* Top Row: Candidate Identity & Job Match */}
+                    {/* Top Row: Rank Badge, Candidate Info & Match Score */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <div style={{
-                          width: '46px',
-                          height: '46px',
-                          borderRadius: '12px',
-                          background: 'linear-gradient(135deg, #10b981, #3b82f6)',
-                          color: '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: '1rem',
-                          flexShrink: 0
-                        }}>
-                          {getInitials(candidate.name)}
-                        </div>
+                        {/* Rank Badge */}
+                        {candidate.rank && (
+                          <div
+                            style={{
+                              padding: '4px 10px',
+                              borderRadius: '8px',
+                              fontSize: '0.85rem',
+                              fontWeight: 800,
+                              background: rankStyle.bg,
+                              color: rankStyle.color,
+                              border: rankStyle.border,
+                              boxShadow: rankStyle.shadow,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              flexShrink: 0
+                            }}
+                          >
+                            <Trophy size={13} />
+                            <span>#{candidate.rank}</span>
+                          </div>
+                        )}
+
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <h3 style={{ fontSize: '1.08rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
@@ -578,139 +879,255 @@ export default function CompanyCandidatesDiscoveryPage() {
                             </h3>
                             {isRequested && (
                               <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
-                                Requested ✓
+                                Shortlisted ✓
                               </span>
                             )}
                           </div>
                           <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
-                            {candidate.branch} • {candidate.degree || 'B.Tech'} ({candidate.graduationYear || 2026})
+                            {candidate.branch} • {candidate.institutionName}
                           </p>
                         </div>
                       </div>
 
-                      {/* Evidence Strength Badge */}
-                      <div
-                        onClick={() => setExpandedMatchId(isExpanded ? null : candidate.id)}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-end',
-                          cursor: 'pointer',
-                          padding: '6px 10px',
-                          borderRadius: '10px',
-                          background: candidate.evidenceStrength === 'Strong Evidence' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(139, 92, 246, 0.12)',
-                          border: `1px solid ${candidate.evidenceStrength === 'Strong Evidence' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`
-                        }}
-                      >
-                        <span style={{ fontSize: '0.88rem', fontWeight: 800, color: candidate.evidenceStrength === 'Strong Evidence' ? '#34d399' : '#a78bfa' }}>
-                          {candidate.requiredSkillsSupportedCount}/{candidate.totalRequiredSkillsCount} Skills
-                        </span>
-                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                          {candidate.evidenceStrength} {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                        </span>
+                      {/* Match Score Display */}
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', justifyContent: 'flex-end' }}>
+                          <span style={{ fontSize: '1.45rem', fontWeight: 900, color: scoreColor, fontFamily: 'Outfit, sans-serif' }}>
+                            {candidate.jobMatchScore}%
+                          </span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)' }}>MATCH</span>
+                        </div>
+
+                        <button
+                          onClick={() => setActiveBreakdownCandidate(candidate)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#a78bfa',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            padding: 0,
+                            textDecoration: 'underline',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '2px',
+                            marginLeft: 'auto'
+                          }}
+                        >
+                          <BarChart3 size={11} />
+                          <span>View Breakdown</span>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Academic Standing & Stats Bar */}
+                    {/* Hard Ineligibility Banner (If Ineligible) */}
+                    {!candidate.isAcademicallyEligible && candidate.ineligibleReasons && (
+                      <div style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.12)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        fontSize: '0.78rem',
+                        color: '#fca5a5'
+                      }}>
+                        <strong>❌ Not Eligible:</strong> {candidate.ineligibleReasons.join(' • ')}
+                      </div>
+                    )}
+
+                    {/* AI Match DNA / Dimensional Equalizer Gauges */}
+                    <div style={{
+                      padding: '11px 13px',
+                      borderRadius: '10px',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid var(--border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <SlidersHorizontal size={12} color="#10b981" />
+                          <span>Match DNA Index</span>
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                          {candidate.evidenceStrength || 'Strong Evidence'}
+                        </span>
+                      </div>
+
+                      {/* 4-Column Mini Equalizer Gauges */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                        {/* Skills */}
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                            <span>Skills</span>
+                            <strong style={{ color: '#34d399' }}>{candidate.matchBreakdown?.skillScore || 0}/{candidate.matchBreakdown?.maxSkillScore || 35}</strong>
+                          </div>
+                          <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${Math.round(((candidate.matchBreakdown?.skillScore || 0) / (candidate.matchBreakdown?.maxSkillScore || 35)) * 100)}%`, background: 'linear-gradient(90deg, #10b981, #34d399)', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+
+                        {/* Role */}
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                            <span>Role</span>
+                            <strong style={{ color: '#a78bfa' }}>{candidate.matchBreakdown?.roleRelevanceScore || 0}/{candidate.matchBreakdown?.maxRoleRelevanceScore || 20}</strong>
+                          </div>
+                          <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${Math.round(((candidate.matchBreakdown?.roleRelevanceScore || 0) / (candidate.matchBreakdown?.maxRoleRelevanceScore || 20)) * 100)}%`, background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+
+                        {/* Academics */}
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                            <span>Academics</span>
+                            <strong style={{ color: '#38bdf8' }}>{candidate.matchBreakdown?.academicScore || 0}/{candidate.matchBreakdown?.maxAcademicScore || 15}</strong>
+                          </div>
+                          <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${Math.round(((candidate.matchBreakdown?.academicScore || 0) / (candidate.matchBreakdown?.maxAcademicScore || 15)) * 100)}%`, background: 'linear-gradient(90deg, #0ea5e9, #38bdf8)', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+
+                        {/* Projects */}
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                            <span>Projects</span>
+                            <strong style={{ color: '#fbbf24' }}>{candidate.matchBreakdown?.projectScore || 0}/{candidate.matchBreakdown?.maxProjectScore || 10}</strong>
+                          </div>
+                          <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${Math.round(((candidate.matchBreakdown?.projectScore || 0) / (candidate.matchBreakdown?.maxProjectScore || 10)) * 100)}%`, background: 'linear-gradient(90deg, #f59e0b, #fbbf24)', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AI Signal Highlights Grid (Bento Intelligence Deck) */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gap: '8px'
+                    }}>
+                      {(candidate.aiSignals && candidate.aiSignals.length > 0 ? candidate.aiSignals : [
+                        { id: '1', title: `${Math.round((candidate.requiredSkillsSupportedCount / Math.max(1, candidate.totalRequiredSkillsCount)) * 100)}% Skill Fit`, subtitle: `${candidate.requiredSkillsSupportedCount}/${candidate.totalRequiredSkillsCount} Core Skills`, tag: 'Skills', iconType: 'zap', theme: 'emerald' },
+                        { id: '2', title: candidate.relevantProjects?.[0]?.title || 'Domain Projects', subtitle: `${candidate.relevantProjectsCount} Projects on record`, tag: 'Projects', iconType: 'code', theme: 'violet' },
+                        { id: '3', title: `${candidate.cgpa.toFixed(2)} CGPA`, subtitle: 'Verified Academic Record', tag: 'Academics', iconType: 'shield', theme: 'blue' },
+                        { id: '4', title: `${candidate.internshipsCount} Internship${candidate.internshipsCount === 1 ? '' : 's'}`, subtitle: 'Hands-on Experience', tag: 'Experience', iconType: 'briefcase', theme: 'cyan' }
+                      ]).map((signal: any, idx: number) => {
+                        const themeColors: Record<string, { bg: string; border: string; iconColor: string; tagBg: string; tagColor: string }> = {
+                          emerald: { bg: 'rgba(16, 185, 129, 0.06)', border: 'rgba(16, 185, 129, 0.22)', iconColor: '#34d399', tagBg: 'rgba(16, 185, 129, 0.15)', tagColor: '#34d399' },
+                          violet: { bg: 'rgba(139, 92, 246, 0.06)', border: 'rgba(139, 92, 246, 0.22)', iconColor: '#a78bfa', tagBg: 'rgba(139, 92, 246, 0.15)', tagColor: '#c4b5fd' },
+                          amber: { bg: 'rgba(245, 158, 11, 0.06)', border: 'rgba(245, 158, 11, 0.22)', iconColor: '#fbbf24', tagBg: 'rgba(245, 158, 11, 0.15)', tagColor: '#fde68a' },
+                          cyan: { bg: 'rgba(6, 182, 212, 0.06)', border: 'rgba(6, 182, 212, 0.22)', iconColor: '#22d3ee', tagBg: 'rgba(6, 182, 212, 0.15)', tagColor: '#a5f3fc' },
+                          blue: { bg: 'rgba(59, 130, 246, 0.06)', border: 'rgba(59, 130, 246, 0.22)', iconColor: '#60a5fa', tagBg: 'rgba(59, 130, 246, 0.15)', tagColor: '#bfdbfe' }
+                        }
+                        const t = themeColors[signal.theme] || themeColors.emerald
+
+                        return (
+                          <div
+                            key={signal.id || idx}
+                            style={{
+                              padding: '8px 10px',
+                              borderRadius: '8px',
+                              background: t.bg,
+                              border: `1px solid ${t.border}`,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '2px',
+                              minWidth: 0
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px', color: t.tagColor, background: t.tagBg, padding: '1px 5px', borderRadius: '3px', whiteSpace: 'nowrap' }}>
+                                {signal.tag}
+                              </span>
+                              {signal.iconType === 'zap' && <Zap size={11} color={t.iconColor} />}
+                              {signal.iconType === 'code' && <Code2 size={11} color={t.iconColor} />}
+                              {signal.iconType === 'award' && <Award size={11} color={t.iconColor} />}
+                              {signal.iconType === 'shield' && <ShieldCheck size={11} color={t.iconColor} />}
+                              {signal.iconType === 'briefcase' && <Briefcase size={11} color={t.iconColor} />}
+                              {signal.iconType === 'star' && <Star size={11} color={t.iconColor} />}
+                              {signal.iconType === 'sparkles' && <Sparkles size={11} color={t.iconColor} />}
+                            </div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={signal.title}>
+                              {signal.title}
+                            </div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={signal.subtitle}>
+                              {signal.subtitle}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Verified Academic Badges */}
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(3, 1fr)',
                       gap: '8px',
                       padding: '10px 12px',
                       borderRadius: '10px',
-                      background: 'rgba(255,255,255,0.02)',
+                      background: 'rgba(0, 0, 0, 0.2)',
                       border: '1px solid var(--border)',
                       fontSize: '0.8rem'
                     }}>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>CGPA (Verified)</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>10th Marks</div>
                         <div style={{ fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <span>{candidate.cgpa.toFixed(1)}</span>
-                          <ShieldCheck size={12} strokeWidth={2.5} color="#10b981" />
+                          <span>{candidate.tenthMarks ? `${candidate.tenthMarks.toFixed(1)}%` : 'N/A'}</span>
+                          <CheckCheck size={13} strokeWidth={2.5} color="#10b981" />
                         </div>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Experience</div>
-                        <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                          {candidate.internshipsCount} Internship{candidate.internshipsCount === 1 ? '' : 's'}
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>12th Marks</div>
+                        <div style={{ fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span>{candidate.twelfthMarks ? `${candidate.twelfthMarks.toFixed(1)}%` : 'N/A'}</span>
+                          <CheckCheck size={13} strokeWidth={2.5} color="#10b981" />
                         </div>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Projects</div>
-                        <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                          {candidate.relevantProjectsCount} Relevant
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>CGPA</div>
+                        <div style={{ fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span>{candidate.cgpa.toFixed(2)}</span>
+                          <ShieldCheck size={13} strokeWidth={2.5} color="#10b981" />
                         </div>
                       </div>
                     </div>
 
-                    {/* Source-Backed Skills Summary */}
+                    {/* Source-Backed Skills Chips */}
                     <div>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Source-Backed Skills Found
+                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Verified Skills & Proficiency
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {candidate.topSkills.map((sk: any) => (
-                          <div key={sk.skill} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{sk.skill}</span>
-                              {sk.actualAssessmentScore && (
-                                <span className="badge badge-green" style={{ fontSize: '0.65rem', padding: '1px 5px' }}>
-                                  Test: {sk.actualAssessmentScore}%
-                                </span>
-                              )}
-                            </div>
-                            <span style={{ fontSize: '0.74rem', color: sk.sourceCount > 0 ? '#34d399' : 'var(--text-muted)' }}>
-                              {sk.sourceCount > 0 ? `Found in ${sk.sourceCount} source${sk.sourceCount === 1 ? '' : 's'}` : 'No sources'}
-                            </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {candidate.topSkills.map((sk) => (
+                          <div
+                            key={sk.skill}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              background: sk.sourceCount > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                              border: sk.sourceCount > 0 ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid var(--border)',
+                              fontSize: '0.78rem'
+                            }}
+                          >
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{sk.skill}</span>
+                            {sk.actualAssessmentScore && (
+                              <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#34d399', background: 'rgba(16, 185, 129, 0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                {sk.actualAssessmentScore}%
+                              </span>
+                            )}
                           </div>
                         ))}
                       </div>
                     </div>
-
-                    {/* Expanded Match Breakdown Preview */}
-                    {isExpanded && (
-                      <div style={{
-                        padding: '12px',
-                        borderRadius: '10px',
-                        background: 'rgba(0,0,0,0.25)',
-                        border: '1px solid var(--border)',
-                        fontSize: '0.78rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '6px'
-                      }}>
-                        <div style={{ fontWeight: 700, color: '#34d399' }}>Requirement Evidence Check:</div>
-                        {candidate.matchFactors.map((mf: string, idx: number) => (
-                          <div key={idx} style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <CheckCircle2 size={12} color="#10b981" />
-                            <span>{mf}</span>
-                          </div>
-                        ))}
-                        {candidate.missingFactors.map((mf: string, idx: number) => (
-                          <div key={idx} style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <AlertCircle size={12} color="#ef4444" />
-                            <span>{mf}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Recruiter Summary Snippet */}
-                    <p style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--text-secondary)',
-                      lineHeight: '1.4',
-                      margin: 0,
-                      background: 'rgba(255,255,255,0.02)',
-                      padding: '8px 10px',
-                      borderRadius: '8px',
-                      borderLeft: '2px solid #8b5cf6'
-                    }}>
-                      {candidate.recruiterSummary}
-                    </p>
 
                     {/* Action Suite */}
-                    <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '4px' }}>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '6px' }}>
                       <Link
                         href={`/company/candidates/${candidate.id}?role=${encodeURIComponent(activeRole)}`}
                         className="btn btn-ghost btn-sm"
@@ -747,12 +1164,12 @@ export default function CompanyCandidatesDiscoveryPage() {
                         ) : isRequested ? (
                           <>
                             <CheckCircle2 size={14} strokeWidth={2} />
-                            <span>Requested</span>
+                            <span>Shortlisted</span>
                           </>
                         ) : (
                           <>
                             <Send size={14} strokeWidth={2} />
-                            <span>Request Candidate</span>
+                            <span>Shortlist</span>
                           </>
                         )}
                       </button>
@@ -764,6 +1181,171 @@ export default function CompanyCandidatesDiscoveryPage() {
           )}
         </main>
       </div>
+
+      {/* Dimensional Score Breakdown Modal */}
+      {activeBreakdownCandidate && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setActiveBreakdownCandidate(null)}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '28px',
+              maxWidth: '540px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  {activeBreakdownCandidate.name}
+                </h3>
+                <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  Multi-Dimensional Match Score: <strong style={{ color: '#10b981', fontSize: '1.1rem' }}>{activeBreakdownCandidate.jobMatchScore}%</strong>
+                </p>
+              </div>
+              <button
+                onClick={() => setActiveBreakdownCandidate(null)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Dimensional Score Meters */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { label: 'Skill Match & Proficiency', score: activeBreakdownCandidate.matchBreakdown.skillScore, max: 35, color: '#10b981' },
+                { label: 'Role & Job Relevance', score: activeBreakdownCandidate.matchBreakdown.roleRelevanceScore, max: 20, color: '#3b82f6' },
+                { label: 'Verified Academic Standing', score: activeBreakdownCandidate.matchBreakdown.academicScore, max: 15, color: '#8b5cf6' },
+                { label: 'Projects & Experience', score: activeBreakdownCandidate.matchBreakdown.projectScore, max: 10, color: '#f59e0b' },
+                { label: 'Education & Branch Alignment', score: activeBreakdownCandidate.matchBreakdown.educationScore, max: 10, color: '#06b6d4' },
+                { label: 'Relevant Certifications', score: activeBreakdownCandidate.matchBreakdown.certificationScore, max: 5, color: '#ec4899' },
+                { label: 'Profile Completeness', score: activeBreakdownCandidate.matchBreakdown.profileScore, max: 5, color: '#6366f1' }
+              ].map(dim => (
+                <div key={dim.label} style={{ fontSize: '0.84rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{dim.label}</span>
+                    <span style={{ fontWeight: 700, color: dim.color }}>{dim.score} / {dim.max} pts</span>
+                  </div>
+                  <div style={{ height: '7px', width: '100%', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(dim.score / dim.max) * 100}%`, background: dim.color, borderRadius: '4px' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Total Aggregated Score</span>
+              <span style={{ fontWeight: 900, fontSize: '1.2rem', color: '#10b981' }}>{activeBreakdownCandidate.matchBreakdown.totalScore} / 100 pts</span>
+            </div>
+
+            <button
+              onClick={() => setActiveBreakdownCandidate(null)}
+              className="btn btn-ghost btn-sm"
+              style={{ width: '100%' }}
+            >
+              Close Breakdown
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Scoring Weights Information Modal */}
+      {showWeightsModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setShowWeightsModal(false)}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '28px',
+              maxWidth: '520px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '18px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={20} color="#10b981" />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>Candidate Intelligence Weights</h3>
+              </div>
+              <button
+                onClick={() => setShowWeightsModal(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0 }}>
+              PlaceIQ utilizes an explainable 7-dimensional matching engine to rank candidates. Academic marks act as an eligibility filter and ranking signal, but cannot overpower missing technical skills.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[
+                { title: 'Skill Match & Proficiency', weight: '35%', desc: 'Semantic normalization, proficiency levels, and platform benchmarks.' },
+                { title: 'Role & Job Relevance', weight: '20%', desc: 'Alignment with target role title and domain keywords.' },
+                { title: 'Academic Eligibility', weight: '15%', desc: 'Verified 10th %, 12th %, and CGPA from official marksheets.' },
+                { title: 'Projects & Experience', weight: '10%', desc: 'Tech stack alignment in capstone and domain projects.' },
+                { title: 'Education / Branch Match', weight: '10%', desc: 'Discipline alignment (Computer Engineering, IT, etc.).' },
+                { title: 'Verified Certifications', weight: '5%', desc: 'Domain-relevant digital certifications.' },
+                { title: 'Profile Completeness', weight: '5%', desc: 'Document verification status and platform readiness.' }
+              ].map(item => (
+                <div key={item.title} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '8px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.84rem', color: 'var(--text-primary)' }}>{item.title}</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{item.desc}</div>
+                  </div>
+                  <span style={{ fontWeight: 800, color: '#10b981', fontSize: '0.9rem' }}>{item.weight}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowWeightsModal(false)}
+              className="btn btn-primary btn-sm"
+              style={{ width: '100%' }}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

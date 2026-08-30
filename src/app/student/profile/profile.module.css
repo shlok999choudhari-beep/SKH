@@ -528,3 +528,104 @@
   }
 }
 
+/* ── Verified & Locked Field Styles ── */
+.verifiedFieldBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.lockedFieldNotice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #a78bfa;
+  margin-top: 4px;
+}
+
+.inputLocked {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #f8fafc !important;
+  cursor: not-allowed;
+  font-weight: 600;
+}
+
+.inputLocked:hover {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+.academicDocsStatusCard {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.academicDocsStatusHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.academicDocsStatusTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.academicDocRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #f1f5f9;
+}
+
+.academicDocRowVerified {
+  color: #34d399;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.academicDocRowTimestamp {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 6px;
+}
+
+.unverifiedBanner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+

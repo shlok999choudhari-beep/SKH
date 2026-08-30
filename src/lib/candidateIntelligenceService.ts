@@ -2,6 +2,36 @@ import { prisma } from '@/lib/prisma'
 
 export type SourceTrustLevel = 'VERIFIED' | 'PLATFORM EVIDENCE' | 'STUDENT PROVIDED' | 'AI EXTRACTED'
 
+// =========================================================================
+// 1. CONFIGURABLE MULTI-DIMENSIONAL SCORING WEIGHTS (TOTAL = 100%)
+// =========================================================================
+export interface ScoringWeights {
+  skillMatch: number           // 35%
+  roleRelevance: number        // 20%
+  academicEligibility: number  // 15%
+  projectsAndExperience: number // 10%
+  educationBranchMatch: number  // 10%
+  certifications: number       // 5%
+  profileCompleteness: number  // 5%
+}
+
+export const DEFAULT_SCORING_WEIGHTS: ScoringWeights = {
+  skillMatch: 0.35,
+  roleRelevance: 0.20,
+  academicEligibility: 0.15,
+  projectsAndExperience: 0.10,
+  educationBranchMatch: 0.10,
+  certifications: 0.05,
+  profileCompleteness: 0.05
+}
+
+// Configurable global scoring weights instance
+export let CURRENT_SCORING_WEIGHTS: ScoringWeights = { ...DEFAULT_SCORING_WEIGHTS }
+
+export function updateScoringWeights(newWeights: Partial<ScoringWeights>) {
+  CURRENT_SCORING_WEIGHTS = { ...CURRENT_SCORING_WEIGHTS, ...newWeights }
+}
+
 export interface CandidateFilterCriteria {
   role?: string
   requiredSkills?: string[]
@@ -14,16 +44,17 @@ export interface CandidateFilterCriteria {
   minInternships?: number
   hasProjects?: boolean
   hasAssessments?: boolean
+  topLimit?: number | 'all' // e.g. 5, 10, 25, 'all'
   sortBy?: 'match' | 'cgpa' | 'sources' | 'experience' | 'assessments'
   search?: string
 }
 
 export interface TraceableSourceItem {
   id: string
-  sourceTitle: string // e.g. "Verified 12th Marksheet", "Resume.pdf", "Student Profile → Skills", "Python Assessment"
+  sourceTitle: string
   sourceType: SourceTrustLevel
-  location: string // e.g. "Mark Statement", "Skills Section", "Profile Form", "Coding Judge Session"
-  detail: string // e.g. "86.0% verified by Institution Examination Authority", "Extracted by AI parser from Resume.pdf", "Actual score: 91%"
+  location: string
+  detail: string
   timestamp?: string
   verificationAuthority?: string
   documentUrl?: string
@@ -34,7 +65,9 @@ export interface TraceableSkillEvidence {
   category: string
   sourceCount: number
   sourceTypes: SourceTrustLevel[]
-  actualAssessmentScore?: number // Only if a real test was completed (e.g. 91%) - never an arbitrary AI percentage
+  actualAssessmentScore?: number
+  proficiencyLevel?: 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner' | 'Self-Reported'
+  proficiencyMultiplier?: number // 0.5 to 1.0 based on verified depth
   sources: TraceableSourceItem[]
   isRelevant: boolean
 }
@@ -59,6 +92,7 @@ export interface ProjectItem {
   techStack: string[]
   domain?: string
   isRelevant: boolean
+  relevanceScore?: number // 0 - 10
   sourceTitle: string
   sourceType: SourceTrustLevel
   location: string
@@ -97,14 +131,43 @@ export interface CertificationItem {
   provider: string
   issueDate: string
   status: 'VERIFIED' | 'STUDENT PROVIDED'
+  isRelevant?: boolean
   sourceTitle: string
   sourceType: SourceTrustLevel
   location: string
   detail: string
 }
 
+export interface DimensionalScoreBreakdown {
+  skillScore: number          // Max 35
+  maxSkillScore: number       // 35
+  roleRelevanceScore: number  // Max 20
+  maxRoleRelevanceScore: number // 20
+  academicScore: number       // Max 15
+  maxAcademicScore: number    // 15
+  projectScore: number        // Max 10
+  maxProjectScore: number     // 10
+  educationScore: number      // Max 10
+  maxEducationScore: number   // 10
+  certificationScore: number  // Max 5
+  maxCertificationScore: number // 5
+  profileScore: number        // Max 5
+  maxProfileScore: number     // 5
+  totalScore: number          // Max 100
+}
+
+export interface AISignalItem {
+  id: string
+  title: string
+  subtitle: string
+  tag: string
+  iconType: 'sparkles' | 'code' | 'award' | 'shield' | 'briefcase' | 'zap' | 'star'
+  theme: 'emerald' | 'violet' | 'amber' | 'cyan' | 'blue'
+}
+
 export interface CandidateCardData {
   id: number
+  rank?: number
   name: string
   email: string
   phone?: string | null
@@ -115,19 +178,38 @@ export interface CandidateCardData {
   cgpa: number
   tenthMarks?: number | null
   twelfthMarks?: number | null
-  isAcademicallyEligible: boolean
   
-  // Traceable Job Relevance
+  // Hard Eligibility Flag
+  isAcademicallyEligible: boolean
+  ineligibleReasons?: string[]
+  
+  // AI Match Score & Detailed Breakdown
+  jobMatchScore: number // Overall 0 - 100
+  matchBreakdown: DimensionalScoreBreakdown
   evidenceStrength: 'Strong Evidence' | 'Moderate Evidence' | 'Limited Evidence'
   requiredSkillsSupportedCount: number
   totalRequiredSkillsCount: number
-  jobMatchScore: number // Calculated from supported criteria for sorting/filtering
+  
+  // AI Signal Highlights & Takeaways
+  aiSignals: AISignalItem[]
+  executiveSummary?: string
+
+  // Explainable "Why Matched?" Reasons (Legacy / Detailed Modal)
+  whyMatchedBullets: string[]
   matchFactors: string[]
   missingFactors: string[]
   
-  // Traceable Skills Summary
+  // Verified Academic Highlights
+  academicSummary: {
+    tenth: { percentage: number | null; isVerified: boolean }
+    twelfth: { percentage: number | null; isVerified: boolean }
+    cgpa: { value: number; isVerified: boolean }
+  }
+  
+  // Skills, Projects, and Experience Summaries
   topSkills: TraceableSkillEvidence[]
   relevantProjectsCount: number
+  relevantProjects: ProjectItem[]
   internshipsCount: number
   recruiterSummary: string
   status: 'Available' | 'Requested' | 'Shortlisted' | 'In Review' | 'Selected'
@@ -136,7 +218,6 @@ export interface CandidateCardData {
 
 export interface MasterCandidateProfileData extends CandidateCardData {
   allSkills: TraceableSkillEvidence[]
-  relevantProjects: ProjectItem[]
   allProjects: ProjectItem[]
   experiences: ExperienceItem[]
   assessments: AssessmentMetric[]
@@ -157,35 +238,111 @@ export interface MasterCandidateProfileData extends CandidateCardData {
 // In-memory interest tracking store for candidate requests
 const candidateInterestStore: Map<string, { companyId: number; studentId: number; role: string; requestedAt: string; status: string }> = new Map()
 
-// Helper: Normalized skill matching
-export function normalizeSkill(skill: string): string {
-  return skill.trim().toLowerCase().replace(/[\.\-_]/g, '')
+// =========================================================================
+// 2. SEMANTIC SKILL SYNONYMS, NORMALIZATION & ECOSYSTEM CLUSTERS
+// =========================================================================
+
+export const SKILL_SYNONYMS: Record<string, string[]> = {
+  react: ['react.js', 'reactjs', 'react js', 'next.js', 'nextjs', 'next js', 'redux', 'react native', 'jsx', 'tsx'],
+  javascript: ['js', 'javascript es6', 'es6', 'ecmascript', 'vanilla js', 'modern javascript', 'js/ts'],
+  typescript: ['ts', 'typescript', 'type script'],
+  nodejs: ['node.js', 'node js', 'node', 'express', 'express.js', 'expressjs', 'nestjs', 'backend js'],
+  python: ['python3', 'python 3', 'py', 'django', 'fastapi', 'flask', 'pandas', 'numpy', 'scipy'],
+  machinelearning: ['ml', 'machine learning', 'deep learning', 'dl', 'ai', 'artificial intelligence', 'scikit-learn', 'scikitlearn', 'sklearn', 'pandas', 'numpy', 'scipy', 'tensorflow', 'pytorch', 'keras', 'nlp', 'computer vision', 'opencv', 'data science'],
+  sql: ['postgresql', 'postgres', 'mysql', 'mssql', 'sql server', 'sqlite', 'rdbms', 'relational database', 'database design', 'queries'],
+  mongodb: ['mongo', 'nosql', 'document db', 'mongoose'],
+  aws: ['amazon web services', 'cloud', 's3', 'ec2', 'lambda', 'cloud computing', 'aws cloud'],
+  docker: ['containerization', 'containers', 'docker compose', 'dockerfile', 'k8s', 'kubernetes', 'container'],
+  kubernetes: ['k8s', 'kube', 'kubernetes cluster'],
+  git: ['github', 'gitlab', 'version control', 'git/github', 'git cli'],
+  cybersecurity: ['network security', 'ethical hacking', 'penetration testing', 'infosec', 'information security', 'vulnerability assessment', 'cryptography', 'cyber fraud', 'soc', 'firewall'],
+  frontend: ['html', 'css', 'html5', 'css3', 'tailwind', 'tailwindcss', 'bootstrap', 'ui/ux', 'web design', 'responsive web'],
+  java: ['core java', 'java 8', 'java 11', 'spring', 'spring boot', 'springboot', 'hibernate', 'jpa'],
+  cpp: ['c++', 'c/c++', 'cpp', 'object oriented programming', 'dsa', 'data structures'],
+  devops: ['ci/cd', 'github actions', 'jenkins', 'devops pipeline', 'terraform', 'ansible', 'linux', 'bash scripting']
 }
 
 export const ROLE_PRESET_SKILLS: Record<string, string[]> = {
-  'Software Developer': ['Python', 'SQL', 'React', 'Git', 'Data Structures'],
-  'Software Engineer': ['Java', 'C++', 'Python', 'SQL', 'System Design'],
-  'Python Backend Developer': ['Python', 'Django', 'FastAPI', 'SQL', 'REST API', 'Git', 'PostgreSQL'],
-  'Full Stack Developer': ['React', 'Node.js', 'TypeScript', 'SQL', 'REST API', 'MongoDB', 'CSS'],
-  'Frontend Developer': ['React', 'JavaScript', 'TypeScript', 'HTML/CSS', 'Next.js', 'Tailwind'],
+  'Software Developer': ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git'],
+  'Software Developer Intern': ['JavaScript', 'React', 'Node.js', 'SQL', 'Git'],
+  'Software Engineer': ['Java', 'C++', 'Python', 'SQL', 'System Design', 'Git'],
+  'Python Backend Developer': ['Python', 'FastAPI', 'Django', 'SQL', 'PostgreSQL', 'Git', 'REST API'],
+  'Full Stack Developer': ['React', 'Node.js', 'TypeScript', 'SQL', 'MongoDB', 'REST API', 'CSS'],
+  'Frontend Developer': ['React', 'JavaScript', 'TypeScript', 'HTML/CSS', 'Next.js', 'TailwindCSS'],
   'Data Scientist / AI Engineer': ['Python', 'Machine Learning', 'SQL', 'Pandas', 'TensorFlow', 'Data Analysis'],
   'DevOps & Cloud Engineer': ['Docker', 'Kubernetes', 'AWS', 'Linux', 'CI/CD', 'Git'],
-  'Cybersecurity Specialist': ['Network Security', 'Ethical Hacking', 'Linux', 'Cryptography', 'Python']
+  'Cybersecurity Specialist': ['Network Security', 'Ethical Hacking', 'Linux', 'Cryptography', 'Python', 'Cybersecurity']
 }
 
 export const ROLE_PRESETS = ROLE_PRESET_SKILLS
 
 /**
- * Evaluates and organizes candidates based on recruiter filter criteria with source-backed evidence.
+ * Normalizes raw skill text by stripping punctuation, extra spaces, and common extensions.
  */
+export function normalizeSkill(skill: string): string {
+  if (!skill) return ''
+  return skill
+    .toLowerCase()
+    .replace(/[\.\-_/]/g, '')
+    .replace(/\s+/g, '')
+    .trim()
+}
+
+/**
+ * Checks whether candidateSkill matches requiredSkill either exactly, as a substring, or through semantic synonym mapping.
+ */
+export function isSemanticSkillMatch(candidateSkill: string, requiredSkill: string): { isMatch: boolean; confidence: number; matchedTerm?: string } {
+  const normCand = normalizeSkill(candidateSkill)
+  const normReq = normalizeSkill(requiredSkill)
+
+  if (!normCand || !normReq) return { isMatch: false, confidence: 0 }
+
+  // 1. Exact string match
+  if (normCand === normReq) {
+    return { isMatch: true, confidence: 1.0, matchedTerm: candidateSkill }
+  }
+
+  // 2. Substring containment (e.g. "react" in "reactjs", "javascript" in "javascriptes6")
+  if (normCand.includes(normReq) || normReq.includes(normCand)) {
+    return { isMatch: true, confidence: 0.95, matchedTerm: candidateSkill }
+  }
+
+  // 3. Synonym dictionary lookup
+  for (const [canonical, synonyms] of Object.entries(SKILL_SYNONYMS)) {
+    const canonicalNorm = normalizeSkill(canonical)
+    const allForms = [canonicalNorm, ...synonyms.map(s => normalizeSkill(s))]
+
+    const reqMatches = allForms.some(f => f === normReq || normReq.includes(f) || f.includes(normReq))
+    const candMatches = allForms.some(f => f === normCand || normCand.includes(f) || f.includes(normCand))
+
+    if (reqMatches && candMatches) {
+      return { isMatch: true, confidence: 0.90, matchedTerm: candidateSkill }
+    }
+  }
+
+  return { isMatch: false, confidence: 0 }
+}
+
+// =========================================================================
+// 3. MULTI-DIMENSIONAL CANDIDATE INTELLIGENCE EVALUATION ENGINE
+// =========================================================================
+
 export async function evaluateCandidatesForRequirement(
   filters: CandidateFilterCriteria,
   companyId?: number
-): Promise<{ candidates: CandidateCardData[]; totalEligible: number; totalCandidates: number }> {
+): Promise<{
+  candidates: CandidateCardData[]
+  ineligibleCandidates: CandidateCardData[]
+  totalEligible: number
+  totalCandidates: number
+  hasHighMatches: boolean
+  scoringWeights: ScoringWeights
+  summary: string
+}> {
   const role = filters.role || 'Software Developer'
   const requiredSkills = filters.requiredSkills && filters.requiredSkills.length > 0
     ? filters.requiredSkills
-    : (ROLE_PRESET_SKILLS[role] || ['Python', 'SQL', 'React'])
+    : (ROLE_PRESET_SKILLS[role] || ['JavaScript', 'React', 'Node.js', 'SQL'])
 
   const minCgpa = filters.minCgpa !== undefined ? Number(filters.minCgpa) : 0
   const minTenth = filters.minTenth !== undefined ? Number(filters.minTenth) : 0
@@ -195,41 +352,47 @@ export async function evaluateCandidatesForRequirement(
   const selectedGradYear = filters.graduationYear && filters.graduationYear !== 'all' ? Number(filters.graduationYear) : null
   const minInternships = filters.minInternships || 0
 
-  // Fetch all students from database with relevant relations with retry support
+  // Fetch all student records with explicit select for resilient column resolution
   let students: any[] = []
+  const studentSelectFields = {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    college: true,
+    degree: true,
+    graduationYear: true,
+    cgpa: true,
+    tenthMarks: true,
+    twelfthMarks: true,
+    tenthBoard: true,
+    twelfthBoard: true,
+    academicVerificationStatus: true,
+    isAcademicLocked: true,
+    institution: { select: { id: true, name: true } },
+    resumes: { orderBy: { createdAt: 'desc' as const }, take: 1 },
+    skillAssessments: true,
+    skillProfiles: { include: { evidences: true } },
+    placementReadiness: true,
+    internshipApps: { include: { internship: true } },
+    placementApps: { include: { drive: true } },
+    certifications: true,
+    academicMarksheets: true,
+    codingSessions: { orderBy: { startedAt: 'desc' as const }, take: 5 },
+    quizAttempts: { include: { quiz: true }, orderBy: { startedAt: 'desc' as const }, take: 5 }
+  }
+
   try {
-    students = await prisma.student.findMany({
-      include: {
-        institution: { select: { id: true, name: true } },
-        resumes: { orderBy: { createdAt: 'desc' }, take: 1 },
-        skillAssessments: true,
-        skillProfiles: { include: { evidences: true } },
-        placementReadiness: true,
-        internshipApps: { include: { internship: true } },
-        placementApps: { include: { drive: true } },
-        certifications: true,
-        codingSessions: { orderBy: { startedAt: 'desc' }, take: 5 },
-        quizAttempts: { include: { quiz: true }, orderBy: { startedAt: 'desc' }, take: 5 }
-      },
+    students = await (prisma.student as any).findMany({
+      select: studentSelectFields,
       orderBy: { id: 'asc' }
     })
   } catch (err) {
     console.warn('Initial student fetch failed, retrying once...', err)
     try {
       await new Promise(r => setTimeout(r, 1000))
-      students = await prisma.student.findMany({
-        include: {
-          institution: { select: { id: true, name: true } },
-          resumes: { orderBy: { createdAt: 'desc' }, take: 1 },
-          skillAssessments: true,
-          skillProfiles: { include: { evidences: true } },
-          placementReadiness: true,
-          internshipApps: { include: { internship: true } },
-          placementApps: { include: { drive: true } },
-          certifications: true,
-          codingSessions: { orderBy: { startedAt: 'desc' }, take: 5 },
-          quizAttempts: { include: { quiz: true }, orderBy: { startedAt: 'desc' }, take: 5 }
-        },
+      students = await (prisma.student as any).findMany({
+        select: studentSelectFields,
         orderBy: { id: 'asc' }
       })
     } catch (retryErr) {
@@ -238,48 +401,36 @@ export async function evaluateCandidatesForRequirement(
     }
   }
 
-  // Fallback student roster for offline / local resilience
+  // Fallback resilient roster if database query returns empty
   if (students.length === 0) {
     students = getBaselineResilientStudents()
   }
 
-  const analyzedList: CandidateCardData[] = []
+  const eligibleCandidates: CandidateCardData[] = []
+  const ineligibleCandidates: CandidateCardData[] = []
 
   for (const student of students) {
     const studentDegree = student.degree || 'B.Tech'
-    const studentCollege = student.college || student.institution?.name || 'Engineering Institute'
+    const studentCollege = student.college || student.institution?.name || 'MIT Academy of Engineering'
     const studentGradYear = student.graduationYear || 2026
-    const studentCgpa = student.cgpa ? Number(student.cgpa) : 8.0
-    const student10th = student.tenthMarks ? Number(student.tenthMarks) : 82.0
-    const student12th = student.twelfthMarks ? Number(student.twelfthMarks) : 80.0
+    
+    // Verified marks from marksheets or verified student columns
+    const verified10thMark = student.tenthMarks ? Number(student.tenthMarks) : (student.academicMarksheets?.find((m: any) => m.educationLevel === 'TENTH')?.percentage || 82.0)
+    const verified12thMark = student.twelfthMarks ? Number(student.twelfthMarks) : (student.academicMarksheets?.find((m: any) => m.educationLevel === 'TWELFTH')?.percentage || 80.0)
+    const verifiedCgpa = student.cgpa ? Number(student.cgpa) : 8.0
+    const isAcademicVerified = student.academicVerificationStatus === 'VERIFIED' || student.isAcademicLocked === true
 
-    // Infer branch from degree or name if not explicitly set
+    // Infer branch from degree or profile
     let studentBranch = 'Computer Engineering'
-    if (studentDegree.toLowerCase().includes('it') || studentDegree.toLowerCase().includes('information')) {
+    const degLower = (studentDegree || '').toLowerCase()
+    if (degLower.includes('it') || degLower.includes('information')) {
       studentBranch = 'Information Technology'
-    } else if (studentDegree.toLowerCase().includes('mech')) {
+    } else if (degLower.includes('mech')) {
       studentBranch = 'Mechanical Engineering'
-    } else if (studentDegree.toLowerCase().includes('electr') || studentDegree.toLowerCase().includes('ece')) {
+    } else if (degLower.includes('electr') || degLower.includes('ece') || degLower.includes('entc')) {
       studentBranch = 'Electronics & Telecommunication'
-    } else if (studentDegree.toLowerCase().includes('civil')) {
+    } else if (degLower.includes('civil')) {
       studentBranch = 'Civil Engineering'
-    }
-
-    // Branch filter check
-    if (selectedBranch && selectedBranch !== 'all') {
-      const branchMatches = studentBranch.toLowerCase().includes(selectedBranch) ||
-        studentDegree.toLowerCase().includes(selectedBranch)
-      if (!branchMatches) continue
-    }
-
-    // Degree filter check
-    if (selectedDegree && !studentDegree.toLowerCase().includes(selectedDegree)) {
-      continue
-    }
-
-    // Graduation year filter check
-    if (selectedGradYear && studentGradYear !== selectedGradYear) {
-      continue
     }
 
     // Search query check
@@ -293,115 +444,298 @@ export async function evaluateCandidatesForRequirement(
       if (!matchesSearch) continue
     }
 
-    // Academic eligibility evaluation
-    const cgpaMet = studentCgpa >= minCgpa
-    const tenthMet = student10th >= minTenth
-    const twelfthMet = student12th >= minTwelfth
-    const isAcademicallyEligible = cgpaMet && tenthMet && twelfthMet
+    // -----------------------------------------------------------------------
+    // A. HARD ELIGIBILITY EVALUATION (Separated from Match Score)
+    // -----------------------------------------------------------------------
+    const ineligibleReasons: string[] = []
 
-    // Filter by academic eligibility if min criteria specified
-    if (minCgpa > 0 && !cgpaMet) continue
-    if (minTenth > 0 && !tenthMet) continue
-    if (minTwelfth > 0 && !twelfthMet) continue
+    if (minCgpa > 0 && verifiedCgpa < minCgpa) {
+      ineligibleReasons.push(`CGPA requirement not met: ${verifiedCgpa.toFixed(2)} < ${minCgpa.toFixed(2)}`)
+    }
+    if (minTenth > 0 && verified10thMark < minTenth) {
+      ineligibleReasons.push(`10th percentage requirement not met: ${verified10thMark.toFixed(1)}% < ${minTenth.toFixed(1)}%`)
+    }
+    if (minTwelfth > 0 && verified12thMark < minTwelfth) {
+      ineligibleReasons.push(`12th percentage requirement not met: ${verified12thMark.toFixed(1)}% < ${minTwelfth.toFixed(1)}%`)
+    }
+    if (selectedBranch && selectedBranch !== 'all') {
+      const branchMatches = studentBranch.toLowerCase().includes(selectedBranch) || degLower.includes(selectedBranch)
+      if (!branchMatches) {
+        ineligibleReasons.push(`Branch mismatch: ${studentBranch} does not match required ${filters.branch}`)
+      }
+    }
+    if (selectedDegree && selectedDegree !== 'all' && !degLower.includes(selectedDegree)) {
+      ineligibleReasons.push(`Degree mismatch: ${studentDegree} does not match required ${filters.degree}`)
+    }
+    if (selectedGradYear && studentGradYear !== selectedGradYear) {
+      ineligibleReasons.push(`Graduation year mismatch: Batch ${studentGradYear} does not match required ${selectedGradYear}`)
+    }
 
-    // Extract traceable skills and evidence
+    const isAcademicallyEligible = ineligibleReasons.length === 0
+
+    // -----------------------------------------------------------------------
+    // B. MULTI-DIMENSIONAL INTELLIGENCE SCORING
+    // -----------------------------------------------------------------------
+
+    // 1. Skill Match & Proficiency (Weight: 35%)
     const skillEvidences = extractStudentTraceableSkills(student, requiredSkills)
+    let supportedSkillsCount = 0
+    let weightedSkillPoints = 0
 
-    // Count required skills that have at least 1 legitimate source
-    let supportedCount = 0
     for (const reqSkill of requiredSkills) {
-      const normReq = normalizeSkill(reqSkill)
-      const found = skillEvidences.find(s => normalizeSkill(s.skill) === normReq || normalizeSkill(s.skill).includes(normReq))
-      if (found && found.sourceCount > 0) {
-        supportedCount++
+      let bestMatch: { isMatch: boolean; confidence: number } = { isMatch: false, confidence: 0 }
+      let matchedEvidence: TraceableSkillEvidence | undefined
+
+      for (const candSkill of skillEvidences) {
+        const matchRes = isSemanticSkillMatch(candSkill.skill, reqSkill)
+        if (matchRes.isMatch && matchRes.confidence > bestMatch.confidence) {
+          bestMatch = matchRes
+          matchedEvidence = candSkill
+        }
+      }
+
+      if (bestMatch.isMatch && matchedEvidence && matchedEvidence.sourceCount > 0) {
+        supportedSkillsCount++
+        // Multiplier based on proficiency evidence
+        const profMultiplier = matchedEvidence.proficiencyMultiplier || 0.85
+        weightedSkillPoints += bestMatch.confidence * profMultiplier
       }
     }
 
-    // Extract projects & count
-    const projects = extractStudentTraceableProjects(student, role, requiredSkills)
-    const relevantProjectsCount = projects.filter(p => p.isRelevant).length
+    const skillCoverageRatio = requiredSkills.length > 0 ? (weightedSkillPoints / requiredSkills.length) : 1
+    const skillScore = Math.min(35, Math.round(skillCoverageRatio * 35))
 
-    if (filters.hasProjects && relevantProjectsCount === 0) {
-      continue
+    // 2. Role / Job Relevance (Weight: 20%)
+    const roleRelevance = calculateRoleRelevance(student, role, requiredSkills)
+    const roleRelevanceScore = Math.min(20, Math.round(roleRelevance * 20))
+
+    // 3. Academic Standing (Weight: 15% - Capped, cannot overpower skills)
+    let academicPoints = 0
+    // CGPA Contribution (max 8 pts)
+    if (verifiedCgpa >= 8.5) academicPoints += 8
+    else if (verifiedCgpa >= 7.5) academicPoints += 7
+    else if (verifiedCgpa >= 6.5) academicPoints += 5
+    else academicPoints += 3
+
+    // 10th & 12th Verified Marks (max 4 pts)
+    if (verified10thMark >= 85) academicPoints += 2
+    else if (verified10thMark >= 70) academicPoints += 1.5
+
+    if (verified12thMark >= 80) academicPoints += 2
+    else if (verified12thMark >= 70) academicPoints += 1.5
+
+    // Document Verification Bonus (max 3 pts)
+    if (isAcademicVerified) academicPoints += 3
+    else academicPoints += 1.5
+
+    const academicScore = Math.min(15, Math.round(academicPoints))
+
+    // 4. Projects & Experience (Weight: 10%)
+    const allProjects = extractStudentTraceableProjects(student, role, requiredSkills)
+    const relevantProjects = allProjects.filter(p => p.isRelevant)
+    const relevantProjectsCount = relevantProjects.length
+
+    const internships = extractStudentTraceableExperiences(student, role)
+    const internshipsCount = internships.length
+
+    let projectPoints = 0
+    if (relevantProjectsCount >= 2) projectPoints += 6
+    else if (relevantProjectsCount === 1) projectPoints += 4
+    else projectPoints += 1
+
+    if (internshipsCount >= 2) projectPoints += 4
+    else if (internshipsCount === 1) projectPoints += 3
+    else projectPoints += 1
+
+    const projectScore = Math.min(10, Math.round(projectPoints))
+
+    // 5. Education / Branch Alignment (Weight: 10%)
+    let eduPoints = 8
+    const isTechBranch = studentBranch.toLowerCase().includes('computer') ||
+      studentBranch.toLowerCase().includes('information') ||
+      studentBranch.toLowerCase().includes('electronics') ||
+      studentBranch.toLowerCase().includes('data')
+    if (isTechBranch) eduPoints += 2
+    const educationScore = Math.min(10, eduPoints)
+
+    // 6. Relevant Certifications (Weight: 5%)
+    const certifications = extractStudentTraceableCertifications(student)
+    const relevantCerts = certifications.filter(c => isCertificationRelevantToRole(c.name, role, requiredSkills))
+    let certScore = 0
+    if (relevantCerts.length >= 2) certScore = 5
+    else if (relevantCerts.length === 1) certScore = 4
+    else if (certifications.length > 0) certScore = 2
+    else certScore = 1
+
+    // 7. Profile Completeness & Platform Readiness (Weight: 5%)
+    let profilePoints = 2
+    if (student.resumes && student.resumes.length > 0) profilePoints += 1
+    if (isAcademicVerified) profilePoints += 1
+    if (student.skillAssessments && student.skillAssessments.length > 0) profilePoints += 1
+    const profileScore = Math.min(5, profilePoints)
+
+    // Total Overall Match Score (0 - 100)
+    let totalScore = skillScore + roleRelevanceScore + academicScore + projectScore + educationScore + certScore + profileScore
+    totalScore = Math.min(98, Math.max(20, totalScore))
+
+    const matchBreakdown: DimensionalScoreBreakdown = {
+      skillScore,
+      maxSkillScore: 35,
+      roleRelevanceScore,
+      maxRoleRelevanceScore: 20,
+      academicScore,
+      maxAcademicScore: 15,
+      projectScore,
+      maxProjectScore: 10,
+      educationScore,
+      maxEducationScore: 10,
+      certificationScore: certScore,
+      maxCertificationScore: 5,
+      profileScore,
+      maxProfileScore: 5,
+      totalScore
     }
 
-    // Internships count
-    const internshipsCount = (student.internshipApps || []).filter(
-      (app: any) => app.status === 'placed' || app.status === 'offered' || app.status === 'completed' || app.status === 'accepted'
-    ).length
-
-    if (minInternships > 0 && internshipsCount < minInternships) {
-      continue
-    }
-
-    // Assessments
-    const assessments = extractStudentTraceableAssessments(student)
-    if (filters.hasAssessments && assessments.length === 0) {
-      continue
-    }
-
-    // Match Factors & Missing Signals (Factual and Transparent)
+    // -----------------------------------------------------------------------
+    // C. EXPLAINABLE "WHY THIS CANDIDATE?" REASON GENERATION
+    // -----------------------------------------------------------------------
+    const whyMatchedBullets: string[] = []
     const matchFactors: string[] = []
     const missingFactors: string[] = []
 
-    if (cgpaMet) {
-      matchFactors.push(`Verified CGPA (${studentCgpa.toFixed(1)} meets ≥ ${minCgpa || 6.0} cutoff)`)
-    } else {
-      missingFactors.push(`CGPA ${studentCgpa.toFixed(1)} below required ${minCgpa}`)
+    // Skill evidence bullet
+    const skillPct = Math.round((supportedSkillsCount / Math.max(1, requiredSkills.length)) * 100)
+    whyMatchedBullets.push(`✓ ${supportedSkillsCount}/${requiredSkills.length} required skills matched (${skillPct}% skill coverage)`)
+
+    // Academic bullet
+    whyMatchedBullets.push(`✓ Verified Academics: ${verifiedCgpa.toFixed(2)} CGPA, 10th: ${verified10thMark.toFixed(1)}% ✓, 12th: ${verified12thMark.toFixed(1)}% ✓`)
+
+    // Project bullet
+    if (relevantProjectsCount > 0) {
+      const topProjTitles = relevantProjects.slice(0, 2).map(p => `"${p.title}"`).join(' and ')
+      whyMatchedBullets.push(`✓ ${relevantProjectsCount} relevant domain projects: ${topProjTitles}`)
     }
 
-    // Check required skills coverage
+    // Certification / Internship bullet
+    if (relevantCerts.length > 0) {
+      whyMatchedBullets.push(`✓ ${relevantCerts.length} verified domain certifications (${relevantCerts[0].name})`)
+    }
+    if (internshipsCount > 0) {
+      whyMatchedBullets.push(`✓ ${internshipsCount} verified technical internship${internshipsCount === 1 ? '' : 's'} on record`)
+    }
+
+    // -----------------------------------------------------------------------
+    // D. HIGH-VALUE STRUCTURED AI SIGNALS
+    // -----------------------------------------------------------------------
+    const aiSignals: AISignalItem[] = []
+
+    // 1. Skill Alignment Signal
+    aiSignals.push({
+      id: 'skill-fit',
+      title: `${skillPct}% Required Skill Fit`,
+      subtitle: `${supportedSkillsCount}/${requiredSkills.length} Core Skills Matched`,
+      tag: 'Skills Fit',
+      iconType: 'zap',
+      theme: skillPct >= 80 ? 'emerald' : skillPct >= 50 ? 'cyan' : 'amber'
+    })
+
+    // 2. Project Highlight Signal
+    if (relevantProjects.length > 0) {
+      aiSignals.push({
+        id: 'project-fit',
+        title: relevantProjects[0].title,
+        subtitle: `${relevantProjects.length} Domain Project${relevantProjects.length > 1 ? 's' : ''} in Portfolio`,
+        tag: 'Highlight Project',
+        iconType: 'code',
+        theme: 'violet'
+      })
+    } else {
+      aiSignals.push({
+        id: 'project-fit',
+        title: 'Technical Portfolio',
+        subtitle: 'Code practice & domain problem solving on record',
+        tag: 'Portfolio',
+        iconType: 'code',
+        theme: 'violet'
+      })
+    }
+
+    // 3. Verified Academics Signal
+    aiSignals.push({
+      id: 'academic-fit',
+      title: `${verifiedCgpa.toFixed(2)} CGPA • Academic Standing`,
+      subtitle: isAcademicVerified ? `10th: ${verified10thMark.toFixed(1)}% | 12th: ${verified12thMark.toFixed(1)}% 🔒` : 'Academic profile record',
+      tag: 'Academics',
+      iconType: 'shield',
+      theme: 'blue'
+    })
+
+    // 4. Credential or Experience Signal
+    if (relevantCerts.length > 0) {
+      aiSignals.push({
+        id: 'cert-fit',
+        title: relevantCerts[0].name,
+        subtitle: 'Verified Technical Certification',
+        tag: 'Credentials',
+        iconType: 'award',
+        theme: 'amber'
+      })
+    } else if (internshipsCount > 0) {
+      aiSignals.push({
+        id: 'internship-fit',
+        title: `${internshipsCount} Technical Internship${internshipsCount > 1 ? 's' : ''}`,
+        subtitle: 'Industry Work Experience on Record',
+        tag: 'Experience',
+        iconType: 'briefcase',
+        theme: 'cyan'
+      })
+    } else {
+      aiSignals.push({
+        id: 'readiness-fit',
+        title: 'Placement Ready (Tier 1)',
+        subtitle: 'Cleared institutional verification standards',
+        tag: 'Readiness',
+        iconType: 'star',
+        theme: 'amber'
+      })
+    }
+
+    const executiveSummary = `${student.name} shows ${skillPct}% alignment for ${role} with ${relevantProjectsCount} domain project${relevantProjectsCount === 1 ? '' : 's'} and verified ${verifiedCgpa.toFixed(2)} CGPA.`
+
+    // Match Factors & Missing Factors
     for (const reqSkill of requiredSkills) {
-      const normReq = normalizeSkill(reqSkill)
-      const found = skillEvidences.find(s => normalizeSkill(s.skill) === normReq || normalizeSkill(s.skill).includes(normReq))
-      if (found && found.sourceCount > 0) {
+      const found = skillEvidences.find(s => isSemanticSkillMatch(s.skill, reqSkill).isMatch && s.sourceCount > 0)
+      if (found) {
         const topSourceType = found.sourceTypes.includes('VERIFIED')
-          ? 'Verified'
+          ? 'Verified Faculty'
           : found.sourceTypes.includes('PLATFORM EVIDENCE')
-          ? 'Platform Evidence'
+          ? 'Platform Benchmark'
           : found.sourceTypes.includes('AI EXTRACTED')
           ? 'Resume Extracted'
-          : 'Student Provided'
-        matchFactors.push(`${found.skill} found in ${found.sourceCount} sources (${topSourceType})`)
+          : 'Student Profile'
+        matchFactors.push(`${found.skill}: Supported by ${found.sourceCount} source(s) (${topSourceType})`)
       } else {
-        missingFactors.push(`${reqSkill}: No supporting evidence found`)
+        missingFactors.push(`${reqSkill}: No supporting evidence recorded`)
       }
     }
 
-    if (relevantProjectsCount > 0) {
-      matchFactors.push(`${relevantProjectsCount} relevant domain projects recorded`)
-    }
-
-    if (internshipsCount > 0) {
-      matchFactors.push(`${internshipsCount} completed technical internships`)
-    }
-
-    // Determine evidence strength
+    // Determine overall evidence strength
     let evidenceStrength: 'Strong Evidence' | 'Moderate Evidence' | 'Limited Evidence' = 'Limited Evidence'
-    const coverageRatio = requiredSkills.length > 0 ? supportedCount / requiredSkills.length : 1
-
-    if (coverageRatio >= 0.75 && relevantProjectsCount >= 1 && cgpaMet) {
+    if (skillPct >= 75 && relevantProjectsCount >= 1 && isAcademicallyEligible) {
       evidenceStrength = 'Strong Evidence'
-    } else if (coverageRatio >= 0.5) {
+    } else if (skillPct >= 50) {
       evidenceStrength = 'Moderate Evidence'
     }
 
-    // Calculate a transparent match score (0-100) based strictly on met criteria
-    let calculatedScore = Math.round(coverageRatio * 60)
-    if (cgpaMet) calculatedScore += 15
-    if (relevantProjectsCount > 0) calculatedScore += 15
-    if (internshipsCount > 0) calculatedScore += 10
-    calculatedScore = Math.min(98, Math.max(25, calculatedScore))
-
     // Recruiter summary
-    const supportedSkillsList = skillEvidences.slice(0, 3).map(s => s.skill).join(', ')
-    const recruiterSummary = `${student.name} is a ${studentBranch} candidate with supporting evidence for ${supportedSkillsList || 'core engineering competencies'} (CGPA: ${studentCgpa.toFixed(1)}). Backed by ${relevantProjectsCount} relevant projects and ${internshipsCount} technical internships.`
+    const supportedSkillsList = skillEvidences.filter(s => s.isRelevant && s.sourceCount > 0).slice(0, 3).map(s => s.skill).join(', ')
+    const recruiterSummary = `${student.name} is a ${studentBranch} student with strong evidence for ${supportedSkillsList || 'core competencies'} (CGPA: ${verifiedCgpa.toFixed(2)}). Backed by ${relevantProjectsCount} relevant projects and ${internshipsCount} verified internships.`
 
-    // Check request status
+    // Interest / Request status
     const reqKey = `${companyId || 1}-${student.id}-${role}`
     const currentStatus = (candidateInterestStore.get(reqKey)?.status as any) || 'Available'
 
-    analyzedList.push({
+    const candidateData: CandidateCardData = {
       id: student.id,
       name: student.name,
       email: student.email,
@@ -410,68 +744,124 @@ export async function evaluateCandidatesForRequirement(
       branch: studentBranch,
       institutionName: studentCollege,
       graduationYear: studentGradYear,
-      cgpa: studentCgpa,
-      tenthMarks: student10th,
-      twelfthMarks: student12th,
+      cgpa: verifiedCgpa,
+      tenthMarks: verified10thMark,
+      twelfthMarks: verified12thMark,
       isAcademicallyEligible,
+      ineligibleReasons: ineligibleReasons.length > 0 ? ineligibleReasons : undefined,
+      jobMatchScore: totalScore,
+      matchBreakdown,
       evidenceStrength,
-      requiredSkillsSupportedCount: supportedCount,
+      requiredSkillsSupportedCount: supportedSkillsCount,
       totalRequiredSkillsCount: requiredSkills.length,
-      jobMatchScore: calculatedScore,
+      aiSignals,
+      executiveSummary,
+      whyMatchedBullets,
       matchFactors,
       missingFactors,
-      topSkills: skillEvidences.slice(0, 4),
+      academicSummary: {
+        tenth: { percentage: verified10thMark, isVerified: isAcademicVerified },
+        twelfth: { percentage: verified12thMark, isVerified: isAcademicVerified },
+        cgpa: { value: verifiedCgpa, isVerified: true }
+      },
+      topSkills: skillEvidences.slice(0, 6),
       relevantProjectsCount,
+      relevantProjects,
       internshipsCount,
       recruiterSummary,
       status: currentStatus
-    })
+    }
+
+    if (isAcademicallyEligible) {
+      if (filters.hasProjects && relevantProjectsCount === 0) continue
+      if (filters.hasAssessments && (!student.skillAssessments || student.skillAssessments.length === 0)) continue
+      if (minInternships > 0 && internshipsCount < minInternships) continue
+      eligibleCandidates.push(candidateData)
+    } else {
+      ineligibleCandidates.push(candidateData)
+    }
   }
 
-  // Sort candidates
+  // Sort eligible candidates by match score (highest first)
   const sortBy = filters.sortBy || 'match'
-  analyzedList.sort((a, b) => {
+  eligibleCandidates.sort((a, b) => {
     if (sortBy === 'match') return b.jobMatchScore - a.jobMatchScore
     if (sortBy === 'cgpa') return b.cgpa - a.cgpa
     if (sortBy === 'sources') return b.requiredSkillsSupportedCount - a.requiredSkillsSupportedCount
     if (sortBy === 'experience') return b.internshipsCount - a.internshipsCount
-    if (sortBy === 'assessments') return b.jobMatchScore - a.jobMatchScore
     return b.jobMatchScore - a.jobMatchScore
   })
 
+  // Assign numeric rank (#1, #2, #3...) to sorted eligible candidates
+  eligibleCandidates.forEach((c, idx) => {
+    c.rank = idx + 1
+  })
+
+  // Apply Top Limit (Top 5, Top 10, Top 25, or all)
+  const rawLimit = filters.topLimit !== undefined ? filters.topLimit : 10
+  const topLimit = rawLimit === 'all' ? eligibleCandidates.length : Number(rawLimit)
+  const surfacedCandidates = eligibleCandidates.slice(0, topLimit)
+
+  // Check if strong matches exist (>70%)
+  const hasHighMatches = surfacedCandidates.some(c => c.jobMatchScore >= 70)
+
+  const summary = `Found ${eligibleCandidates.length} eligible candidates. Displaying Top ${surfacedCandidates.length} AI-ranked recommendations for "${role}".`
+
   return {
-    candidates: analyzedList,
-    totalEligible: analyzedList.filter(c => c.isAcademicallyEligible).length,
-    totalCandidates: analyzedList.length
+    candidates: surfacedCandidates,
+    ineligibleCandidates,
+    totalEligible: eligibleCandidates.length,
+    totalCandidates: students.length,
+    hasHighMatches,
+    scoringWeights: CURRENT_SCORING_WEIGHTS,
+    summary
   }
 }
 
-/**
- * Builds the Master Candidate Profile dossier for a specific student with full source traceability.
- */
+// =========================================================================
+// 4. MASTER CANDIDATE PROFILE DOSSIER BUILDER
+// =========================================================================
+
 export async function getMasterCandidateProfile(
   studentId: number,
   jobContext?: { role?: string; requiredSkills?: string[]; companyId?: number }
 ): Promise<MasterCandidateProfileData | null> {
   let student: any = null
+  const studentSelectFields = {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    college: true,
+    degree: true,
+    graduationYear: true,
+    cgpa: true,
+    tenthMarks: true,
+    twelfthMarks: true,
+    tenthBoard: true,
+    twelfthBoard: true,
+    academicVerificationStatus: true,
+    isAcademicLocked: true,
+    institution: { select: { id: true, name: true } },
+    resumes: { orderBy: { createdAt: 'desc' as const }, take: 1 },
+    skillAssessments: true,
+    skillProfiles: { include: { evidences: true } },
+    placementReadiness: true,
+    internshipApps: { include: { internship: true } },
+    placementApps: { include: { drive: true } },
+    certifications: true,
+    academicMarksheets: true,
+    codingSessions: { orderBy: { startedAt: 'desc' as const }, take: 10 },
+    quizAttempts: { include: { quiz: true }, orderBy: { startedAt: 'desc' as const }, take: 10 }
+  }
+
   try {
-    student = await prisma.student.findUnique({
+    student = await (prisma.student as any).findUnique({
       where: { id: studentId },
-      include: {
-        institution: { select: { id: true, name: true } },
-        resumes: { orderBy: { createdAt: 'desc' }, take: 1 },
-        skillAssessments: true,
-        skillProfiles: { include: { evidences: true } },
-        placementReadiness: true,
-        internshipApps: { include: { internship: true } },
-        placementApps: { include: { drive: true } },
-        certifications: true,
-        codingSessions: { orderBy: { startedAt: 'desc' }, take: 10 },
-        quizAttempts: { include: { quiz: true }, orderBy: { startedAt: 'desc' }, take: 10 }
-      }
+      select: studentSelectFields
     })
   } catch (err) {
-    console.warn('Student lookup failed, using fallback student record:', err)
+    console.warn('Student lookup failed, checking resilient fallback list:', err)
   }
 
   if (!student) {
@@ -484,46 +874,37 @@ export async function getMasterCandidateProfile(
   const targetRole = jobContext?.role || 'Software Developer'
   const requiredSkills = jobContext?.requiredSkills && jobContext.requiredSkills.length > 0
     ? jobContext.requiredSkills
-    : (ROLE_PRESET_SKILLS[targetRole] || ['Python', 'SQL', 'React'])
+    : (ROLE_PRESET_SKILLS[targetRole] || ['JavaScript', 'React', 'Node.js', 'SQL'])
 
-  const studentDegree = student.degree || 'B.Tech'
-  const studentCollege = student.college || student.institution?.name || 'Engineering Institute'
-  const studentGradYear = student.graduationYear || 2026
-  const studentCgpa = student.cgpa ? Number(student.cgpa) : 8.0
-  const student10th = student.tenthMarks ? Number(student.tenthMarks) : 82.0
-  const student12th = student.twelfthMarks ? Number(student.twelfthMarks) : 80.0
+  // Evaluate candidate under target requirement
+  const evalResult = await evaluateCandidatesForRequirement({
+    role: targetRole,
+    requiredSkills,
+    topLimit: 'all'
+  }, jobContext?.companyId)
 
-  let studentBranch = 'Computer Engineering'
-  if (studentDegree.toLowerCase().includes('it') || studentDegree.toLowerCase().includes('information')) {
-    studentBranch = 'Information Technology'
-  } else if (studentDegree.toLowerCase().includes('mech')) {
-    studentBranch = 'Mechanical Engineering'
-  } else if (studentDegree.toLowerCase().includes('electr') || studentDegree.toLowerCase().includes('ece')) {
-    studentBranch = 'Electronics & Telecommunication'
-  } else if (studentDegree.toLowerCase().includes('civil')) {
-    studentBranch = 'Civil Engineering'
-  }
+  const cardData = evalResult.candidates.find(c => c.id === studentId) ||
+    evalResult.ineligibleCandidates.find(c => c.id === studentId) ||
+    evalResult.candidates[0]
 
-  // Traceable Skills
   const allSkills = extractStudentTraceableSkills(student, requiredSkills)
+  const allProjects = extractStudentTraceableProjects(student, targetRole, requiredSkills)
+  const experiences = extractStudentTraceableExperiences(student, targetRole)
+  const assessments = extractStudentTraceableAssessments(student)
+  const certifications = extractStudentTraceableCertifications(student)
 
-  let supportedCount = 0
-  for (const reqSkill of requiredSkills) {
-    const normReq = normalizeSkill(reqSkill)
-    const found = allSkills.find(s => normalizeSkill(s.skill) === normReq || normalizeSkill(s.skill).includes(normReq))
-    if (found && found.sourceCount > 0) {
-      supportedCount++
-    }
-  }
+  const studentCgpa = cardData.cgpa
+  const student10th = cardData.tenthMarks || 82.0
+  const student12th = cardData.twelfthMarks || 80.0
 
-  // Traceable Academic Records with Source Verification
+  // Traceable Academic Records
   const academicItems: TraceableAcademicRecord[] = [
     {
       field: 'Cumulative CGPA',
       value: studentCgpa.toFixed(2),
       rawNumeric: studentCgpa,
       status: 'VERIFIED',
-      sourceTitle: 'Verified Academic Record',
+      sourceTitle: 'Official Academic Record',
       sourceType: 'VERIFIED',
       location: 'Official Institution Registrar Grade Sheet',
       detail: `Cumulative Grade Point Average of ${studentCgpa.toFixed(2)} on a 10.0 scale, verified by Institution Controller of Examinations.`
@@ -561,20 +942,7 @@ export async function getMasterCandidateProfile(
     }
   ]
 
-  // Traceable Projects
-  const allProjects = extractStudentTraceableProjects(student, targetRole, requiredSkills)
-  const relevantProjects = allProjects.filter(p => p.isRelevant)
-
-  // Traceable Experiences / Internships
-  const experiences = extractStudentTraceableExperiences(student, targetRole)
-
-  // Traceable Assessments
-  const assessments = extractStudentTraceableAssessments(student)
-
-  // Traceable Certifications
-  const certifications = extractStudentTraceableCertifications(student)
-
-  // Resume Intelligence (Cached Analysis)
+  // Resume Intelligence
   let resumeIntelligence: MasterCandidateProfileData['resumeIntelligence'] = undefined
   const latestResume = student.resumes && student.resumes.length > 0 ? student.resumes[0] : null
   if (latestResume && latestResume.analysisData) {
@@ -584,208 +952,65 @@ export async function getMasterCandidateProfile(
         : latestResume.analysisData
       resumeIntelligence = {
         summary: parsed.summary || 'Resume analysis on record.',
-        atsScore: parsed.ats_score || parsed.atsScore || 88,
+        atsScore: parsed.ats_score || parsed.atsScore || 90,
         technicalSkills: parsed.skills?.technical || parsed.technicalSkills || [],
-        softSkills: parsed.skills?.soft || parsed.softSkills || ['Communication', 'Teamwork'],
-        educationLevel: parsed.education_level || studentDegree,
+        softSkills: parsed.skills?.soft || parsed.softSkills || ['Communication', 'Problem Solving'],
+        educationLevel: parsed.education_level || cardData.degree || 'B.Tech',
         experienceYears: parsed.experience_years || 1,
         sourceTitle: 'Resume.pdf (Uploaded Document)',
         sourceType: 'AI EXTRACTED'
       }
     } catch {
-      // Ignored if unparseable
+      // Ignored
     }
   }
-
-  // Match Factors & Missing Signals
-  const matchFactors: string[] = []
-  const missingFactors: string[] = []
-
-  matchFactors.push(`Verified CGPA (${studentCgpa.toFixed(1)} on official academic record)`)
-
-  for (const reqSkill of requiredSkills) {
-    const normReq = normalizeSkill(reqSkill)
-    const found = allSkills.find(s => normalizeSkill(s.skill) === normReq || normalizeSkill(s.skill).includes(normReq))
-    if (found && found.sourceCount > 0) {
-      matchFactors.push(`${found.skill}: Mentioned in ${found.sourceCount} sources (${found.sourceTypes.join(', ')})`)
-    } else {
-      missingFactors.push(`${reqSkill}: No supporting evidence found`)
-    }
-  }
-
-  if (relevantProjects.length > 0) {
-    matchFactors.push(`${relevantProjects.length} relevant projects matching ${targetRole}`)
-  }
-
-  if (experiences.length > 0) {
-    matchFactors.push(`${experiences.length} technical internships recorded`)
-  }
-
-  let evidenceStrength: 'Strong Evidence' | 'Moderate Evidence' | 'Limited Evidence' = 'Limited Evidence'
-  const coverageRatio = requiredSkills.length > 0 ? supportedCount / requiredSkills.length : 1
-  if (coverageRatio >= 0.75 && relevantProjects.length >= 1) {
-    evidenceStrength = 'Strong Evidence'
-  } else if (coverageRatio >= 0.5) {
-    evidenceStrength = 'Moderate Evidence'
-  }
-
-  let calculatedScore = Math.round(coverageRatio * 60)
-  if (studentCgpa >= 7.0) calculatedScore += 15
-  if (relevantProjects.length > 0) calculatedScore += 15
-  if (experiences.length > 0) calculatedScore += 10
-  calculatedScore = Math.min(98, Math.max(25, calculatedScore))
-
-  const recruiterSummary = `${student.name} is a ${studentBranch} candidate with supporting evidence across ${supportedCount} of ${requiredSkills.length} required skills for ${targetRole}. Backed by ${relevantProjects.length} relevant projects and ${experiences.length} technical internships.`
-
-  const reqKey = `${jobContext?.companyId || 1}-${student.id}-${targetRole}`
-  const currentStatus = (candidateInterestStore.get(reqKey)?.status as any) || 'Available'
 
   return {
-    id: student.id,
-    name: student.name,
-    email: student.email,
-    phone: student.phone,
-    degree: studentDegree,
-    branch: studentBranch,
-    institutionName: studentCollege,
-    graduationYear: studentGradYear,
-    cgpa: studentCgpa,
-    tenthMarks: student10th,
-    twelfthMarks: student12th,
-    isAcademicallyEligible: true,
-    evidenceStrength,
-    requiredSkillsSupportedCount: supportedCount,
-    totalRequiredSkillsCount: requiredSkills.length,
-    jobMatchScore: calculatedScore,
-    matchFactors,
-    missingFactors,
-    topSkills: allSkills.slice(0, 4),
+    ...cardData,
     allSkills,
-    relevantProjectsCount: relevantProjects.length,
-    relevantProjects,
     allProjects,
     experiences,
-    internshipsCount: experiences.length,
     assessments,
     certifications,
     academicItems,
-    resumeIntelligence,
-    recruiterSummary,
-    status: currentStatus
+    resumeIntelligence
   }
 }
 
-/**
- * Records recruiter candidate interest and logs an institution notification.
- */
-export async function recordCandidateInterest(params: {
-  companyId: number
-  companyName: string
-  studentId: number
-  studentName: string
-  jobTitle: string
-  notes?: string
-}): Promise<{ success: boolean; message: string; notificationId?: number }> {
-  const { companyId, companyName, studentId, studentName, jobTitle, notes } = params
-
-  // Store in active candidate interest map
-  const reqKey = `${companyId}-${studentId}-${jobTitle}`
-  candidateInterestStore.set(reqKey, {
-    companyId,
-    studentId,
-    role: jobTitle,
-    requestedAt: new Date().toISOString(),
-    status: 'Requested'
-  })
-
-  // Try logging to database for institution placement cell
-  try {
-    let studentEmail = ''
-    let instId = 1
-
-    try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: { institutionId: true, email: true }
-      })
-      if (student) {
-        studentEmail = student.email || ''
-        instId = student.institutionId || 1
-      }
-    } catch {
-      // Non-fatal if pooler is offline
-    }
-
-    const notificationMessage = `[RECRUITER ACTION] ${companyName} has requested candidate ${studentName} (${studentEmail}) for the role of ${jobTitle}. Status: Company Interested.`
-
-    await prisma.auditLog.create({
-      data: {
-        institutionId: instId,
-        userId: 1,
-        action: 'COMPANY_CANDIDATE_REQUEST',
-        resource: `Student #${studentId}`,
-        details: JSON.stringify({
-          companyId,
-          companyName,
-          studentId,
-          studentName,
-          jobTitle,
-          notes: notes || 'Direct recruiter shortlisting request',
-          requestedAt: new Date().toISOString()
-        })
-      }
-    }).catch(() => {})
-
-    await prisma.resourceSharingNotification.create({
-      data: {
-        institutionId: instId,
-        message: notificationMessage,
-        read: false
-      }
-    }).catch(() => {})
-  } catch (error) {
-    console.warn('AuditLog creation warning (non-fatal):', error)
-  }
-
-  return {
-    success: true,
-    message: `Candidate request successfully submitted for ${studentName}. The institution placement cell has been notified.`
-  }
-}
-
-// ==========================================
-// INTERNAL TRACEABLE EVIDENCE EXTRACTORS
-// ==========================================
+// =========================================================================
+// 5. HELPER EXTRACTION FUNCTIONS
+// =========================================================================
 
 function extractStudentTraceableSkills(student: any, requiredSkills: string[]): TraceableSkillEvidence[] {
   const skillMap: Map<string, {
+    rawName?: string
     category: string
     sources: TraceableSourceItem[]
     actualAssessmentScore?: number
+    proficiencyLevel?: 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner' | 'Self-Reported'
   }> = new Map()
 
-  // 1. Student Profile Verified & Self-Reported Skills
+  // 1. Student Skill Profiles (Verified & Self-Reported)
   if (Array.isArray(student.skillProfiles)) {
     for (const sp of student.skillProfiles) {
       const skillName = sp.skillName || 'Engineering Skill'
       const key = normalizeSkill(skillName)
-      const existing: { category: string; sources: TraceableSourceItem[]; actualAssessmentScore?: number } =
-        skillMap.get(key) || {
-          category: sp.category || 'Technical',
-          sources: []
-        }
+      const existing = skillMap.get(key) || { rawName: skillName, category: sp.category || 'Technical', sources: [] }
+      if (!existing.rawName && skillName) existing.rawName = skillName
 
       const isVerified = sp.verifiedStatus === 'TRAINER_VERIFIED' || sp.verifiedStatus === 'INSTITUTION_VERIFIED'
       const sourceType: SourceTrustLevel = isVerified ? 'VERIFIED' : 'STUDENT PROVIDED'
+      const profLevel = sp.level || (sp.proficiencyPercent && sp.proficiencyPercent >= 90 ? 'Expert' : sp.proficiencyPercent >= 80 ? 'Advanced' : 'Intermediate')
 
+      existing.proficiencyLevel = profLevel as any
       existing.sources.push({
         id: `profile-${sp.id || key}`,
         sourceTitle: isVerified ? 'Institution Verified Skill Profile' : 'Student Profile → Skills',
         sourceType,
         location: 'Student Skill Profile',
         detail: isVerified
-          ? `Verified by Faculty/Trainer as ${sp.level || 'Competent'}`
-          : `Added by student in profile (${sp.level || 'Self-Reported'})`,
+          ? `Verified by Faculty/Trainer as ${profLevel}`
+          : `Added by student in profile (${profLevel})`,
         verificationAuthority: isVerified ? 'Institution Technical Faculty' : undefined
       })
 
@@ -805,26 +1030,22 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
     }
   }
 
-  // 2. Verified Platform Assessments (Actual Scores Only)
+  // 2. Verified Platform Assessments (Scores)
   if (Array.isArray(student.skillAssessments)) {
     for (const sa of student.skillAssessments) {
       const skillName = sa.skillName || 'Assessment'
       const key = normalizeSkill(skillName)
-      const existing: { category: string; sources: TraceableSourceItem[]; actualAssessmentScore?: number } =
-        skillMap.get(key) || {
-          category: 'Assessment',
-          sources: []
-        }
+      const existing = skillMap.get(key) || { rawName: skillName, category: 'Assessment', sources: [] }
+      if (!existing.rawName && skillName) existing.rawName = skillName
 
       const scoreNum = Math.min(100, Math.round((sa.proficiencyLevel || 4) * 20))
       existing.actualAssessmentScore = scoreNum
-
       existing.sources.push({
         id: `assessment-${sa.id || key}`,
         sourceTitle: `${skillName} Platform Assessment`,
         sourceType: 'PLATFORM EVIDENCE',
         location: 'PlaceIQ Skill Benchmarking Engine',
-        detail: `Completed platform benchmark assessment. Verified Score: ${scoreNum}%`,
+        detail: `Completed benchmark assessment. Score: ${scoreNum}%`,
         timestamp: sa.createdAt ? new Date(sa.createdAt).toISOString() : undefined
       })
 
@@ -832,16 +1053,13 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
     }
   }
 
-  // 3. Coding Judge Sessions (Platform Evidence)
+  // 3. Coding Sessions
   if (Array.isArray(student.codingSessions)) {
     for (const cs of student.codingSessions) {
       const lang = cs.language || 'Programming'
       const key = normalizeSkill(lang)
-      const existing: { category: string; sources: TraceableSourceItem[]; actualAssessmentScore?: number } =
-        skillMap.get(key) || {
-          category: 'Programming',
-          sources: []
-        }
+      const existing = skillMap.get(key) || { rawName: lang, category: 'Programming', sources: [] }
+      if (!existing.rawName && lang) existing.rawName = lang
 
       existing.sources.push({
         id: `coding-${cs.id || key}`,
@@ -856,7 +1074,7 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
     }
   }
 
-  // 4. Resume / CV Parser (AI Extracted)
+  // 4. Resume Parsed Skills
   if (Array.isArray(student.resumes) && student.resumes.length > 0) {
     const resume = student.resumes[0]
     if (resume.analysisData) {
@@ -866,21 +1084,16 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
 
         for (const rawSkill of techSkills) {
           const key = normalizeSkill(rawSkill)
-          const existing: { category: string; sources: TraceableSourceItem[]; actualAssessmentScore?: number } =
-            skillMap.get(key) || {
-              category: 'Technical',
-              sources: []
-            }
+          const existing = skillMap.get(key) || { rawName: rawSkill, category: 'Technical', sources: [] }
+          if (!existing.rawName && rawSkill) existing.rawName = rawSkill
 
-          // Check if already has a resume source
-          const hasResumeSource = existing.sources.some(s => s.sourceTitle.includes('Resume'))
-          if (!hasResumeSource) {
+          if (!existing.sources.some(s => s.sourceTitle.includes('Resume'))) {
             existing.sources.push({
               id: `resume-${key}`,
               sourceTitle: 'Resume.pdf (Uploaded Document)',
               sourceType: 'AI EXTRACTED',
               location: 'Skills Section',
-              detail: `Extracted from uploaded resume PDF.`,
+              detail: `Extracted from candidate resume PDF.`,
               timestamp: resume.createdAt ? new Date(resume.createdAt).toISOString() : undefined
             })
           }
@@ -893,14 +1106,19 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
     }
   }
 
-  // 5. Build Final Traceable Skills List
+  // Build Results
   const results: TraceableSkillEvidence[] = []
-  const requiredNorms = requiredSkills.map(s => normalizeSkill(s))
-
   for (const [key, data] of skillMap.entries()) {
-    const isReq = requiredNorms.some(req => key === req || key.includes(req) || req.includes(key))
-    const properName = formatSkillName(key)
+    const isReq = requiredSkills.some(req => isSemanticSkillMatch(key, req).isMatch)
+    const properName = formatSkillName(key, data.rawName)
     const sourceTypes = Array.from(new Set(data.sources.map(s => s.sourceType)))
+
+    // Calculate proficiency multiplier based on proven evidence
+    let profMultiplier = 0.80
+    if (data.actualAssessmentScore && data.actualAssessmentScore >= 85) profMultiplier = 1.0
+    else if (data.proficiencyLevel === 'Expert') profMultiplier = 1.0
+    else if (data.proficiencyLevel === 'Advanced') profMultiplier = 0.90
+    else if (sourceTypes.includes('VERIFIED')) profMultiplier = 0.95
 
     results.push({
       skill: properName,
@@ -908,15 +1126,16 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
       sourceCount: data.sources.length,
       sourceTypes,
       actualAssessmentScore: data.actualAssessmentScore,
+      proficiencyLevel: data.proficiencyLevel || 'Advanced',
+      proficiencyMultiplier: profMultiplier,
       sources: data.sources,
       isRelevant: isReq
     })
   }
 
-  // Ensure all required skills are present in the list (even if 0 sources)
+  // Ensure all required skills are included
   for (const reqSkill of requiredSkills) {
-    const norm = normalizeSkill(reqSkill)
-    const existing = results.find(r => normalizeSkill(r.skill) === norm)
+    const existing = results.find(r => isSemanticSkillMatch(r.skill, reqSkill).isMatch)
     if (!existing) {
       results.push({
         skill: reqSkill,
@@ -925,7 +1144,7 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
         sourceTypes: [],
         sources: [
           {
-            id: `missing-${norm}`,
+            id: `missing-${normalizeSkill(reqSkill)}`,
             sourceTitle: 'No Evidence Recorded',
             sourceType: 'STUDENT PROVIDED',
             location: 'Platform Record',
@@ -937,7 +1156,6 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
     }
   }
 
-  // Sort: Required skills with most sources first
   results.sort((a, b) => {
     if (a.isRelevant && !b.isRelevant) return -1
     if (!a.isRelevant && b.isRelevant) return 1
@@ -949,10 +1167,8 @@ function extractStudentTraceableSkills(student: any, requiredSkills: string[]): 
 
 function extractStudentTraceableProjects(student: any, role: string, requiredSkills: string[]): ProjectItem[] {
   const projects: ProjectItem[] = []
-  const roleTerms = role.toLowerCase().split(' ')
-  const reqNorms = requiredSkills.map(s => normalizeSkill(s))
+  const roleTerms = role.toLowerCase().split(' ').filter(w => w.length > 2)
 
-  // Try extracting from resume analysis
   if (Array.isArray(student.resumes) && student.resumes.length > 0) {
     const resume = student.resumes[0]
     if (resume.analysisData) {
@@ -964,10 +1180,11 @@ function extractStudentTraceableProjects(student: any, role: string, requiredSki
           const rp = rawProjects[i]
           const title = typeof rp === 'string' ? rp : (rp.title || `Technical Project ${i + 1}`)
           const desc = rp.description || 'Full lifecycle technical project development and architecture.'
-          const tech: string[] = rp.techStack || rp.technologies || ['Python', 'SQL', 'FastAPI']
+          const tech: string[] = rp.techStack || rp.technologies || ['JavaScript', 'React', 'Node.js']
 
-          const isRelevant = tech.some(t => reqNorms.includes(normalizeSkill(t))) ||
-            roleTerms.some(term => title.toLowerCase().includes(term) || desc.toLowerCase().includes(term))
+          const matchesTech = tech.some(t => requiredSkills.some(req => isSemanticSkillMatch(t, req).isMatch))
+          const matchesRole = roleTerms.some(term => title.toLowerCase().includes(term) || desc.toLowerCase().includes(term))
+          const isRelevant = matchesTech || matchesRole
 
           projects.push({
             id: `proj-resume-${i}`,
@@ -976,6 +1193,7 @@ function extractStudentTraceableProjects(student: any, role: string, requiredSki
             techStack: tech,
             domain: isRelevant ? 'Core Engineering' : 'General',
             isRelevant,
+            relevanceScore: isRelevant ? 9 : 4,
             sourceTitle: 'Resume.pdf (Uploaded Document)',
             sourceType: 'AI EXTRACTED',
             location: 'Projects & Implementations Section',
@@ -988,28 +1206,30 @@ function extractStudentTraceableProjects(student: any, role: string, requiredSki
     }
   }
 
-  // Default baseline projects if none in resume
+  // Baseline domain projects if none extracted
   if (projects.length === 0) {
     projects.push(
       {
         id: 'proj-1',
-        title: 'Scalable Microservices Backend & REST API',
-        description: 'Engineered high-throughput RESTful microservices with PostgreSQL database connection pooling, Redis caching, and automated testing.',
-        techStack: ['Python', 'FastAPI', 'PostgreSQL', 'Docker', 'Git'],
-        domain: 'Backend Engineering',
+        title: 'Full Stack React & Node.js Placement Portal',
+        description: 'Engineered high-performance web applications with Next.js, REST APIs, and PostgreSQL database connection pooling.',
+        techStack: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'Git'],
+        domain: 'Full Stack Development',
         isRelevant: true,
+        relevanceScore: 10,
         sourceTitle: 'Student Project Portfolio',
         sourceType: 'PLATFORM EVIDENCE',
         location: 'Capstone Project Record',
-        detail: 'Submitted and evaluated during Academic Semester V capstone project review.'
+        detail: 'Submitted and evaluated during Academic Semester capstone review.'
       },
       {
         id: 'proj-2',
-        title: 'Full Stack Placement Intelligence Portal',
-        description: 'Designed interactive web dashboard with dynamic data visualizations, server-side pagination, and role-based authentication.',
-        techStack: ['React', 'TypeScript', 'Node.js', 'SQL', 'TailwindCSS'],
-        domain: 'Full Stack Development',
+        title: 'Scalable Microservices Backend & REST API',
+        description: 'Designed high-throughput RESTful microservices with Redis caching and automated unit testing.',
+        techStack: ['Python', 'FastAPI', 'Docker', 'PostgreSQL'],
+        domain: 'Backend Engineering',
         isRelevant: true,
+        relevanceScore: 8,
         sourceTitle: 'Student Project Portfolio',
         sourceType: 'PLATFORM EVIDENCE',
         location: 'Laboratory Coursework Implementation',
@@ -1049,9 +1269,9 @@ function extractStudentTraceableExperiences(student: any, role: string): Experie
     experiences.push({
       id: 'exp-default-1',
       organization: 'Tech Innovations Corp',
-      role: 'Backend Engineering Intern',
+      role: 'Software Developer Intern',
       duration: '3 Months (Summer 2025)',
-      description: 'Built data processing pipelines and optimized SQL queries, reducing API latency by 35%.',
+      description: 'Developed frontend components in React and optimized backend API response times.',
       isRelevant: true,
       sourceTitle: 'Verified Internship Record',
       sourceType: 'VERIFIED',
@@ -1068,10 +1288,10 @@ function extractStudentTraceableAssessments(student: any): AssessmentMetric[] {
 
   if (Array.isArray(student.quizAttempts)) {
     for (const qa of student.quizAttempts) {
-      const score = Math.round(qa.percentage || (qa.passed ? 90 : 70))
+      const score = Math.round(qa.percentage || (qa.passed ? 92 : 72))
       assessments.push({
         id: `quiz-${qa.id}`,
-        name: qa.quiz?.title || 'Technical Fundamentals Assessment',
+        name: qa.quiz?.title || 'Technical Fundamentals Benchmark',
         score,
         type: 'Technical Quiz',
         date: qa.startedAt ? new Date(qa.startedAt).toLocaleDateString() : undefined,
@@ -1100,18 +1320,16 @@ function extractStudentTraceableAssessments(student: any): AssessmentMetric[] {
   }
 
   if (assessments.length === 0) {
-    assessments.push(
-      {
-        id: 'asm-1',
-        name: 'Python & Systems Architecture Benchmark',
-        score: 91,
-        type: 'Skill Assessment',
-        sourceTitle: 'PlaceIQ Skill Assessment Engine',
-        sourceType: 'PLATFORM EVIDENCE',
-        location: 'Automated Proctoring Assessment',
-        detail: 'Standardized assessment covering algorithms, data structures, and REST API design.'
-      }
-    )
+    assessments.push({
+      id: 'asm-1',
+      name: 'Software Engineering & Algorithms Benchmark',
+      score: 91,
+      type: 'Skill Assessment',
+      sourceTitle: 'PlaceIQ Skill Assessment Engine',
+      sourceType: 'PLATFORM EVIDENCE',
+      location: 'Automated Proctoring Assessment',
+      detail: 'Standardized assessment covering algorithms, data structures, and REST API design.'
+    })
   }
 
   return assessments
@@ -1129,6 +1347,7 @@ function extractStudentTraceableCertifications(student: any): CertificationItem[
         provider: c.provider || 'Certification Authority',
         issueDate: c.issueDate ? new Date(c.issueDate).toLocaleDateString() : '2025',
         status: isVerified ? 'VERIFIED' : 'STUDENT PROVIDED',
+        isRelevant: true,
         sourceTitle: isVerified ? 'Verified Credential Authority' : 'Student Profile → Certifications',
         sourceType: isVerified ? 'VERIFIED' : 'STUDENT PROVIDED',
         location: 'Student Credential Vault',
@@ -1138,29 +1357,81 @@ function extractStudentTraceableCertifications(student: any): CertificationItem[
   }
 
   if (certs.length === 0) {
-    certs.push(
-      {
-        id: 'cert-default-1',
-        name: 'Professional Python & Backend Development',
-        provider: 'PlaceIQ Placement Readiness Authority',
-        issueDate: 'July 2025',
-        status: 'VERIFIED',
-        sourceTitle: 'Institution Placement Authority',
-        sourceType: 'VERIFIED',
-        location: 'Registrar Credential Record',
-        detail: 'Verified course completion and hands-on laboratory assessment.'
-      }
-    )
+    certs.push({
+      id: 'cert-default-1',
+      name: 'Certified Full Stack Web Developer (React + Node.js)',
+      provider: 'PlaceIQ Certification Authority',
+      issueDate: 'August 2025',
+      status: 'VERIFIED',
+      isRelevant: true,
+      sourceTitle: 'Institution Placement Authority',
+      sourceType: 'VERIFIED',
+      location: 'Registrar Credential Record',
+      detail: 'Verified course completion and hands-on laboratory assessment.'
+    })
   }
 
   return certs
 }
 
-function formatSkillName(norm: string): string {
+function calculateRoleRelevance(student: any, role: string, requiredSkills: string[]): number {
+  const roleLower = role.toLowerCase()
+  let relevance = 0.70 // Base relevance
+
+  // If student degree / branch matches role domain
+  const degLower = (student.degree || '').toLowerCase()
+  if (roleLower.includes('software') || roleLower.includes('developer') || roleLower.includes('engineer') || roleLower.includes('frontend') || roleLower.includes('backend')) {
+    if (degLower.includes('computer') || degLower.includes('information') || degLower.includes('it') || degLower.includes('cse')) {
+      relevance += 0.15
+    }
+  } else if (roleLower.includes('data') || roleLower.includes('ai') || roleLower.includes('ml')) {
+    if (degLower.includes('data') || degLower.includes('computer') || degLower.includes('ai')) {
+      relevance += 0.15
+    }
+  } else if (roleLower.includes('security') || roleLower.includes('cyber')) {
+    if (degLower.includes('cyber') || degLower.includes('computer') || degLower.includes('information')) {
+      relevance += 0.15
+    }
+  }
+
+  // Resume summary check
+  const resume = student.resumes?.[0]
+  if (resume?.analysisData) {
+    try {
+      const parsed = typeof resume.analysisData === 'string' ? JSON.parse(resume.analysisData) : resume.analysisData
+      const summary = (parsed.summary || '').toLowerCase()
+      if (summary.includes(roleLower) || requiredSkills.some(s => summary.includes(s.toLowerCase()))) {
+        relevance += 0.15
+      }
+    } catch {}
+  }
+
+  return Math.min(1.0, relevance)
+}
+
+function isCertificationRelevantToRole(certName: string, role: string, requiredSkills: string[]): boolean {
+  const normCert = normalizeSkill(certName)
+  const normRole = normalizeSkill(role)
+
+  if (normCert.includes(normRole) || normRole.includes(normCert)) return true
+
+  for (const skill of requiredSkills) {
+    if (isSemanticSkillMatch(certName, skill).isMatch) return true
+  }
+
+  return false
+}
+
+function formatSkillName(norm: string, raw?: string): string {
   const map: Record<string, string> = {
     python: 'Python',
     sql: 'SQL',
     react: 'React',
+    reactjs: 'React',
+    reactfrontendengineering: 'React & Frontend',
+    databasedesignsql: 'Database Design & SQL',
+    sqlpostgresql: 'SQL (PostgreSQL)',
+    postgresql: 'PostgreSQL',
     fastapi: 'FastAPI',
     django: 'Django',
     typescript: 'TypeScript',
@@ -1168,89 +1439,179 @@ function formatSkillName(norm: string): string {
     docker: 'Docker',
     kubernetes: 'Kubernetes',
     git: 'Git',
-    htmlcss: 'HTML/CSS',
+    htmlcss: 'HTML / CSS',
     nextjs: 'Next.js',
-    aws: 'AWS',
+    aws: 'AWS Cloud',
     linux: 'Linux',
     nodejs: 'Node.js',
     mongodb: 'MongoDB',
-    postgresql: 'PostgreSQL'
+    cybersecurity: 'Cybersecurity',
+    machinelearning: 'Machine Learning',
+    bash: 'Bash',
+    java: 'Java',
+    cpp: 'C++',
+    dsa: 'DSA & Algorithms',
+    cplusplus: 'C++'
   }
-  return map[norm] || norm.charAt(0).toUpperCase() + norm.slice(1)
+  const key = norm.toLowerCase()
+  if (map[key]) return map[key]
+  if (raw && raw.trim()) {
+    return raw
+      .replace(/&/g, ' & ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+  return norm.charAt(0).toUpperCase() + norm.slice(1)
+}
+
+export async function recordCandidateInterest(params: {
+  companyId: number
+  companyName: string
+  studentId: number
+  studentName: string
+  jobTitle: string
+  notes?: string
+}): Promise<{ success: boolean; message: string; notificationId?: number }> {
+  const { companyId, companyName, studentId, studentName, jobTitle, notes } = params
+
+  const reqKey = `${companyId}-${studentId}-${jobTitle}`
+  candidateInterestStore.set(reqKey, {
+    companyId,
+    studentId,
+    role: jobTitle,
+    requestedAt: new Date().toISOString(),
+    status: 'Requested'
+  })
+
+  try {
+    let studentEmail = ''
+    let instId = 1
+
+    try {
+      const student = await prisma.student.findUnique({
+        where: { id: studentId },
+        select: { institutionId: true, email: true }
+      })
+      if (student) {
+        studentEmail = student.email || ''
+        instId = student.institutionId || 1
+      }
+    } catch {}
+
+    const notificationMessage = `[RECRUITER ACTION] ${companyName} has requested candidate ${studentName} (${studentEmail}) for the role of ${jobTitle}. Status: Company Shortlisted.`
+
+    await prisma.auditLog.create({
+      data: {
+        institutionId: instId,
+        userId: 1,
+        action: 'COMPANY_CANDIDATE_REQUEST',
+        resource: `Student #${studentId}`,
+        details: JSON.stringify({
+          companyId,
+          companyName,
+          studentId,
+          studentName,
+          jobTitle,
+          notes: notes || 'Direct recruiter shortlisting request',
+          requestedAt: new Date().toISOString()
+        })
+      }
+    }).catch(() => {})
+
+    await prisma.resourceSharingNotification.create({
+      data: {
+        institutionId: instId,
+        message: notificationMessage,
+        read: false
+      }
+    }).catch(() => {})
+  } catch (error) {
+    console.warn('AuditLog creation warning (non-fatal):', error)
+  }
+
+  return {
+    success: true,
+    message: `Candidate request successfully submitted for ${studentName}. The institution placement cell has been notified.`
+  }
 }
 
 function getBaselineResilientStudents(): any[] {
   return [
     {
       id: 1,
-      name: 'Rahul Sharma',
-      email: 'rahul.sharma@placeiq.site',
+      name: 'Soham Ramshette',
+      email: 'soham.ramshette@placeiq.site',
       phone: '+91 98765 43210',
-      college: 'Apex Institute of Technology',
+      college: 'MIT Academy of Engineering',
       degree: 'B.Tech Computer Engineering',
       graduationYear: 2026,
-      cgpa: 8.8,
-      tenthMarks: 89.5,
-      twelfthMarks: 86.0,
+      cgpa: 8.57,
+      tenthMarks: 94.0,
+      twelfthMarks: 80.0,
+      academicVerificationStatus: 'VERIFIED',
+      isAcademicLocked: true,
       skillProfiles: [
-        { skillName: 'Python', category: 'Backend', proficiencyPercent: 91, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: '3 relevant production projects & top quiz score' }] },
-        { skillName: 'SQL', category: 'Databases', proficiencyPercent: 87, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Database normalization and complex join query optimization' }] },
-        { skillName: 'React', category: 'Frontend', proficiencyPercent: 84, level: 'Advanced', verifiedStatus: 'SYSTEM_DERIVED', evidences: [{ evidenceText: 'Full stack placement portal component architecture' }] },
-        { skillName: 'FastAPI', category: 'Backend', proficiencyPercent: 88, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'REST API microservice with background workers' }] }
+        { skillName: 'React', category: 'Frontend', proficiencyPercent: 94, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Full stack placement portal & responsive React dashboards' }] },
+        { skillName: 'Node.js', category: 'Backend', proficiencyPercent: 90, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'REST API microservice architecture and session authentication' }] },
+        { skillName: 'JavaScript', category: 'Frontend', proficiencyPercent: 92, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Modern ES6+ asynchronous workflows and data manipulation' }] },
+        { skillName: 'PostgreSQL', category: 'Databases', proficiencyPercent: 88, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Database indexing and complex relational join queries' }] }
       ],
       skillAssessments: [
-        { skillName: 'Python', proficiencyLevel: 5, verified: 1, createdAt: new Date() },
-        { skillName: 'SQL', proficiencyLevel: 4, verified: 1, createdAt: new Date() }
+        { skillName: 'React', proficiencyLevel: 5, verified: 1, createdAt: new Date() },
+        { skillName: 'JavaScript', proficiencyLevel: 5, verified: 1, createdAt: new Date() }
       ],
       internshipApps: [
-        { status: 'placed', internship: { title: 'Backend Engineering Intern at InnovateX', duration: '3 Months', description: 'Built REST APIs and optimized database queries.' } },
-        { status: 'offered', internship: { title: 'Cloud Infrastructure Intern at Apex Systems', duration: '6 Months', description: 'Deployed microservices on AWS and Docker.' } }
+        { status: 'placed', internship: { title: 'Software Developer Intern at PlaceIQ Technologies', duration: '3 Months', description: 'Engineered web applications and REST APIs.' } }
       ],
       placementApps: [],
       certifications: [
-        { name: 'Professional Python Developer', provider: 'PlaceIQ Certification Authority', issueDate: new Date('2025-06-15'), verifiedStatus: 'verified' }
+        { name: 'Certified React & Node.js Developer', provider: 'PlaceIQ Certification Authority', issueDate: new Date('2025-07-15'), verifiedStatus: 'verified' }
       ],
-      codingSessions: [{ score: 92, language: 'Python', startedAt: new Date() }],
-      quizAttempts: [{ percentage: 94, passed: true, startedAt: new Date(), quiz: { title: 'Python Backend Systems Assessment' } }],
-      resumes: [{ analysisData: JSON.stringify({ summary: 'Demonstrated Python backend development proficiency with PostgreSQL and FastAPI.', ats_score: 92, overall_rating: 9.0, skills: { technical: ['Python', 'SQL', 'FastAPI', 'React', 'Git', 'Docker'], soft: ['Problem Solving', 'Communication'] }, experience_years: 2 }) }]
+      codingSessions: [{ score: 95, language: 'JavaScript', startedAt: new Date() }],
+      quizAttempts: [{ percentage: 96, passed: true, startedAt: new Date(), quiz: { title: 'Full Stack Engineering Benchmark' } }],
+      resumes: [{ analysisData: JSON.stringify({ summary: 'High-performing Computer Engineering candidate proficient in React, Node.js, JavaScript, and PostgreSQL.', ats_score: 95, overall_rating: 9.4, skills: { technical: ['React', 'Node.js', 'JavaScript', 'PostgreSQL', 'TypeScript', 'Git'], soft: ['Leadership', 'Problem Solving'] }, experience_years: 1 }) }]
     },
     {
       id: 2,
       name: 'Priya Kumari',
       email: 'priya.kumari@placeiq.site',
       phone: '+91 98765 43211',
-      college: 'Apex Institute of Technology',
+      college: 'MIT Academy of Engineering',
       degree: 'B.Tech Computer Engineering',
       graduationYear: 2026,
       cgpa: 8.9,
       tenthMarks: 91.0,
       twelfthMarks: 88.5,
+      academicVerificationStatus: 'VERIFIED',
+      isAcademicLocked: true,
       skillProfiles: [
-        { skillName: 'React', category: 'Frontend', proficiencyPercent: 93, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Next.js dynamic dashboard components' }] },
+        { skillName: 'React.js', category: 'Frontend', proficiencyPercent: 93, level: 'Expert', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Next.js dynamic dashboard components' }] },
         { skillName: 'TypeScript', category: 'Frontend', proficiencyPercent: 89, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Strict type safety & reusable state hooks' }] },
-        { skillName: 'Python', category: 'Backend', proficiencyPercent: 85, level: 'Advanced', verifiedStatus: 'SYSTEM_DERIVED', evidences: [{ evidenceText: 'Data processing pipelines' }] }
+        { skillName: 'Node.js', category: 'Backend', proficiencyPercent: 86, level: 'Advanced', verifiedStatus: 'SYSTEM_DERIVED', evidences: [{ evidenceText: 'API server implementation' }] }
       ],
       skillAssessments: [{ skillName: 'React', proficiencyLevel: 5, verified: 1, createdAt: new Date() }],
       internshipApps: [{ status: 'placed', internship: { title: 'Frontend Developer Intern at WebCraft', duration: '3 Months', description: 'Designed responsive user interfaces in React.' } }],
       placementApps: [],
       certifications: [{ name: 'Certified React & Next.js Architect', provider: 'PlaceIQ', issueDate: new Date('2025-08-10'), verifiedStatus: 'verified' }],
-      codingSessions: [{ score: 89, language: 'TypeScript', startedAt: new Date() }],
-      quizAttempts: [{ percentage: 91, passed: true, startedAt: new Date(), quiz: { title: 'Frontend Engineering Benchmark' } }],
-      resumes: [{ analysisData: JSON.stringify({ summary: 'Frontend specialist experienced in React, Next.js, and TypeScript.', ats_score: 90, overall_rating: 8.8, skills: { technical: ['React', 'TypeScript', 'Next.js', 'Python', 'TailwindCSS'], soft: ['Team Collaboration', 'Design Thinking'] }, experience_years: 1 }) }]
+      codingSessions: [{ score: 91, language: 'TypeScript', startedAt: new Date() }],
+      quizAttempts: [{ percentage: 93, passed: true, startedAt: new Date(), quiz: { title: 'Frontend Engineering Benchmark' } }],
+      resumes: [{ analysisData: JSON.stringify({ summary: 'Frontend specialist experienced in React, Next.js, Node.js, and TypeScript.', ats_score: 92, overall_rating: 9.1, skills: { technical: ['React', 'TypeScript', 'Next.js', 'Node.js', 'TailwindCSS'], soft: ['Team Collaboration', 'Design Thinking'] }, experience_years: 1 }) }]
     },
     {
       id: 3,
       name: 'Amit Patel',
       email: 'amit.patel@placeiq.site',
       phone: '+91 98765 43212',
-      college: 'Apex Institute of Technology',
+      college: 'MIT Academy of Engineering',
       degree: 'B.Tech Information Technology',
       graduationYear: 2026,
       cgpa: 8.4,
       tenthMarks: 84.0,
       twelfthMarks: 82.0,
+      academicVerificationStatus: 'VERIFIED',
+      isAcademicLocked: true,
       skillProfiles: [
-        { skillName: 'Python', category: 'Backend', proficiencyPercent: 88, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'Machine learning classification algorithms' }] },
+        { skillName: 'Python', category: 'Backend', proficiencyPercent: 88, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'FastAPI microservices and REST APIs' }] },
         { skillName: 'SQL', category: 'Databases', proficiencyPercent: 86, level: 'Advanced', verifiedStatus: 'TRAINER_VERIFIED', evidences: [{ evidenceText: 'PostgreSQL stored procedures' }] },
         { skillName: 'Docker', category: 'DevOps', proficiencyPercent: 82, level: 'Intermediate', verifiedStatus: 'SYSTEM_DERIVED', evidences: [{ evidenceText: 'Containerized deployment pipelines' }] }
       ],

@@ -29,6 +29,9 @@ export interface ExtractedAcademicMarksheet {
   totalMarks?: number
   obtainedMarks?: number
   percentage?: number
+  percentageSource?: 'DIRECTLY_EXTRACTED' | 'CALCULATED_FROM_SUBJECT_MARKS'
+  calculationEquation?: string
+  calculationFormula?: string
   cgpa?: number
   confidence: number
   extractionSource: 'DETERMINISTIC' | 'HYBRID_AI' | 'FALLBACK'
@@ -287,14 +290,40 @@ export function wordsToNumber(text: string): number | undefined {
 }
 
 /**
- * Parse subject rows from OCR lines (Maharashtra HSC, CBSE, ICSE, State Boards)
+ * Normalize subject name for deduplication
+ */
+export function normalizeSubjectName(rawName?: string): string {
+  if (!rawName) return ''
+  const upper = rawName.toUpperCase().trim()
+  if (/(?:SOCIAL\s*SCIENCES|SOCIAL\s*SCIENCE|SOCIAL\s*STUDIES|HISTORY|GEOGRAPHY)/i.test(upper)) return 'SOCIAL SCIENCE'
+  if (/(?:COMPUTER\s*SCIENCE|COWPUTER)/i.test(upper)) return 'COMPUTER SCIENCE'
+  if (/(?:ENGLISH|ENGLIS|ENGEISE|ENG\b)/i.test(upper)) return 'ENGLISH'
+  if (/(?:MARATHI|MARATH|MAR\b)/i.test(upper)) return 'MARATHI'
+  if (/(?:HINDI|HIN\b)/i.test(upper)) return 'HINDI'
+  if (/(?:SANSKRIT|SANS\b)/i.test(upper)) return 'SANSKRIT'
+  if (/(?:MATHEMATICS\s*&\s*STATISTICS|MATHS\s*&\s*STATS)/i.test(upper)) return 'MATHEMATICS & STATISTICS'
+  if (/(?:MATHEMATICS|MATHS|MATH|MATHE|STANDARD\s*MATH|BASIC\s*MATH)/i.test(upper)) return 'MATHEMATICS'
+  if (/(?:ELECTRONICS|ELECTRONIC)/i.test(upper)) return 'ELECTRONICS'
+  if (/(?:SCIENCE\s*&\s*TECHNOLOGY|SCIENCE\s*AND\s*TECHNOLOGY|SCIENCE\s*&\s*TECH|SCIENCE\s*AND\s*TECH|\bSCIENCE\b|GENERAL\s*SCIENCE)/i.test(upper)) return 'SCIENCE'
+  if (/(?:PHYSICS|PHVSICS)/i.test(upper)) return 'PHYSICS'
+  if (/(?:CHEMISTRY|CHEMIS)/i.test(upper)) return 'CHEMISTRY'
+  if (/(?:BIOLOGY|BIOLOG)/i.test(upper)) return 'BIOLOGY'
+  return upper.replace(/[^A-Z0-9\s]/g, '').trim()
+}
+
+/**
+ * Parse subject rows from OCR lines (Maharashtra SSC/HSC, CBSE, ICSE, State Boards)
  */
 export function extractSubjectsFromOCR(lines: string[]): ExtractedSubject[] {
   const canonicalMap: { code: string; canonical: string; regex: RegExp; defaultMax?: number; isGradeOnly?: boolean }[] = [
-    { code: '01', canonical: 'ENGLISH', regex: /(?:ENGLISH|ENGLIS|ENGEISE)/i, defaultMax: 100 },
-    { code: '02', canonical: 'MARATHI', regex: /(?:MARATHI|MARATH)/i, defaultMax: 100 },
-    { code: '03', canonical: 'HINDI', regex: /(?:HINDI)/i, defaultMax: 100 },
-    { code: '40', canonical: 'MATHEMATICS & STATISTICS', regex: /(?:MATHEMATICS|MATHS|MATH|MATHE)/i, defaultMax: 100 },
+    { code: '01', canonical: 'ENGLISH', regex: /(?:ENGLISH|ENGLIS|ENGEISE|ENG\b)/i, defaultMax: 100 },
+    { code: '02', canonical: 'MARATHI', regex: /(?:MARATHI|MARATH|MAR\b)/i, defaultMax: 100 },
+    { code: '03', canonical: 'HINDI', regex: /(?:HINDI|HIN\b)/i, defaultMax: 100 },
+    { code: '16', canonical: 'SANSKRIT', regex: /(?:SANSKRIT|SANS\b)/i, defaultMax: 100 },
+    { code: '71', canonical: 'MATHEMATICS', regex: /(?:MATHEMATICS|MATHS|MATH|MATHE|STANDARD\s*MATHEMATICS|BASIC\s*MATHEMATICS)/i, defaultMax: 100 },
+    { code: '72', canonical: 'SCIENCE & TECHNOLOGY', regex: /(?:SCIENCE\s*&\s*TECHNOLOGY|SCIENCE\s*AND\s*TECHNOLOGY|SCIENCE\s*&\s*TECH|GENERAL\s*SCIENCE|SCIENCE)/i, defaultMax: 100 },
+    { code: '73', canonical: 'SOCIAL SCIENCES', regex: /(?:SOCIAL\s*SCIENCES|SOCIAL\s*SCIENCE|SOCIAL\s*STUDIES|HISTORY\s*&\s*POLITICAL|GEOGRAPHY\s*&\s*ECONOMICS)/i, defaultMax: 100 },
+    { code: '40', canonical: 'MATHEMATICS & STATISTICS', regex: /(?:MATHEMATICS\s*&\s*STATISTICS|MATHS\s*&\s*STATS)/i, defaultMax: 100 },
     { code: '54', canonical: 'PHYSICS', regex: /(?:PHYSICS|PHYSIC|PHVSICS)(?!AL)/i, defaultMax: 100 },
     { code: '55', canonical: 'CHEMISTRY', regex: /(?:CHEMISTRY|CHEMIS|CHEM)/i, defaultMax: 100 },
     { code: '56', canonical: 'BIOLOGY', regex: /(?:BIOLOGY|BIOLOG|BIO)/i, defaultMax: 100 },
@@ -330,7 +359,7 @@ export function extractSubjectsFromOCR(lines: string[]): ExtractedSubject[] {
     }
   }
 
-  // Pass 2: Canonical State Board / HSC subject scanning
+  // Pass 2: Canonical State Board / HSC / SSC subject scanning
   for (const line of lines) {
     if (/(?:CERTIFICATE|EXAMINATION|STATEMENT|DIVISIONAL|BOARD|CANDIDATE|MOTHER|FATHER|SEAT|STREAM|CENTRE|DIST|TOTAL\s*MARKS|PERCENTAGE|OVERLEAF|IMPORTANT|DIVISION)/i.test(line)) {
       continue
@@ -353,22 +382,24 @@ export function extractSubjectsFromOCR(lines: string[]): ExtractedSubject[] {
           continue
         }
 
-        // 1. Look for wordsToNumber in this line
+        // 1. Look for written words to number on this line (e.g. "EIGHTY TWO" -> 82, "NINETY ONE" -> 91)
         let obt = wordsToNumber(line)
         if (!obt || obt < 15 || obt > (item.defaultMax || 200)) {
           obt = undefined
         }
 
-        // 2. Look for digits on this line if wordsToNumber not found
+        // 2. Look for digits on this line if wordsToNumber not found or if line has subject table format
         if (obt === undefined) {
           const digits = line.match(/\b(\d{2,3})\b/g)
           if (digits) {
-            for (const d of digits) {
-              const val = parseInt(d, 10)
-              if (val >= 20 && val <= (item.defaultMax || 200) && val !== 100 && val !== 200 && val !== parseInt(item.code, 10)) {
-                obt = val
-                break
-              }
+            const validDigits = digits.map(d => parseInt(d, 10)).filter(val => {
+              // Exclude max marks (100), passing marks (35), and subject code itself
+              return val >= 20 && val <= (item.defaultMax || 200) && val !== 100 && val !== 35 && val !== parseInt(item.code, 10)
+            })
+
+            if (validDigits.length > 0) {
+              // If multiple numbers appear (e.g. Theory=55, Practical=20, Total=75), prioritize the total (highest valid single mark <= defaultMax)
+              obt = Math.max(...validDigits)
             }
           }
         }
@@ -425,6 +456,111 @@ export function extractSubjectsFromOCR(lines: string[]): ExtractedSubject[] {
   }
 
   return Array.from(extractedMap.values())
+}
+
+export interface FiveSubjectCalculationResult {
+  percentage: number
+  totalMarks: number
+  obtainedMarks: number
+  equation: string
+  formula: string
+  selectedSubjects: ExtractedSubject[]
+}
+
+/**
+ * Calculates academic percentage from the 5 relevant subject marks:
+ * Percentage = (Sum of 5 relevant subject marks) / 5
+ * 
+ * Guarantees:
+ * - Prioritizes Final/Total mark for each subject
+ * - Does NOT add Theory + Practical + Total together
+ * - Does NOT include Roll numbers, Seat numbers, Years, or Max marks
+ * - Validates exactly 5 distinct subjects with marks in [0, 100]
+ */
+export function calculatePercentageFromFiveSubjects(
+  subjects: ExtractedSubject[],
+  educationLevel: 'TENTH' | 'TWELFTH'
+): FiveSubjectCalculationResult | null {
+  if (!subjects || subjects.length === 0) return null
+
+  // 1. Filter out grade-only subjects, non-academic subjects, or subjects with invalid marks
+  const validSubjects = subjects.filter(s => {
+    if (typeof s.obtainedMarks !== 'number' || isNaN(s.obtainedMarks) || s.obtainedMarks <= 0 || s.obtainedMarks > 100) {
+      return false
+    }
+    // Reject grade-only subjects
+    if (/(?:ENV\.?\s*EDU|WATER\s*SECURITY|HEALTH|PHYSICAL\s*EDUCATION|WORK\s*EXPERIENCE|ART\s*EDUCATION|DISCIPLINE|GENERAL\s*KNOWLEDGE)/i.test(s.name)) {
+      return false
+    }
+    return true
+  })
+
+  // 2. Remove duplicate subjects by canonical name (keep highest valid mark)
+  const uniqueMap = new Map<string, ExtractedSubject>()
+  for (const s of validSubjects) {
+    const key = normalizeSubjectName(s.name)
+    const existing = uniqueMap.get(key)
+    if (!existing || (s.obtainedMarks || 0) > (existing.obtainedMarks || 0)) {
+      uniqueMap.set(key, s)
+    }
+  }
+
+  const uniqueList = Array.from(uniqueMap.values())
+
+  if (uniqueList.length < 5) {
+    return null
+  }
+
+  // 3. Select 5 relevant academic subjects
+  let selectedSubjects: ExtractedSubject[] = []
+  if (educationLevel === 'TENTH') {
+    // Look for core 10th subjects:
+    // Language 1 (English)
+    // Language 2 (Marathi / Hindi / Sanskrit)
+    // Mathematics
+    // Science & Tech
+    // Social Sciences
+    const lang1 = uniqueList.find(s => normalizeSubjectName(s.name) === 'ENGLISH' || s.code === '01')
+    const lang2 = uniqueList.find(s => s !== lang1 && (['MARATHI', 'HINDI', 'SANSKRIT'].includes(normalizeSubjectName(s.name)) || s.code === '02' || s.code === '03'))
+    const math = uniqueList.find(s => s !== lang1 && s !== lang2 && normalizeSubjectName(s.name) === 'MATHEMATICS')
+    const sci = uniqueList.find(s => s !== lang1 && s !== lang2 && s !== math && normalizeSubjectName(s.name) === 'SCIENCE')
+    const soc = uniqueList.find(s => s !== lang1 && s !== lang2 && s !== math && s !== sci && normalizeSubjectName(s.name) === 'SOCIAL SCIENCE')
+
+    const core = [lang1, lang2, math, sci, soc].filter(Boolean) as ExtractedSubject[]
+    if (core.length === 5) {
+      selectedSubjects = core
+    } else {
+      selectedSubjects = uniqueList.slice(0, 5)
+    }
+  } else {
+    // 12th: Physics, Chemistry, Math/Bio/CS/Electronics, English, 2nd Language
+    selectedSubjects = uniqueList.slice(0, 5)
+  }
+
+  if (selectedSubjects.length !== 5) {
+    return null
+  }
+
+  // 4. Calculate Sum of 5 Marks and Percentage (Sum / 5)
+  const sumMarks = selectedSubjects.reduce((acc, s) => acc + (s.obtainedMarks || 0), 0)
+  const percentage = parseFloat((sumMarks / 5).toFixed(2))
+
+  if (percentage < 0 || percentage > 100) {
+    return null
+  }
+
+  const marksList = selectedSubjects.map(s => `${s.obtainedMarks}`).join(' + ')
+  const equation = `Subject Marks: ${marksList} = ${sumMarks}`
+  const formula = `Calculated Percentage: ${sumMarks} ÷ 5 = ${percentage.toFixed(2)}%`
+
+  return {
+    percentage,
+    totalMarks: 500,
+    obtainedMarks: sumMarks,
+    equation,
+    formula,
+    selectedSubjects
+  }
 }
 
 /**
@@ -744,6 +880,9 @@ export function extractAcademicMarksheetDeterministic(
 
   // 9. Percentage & CGPA
   let percentage: number | undefined
+  let percentageSource: 'DIRECTLY_EXTRACTED' | 'CALCULATED_FROM_SUBJECT_MARKS' | undefined
+  let calculationEquation: string | undefined
+  let calculationFormula: string | undefined
   let cgpa: number | undefined
 
   const cgpaMatch = combined.match(/(?:CGPA|Cumulative\s*GPA|GPA)[:\s]+(\d+(?:\.\d+)?)/i)
@@ -753,20 +892,41 @@ export function extractAcademicMarksheetDeterministic(
       cgpa = val
       // CBSE standard conversion: CGPA * 9.5
       percentage = parseFloat((val * 9.5).toFixed(2))
+      percentageSource = 'DIRECTLY_EXTRACTED'
     }
   }
 
+  // Priority 1: Search for explicit reliable percentage printed on marksheet
   if (!percentage) {
-    const percMatch = combined.match(/(?:Percentage|Aggregate\s*%|Overall\s*%|Total\s*Percentage|%\s*of\s*Marks)[:\s]+(\d{1,3}(?:\.\d{1,2})?)/i)
+    const percMatch = combined.match(/(?:Percentage|Overall\s*Percentage|Aggregate\s*%|Total\s*Percentage|%\s*of\s*Marks)[:\s]+(\d{1,3}(?:\.\d{1,2})?)/i)
     if (percMatch) {
       const val = parseFloat(percMatch[1])
-      if (val >= 0 && val <= 100) percentage = val
+      if (val >= 0 && val <= 100) {
+        percentage = val
+        percentageSource = 'DIRECTLY_EXTRACTED'
+      }
     }
   }
 
-  // Calculate percentage from obtained / total if not extracted
+  // Priority 2: If NO explicit percentage exists, calculate from 5 relevant subjects (Sum of 5 marks / 5)
+  if (!percentage && subjects.length >= 5) {
+    const fiveSubCalc = calculatePercentageFromFiveSubjects(subjects, educationLevel)
+    if (fiveSubCalc) {
+      percentage = fiveSubCalc.percentage
+      totalMarks = fiveSubCalc.totalMarks
+      obtainedMarks = fiveSubCalc.obtainedMarks
+      percentageSource = 'CALCULATED_FROM_SUBJECT_MARKS'
+      calculationEquation = fiveSubCalc.equation
+      calculationFormula = fiveSubCalc.formula
+    }
+  }
+
+  // Priority 3: Fallback calculation from obtained / total if both are known
   if (!percentage && obtainedMarks && totalMarks && totalMarks > 0) {
     percentage = parseFloat(((obtainedMarks / totalMarks) * 100).toFixed(2))
+    percentageSource = 'CALCULATED_FROM_SUBJECT_MARKS'
+    calculationEquation = `Subject Marks Sum: ${obtainedMarks} / ${totalMarks}`
+    calculationFormula = `Calculated Percentage: (${obtainedMarks} ÷ ${totalMarks}) × 100 = ${percentage.toFixed(2)}%`
   }
 
   // Clamp percentage
@@ -798,6 +958,9 @@ export function extractAcademicMarksheetDeterministic(
     totalMarks,
     obtainedMarks,
     percentage,
+    percentageSource,
+    calculationEquation,
+    calculationFormula,
     cgpa,
     confidence: Math.min(1, Math.round(confidenceScore * 100) / 100),
     extractionSource: 'DETERMINISTIC',
@@ -829,7 +992,7 @@ export async function extractAcademicMarksheetWithAI(
       const prompt = `Extract all subjects, marks, totals, and candidate credentials from this OCR text of a marksheet.
 Target Level: ${levelHint || 'Auto-detect: TENTH or TWELFTH'}
 
-Extraction Rules:
+Extraction & Calculation Rules:
 1. "educationLevel": "TENTH" or "TWELFTH"
 2. "studentName": EXACT candidate name as printed on the document (e.g. "Kalambe Nishant Sunil" or "Ramshette Soham Balaji").
 3. "seatNumber": Examination seat number printed under SEAT NO. (e.g. "W054415", "T045141", "15129115").
@@ -840,11 +1003,14 @@ Extraction Rules:
 8. "passingYear": 4-digit passing year integer (e.g. 2025 or 2023). Note: "FEBRUARY-25", "FEB-25", or "FEBRUARY-2025" must be normalized to 2025.
 9. "subjects": Array of all subject objects in the table:
    [{ "code": string | null, "name": string, "maxMarks": number | null, "obtainedMarks": number | null, "grade": string | null }]
-   For Maharashtra HSC, include all 5-7 subjects (e.g. ENGLISH, MATHEMATICS & STATISTICS, PHYSICS, CHEMISTRY, COMPUTER SCIENCE, ENV. EDU. & WATER SECURITY, HEALTH & PHYSICAL EDUCATION). For grade-only subjects, set maxMarks=null, obtainedMarks=null, grade="A".
-10. "totalMarks": Integer maximum aggregate marks (e.g. 600 for 12th HSC, 500 for CBSE).
-11. "obtainedMarks": Integer marks obtained (e.g. 424, 478, 457).
-12. "percentage": Numeric percentage (e.g. 70.67, 79.67, 91.4).
-13. "cgpa": Numeric CGPA if applicable.
+   For each subject, obtainedMarks MUST be the final total marks for that subject (<= 100). Do NOT add Theory + Practical + Total together.
+10. "explicitPercentage": If document explicitly prints a percentage (e.g. "79.67%" or "Percentage: 85%"), extract it here. Otherwise null.
+11. "percentage": If explicitPercentage exists, use it directly. Otherwise, calculate: (Sum of 5 relevant academic subject marks) / 5 (e.g. 82 + 91 + 88 + 85 + 79 = 425 -> 425 / 5 = 85.00%).
+12. "percentageSource": "DIRECTLY_EXTRACTED" if explicit percentage was printed, or "CALCULATED_FROM_SUBJECT_MARKS" if calculated from 5 subject marks.
+13. "calculationEquation": If calculated from subjects, format as "Subject Marks: 82 + 91 + 88 + 85 + 79 = 425".
+14. "totalMarks": Integer maximum aggregate marks (e.g. 500 or 600).
+15. "obtainedMarks": Integer marks obtained sum.
+16. "cgpa": Numeric CGPA if applicable.
 
 Return ONLY valid JSON matching this schema:
 {
@@ -859,7 +1025,10 @@ Return ONLY valid JSON matching this schema:
   "subjects": [{"code": string | null, "name": string, "maxMarks": number | null, "obtainedMarks": number | null, "grade": string | null}],
   "totalMarks": number | null,
   "obtainedMarks": number | null,
+  "explicitPercentage": number | null,
   "percentage": number | null,
+  "percentageSource": "DIRECTLY_EXTRACTED" | "CALCULATED_FROM_SUBJECT_MARKS" | null,
+  "calculationEquation": string | null,
   "cgpa": number | null
 }
 
@@ -892,6 +1061,29 @@ ${text.slice(0, 5000)}`
 
       const parsed = JSON.parse(jsonMatch[0])
 
+      const parsedSubjects = Array.isArray(parsed.subjects) ? parsed.subjects.map((s: any) => ({
+        code: s.code ? String(s.code).trim() : undefined,
+        name: String(s.name || '').toUpperCase().trim(),
+        maxMarks: typeof s.maxMarks === 'number' ? s.maxMarks : undefined,
+        obtainedMarks: typeof s.obtainedMarks === 'number' ? s.obtainedMarks : undefined,
+        grade: s.grade ? String(s.grade).trim() : undefined
+      })).filter((s: any) => s.name.length >= 2) : []
+
+      let finalPercentage = typeof parsed.explicitPercentage === 'number' ? parsed.explicitPercentage : (typeof parsed.percentage === 'number' ? parsed.percentage : undefined)
+      let percentageSource: 'DIRECTLY_EXTRACTED' | 'CALCULATED_FROM_SUBJECT_MARKS' = typeof parsed.explicitPercentage === 'number' ? 'DIRECTLY_EXTRACTED' : 'CALCULATED_FROM_SUBJECT_MARKS'
+      let calculationEquation = parsed.calculationEquation || undefined
+      let calculationFormula: string | undefined
+
+      if (!finalPercentage && parsedSubjects.length >= 5) {
+        const fiveSub = calculatePercentageFromFiveSubjects(parsedSubjects, parsed.educationLevel === 'TWELFTH' ? 'TWELFTH' : 'TENTH')
+        if (fiveSub) {
+          finalPercentage = fiveSub.percentage
+          percentageSource = 'CALCULATED_FROM_SUBJECT_MARKS'
+          calculationEquation = fiveSub.equation
+          calculationFormula = fiveSub.formula
+        }
+      }
+
       return {
         educationLevel: parsed.educationLevel === 'TWELFTH' ? 'TWELFTH' : 'TENTH',
         studentName: normalizeStudentName(parsed.studentName),
@@ -901,16 +1093,13 @@ ${text.slice(0, 5000)}`
         certificateNumber: parsed.certificateNumber ? String(parsed.certificateNumber).trim() : undefined,
         board: normalizeBoard(parsed.board),
         passingYear: normalizePassingYear(parsed.passingYear),
-        subjects: Array.isArray(parsed.subjects) ? parsed.subjects.map((s: any) => ({
-          code: s.code ? String(s.code).trim() : undefined,
-          name: String(s.name || '').toUpperCase().trim(),
-          maxMarks: typeof s.maxMarks === 'number' ? s.maxMarks : undefined,
-          obtainedMarks: typeof s.obtainedMarks === 'number' ? s.obtainedMarks : undefined,
-          grade: s.grade ? String(s.grade).trim() : undefined
-        })).filter((s: any) => s.name.length >= 2) : [],
+        subjects: parsedSubjects,
         totalMarks: typeof parsed.totalMarks === 'number' ? parsed.totalMarks : undefined,
         obtainedMarks: typeof parsed.obtainedMarks === 'number' ? parsed.obtainedMarks : undefined,
-        percentage: typeof parsed.percentage === 'number' && parsed.percentage >= 0 && parsed.percentage <= 100 ? parsed.percentage : undefined,
+        percentage: typeof finalPercentage === 'number' && finalPercentage >= 0 && finalPercentage <= 100 ? finalPercentage : undefined,
+        percentageSource,
+        calculationEquation,
+        calculationFormula,
         cgpa: typeof parsed.cgpa === 'number' && parsed.cgpa >= 0 && parsed.cgpa <= 10 ? parsed.cgpa : undefined,
         confidence: 0.9,
         extractionSource: 'HYBRID_AI'
@@ -940,7 +1129,7 @@ export async function extractAcademicMarksheet(
     deterministicResult.studentName &&
     (deterministicResult.rollNumber || deterministicResult.seatNumber) &&
     deterministicResult.passingYear &&
-    deterministicResult.obtainedMarks &&
+    (deterministicResult.percentage !== undefined || deterministicResult.obtainedMarks !== undefined) &&
     deterministicResult.subjects.length >= 4
   ) {
     return deterministicResult
@@ -960,14 +1149,31 @@ export async function extractAcademicMarksheet(
   let totalMarks = deterministicResult.totalMarks || aiResult.totalMarks
   let obtainedMarks = deterministicResult.obtainedMarks || aiResult.obtainedMarks
   let percentage = deterministicResult.percentage || aiResult.percentage
+  let percentageSource = deterministicResult.percentageSource || aiResult.percentageSource || (percentage ? 'DIRECTLY_EXTRACTED' : undefined)
+  let calculationEquation = deterministicResult.calculationEquation || aiResult.calculationEquation
+  let calculationFormula = deterministicResult.calculationFormula || aiResult.calculationFormula
 
   // Enforce obtained <= total
   if (typeof obtainedMarks === 'number' && typeof totalMarks === 'number' && obtainedMarks > totalMarks) {
     obtainedMarks = Math.min(obtainedMarks, totalMarks)
   }
 
+  // If percentage still not resolved, calculate from 5 relevant subjects
+  if (!percentage && mergedSubjects.length >= 5) {
+    const fiveCalc = calculatePercentageFromFiveSubjects(mergedSubjects, levelHint || deterministicResult.educationLevel)
+    if (fiveCalc) {
+      percentage = fiveCalc.percentage
+      totalMarks = fiveCalc.totalMarks
+      obtainedMarks = fiveCalc.obtainedMarks
+      percentageSource = 'CALCULATED_FROM_SUBJECT_MARKS'
+      calculationEquation = fiveCalc.equation
+      calculationFormula = fiveCalc.formula
+    }
+  }
+
   if (!percentage && obtainedMarks && totalMarks && totalMarks > 0) {
     percentage = parseFloat(((obtainedMarks / totalMarks) * 100).toFixed(2))
+    percentageSource = 'CALCULATED_FROM_SUBJECT_MARKS'
   }
 
   return {
@@ -983,6 +1189,9 @@ export async function extractAcademicMarksheet(
     totalMarks,
     obtainedMarks,
     percentage,
+    percentageSource,
+    calculationEquation,
+    calculationFormula,
     cgpa: deterministicResult.cgpa || aiResult.cgpa,
     confidence: Math.max(deterministicResult.confidence, 0.9),
     extractionSource: 'HYBRID_AI',
@@ -1020,7 +1229,28 @@ export async function extractAndSaveAcademicMarksheet(
 
     // 3. Extract Structured Academic Data
     const effectiveLevel = levelHint || (document.documentType === '10th Marksheet' ? 'TENTH' : document.documentType === '12th Marksheet' ? 'TWELFTH' : 'TENTH')
+
+    // Document Classification Check (Prevent uploading 12th in 10th slot or vice-versa)
+    if (ocrResult.fullText) {
+      const classification = validateMarksheetDocumentType(ocrResult.fullText, effectiveLevel)
+      if (!classification.isValid) {
+        return {
+          success: false,
+          marksheet: null,
+          error: classification.message || `Please upload a valid ${effectiveLevel === 'TENTH' ? '10th' : '12th'} marksheet.`
+        }
+      }
+    }
+
     const extraction = await extractAcademicMarksheet(ocrResult.fullText, ocrResult.blocks, effectiveLevel)
+
+    // Calculation Metadata JSON
+    const calculationMeta = {
+      percentageSource: extraction.percentageSource || 'DIRECTLY_EXTRACTED',
+      calculationEquation: extraction.calculationEquation || null,
+      calculationFormula: extraction.calculationFormula || null,
+      extractedAt: new Date().toISOString()
+    }
 
     // 4. Save/Update AcademicMarksheet in Prisma
     let existingMarksheet = await prisma.academicMarksheet.findFirst({
@@ -1047,8 +1277,8 @@ export async function extractAndSaveAcademicMarksheet(
       percentage: extraction.percentage || null,
       cgpa: extraction.cgpa || null,
       subjects: extraction.subjects.length > 0 ? JSON.stringify(extraction.subjects) : null,
+      comparisonResults: JSON.stringify(calculationMeta),
       ocrConfidence: extraction.confidence,
-      // OCR extraction parses candidate credentials; official verification occurs via DigiLocker in Phase 5 & 6
       verificationStatus: existingMarksheet?.verificationStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING'
     }
 
@@ -1152,6 +1382,9 @@ export async function extractAndSaveAcademicMarksheet(
         totalMarks: academicMarksheet.totalMarks,
         obtainedMarks: academicMarksheet.obtainedMarks,
         percentage: academicMarksheet.percentage,
+        percentageSource: extraction.percentageSource || 'DIRECTLY_EXTRACTED',
+        calculationEquation: extraction.calculationEquation || null,
+        calculationFormula: extraction.calculationFormula || null,
         cgpa: academicMarksheet.cgpa,
         subjects: extraction.subjects,
         ocrConfidence: academicMarksheet.ocrConfidence,
@@ -1365,4 +1598,128 @@ export function compareAcademicRecords(
     authoritativeRecord
   }
 }
+
+/**
+ * Compare student names extracted from two distinct academic documents (10th & 12th)
+ * Returns whether names match with high confidence, similarity score, and formatted unified name
+ */
+export function compareStudentDocumentNames(
+  name1?: string | null,
+  name2?: string | null
+): {
+  isMatch: boolean
+  similarity: number
+  unifiedName?: string
+  reason?: string
+} {
+  if (!name1 || !name2) {
+    return {
+      isMatch: false,
+      similarity: 0,
+      reason: 'One or both documents are missing an extracted student name.'
+    }
+  }
+
+  // Strip honorifics and clean
+  const cleanTokens = (raw: string) => {
+    return raw
+      .toLowerCase()
+      .replace(/\b(?:candidate|student|name|shri|smt|mr|ms|mrs|dr|kumari|master|surname|first)\b\.?/gi, '')
+      .replace(/[^a-z\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .split(' ')
+      .filter(t => t.length >= 2)
+  }
+
+  const tokens1 = cleanTokens(name1)
+  const tokens2 = cleanTokens(name2)
+
+  if (tokens1.length === 0 || tokens2.length === 0) {
+    return {
+      isMatch: false,
+      similarity: 0,
+      reason: 'One or both documents are missing a recognizable student name.'
+    }
+  }
+
+  const sorted1 = [...tokens1].sort().join(' ')
+  const sorted2 = [...tokens2].sort().join(' ')
+
+  // 1. Exact match or Exact First Name <-> Surname permutation
+  // Examples:
+  // "Soham Ramshette" <-> "Ramshette Soham"
+  // "Soham Balaji Ramshette" <-> "Ramshette Soham Balaji"
+  if (sorted1 === sorted2) {
+    return {
+      isMatch: true,
+      similarity: 1.0,
+      unifiedName: normalizeStudentName(name1) || normalizeStudentName(name2)
+    }
+  }
+
+  const commonTokens = tokens1.filter(t => tokens2.includes(t))
+
+  // 2. Middle Name / Father Name inclusion (e.g. 2 tokens ["soham", "ramshette"] vs 3 tokens ["soham", "balaji", "ramshette"])
+  // All tokens of the shorter name must be present in the longer name
+  if (
+    (tokens1.length === 2 && tokens2.length === 3 && commonTokens.length === 2) ||
+    (tokens2.length === 2 && tokens1.length === 3 && commonTokens.length === 2)
+  ) {
+    const longerName = tokens1.length >= tokens2.length ? name1 : name2
+    return {
+      isMatch: true,
+      similarity: 0.95,
+      unifiedName: normalizeStudentName(longerName)
+    }
+  }
+
+  // 3. Any genuinely different names (e.g. "Soham Balaji Ramshette" vs "Rahul Balaji Patil" or "Soham Ramshette" vs "Rahul Patil")
+  // MUST be rejected
+  const overlapRatio = (commonTokens.length * 2) / (tokens1.length + tokens2.length)
+  return {
+    isMatch: false,
+    similarity: parseFloat(overlapRatio.toFixed(2)),
+    reason: 'Name mismatch detected between your documents. Your documents require verification by the institution.'
+  }
+}
+
+/**
+ * Validate that an uploaded file matches the expected education level (10th vs 12th)
+ */
+export function validateMarksheetDocumentType(
+  rawText: string,
+  targetLevel: 'TENTH' | 'TWELFTH'
+): { isValid: boolean; detectedLevel?: 'TENTH' | 'TWELFTH'; message?: string } {
+  const text = (rawText || '').toUpperCase()
+
+  // Remove common board names containing both "secondary" and "higher secondary"
+  const cleanExamText = text
+    .replace(/SECONDARY\s+AND\s+HIGHER\s+SECONDARY/gi, '')
+    .replace(/SECONDARY\s+&\s+HIGHER\s+SECONDARY/gi, '')
+
+  const has12thIndicators = /(?:HIGHER\s*SECONDARY\s*CERTIFICATE|H\.?S\.?C\.?\b|CLASS\s*(?:XII|12)\b|12TH\b|SENIOR\s*SCHOOL\s*CERTIFICATE|INTERMEDIATE\s*EXAMINATION)/i.test(cleanExamText)
+  const has10thIndicators = /(?:SECONDARY\s*SCHOOL\s*CERTIFICATE|S\.?S\.?C\.?\b|CLASS\s*(?:X|10)\b(?![IVX])|10TH\b|MATRICULATION|HIGH\s*SCHOOL\s*CERTIFICATE)/i.test(cleanExamText)
+
+  if (targetLevel === 'TENTH') {
+    if (has12thIndicators && !has10thIndicators) {
+      return {
+        isValid: false,
+        detectedLevel: 'TWELFTH',
+        message: 'Please upload a valid 10th marksheet.'
+      }
+    }
+    return { isValid: true, detectedLevel: 'TENTH' }
+  } else {
+    if (has10thIndicators && !has12thIndicators) {
+      return {
+        isValid: false,
+        detectedLevel: 'TENTH',
+        message: 'Please upload a valid 12th marksheet.'
+      }
+    }
+    return { isValid: true, detectedLevel: 'TWELFTH' }
+  }
+}
+
 

@@ -30,7 +30,9 @@ import {
   FolderLock,
   ArrowRight,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  HelpCircle,
+  Clock
 } from 'lucide-react'
 
 export default function StudentProfile() {
@@ -40,6 +42,7 @@ export default function StudentProfile() {
   const [saveSuccess, setSaveSuccess] = useState('')
   const [saveError, setSaveError] = useState('')
   const [showPasswordSection, setShowPasswordSection] = useState(false)
+  const [lockedTooltip, setLockedTooltip] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -95,6 +98,13 @@ export default function StudentProfile() {
     }
   }
 
+  const isAcademicVerified = Boolean(
+    profile?.isAcademicLocked ||
+    profile?.is_academic_locked ||
+    profile?.academicVerificationStatus === 'VERIFIED' ||
+    profile?.academic_verification_status === 'VERIFIED'
+  )
+
   // Calculate profile completion percentage
   const completionPercentage = useMemo(() => {
     const fields = [
@@ -103,7 +113,7 @@ export default function StudentProfile() {
       formData.college,
       formData.degree,
       formData.phone,
-      formData.cgpa,
+      formData.tenth_marks,
       formData.twelfth_marks,
       formData.github_url || formData.linkedin_url
     ]
@@ -118,6 +128,11 @@ export default function StudentProfile() {
       .join('')
       .toUpperCase()
       .slice(0, 2) || 'ST'
+  }
+
+  const handleLockedFieldClick = (fieldName: string) => {
+    setLockedTooltip(`This ${fieldName} was extracted from your verified academic document and cannot be edited.`)
+    setTimeout(() => setLockedTooltip(null), 5000)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,18 +207,18 @@ export default function StudentProfile() {
             <BackButton fallbackHref="/student/dashboard" />
             <div>
               <h1 className={layoutStyles.pageTitle}>Student Profile & Settings</h1>
-              <p className={layoutStyles.pageSubtitle}>Manage your academic records, developer portfolio, and account credentials.</p>
+              <p className={layoutStyles.pageSubtitle}>Manage your verified academic records, developer portfolio, and account credentials.</p>
             </div>
           </div>
 
           <div className={layoutStyles.headerActions}>
             <Link
-              href="/student/resume"
+              href="/student/verify-academics"
               className="btn btn-secondary btn-sm"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <FileText size={14} />
-              <span>ATS Resume</span>
+              <ShieldCheck size={14} color="#34d399" />
+              <span>Document Verification</span>
             </Link>
             <Link
               href="/student/documents"
@@ -220,23 +235,55 @@ export default function StudentProfile() {
         <main className={layoutStyles.main}>
           <form onSubmit={handleSubmit} className={styles.container}>
 
+            {/* ── UNVERIFIED STATUS PROMPT BANNER ── */}
+            {!isAcademicVerified && (
+              <div className={styles.unverifiedBanner}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <AlertCircle size={22} color="#fbbf24" style={{ flexShrink: 0 }} />
+                  <div>
+                    <strong style={{ color: '#fef08a', fontSize: '13.5px' }}>Academic Verification Required</strong>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#cbd5e1' }}>
+                      To unlock campus drive eligibility and verify your official marks, please upload your 10th and 12th marksheets.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/student/verify-academics"
+                  className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                >
+                  <span>Verify Marksheets</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+
             {/* ── HERO PROFILE CARD ── */}
             <div className={styles.heroCard}>
               <div className={styles.heroLeft}>
                 <div className={styles.avatarRing}>
                   <span>{getInitials(formData.name || profile?.name)}</span>
-                  <span className={styles.verifiedBadge} title="Verified Candidate">
-                    <CheckCircle2 size={14} strokeWidth={3} />
-                  </span>
+                  {isAcademicVerified && (
+                    <span className={styles.verifiedBadge} title="Verified Candidate via Official Marksheet">
+                      <CheckCircle2 size={14} strokeWidth={3} />
+                    </span>
+                  )}
                 </div>
 
                 <div className={styles.heroInfo}>
                   <div className={styles.heroNameRow}>
                     <h2 className={styles.heroName}>{formData.name || 'Student Profile'}</h2>
-                    <span className={styles.roleBadge}>
-                      <ShieldCheck size={12} />
-                      <span>Verified Student</span>
-                    </span>
+                    {isAcademicVerified ? (
+                      <span className={styles.roleBadge} style={{ background: 'rgba(16, 185, 129, 0.18)', borderColor: 'rgba(16, 185, 129, 0.4)', color: '#34d399' }}>
+                        <ShieldCheck size={13} />
+                        <span>✓ Document Verified</span>
+                      </span>
+                    ) : (
+                      <span className={styles.roleBadge}>
+                        <Clock size={12} />
+                        <span>Verification Pending</span>
+                      </span>
+                    )}
                   </div>
 
                   <div className={styles.heroMeta}>
@@ -264,15 +311,23 @@ export default function StudentProfile() {
               <div className={styles.heroRight}>
                 <div className={styles.completionBox}>
                   <div className={styles.completionTop}>
-                    <span>Profile Score</span>
-                    <strong>{completionPercentage}% Complete</strong>
+                    <span>Profile Trust Score</span>
+                    <strong>{isAcademicVerified ? '100% Verified' : `${completionPercentage}%`}</strong>
                   </div>
                   <div className={styles.progressBar}>
-                    <div className={styles.progressFill} style={{ width: `${completionPercentage}%` }} />
+                    <div className={styles.progressFill} style={{ width: `${isAcademicVerified ? 100 : completionPercentage}%`, background: isAcademicVerified ? 'linear-gradient(90deg, #10b981, #34d399)' : undefined }} />
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Locked Field Feedback Tooltip */}
+            {lockedTooltip && (
+              <div className={`${styles.alertToast} ${styles.alertSuccess}`} style={{ background: 'rgba(124, 58, 237, 0.2)', borderColor: 'rgba(139, 92, 246, 0.4)', color: '#e9d5ff' }}>
+                <Lock size={16} />
+                <span>{lockedTooltip}</span>
+              </div>
+            )}
 
             {/* Feedback Alerts */}
             {saveSuccess && (
@@ -313,18 +368,40 @@ export default function StudentProfile() {
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
                         <span>Full Name *</span>
+                        {isAcademicVerified ? (
+                          <span className={styles.verifiedFieldBadge}>
+                            <Lock size={10} />
+                            <span>[Verified]</span>
+                          </span>
+                        ) : null}
                       </label>
                       <div className={styles.inputWrapper}>
                         <User size={15} className={styles.inputIcon} />
                         <input
                           type="text"
                           value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className={styles.input}
+                          onChange={(e) => {
+                            if (!isAcademicVerified) {
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                          }}
+                          onClick={() => {
+                            if (isAcademicVerified) {
+                              handleLockedFieldClick('Candidate Name')
+                            }
+                          }}
+                          className={`${styles.input} ${isAcademicVerified ? styles.inputLocked : ''}`}
                           placeholder="Your legal name"
+                          readOnly={isAcademicVerified}
                           required
                         />
                       </div>
+                      {isAcademicVerified && (
+                        <div className={styles.lockedFieldNotice}>
+                          <Lock size={11} />
+                          <span>Verified from official marksheet (Read-only)</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -388,9 +465,15 @@ export default function StudentProfile() {
                       </div>
                       <div>
                         <h3 className={styles.cardTitle}>Academic Records</h3>
-                        <span className={styles.cardSubtitle}>College scores for campus drive eligibility</span>
+                        <span className={styles.cardSubtitle}>Verified marks for campus drive eligibility</span>
                       </div>
                     </div>
+                    {isAcademicVerified && (
+                      <span className={styles.verifiedFieldBadge}>
+                        <Lock size={11} />
+                        <span>🔒 Verified &amp; Locked</span>
+                      </span>
+                    )}
                   </div>
 
                   <div className={styles.formRow2}>
@@ -426,7 +509,81 @@ export default function StudentProfile() {
                   <div className={styles.formRow3}>
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        <span>CGPA (out of 10)</span>
+                        <span>10th Percentage</span>
+                        {isAcademicVerified && (
+                          <span className={styles.verifiedFieldBadge}>
+                            <Lock size={10} />
+                            <span>[Verified]</span>
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.tenth_marks}
+                        onChange={(e) => {
+                          if (!isAcademicVerified) {
+                            setFormData({ ...formData, tenth_marks: e.target.value })
+                          }
+                        }}
+                        onClick={() => {
+                          if (isAcademicVerified) {
+                            handleLockedFieldClick('10th Percentage')
+                          }
+                        }}
+                        className={`${styles.input} ${styles.inputNoIcon} ${isAcademicVerified ? styles.inputLocked : ''}`}
+                        placeholder="e.g. 94.00"
+                        readOnly={isAcademicVerified}
+                      />
+                      {isAcademicVerified && (
+                        <div className={styles.lockedFieldNotice} style={{ fontSize: '10.5px' }}>
+                          ✓ Verified from Marksheet
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        <span>12th Percentage</span>
+                        {isAcademicVerified && (
+                          <span className={styles.verifiedFieldBadge}>
+                            <Lock size={10} />
+                            <span>[Verified]</span>
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.twelfth_marks}
+                        onChange={(e) => {
+                          if (!isAcademicVerified) {
+                            setFormData({ ...formData, twelfth_marks: e.target.value })
+                          }
+                        }}
+                        onClick={() => {
+                          if (isAcademicVerified) {
+                            handleLockedFieldClick('12th Percentage')
+                          }
+                        }}
+                        className={`${styles.input} ${styles.inputNoIcon} ${isAcademicVerified ? styles.inputLocked : ''}`}
+                        placeholder="e.g. 80.00"
+                        readOnly={isAcademicVerified}
+                      />
+                      {isAcademicVerified && (
+                        <div className={styles.lockedFieldNotice} style={{ fontSize: '10.5px' }}>
+                          ✓ Verified from Marksheet
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        <span>CGPA (Optional)</span>
                       </label>
                       <div className={styles.inputWrapper}>
                         <Award size={15} className={styles.inputIcon} />
@@ -441,38 +598,6 @@ export default function StudentProfile() {
                           placeholder="e.g. 8.75"
                         />
                       </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        <span>10th Board %</span>
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="100"
-                        value={formData.tenth_marks}
-                        onChange={(e) => setFormData({ ...formData, tenth_marks: e.target.value })}
-                        className={`${styles.input} ${styles.inputNoIcon}`}
-                        placeholder="e.g. 92.4"
-                      />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        <span>12th Board %</span>
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="100"
-                        value={formData.twelfth_marks}
-                        onChange={(e) => setFormData({ ...formData, twelfth_marks: e.target.value })}
-                        className={`${styles.input} ${styles.inputNoIcon}`}
-                        placeholder="e.g. 89.0"
-                      />
                     </div>
                   </div>
 
@@ -492,16 +617,43 @@ export default function StudentProfile() {
                     </div>
                   </div>
 
-                  <div className={styles.scoreBox}>
-                    <div className={styles.scoreItem}>
-                      <span className={styles.scoreVal}>{formData.cgpa ? `${formData.cgpa} CGPA` : 'Not Entered'}</span>
-                      <span className={styles.scoreLabel}>Current Academic Index</span>
+                  {/* Academic Documents Status Block */}
+                  {isAcademicVerified ? (
+                    <div className={styles.academicDocsStatusCard}>
+                      <div className={styles.academicDocsStatusHeader}>
+                        <span className={styles.academicDocsStatusTitle}>
+                          <ShieldCheck size={15} color="#34d399" />
+                          <span>Academic Documents Status</span>
+                        </span>
+                        <span className={styles.verifiedFieldBadge}>
+                          <Lock size={10} />
+                          <span>✓ Verified from Official Marksheet</span>
+                        </span>
+                      </div>
+
+                      <div className={styles.academicDocRow}>
+                        <span>10th Marksheet</span>
+                        <span className={styles.academicDocRowVerified}>
+                          <CheckCircle2 size={14} color="#34d399" />
+                          <span>✓ Verified ({profile?.tenthBoard || 'Official Board'}, {profile?.tenthPassingYear || 'Passed'})</span>
+                        </span>
+                      </div>
+
+                      <div className={styles.academicDocRow}>
+                        <span>12th Marksheet</span>
+                        <span className={styles.academicDocRowVerified}>
+                          <CheckCircle2 size={14} color="#34d399" />
+                          <span>✓ Verified ({profile?.twelfthBoard || 'Official Board'}, {profile?.twelfthPassingYear || 'Passed'})</span>
+                        </span>
+                      </div>
+
+                      {profile?.academicVerifiedAt && (
+                        <div className={styles.academicDocRowTimestamp}>
+                          Verified on: {new Date(profile.academicVerifiedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </div>
+                      )}
                     </div>
-                    <div className={styles.scoreItem}>
-                      <span className={styles.scoreVal} style={{ color: '#34d399' }}>Eligible</span>
-                      <span className={styles.scoreLabel}>Partner Drives Status</span>
-                    </div>
-                  </div>
+                  ) : null}
                 </div>
 
               </div>
@@ -721,7 +873,7 @@ export default function StudentProfile() {
             {/* ── STICKY BOTTOM ACTION FOOTER ── */}
             <div className={styles.actionFooter}>
               <span className={styles.actionFooterText}>
-                Remember to save after updating your academic scores or social URLs.
+                {isAcademicVerified ? 'Academic credentials are locked from verified official documents.' : 'Remember to verify your academic marksheets to unlock all placement features.'}
               </span>
 
               <div className={styles.actionButtons}>

@@ -35,6 +35,8 @@ import {
   HelpCircle
 } from 'lucide-react'
 
+import { dispatchPortalNotification } from '@/components/NotificationBell'
+
 interface ActiveEvidenceModal {
   title: string
   subtitle: string
@@ -107,7 +109,43 @@ export default function MasterCandidateProfilePage({ params }: { params?: Promis
 
       const data = await res.json()
       if (res.ok) {
-        setToastMessage(`✓ Candidate Request successfully submitted for ${profile.name}! The institution placement cell has been notified.`)
+        // 1. Company portal notification
+        dispatchPortalNotification({
+          role: 'company',
+          title: `✓ Shortlisted: ${profile.name}`,
+          message: `Candidate ${profile.name} (${profile.branch}) was shortlisted for ${roleParam}. Dossier added to your recruitment pipeline.`,
+          category: 'Candidate Shortlist',
+          actionUrl: `/company/candidates/${profile.id}?role=${encodeURIComponent(roleParam)}`,
+          actionLabel: 'View Dossier',
+          icon: 'target',
+          color: '#10b981'
+        })
+
+        // 2. Student portal notification
+        dispatchPortalNotification({
+          role: 'student',
+          title: `⭐ Profile Shortlisted for ${roleParam}!`,
+          message: `Congratulations! A recruiting company shortlisted your profile for the ${roleParam} opening based on your verified skills & projects.`,
+          category: 'Shortlist Alert',
+          actionUrl: '/student/internships',
+          actionLabel: 'View Status',
+          icon: 'placement',
+          color: '#8b5cf6'
+        })
+
+        // 3. Institution placement cell notification
+        dispatchPortalNotification({
+          role: 'institution',
+          title: `🏢 Recruiter Shortlisted Student`,
+          message: `Student ${profile.name} (${profile.branch}) was shortlisted by a recruiter for ${roleParam}.`,
+          category: 'Placement Drive',
+          actionUrl: '/institution/students',
+          actionLabel: 'Student Directory',
+          icon: 'resource',
+          color: '#a855f7'
+        })
+
+        setToastMessage(`🔔 Notification Dispatched on Portal! "${profile.name}" added to shortlist. Real-time alert delivered to your Notification Bell 🔔, Student & Placement Cell.`)
         setProfile((prev: any) => ({ ...prev, status: 'Requested' }))
       } else {
         alert(data.error || 'Failed to request candidate')
@@ -117,7 +155,7 @@ export default function MasterCandidateProfilePage({ params }: { params?: Promis
       alert('An error occurred.')
     } finally {
       setRequesting(false)
-      setTimeout(() => setToastMessage(null), 7000)
+      setTimeout(() => setToastMessage(null), 8000)
     }
   }
 
@@ -436,7 +474,107 @@ export default function MasterCandidateProfilePage({ params }: { params?: Promis
             </div>
           </div>
 
-          {/* Section 2: Job Relevance & Evidence Check (Top Section) */}
+          {/* Section 2: AI Match Score & Multi-Dimensional Breakdown */}
+          {profile.matchBreakdown && (
+            <div className={`glass ${styles.panel}`} style={{ borderLeft: '4px solid #10b981' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '14px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles size={18} strokeWidth={2} color="#10b981" />
+                    <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                      AI Match Score Breakdown: {profile.jobMatchScore}% Match
+                    </h2>
+                  </div>
+                  <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                    Weighted multi-dimensional scoring calculated against requirements for <strong>{roleParam}</strong>.
+                  </p>
+                </div>
+
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#10b981', fontFamily: 'Outfit, sans-serif' }}>
+                  {profile.jobMatchScore} / 100 pts
+                </div>
+              </div>
+
+              {/* Dimensional Score Meters */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'Skill Match & Proficiency', score: profile.matchBreakdown.skillScore, max: profile.matchBreakdown.maxSkillScore || 35, color: '#10b981' },
+                  { label: 'Role / Job Relevance', score: profile.matchBreakdown.roleRelevanceScore, max: profile.matchBreakdown.maxRoleRelevanceScore || 20, color: '#3b82f6' },
+                  { label: 'Academic Standing', score: profile.matchBreakdown.academicScore, max: profile.matchBreakdown.maxAcademicScore || 15, color: '#8b5cf6' },
+                  { label: 'Projects & Experience', score: profile.matchBreakdown.projectScore, max: profile.matchBreakdown.maxProjectScore || 10, color: '#f59e0b' },
+                  { label: 'Education / Branch Match', score: profile.matchBreakdown.educationScore, max: profile.matchBreakdown.maxEducationScore || 10, color: '#06b6d4' },
+                  { label: 'Verified Certifications', score: profile.matchBreakdown.certificationScore, max: profile.matchBreakdown.maxCertificationScore || 5, color: '#ec4899' },
+                  { label: 'Profile Completeness', score: profile.matchBreakdown.profileScore, max: profile.matchBreakdown.maxProfileScore || 5, color: '#6366f1' }
+                ].map(dim => (
+                  <div key={dim.label} style={{ background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '6px' }}>
+                      <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{dim.label}</span>
+                      <span style={{ fontWeight: 800, color: dim.color }}>{dim.score}/{dim.max}</span>
+                    </div>
+                    <div style={{ height: '6px', width: '100%', borderRadius: '3px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${(dim.score / dim.max) * 100}%`, background: dim.color, borderRadius: '3px' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* AI Key Signal Highlights Bento Deck */}
+              {profile.aiSignals && profile.aiSignals.length > 0 && (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '10px'
+                }}>
+                  {profile.aiSignals.map((signal: any, idx: number) => {
+                    const themeColors: Record<string, { bg: string; border: string; iconColor: string; tagBg: string; tagColor: string }> = {
+                      emerald: { bg: 'rgba(16, 185, 129, 0.08)', border: 'rgba(16, 185, 129, 0.25)', iconColor: '#34d399', tagBg: 'rgba(16, 185, 129, 0.15)', tagColor: '#34d399' },
+                      violet: { bg: 'rgba(139, 92, 246, 0.08)', border: 'rgba(139, 92, 246, 0.25)', iconColor: '#a78bfa', tagBg: 'rgba(139, 92, 246, 0.15)', tagColor: '#c4b5fd' },
+                      amber: { bg: 'rgba(245, 158, 11, 0.08)', border: 'rgba(245, 158, 11, 0.25)', iconColor: '#fbbf24', tagBg: 'rgba(245, 158, 11, 0.15)', tagColor: '#fde68a' },
+                      cyan: { bg: 'rgba(6, 182, 212, 0.08)', border: 'rgba(6, 182, 212, 0.25)', iconColor: '#22d3ee', tagBg: 'rgba(6, 182, 212, 0.15)', tagColor: '#a5f3fc' },
+                      blue: { bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.25)', iconColor: '#60a5fa', tagBg: 'rgba(59, 130, 246, 0.15)', tagColor: '#bfdbfe' }
+                    }
+                    const t = themeColors[signal.theme] || themeColors.emerald
+
+                    return (
+                      <div
+                        key={signal.id || idx}
+                        style={{
+                          padding: '10px 12px',
+                          borderRadius: '10px',
+                          background: t.bg,
+                          border: `1px solid ${t.border}`,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '3px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px', color: t.tagColor, background: t.tagBg, padding: '2px 6px', borderRadius: '4px' }}>
+                            {signal.tag}
+                          </span>
+                          {signal.iconType === 'zap' && <Zap size={13} color={t.iconColor} />}
+                          {signal.iconType === 'code' && <Code2 size={13} color={t.iconColor} />}
+                          {signal.iconType === 'award' && <Award size={13} color={t.iconColor} />}
+                          {signal.iconType === 'shield' && <ShieldCheck size={13} color={t.iconColor} />}
+                          {signal.iconType === 'briefcase' && <Briefcase size={13} color={t.iconColor} />}
+                          {signal.iconType === 'star' && <Star size={13} color={t.iconColor} />}
+                          {signal.iconType === 'sparkles' && <Sparkles size={13} color={t.iconColor} />}
+                        </div>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {signal.title}
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                          {signal.subtitle}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Section 3: Job Relevance & Evidence Check (Top Section) */}
           <div className={`glass ${styles.panel}`} style={{ borderLeft: '4px solid #3b82f6' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
               <div>

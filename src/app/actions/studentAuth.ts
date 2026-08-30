@@ -70,14 +70,16 @@ export async function studentSignup(state: AuthState, formData: FormData): Promi
       college,
       degree,
       graduationYear: year ? parseInt(year) : null,
-      phone: phone || null
+      phone: phone || null,
+      academicVerificationStatus: 'PENDING',
+      isAcademicLocked: false
     }
   })
 
   const userId = result.id
 
   await createSession({ userId, role: 'student', email, name, expiresAt: new Date() })
-  redirect('/student/dashboard')
+  redirect('/student/verify-academics')
 }
 
 // ── Login ────────────────────────────────────────────

@@ -42,8 +42,14 @@ export default function StudentInternshipsPage() {
       const data = await res.json()
       if (data && !data.error) {
         setStudentProfile(data)
-        if (data.cgpa === null || data.cgpa === undefined || data.twelfth_marks === null || data.twelfth_marks === undefined) {
+        const isVerified = Boolean(
+          (data.academicVerificationStatus === 'VERIFIED' || data.academic_verification_status === 'VERIFIED') &&
+          data.isAcademicLocked
+        )
+        if (!isVerified) {
           setShowAcademicModal(true)
+        } else {
+          setShowAcademicModal(false)
         }
         fetchInternships(data.id || 1)
       } else {

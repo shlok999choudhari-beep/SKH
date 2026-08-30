@@ -46,177 +46,151 @@ interface NotificationBellProps {
 const DEFAULT_NOTIFICATIONS: Record<NotificationRole, NotificationItem[]> = {
   student: [
     {
-      id: 'st-1',
+      id: 'st-academics',
+      type: 'update',
+      title: 'Academic Records & Document Verification',
+      message: 'Verified 10th and 12th percentage records are cryptographically locked and visible to campus recruiters.',
+      category: 'Academic Progress',
+      time: 'Live',
+      read: false,
+      actionUrl: '/student/documents',
+      actionLabel: 'View Marksheets',
+      icon: 'document',
+      color: '#10b981',
+    },
+    {
+      id: 'st-readiness',
       type: 'recommendation',
-      title: 'AI Roadmap Recommendation',
-      message: 'Week 2 System Design modules recommended based on your recent ATS target for Google.',
-      category: 'AI Insight',
-      time: '10m ago',
+      title: 'Placement Readiness & ATS Benchmark',
+      message: 'Target skill competencies and technical evidence are active in the PlaceIQ talent matchmaking engine.',
+      category: 'Career Progress',
+      time: 'Real-time',
       read: false,
       actionUrl: '/student/roadmap',
-      actionLabel: 'Open Roadmap',
+      actionLabel: 'View Roadmap',
       icon: 'brain',
       color: '#8b5cf6',
     },
     {
-      id: 'st-2',
+      id: 'st-coding',
       type: 'update',
-      title: 'New Campus Placement Drive',
-      message: 'Microsoft SWE Drive applications close in 3 days. Your ATS match score is 94%.',
-      category: 'Placement',
-      time: '1h ago',
+      title: 'Real-Time Coding Judge Benchmarking',
+      message: 'Live test case execution benchmarks and algorithmic problem sessions are saved to your technical profile.',
+      category: 'Coding Skills',
+      time: 'Live',
       read: false,
-      actionUrl: '/student/placements',
-      actionLabel: 'View Drive',
-      icon: 'placement',
-      color: '#3b82f6',
-    },
-    {
-      id: 'st-3',
-      type: 'recommendation',
-      title: 'Voice Interview Simulation',
-      message: 'Practice Behavioral Tone analysis to boost your interview confidence score from 84% to 95%.',
-      category: 'Interview AI',
-      time: '3h ago',
-      read: false,
-      actionUrl: '/student/mock-interview',
-      actionLabel: 'Start Practice',
-      icon: 'interview',
-      color: '#ec4899',
-    },
-    {
-      id: 'st-4',
-      type: 'update',
-      title: 'Internship Shortlist Update',
-      message: 'Uber Frontend Internship shortlisted your profile for the technical assessment round.',
-      category: 'Internship',
-      time: 'Yesterday',
-      read: true,
-      actionUrl: '/student/internships',
-      actionLabel: 'View Status',
-      icon: 'internship',
-      color: '#10b981',
-    },
-    {
-      id: 'st-5',
-      type: 'recommendation',
-      title: 'Resume Skill Gap Alert',
-      message: 'Adding Next.js Server Actions & Go to your resume can increase ATS match by +18%.',
-      category: 'Resume AI',
-      time: '2d ago',
-      read: true,
-      actionUrl: '/student/resume',
-      actionLabel: 'Analyze Resume',
-      icon: 'zap',
-      color: '#f59e0b',
-    },
-  ],
-  company: [
-    {
-      id: 'co-1',
-      type: 'recommendation',
-      title: 'AI Top Candidate Matches',
-      message: '8 candidates from IIT & NIT cohorts match 92%+ with your Senior Backend opening.',
-      category: 'AI Talent Match',
-      time: '5m ago',
-      read: false,
-      actionUrl: '/company/dashboard',
-      actionLabel: 'View Candidates',
-      icon: 'target',
-      color: '#10b981',
-    },
-    {
-      id: 'co-2',
-      type: 'update',
-      title: 'Coding Judge Assessments Completed',
-      message: '14 candidates completed the DSA Online Assessment Round with 100% test cases passed.',
-      category: 'Coding Judge',
-      time: '45m ago',
-      read: false,
-      actionUrl: '/company/coding-judge',
-      actionLabel: 'Review Scores',
+      actionUrl: '/student/coding-judge',
+      actionLabel: 'Coding Judge',
       icon: 'code',
       color: '#06b6d4',
     },
     {
-      id: 'co-3',
+      id: 'st-courses',
       type: 'update',
-      title: 'New Internship Applications',
-      message: '23 verified students applied for the Summer 2026 AI Research Intern position.',
-      category: 'Internship',
-      time: '2h ago',
-      read: false,
-      actionUrl: '/company/internships',
-      actionLabel: 'Review Applicants',
-      icon: 'internship',
-      color: '#34d399',
+      title: 'Learning Modules & Training Roadmaps',
+      message: 'Access your curated software engineering curriculum modules and domain training sessions.',
+      category: 'Roadmap Progress',
+      time: 'Active',
+      read: true,
+      actionUrl: '/student/courses',
+      actionLabel: 'Explore Courses',
+      icon: 'placement',
+      color: '#3b82f6',
     },
     {
-      id: 'co-4',
-      type: 'recommendation',
-      title: 'Verified Cohort Recommendation',
-      message: 'Pre-vetted Fullstack engineering candidates are available for fast-track interview scheduling.',
-      category: 'Talent Pool',
-      time: '1d ago',
+      id: 'st-shortlist',
+      type: 'update',
+      title: 'Campus Recruiter Discovery Pool',
+      message: 'Your verified skill profile is active in company talent discovery and ranking pipelines.',
+      category: 'Placement Pipeline',
+      time: 'Active',
       read: true,
-      actionUrl: '/company/dashboard',
-      actionLabel: 'Explore Pool',
+      actionUrl: '/student/internships',
+      actionLabel: 'Placement Status',
+      icon: 'target',
+      color: '#10b981',
+    },
+  ],
+  company: [
+    {
+      id: 'co-intelligence',
+      type: 'recommendation',
+      title: 'AI Candidate Intelligence Engine Active',
+      message: 'Multi-dimensional candidate discovery engine is active. Top talent is automatically ranked and surfaced for your roles.',
+      category: 'Talent Match',
+      time: 'Real-time',
+      read: false,
+      actionUrl: '/company/candidates',
+      actionLabel: 'Discover Candidates',
+      icon: 'target',
+      color: '#10b981',
+    },
+    {
+      id: 'co-coding',
+      type: 'update',
+      title: 'Candidate Live Code Benchmark Reports',
+      message: 'Candidate algorithmic submissions, test case executions, and language performance metrics are ready for review.',
+      category: 'Coding Judge',
+      time: 'Live',
+      read: false,
+      actionUrl: '/company/coding-judge',
+      actionLabel: 'Review Code Benchmarks',
+      icon: 'code',
+      color: '#06b6d4',
+    },
+    {
+      id: 'co-profile',
+      type: 'update',
+      title: 'Recruitment Settings & Partner Institutions',
+      message: 'Custom qualification cutoffs, skill weighting preferences, and institution partnership settings are active.',
+      category: 'Recruitment Settings',
+      time: 'Active',
+      read: true,
+      actionUrl: '/company/profile',
+      actionLabel: 'Manage Settings',
       icon: 'zap',
       color: '#8b5cf6',
     },
   ],
   institution: [
     {
-      id: 'in-1',
+      id: 'in-docs',
       type: 'update',
-      title: 'Resource Sharing Request',
-      message: 'MIT Partner Campus requested access to the Robotics & IoT Lab for next Friday.',
-      category: 'Resource Sharing',
-      time: '15m ago',
+      title: 'Cohort Academic Verification Hub',
+      message: 'Student marksheet OCR extractions and cryptographic percentage locks are active for current cohort.',
+      category: 'Verification Hub',
+      time: 'Real-time',
       read: false,
-      actionUrl: '/institution/resources',
-      actionLabel: 'Review Request',
-      icon: 'resource',
-      color: '#a855f7',
+      actionUrl: '/institution/students',
+      actionLabel: 'View Cohort',
+      icon: 'document',
+      color: '#10b981',
     },
     {
-      id: 'in-2',
+      id: 'in-analytics',
       type: 'recommendation',
-      title: 'Cohort Placement Readiness AI',
-      message: '82% of Computer Science batch is verified and ready for Tier-1 upcoming placement drives.',
-      category: 'Placement AI',
-      time: '1h ago',
+      title: 'Placement Readiness & Skill Distribution',
+      message: 'Real-time cohort competency indexes and recruiter talent readiness metrics are active across all branches.',
+      category: 'Placement Analytics',
+      time: 'Updated',
       read: false,
       actionUrl: '/institution/analytics',
       actionLabel: 'View Analytics',
       icon: 'analytics',
-      color: '#ec4899',
+      color: '#8b5cf6',
     },
     {
-      id: 'in-3',
+      id: 'in-shortlists',
       type: 'update',
-      title: 'Student Documents Pending',
-      message: '15 internship completion certificates submitted and pending institutional verification.',
-      category: 'Verification',
-      time: '3h ago',
-      read: false,
-      actionUrl: '/institution/documents',
-      actionLabel: 'Verify Docs',
-      icon: 'document',
-      color: '#c084fc',
-    },
-    {
-      id: 'in-4',
-      type: 'update',
-      title: 'Industry Trainer Workshop',
-      message: 'Trainer Alex confirmed 1-on-1 System Design workshop for next Monday.',
-      category: 'Trainers',
-      time: 'Yesterday',
+      title: 'Industry Recruiter Candidate Inquiries',
+      message: 'Company discovery sessions, shortlist requests, and student selections are tracked in real time.',
+      category: 'Placement Drives',
+      time: 'Active',
       read: true,
-      actionUrl: '/institution/trainers',
-      actionLabel: 'Manage Sessions',
-      icon: 'trainer',
-      color: '#3b82f6',
+      actionUrl: '/institution/students',
+      actionLabel: 'Review Activity',
+      icon: 'resource',
+      color: '#a855f7',
     },
   ],
 }
@@ -264,25 +238,129 @@ function renderNotificationIcon(icon: string) {
   }
 }
 
+export function dispatchPortalNotification(params: {
+  role?: NotificationRole | 'all'
+  title: string
+  message: string
+  category: string
+  actionUrl?: string
+  actionLabel?: string
+  icon?: string
+  color?: string
+}) {
+  if (typeof window === 'undefined') return
+
+  const roles: NotificationRole[] =
+    params.role === 'all'
+      ? ['student', 'company', 'institution']
+      : [params.role || 'company']
+
+  const newItem: NotificationItem = {
+    id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    type: 'update',
+    title: params.title,
+    message: params.message,
+    category: params.category,
+    time: 'Just now',
+    read: false,
+    actionUrl: params.actionUrl || '/company/candidates',
+    actionLabel: params.actionLabel || 'View Status',
+    icon: params.icon || 'target',
+    color: params.color || '#10b981'
+  }
+
+  roles.forEach(r => {
+    const storageKey = `placeiq_notifications_${r}`
+    try {
+      const stored = localStorage.getItem(storageKey)
+      const list: NotificationItem[] = stored ? JSON.parse(stored) : (DEFAULT_NOTIFICATIONS[r] || [])
+      const updated = [newItem, ...list.filter(item => item.id !== newItem.id)]
+      localStorage.setItem(storageKey, JSON.stringify(updated))
+    } catch (e) {
+      console.error('Failed to update localStorage notifications:', e)
+    }
+
+    window.dispatchEvent(
+      new CustomEvent('placeiq_notification_added', {
+        detail: { role: r, notification: newItem }
+      })
+    )
+  })
+}
+
 export default function NotificationBell({ role }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'all' | 'update' | 'recommendation'>('all')
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Initialize and sync with localStorage
+  // Initialize and fetch authentic progress notifications
   useEffect(() => {
     const storageKey = `placeiq_notifications_${role}`
+    
+    // Load initial from storage or defaults
     const stored = localStorage.getItem(storageKey)
     if (stored) {
       try {
-        setNotifications(JSON.parse(stored))
-        return
-      } catch (e) {
-        console.error('Failed to parse notifications:', e)
+        const parsed = JSON.parse(stored)
+        // Clean out any legacy dummy notifications
+        const clean = parsed.filter((n: any) => !n.id.startsWith('st-1') && !n.id.startsWith('st-2') && !n.id.startsWith('co-1') && !n.id.startsWith('in-1') || n.id.startsWith('auth-'))
+        setNotifications(clean.length > 0 ? clean : (DEFAULT_NOTIFICATIONS[role] || []))
+      } catch {
+        setNotifications(DEFAULT_NOTIFICATIONS[role] || [])
+      }
+    } else {
+      setNotifications(DEFAULT_NOTIFICATIONS[role] || [])
+    }
+
+    // Fetch live progress-based notifications from the backend API
+    const fetchAuthenticNotifications = async () => {
+      try {
+        const res = await fetch(`/api/notifications?role=${role}`)
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data.notifications) && data.notifications.length > 0) {
+            setNotifications(prev => {
+              // Preserve any real-time user-triggered notifications (like shortlists)
+              const runtimeItems = prev.filter(n => n.id.startsWith('notif-'))
+              const merged = [...runtimeItems, ...data.notifications.filter((dn: any) => !runtimeItems.some(rn => rn.id === dn.id))]
+              try {
+                localStorage.setItem(storageKey, JSON.stringify(merged))
+              } catch {}
+              return merged
+            })
+          }
+        }
+      } catch (err) {
+        console.warn('Authentic notifications fetch warning (using defaults):', err)
       }
     }
-    setNotifications(DEFAULT_NOTIFICATIONS[role] || [])
+
+    fetchAuthenticNotifications()
+
+    // Real-time custom event listener for instant notification delivery
+    const handleCustomNotification = (e: Event) => {
+      const customEvent = e as CustomEvent<{ role: NotificationRole; notification: NotificationItem }>
+      if (customEvent.detail && (customEvent.detail.role === role || customEvent.detail.role === ('all' as any))) {
+        setNotifications(prev => [customEvent.detail.notification, ...prev.filter(n => n.id !== customEvent.detail.notification.id)])
+      }
+    }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === storageKey && e.newValue) {
+        try {
+          setNotifications(JSON.parse(e.newValue))
+        } catch {}
+      }
+    }
+
+    window.addEventListener('placeiq_notification_added', handleCustomNotification)
+    window.addEventListener('storage', handleStorage)
+
+    return () => {
+      window.removeEventListener('placeiq_notification_added', handleCustomNotification)
+      window.removeEventListener('storage', handleStorage)
+    }
   }, [role])
 
   // Save changes

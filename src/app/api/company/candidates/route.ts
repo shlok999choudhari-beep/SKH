@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     const minInternships = searchParams.get('minInternships') ? parseInt(searchParams.get('minInternships')!) : undefined
     const hasProjects = searchParams.get('hasProjects') === 'true'
     const hasAssessments = searchParams.get('hasAssessments') === 'true'
+    const topLimitParam = searchParams.get('topLimit')
+    const topLimit = topLimitParam === 'all' ? 'all' : topLimitParam ? parseInt(topLimitParam) : 10
     const sortBy = (searchParams.get('sortBy') as any) || 'match'
     const search = searchParams.get('search') || undefined
 
@@ -42,6 +44,7 @@ export async function GET(request: NextRequest) {
       minInternships,
       hasProjects,
       hasAssessments,
+      topLimit,
       sortBy,
       search
     }
@@ -53,8 +56,12 @@ export async function GET(request: NextRequest) {
       role,
       filters,
       candidates: result.candidates,
+      ineligibleCandidates: result.ineligibleCandidates,
       totalEligible: result.totalEligible,
-      totalCandidates: result.totalCandidates
+      totalCandidates: result.totalCandidates,
+      hasHighMatches: result.hasHighMatches,
+      scoringWeights: result.scoringWeights,
+      summary: result.summary
     }, {
       headers: { 'Cache-Control': 'no-store' }
     })

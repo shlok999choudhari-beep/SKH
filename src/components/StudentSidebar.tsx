@@ -111,6 +111,7 @@ const CATEGORIES: NavCategory[] = [
       { href: '/student/campus-resources', icon: Landmark, label: 'Campus Resources', desc: 'Labs & Hubs' },
       { href: '/student/resources', icon: BookOpen, label: 'Study Resources', desc: 'Curated Notes' },
       { href: '/student/bookings', icon: CalendarDays, label: 'My Bookings', desc: 'Session Timetable' },
+      { href: '/student/verify-academics', icon: ShieldCheck, label: 'Academic Verification', badge: 'ID', desc: 'Marksheet Proofs' },
       { href: '/student/documents', icon: FolderLock, label: 'My Documents', desc: 'Verified Proofs' },
     ]
   }
